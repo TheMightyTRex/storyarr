@@ -10,6 +10,8 @@ for (const scenario of [
   "unknown-conflict",
   "stale-review",
   "unavailable-review",
+  "series-identified",
+  "series-unidentified",
 ] as const) {
   test(`download review ${scenario} keeps the decision visible and reuses the saved request`, async ({
     page,
@@ -25,11 +27,14 @@ for (const scenario of [
     page.on("pageerror", (error) => errors.push(error.message));
     const title =
       "The Anxious Generation: How the Great Rewiring of Childhood is Causing an Epidemic of Mental Illness";
+    const series = scenario.startsWith("series-");
     const files =
       scenario === "untagged"
         ? ["01.mp3", "02.mp3"]
-        : ["The Anxious Generation.epub"];
-    const medium = scenario === "untagged" ? "audio" : "ebook";
+        : series
+          ? ["Modern Childhood, Book 2.m4b"]
+          : ["The Anxious Generation.epub"];
+    const medium = scenario === "untagged" || series ? "audio" : "ebook";
     const group = {
       key: "group",
       medium,
@@ -46,7 +51,7 @@ for (const scenario of [
         "Embedded edition identifier matches",
         "Embedded authors agree",
       ],
-      conflicts: ["Embedded title is missing or differs"],
+      conflicts: series ? [] : ["Embedded title is missing or differs"],
       title,
       authors: group.authors,
     };
@@ -183,11 +188,18 @@ for (const scenario of [
               revision: "match-revision",
               evidence: {
                 issues: [],
-                titles: scenario === "conflict" ? ["A Different Book"] : [],
+                titles:
+                  scenario === "conflict"
+                    ? ["A Different Book"]
+                    : series
+                      ? ["Modern Childhood, Book 2"]
+                      : [],
                 authors: [],
               },
               candidates:
-                scenario === "untagged" || scenario === "unknown-conflict"
+                scenario === "untagged" ||
+                scenario === "unknown-conflict" ||
+                scenario === "series-unidentified"
                   ? []
                   : scenario === "ambiguous"
                     ? [candidate, { ...candidate, version_id: "other-version" }]
@@ -365,7 +377,9 @@ for (const scenario of [
       "/organization/inspections?inspection=next-download",
     );
     expect(plans).toBe(1);
-    expect(editions).toBe(scenario === "untagged" ? 1 : 0);
+    expect(editions).toBe(
+      scenario === "untagged" || scenario === "series-unidentified" ? 1 : 0,
+    );
     expect(errors).toEqual([]);
   });
 }

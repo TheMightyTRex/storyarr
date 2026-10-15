@@ -37,7 +37,7 @@ async def matches(
         inspection_revision=inspection.snapshot["revision"],
         grouping_revision=revision,
         items=[
-            await match_group(db, inspection.snapshot, revision, group)
+            await match_group(db, inspection.snapshot, revision, group, inspection=inspection)
             for group in grouping.groups[offset : offset + limit]
         ],
         total=len(grouping.groups),

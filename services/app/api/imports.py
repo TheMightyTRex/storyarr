@@ -293,23 +293,15 @@ async def inspection(inspection_id: UUID, admin: Admin, db: Database):
         ),
     )
     if row.state == "ready" and row.snapshot and not plan:
-        from app.domain.book_sources import identity
         from app.importing.grouping import current_grouping
-        from app.importing.linked_download import request_file_conflicts
-        from app.importing.match_evidence import group_evidence
+        from app.importing.linked_download import file_match
 
         _, grouping = await current_grouping(db, row)
-        catalog = await identity(db, work, selection.owner_id)
         value.download.file_conflicts = sorted(
             {
                 conflict
                 for group in grouping.groups
-                for conflict in request_file_conflicts(
-                    work,
-                    selection.frozen["release"],
-                    group_evidence(row.snapshot, group),
-                    series=catalog["series"],
-                )
+                for conflict in (await file_match(db, work, selection, row, group)).conflicts
             }
         )
     return value

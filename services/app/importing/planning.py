@@ -201,6 +201,11 @@ async def freeze_plan(db, admin, inspection_id: UUID, body: FreezeInput):
             raise HTTPException(422, "Choose a catalog version belonging to the selected book")
         reviewed_group = next(item for item in grouping.groups if item.key == selection.group_key)
         await validate_inspection(db, row.id, version=version, group=reviewed_group)
+        from app.importing.linked_download import inspection_match
+
+        request_match = await inspection_match(db, row, reviewed_group)
+        if request_match and request_match.work_id == work.id and request_match.conflicts:
+            raise HTTPException(409, request_match.conflicts[0])
         if version.medium != group["medium"]:
             raise HTTPException(422, "Catalog version and inspected medium differ")
         if selection.contained_work_ids:
@@ -208,7 +213,9 @@ async def freeze_plan(db, admin, inspection_id: UUID, body: FreezeInput):
                 db, selection.contained_work_ids, work.id
             )
         if selection.match_revision:
-            match = await match_group(db, row.snapshot, grouping_revision, reviewed_group)
+            match = await match_group(
+                db, row.snapshot, grouping_revision, reviewed_group, inspection=row
+            )
             if (
                 match.revision != selection.match_revision
                 or match.status != "matched"

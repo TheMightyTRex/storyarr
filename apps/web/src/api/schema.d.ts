@@ -10336,7 +10336,7 @@ export interface components {
       limit: number;
       /**
        * Matcher Version
-       * @default 6
+       * @default 7
        */
       matcher_version: number;
     };
