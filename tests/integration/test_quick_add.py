@@ -426,6 +426,38 @@ async def test_cancelled_request_during_search_does_not_download(
         assert not await db.scalar(select(DownloadAttempt.id))
 
 
+async def test_withdraw_then_request_again_starts_one_new_download(
+    client, database, authorized, catalog
+):
+    await defaults(client, authorized)
+    first = (await add(client, catalog["work"])).json()
+    request_id = first["request_id"]
+    request = (await client.get(f"/api/requests/{request_id}")).json()
+    for reason in request["reasons"]:
+        withdrawn = await client.delete(f"/api/requests/{request_id}/reasons/{reason['id']}")
+        assert withdrawn.status_code == 200, withdrawn.text
+    await complete_search(database, UUID(first["id"]), authorized)
+    await quick_add.run(UUID(first["id"]))
+    response = await add(client, catalog["work"])
+    assert response.status_code == 202, response.text
+    second = response.json()
+    assert second["id"] != first["id"]
+    assert second["status"] == "queued", second
+    identifier = UUID(second["id"])
+    await complete_search(database, identifier, authorized)
+    await quick_add.run(identifier)
+    async with database() as db:
+        operation = await db.get(Operation, identifier)
+        child_id = UUID(operation.payload["slots"]["audio"]["operation_id"])
+    await automatic_selection.run(child_id)
+    await quick_add.run(identifier)
+    await quick_add.run(identifier)
+    async with database() as db:
+        operation = await db.get(Operation, identifier)
+        assert operation.status == "completed", operation.message
+        assert await db.scalar(select(func.count()).select_from(DownloadAttempt)) == 1
+
+
 @pytest.mark.parametrize("usenet_primary", [False, True])
 @pytest.mark.parametrize("blocked", [False, True])
 @pytest.mark.parametrize("automatic_folders", [False, True])

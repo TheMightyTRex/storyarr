@@ -16,7 +16,11 @@ from app.domain.catalog_titles import optional_subtitle_base, parse_title_labels
 from app.domain.indexer_labels import indexer_language, indexer_suffixes, label_language
 from app.domain.narrators import NarratorNames
 from app.domain.request_scope import ScopePreferences
-from app.domain.series_identity import position_key, title_outside_series_note
+from app.domain.series_identity import (
+    position_key,
+    title_outside_series_note,
+    title_outside_series_prefix,
+)
 from app.domain.title_matching import compatible_title
 from app.importing.naming import fingerprint
 
@@ -447,15 +451,20 @@ def indexer_title_authors(release, work):
         parts = re.split(r"\s+[-–—]\s*|[-–—]\s+", title, maxsplit=1)
         if len(parts) == 2 and (credit := normalized(parts[0])) in authors:
             source_title = re.sub(r"\s+[-–—]\s*|[-–—]\s+", ": ", parts[1])
-            if compatible_title(source_title, work["title"], allow_extra_subtitle=True):
+            if compatible_title(
+                source_title, work["title"], allow_extra_subtitle=True
+            ) or title_outside_series_prefix(parts[1], work):
                 matched.add(authors[credit])
     # AudiobookBay names, including Prowlarr's copy of them, are
     # "Title - Author, Narrator". The catalog author is the first credit.
     if not matched:
-        head, separator, tail = title.partition(" - ")
-        if separator:
+        # The first separator can belong to "Series 2 - Title"; the last
+        # can belong to a narrator credit. Check both with the exact author.
+        for head, separator, tail in (title.partition(" - "), title.rpartition(" - ")):
+            if not separator:
+                continue
             credit = normalized(tail.split(",")[0])
-            bare = title_outside_series_note(head, work)
+            bare = title_outside_series_note(head, work) or title_outside_series_prefix(head, work)
             full_title = normalized(parse_title_labels(work["title"]).title)
             if credit in authors and (
                 normalized(head) in expected_titles

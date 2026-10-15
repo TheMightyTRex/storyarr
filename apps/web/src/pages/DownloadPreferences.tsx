@@ -61,7 +61,7 @@ export default function DownloadPreferences({
       {current.isPending && <Loading />}
       {current.data && (
         <Editor
-          key={`${scope}:${current.data.revision}`}
+          key={scope}
           admin={admin}
           scope={scope}
           librariesOnly={librariesOnly}
@@ -78,7 +78,7 @@ function Editor({
   admin,
   scope,
   librariesOnly,
-  current,
+  current: latest,
   onSaved,
   onEdit,
 }: {
@@ -90,7 +90,18 @@ function Editor({
   onEdit: () => void;
 }) {
   const cache = useQueryClient();
-  const [overrides, setOverrides] = useState(current.overrides);
+  const [draft, setDraft] = useState<{
+    base: Defaults;
+    overrides: Defaults["overrides"];
+  } | null>(null);
+  // A refresh must not replace the draft or authorize saving against a newer revision.
+  const current = draft?.base ?? latest;
+  const overrides = draft?.overrides ?? current.overrides;
+  const setOverrides = (value: Defaults["overrides"]) =>
+    setDraft((previous) => ({
+      base: previous?.base ?? latest,
+      overrides: value,
+    }));
   const [merge, setMerge] = useState<boolean | null>(null);
   const showAudiobookImport =
     admin && !librariesOnly && scope === "installation";
@@ -126,11 +137,28 @@ function Editor({
               }),
             )
           : null;
-      return { preferences, settings };
+      return {
+        preferences,
+        settings,
+        submittedDraft: draft,
+        submittedMerge: merge,
+      };
     },
-    onSuccess: async ({ preferences, settings }) => {
+    onSuccess: async ({
+      preferences,
+      settings,
+      submittedDraft,
+      submittedMerge,
+    }) => {
       onSaved();
-      setMerge(null);
+      setDraft((next) =>
+        next === submittedDraft
+          ? null
+          : next
+            ? { ...next, base: preferences }
+            : null,
+      );
+      setMerge((next) => (next === submittedMerge ? null : next));
       cache.setQueryData(["download-defaults", scope], preferences);
       if (settings) cache.setQueryData(["organization-settings"], settings);
       await Promise.all([

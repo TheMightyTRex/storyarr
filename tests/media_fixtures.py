@@ -26,6 +26,7 @@ def epub(
     metadata=None,
     isbn=None,
     language="en",
+    obfuscated_font=False,
 ):
     path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(path, "w") as book:
@@ -44,10 +45,27 @@ def epub(
                 f"<dc:language>{escape(language)}</dc:language>"
                 f"<dc:identifier>{escape(isbn or 'synthetic-fixture')}</dc:identifier>"
                 '</metadata><manifest><item id="chapter" href="chapter.xhtml" '
-                'media-type="application/xhtml+xml"/></manifest>'
+                'media-type="application/xhtml+xml"/>'
+                + (
+                    '<item id="font" href="font.woff" media-type="font/woff"/>'
+                    if obfuscated_font
+                    else ""
+                )
+                + "</manifest>"
                 '<spine><itemref idref="chapter"/></spine></package>'
             ),
         )
+        if obfuscated_font:
+            book.writestr("OEBPS/font.woff", b"synthetic obfuscated font bytes")
+            book.writestr(
+                "META-INF/encryption.xml",
+                '<encryption xmlns="urn:oasis:names:tc:opendocument:xmlns:container" '
+                'xmlns:enc="http://www.w3.org/2001/04/xmlenc#">'
+                "<enc:EncryptedData><enc:EncryptionMethod "
+                'Algorithm="http://www.idpf.org/2008/embedding"/>'
+                '<enc:CipherData><enc:CipherReference URI="OEBPS/font.woff"/>'
+                "</enc:CipherData></enc:EncryptedData></encryption>",
+            )
         if chapter:
             book.writestr(
                 "OEBPS/chapter.xhtml",

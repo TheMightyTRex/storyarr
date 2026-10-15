@@ -14,7 +14,7 @@ from app.domain.title_matching import compatible_title
 EBOOKS = {"epub", "pdf", "cbz"}
 AUDIO = {"m4b", "mp3", "flac", "aac", "ogg", "opus"}
 SIDECARS = {"jpg", "jpeg", "png", "webp", "opf", "nfo", "txt", "cue", "m3u"}
-PARTIAL = re.compile(r"\b(sample|excerpt|preview|incomplete|truncated)\b", re.I)
+PARTIAL = re.compile(r"\b(?:sample|excerpt|preview|incomplete|truncated)\d*\b", re.I)
 DISC_FOLDER = re.compile(r"(?:^|[\s_(\[])(?:cd|disc|disk|part)\s*\d+\b", re.I)
 PACK = re.compile(
     r"\b(collection|pack|omnibus|box[ -]?set|anthology|complete series|"

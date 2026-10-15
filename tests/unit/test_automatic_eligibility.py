@@ -84,6 +84,7 @@ def test_unknown_or_conflicting_source_facts_do_not_become_eligible(change, reas
         ),
         ("Cory Doctorow - Enshittification (2025) [EPUB]", [], True),
         ("Cory Doctorow - Enshittification.RETAIL.EPUB", [], True),
+        ("Cory.Doctorow.Enshittification.2025.RETAiL.ePub.eBook-LiBRiCiDE", [], True),
         ("Cory Doctorow - Enshittification (retail) (epub)", [], True),
         ("Cory Doctorow - Enshittification (summary) (epub)", [], False),
         ("Cory Doctorow - Enshittification (sample) (epub)", [], False),
@@ -120,6 +121,86 @@ def test_indexer_ebook_labels_preserve_complete_author_title_evidence(title, aut
     }
     reasons = eligibility(value, work, {**RULE, "medium": "ebook"}, ReleasePreferences())
     assert (not reasons) is allowed, reasons
+
+
+@pytest.mark.parametrize(
+    "paths,allowed",
+    [
+        (["Harbor.epub"], True),
+        (["Harbor.mp3"], False),
+        (["Harbor.epub", "Harbor.zip"], False),
+        (["Harbor.epub", "Other.epub"], False),
+    ],
+)
+def test_dotted_ebook_label_does_not_replace_inspected_content(paths, allowed):
+    from app.adapters.prowlarr import ProwlarrRelease
+
+    title = "Writer.Harbor.2025.RETAiL.ePub.eBook-LiBRiCiDE"
+    value = ProwlarrRelease(
+        source_id="fixture",
+        title=title,
+        raw_title=title,
+        authors=[],
+        medium="ebook",
+        language="en",
+        protocol="torrent",
+        seeders=5,
+        formats=["epub"],
+        indexer_name="Fixture",
+        categories=[7020],
+        observed_at=datetime.now(UTC),
+        acquisition_supported=True,
+    )
+    reasons = eligibility(
+        value,
+        WORK,
+        {**RULE, "medium": "ebook"},
+        ReleasePreferences(),
+        descriptor=descriptor(paths),
+        unattended=True,
+    )
+    assert (not reasons) is allowed, reasons
+
+
+@pytest.mark.parametrize(
+    "warning", ["Sample01", "Excerpt1", "Preview02", "Incomplete3", "Truncated4"]
+)
+@pytest.mark.parametrize("evidence", ["indexer", "raw-title", "file"])
+def test_numbered_partial_markers_prevent_automatic_ebook_selection(warning, evidence):
+    from app.adapters.prowlarr import ProwlarrRelease
+
+    value = release().model_copy(update={"medium": "ebook", "formats": ["epub"]})
+    paths = ["Harbor.epub"]
+    if evidence == "indexer":
+        title = f"Writer.Harbor.epub.eBook-{warning}"
+        value = ProwlarrRelease(
+            source_id="fixture",
+            title=title,
+            raw_title=title,
+            authors=[],
+            medium="ebook",
+            language="en",
+            protocol="torrent",
+            seeders=5,
+            formats=["epub"],
+            indexer_name="Fixture",
+            categories=[7020],
+            observed_at=datetime.now(UTC),
+            acquisition_supported=True,
+        )
+    elif evidence == "raw-title":
+        value = value.model_copy(update={"raw_title": f"Harbor-{warning}"})
+    else:
+        paths = [f"Harbor-{warning}.epub"]
+    reasons = eligibility(
+        value,
+        WORK,
+        {**RULE, "medium": "ebook"},
+        ReleasePreferences(),
+        descriptor=descriptor(paths),
+        unattended=True,
+    )
+    assert any("partial content" in reason for reason in reasons), reasons
 
 
 @pytest.mark.parametrize(

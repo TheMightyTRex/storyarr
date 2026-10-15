@@ -20,6 +20,7 @@ from app.db.models import (
     Operation,
     ReleaseBlock,
     SourceResult,
+    WorkMetadataSource,
 )
 from app.domain import automatic_selection, download_recovery
 from app.domain import download_attempts as downloads
@@ -179,16 +180,26 @@ class Grab:
         return SubmissionReceipt(external_ids=["SABnzbd_nzo_test"])
 
 
-async def test_clicked_usenet_release_with_parenthesized_format_reaches_downloader(
-    client, admin, database, source, authorized, monkeypatch, prowlarr_http
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Writer - Harbor (retail) (m4b)",
+        "Harbor: Sea Saga II - Writer (m4b)",
+        "Sea Saga II: Harbor - Writer (m4b)",
+        "Writer - Sea Saga, Bk 2 Harbor m4b",
+    ],
+)
+async def test_clicked_usenet_release_with_catalog_labels_reaches_downloader(
+    client, admin, database, source, authorized, monkeypatch, prowlarr_http, catalog, title
 ):
     await configure(client)
+    async with database() as db, db.begin():
+        metadata = await db.scalar(
+            select(WorkMetadataSource).where(WorkMetadataSource.work_id == catalog["work"])
+        )
+        metadata.snapshot = {**metadata.snapshot, "series": [{"name": "Sea Saga", "position": "2"}]}
     prowlarr_http.update(
-        releases=[
-            release(
-                title="Writer - Harbor (retail) (m4b)", protocol="usenet", categories=[{"id": 3030}]
-            )
-        ],
+        releases=[release(title=title, protocol="usenet", categories=[{"id": 3030}])],
         bytes=nzb_bytes(name="Harbor", filename="Harbor.m4b"),
     )
     found = (await search(client)).json()["items"][0]

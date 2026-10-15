@@ -30935,7 +30935,7 @@
           "matcher_version": {
             "type": "integer",
             "title": "Matcher Version",
-            "default": 7
+            "default": 8
           }
         },
         "additionalProperties": false,

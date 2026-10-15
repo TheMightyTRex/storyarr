@@ -353,7 +353,9 @@ async def test_cancelled_preparation_does_not_keep_release_selected(
     assert (await detail(client, retry["id"]))["status"] == "completed"
 
 
-@pytest.mark.parametrize("change", ["author", "unknown-seeds", "language", "pack", "recording"])
+@pytest.mark.parametrize(
+    "change", ["author", "unknown-seeds", "language", "pack", "recording", "numbered-partial"]
+)
 async def test_ineligible_candidates_remain_reviewable_without_fetching_torrents(
     client, database, source, catalog, change
 ):
@@ -368,6 +370,7 @@ async def test_ineligible_candidates_remain_reviewable_without_fetching_torrents
             "unknown-seeds": {"seeders": None},
             "language": {"language": "fr"},
             "pack": {"raw_title": "Harbor Books 1-3"},
+            "numbered-partial": {"raw_title": "Writer.Harbor.M4B-Sample01"},
         }
         if change == "recording":
             intent = await db.get(AcquisitionIntent, UUID(source["body"]["intent_id"]))
@@ -387,6 +390,11 @@ async def test_ineligible_candidates_remain_reviewable_without_fetching_torrents
     value = await detail(client, operation["id"])
     assert value["status"] == "held" and value["decisions"][0]["reasons"]
     assert source["resolver"].calls == []
+    if change == "numbered-partial":
+        assert any("partial content" in reason for reason in value["decisions"][0]["reasons"])
+        async with database() as db:
+            assert await db.scalar(select(func.count()).select_from(AcquisitionSelection)) == 0
+            assert await db.scalar(select(func.count()).select_from(DownloadAttempt)) == 0
 
 
 async def test_manifest_pack_evidence_is_retained_when_no_candidate_qualifies(

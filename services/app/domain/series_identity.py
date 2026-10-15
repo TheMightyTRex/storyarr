@@ -19,6 +19,24 @@ def series_name(value):
     return re.sub(r"\s+(?:saga|series)$", "", value).strip()
 
 
+def note_position(value):
+    """A numeric position or canonical Roman numeral, only inside a known series note."""
+    position = position_key(value)
+    if position is not None:
+        return position
+    if not value or not re.fullmatch(
+        r"m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})", value
+    ):
+        return None
+    numbers = {"i": 1, "v": 5, "x": 10, "l": 50, "c": 100, "d": 500, "m": 1000}
+    total, previous = 0, 0
+    for letter in reversed(value):
+        number = numbers[letter]
+        total += -number if number < previous else number
+        previous = number
+    return Decimal(total)
+
+
 def series_note_agrees(note, series, *, require_position=False):
     # Preserve punctuation until numbers have been checked: 5.5 is not 5,
     # and 1-3 is a collection, not a single position.
@@ -31,22 +49,15 @@ def series_note_agrees(note, series, *, require_position=False):
         if not match:
             continue
         remainder = note[: match.start()] + " " + note[match.end() :]
-        numbers = re.findall(r"\d+(?:\.\d+)?", remainder)
-        if require_position and len(numbers) != 1:
-            continue
-        if numbers and (
-            len(numbers) != 1
-            or position_key(numbers[0]) is None
-            or position_key(numbers[0]) != position_key(entry.get("position"))
-        ):
-            continue
-        remainder = re.sub(r"\d+(?:\.\d+)?", " ", remainder)
         remainder = re.sub(
-            r"\b(?:a|an|the|trilogy|duology|quartet|saga|series|cycle|book|volume|vol)\b\.?",
+            r"\b(?:a|an|the|trilogy|duology|quartet|saga|series|cycle|book|bk|volume|vol)\b\.?",
             " ",
             remainder,
-        )
-        if not remainder.strip(" ,:;#"):
+        ).strip(" ,:;#")
+        if not remainder and not require_position:
+            return True
+        position = note_position(remainder)
+        if position is not None and position == position_key(entry.get("position")):
             return True
     return False
 
@@ -71,5 +82,20 @@ def title_outside_series_note(value, work):
         else:
             continue
         if series_note_agrees(note, series):
+            return title
+    return None
+
+
+def title_outside_series_prefix(value, work):
+    """Keep the complete title; remove only a catalog-backed series/position prefix."""
+    title, value = display_title(work["title"]), display_title(value)
+    if not title:
+        return None
+    series = [entry for entry in work.get("series", []) if isinstance(entry, dict)]
+    for boundary in re.finditer(r"\s*[:–—-]\s*|\s+", value):
+        if exact_title_key(value[boundary.end() :]) != exact_title_key(title):
+            continue
+        note = value[: boundary.start()].strip()
+        if series_note_agrees(note, series, require_position=True):
             return title
     return None

@@ -68,12 +68,42 @@ test("download defaults inherit per field and persist after reload", async ({
   await expect(panel.getByRole("status")).toContainText(
     "Download defaults saved",
   );
+  let releasePersonal!: () => void;
+  const personalRefresh = new Promise<void>((resolve) => {
+    releasePersonal = resolve;
+  });
+  await page.route("**/api/acquisition/preferences/personal", async (route) => {
+    const response = await route.fetch();
+    await personalRefresh;
+    await route.fulfill({ response });
+  });
   await panel.getByLabel("Apply to").selectOption("personal");
   await panel.getByText("Formats and transfer limits", { exact: true }).click();
   const ebooks = panel.getByRole("group", {
     name: "Ebook format preference",
     exact: true,
   });
+  // A refresh of cached personal defaults must not collapse or discard a draft.
+  await expect(ebooks).toBeVisible();
+  await panel.getByLabel("Require standalone copies", { exact: true }).check();
+  const refreshedPersonal = page.waitForResponse(
+    "**/api/acquisition/preferences/personal",
+  );
+  releasePersonal();
+  await refreshedPersonal;
+  await page.unroute("**/api/acquisition/preferences/personal");
+  await expect(
+    panel.getByLabel("Require standalone copies", { exact: true }),
+  ).toBeChecked();
+  await expect(ebooks.getByRole("listitem").first()).toContainText("EPUB");
+  await panel
+    .getByRole("button", { name: "Save download defaults", exact: true })
+    .click();
+  await expect(panel.getByRole("alert")).toContainText(
+    "Download defaults changed; reload before saving",
+  );
+  await page.reload();
+  await panel.getByText("Formats and transfer limits", { exact: true }).click();
   await expect(ebooks.getByRole("listitem").first()).toContainText("PDF");
   await panel
     .getByRole("button", {
@@ -81,13 +111,42 @@ test("download defaults inherit per field and persist after reload", async ({
       exact: true,
     })
     .press("ArrowUp");
+  let releaseSave!: () => void;
+  const pendingSave = new Promise<void>((resolve) => {
+    releaseSave = resolve;
+  });
+  await page.route("**/api/acquisition/preferences/personal", async (route) => {
+    if (route.request().method() !== "PUT") return route.continue();
+    const response = await route.fetch();
+    await pendingSave;
+    await route.fulfill({ response });
+  });
+  await panel
+    .getByRole("button", { name: "Save download defaults", exact: true })
+    .click();
+  // Edits made during a save belong to the next save, not the submitted snapshot.
+  await panel.getByLabel("Require standalone copies", { exact: true }).check();
+  releaseSave();
+  await expect(panel.getByRole("status")).toContainText(
+    "Download defaults saved",
+  );
+  await page.unroute("**/api/acquisition/preferences/personal");
+  await expect(
+    panel.getByLabel("Require standalone copies", { exact: true }),
+  ).toBeChecked();
   await panel
     .getByRole("button", { name: "Save download defaults", exact: true })
     .click();
   await expect(panel.getByRole("status")).toContainText(
     "Download defaults saved",
   );
+  await expect(
+    panel.getByRole("button", { name: "Save download defaults", exact: true }),
+  ).toBeDisabled();
   await page.reload();
+  await expect(
+    panel.getByLabel("Require standalone copies", { exact: true }),
+  ).toBeChecked();
   await panel.getByText("Formats and transfer limits", { exact: true }).click();
   await expect(ebooks.getByRole("listitem").first()).toContainText("EPUB");
   await panel
@@ -97,6 +156,9 @@ test("download defaults inherit per field and persist after reload", async ({
     })
     .click();
   await expect(ebooks.getByRole("listitem").first()).toContainText("PDF");
+  await panel
+    .getByRole("button", { name: "Use inherited defaults", exact: true })
+    .click();
   await panel
     .getByRole("button", { name: "Save download defaults", exact: true })
     .click();
