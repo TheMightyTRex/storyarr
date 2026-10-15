@@ -33,10 +33,10 @@ def indexer_suffixes(value):
     yield value, labels
     if group := _GROUP.search(value):
         # A scene group after a media extension is metadata. Partial/preview
-        # markers are content warnings even if they use the same spelling.
+        # markers, including numbered variants, are content warnings.
         if not re.fullmatch(
-            r"sample|preview|summary|excerpt|incomplete|truncated|collection|pack|omnibus|"
-            r"anthology|boxset|part\d*|cd\d*|disc\d*",
+            r"(?:sample|preview|summary|excerpt|incomplete|truncated|collection|pack|omnibus|"
+            r"anthology|boxset|part|cd|disc)\d*",
             group["group"],
             re.I,
         ):

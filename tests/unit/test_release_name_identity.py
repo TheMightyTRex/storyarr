@@ -103,6 +103,8 @@ def test_series_prefixed_releases_preserve_catalog_constraints(source, title, ac
         (".2012.retail.EPUB-LiBRiCiDE", True),
         (".ePub.eBook-LIBRICIDE", True),
         (".mobi.eBook-Group", True),
+        (".ePub.eBook-Group42", True),
+        (".ePub.eBook-Sampler01", True),
         (".ePub.eBook-sample", False),
         (".ePub.eBook-PART01", False),
         (".ePub.eBook-preview", False),
@@ -118,6 +120,30 @@ def test_ebook_packaging_does_not_erase_content_warnings(suffix, accepted):
     assert authors(title, "The Wind through the Keyhole", None) == (
         ["Stephen King"] if accepted else []
     )
+
+
+@pytest.mark.parametrize(
+    "warning",
+    [
+        "Sample01",
+        "Excerpt1",
+        "Preview02",
+        "Incomplete3",
+        "Truncated4",
+        "Summary5",
+        "Collection6",
+        "Pack7",
+        "Omnibus8",
+        "Anthology9",
+        "Boxset10",
+        "Part11",
+        "CD12",
+        "Disc13",
+    ],
+)
+def test_numbered_content_warnings_are_not_release_groups(warning):
+    title = "Stephen.King.The.Wind.Through.The.Keyhole.ePub.eBook-" + warning
+    assert authors(title, "The Wind through the Keyhole", None) == []
 
 
 def test_supported_layout_still_requires_structured_author_agreement_and_catalog_series():

@@ -50,6 +50,22 @@ def test_partial_labels_and_noncertified_ebook_containers_need_review(extension,
     )
 
 
+@pytest.mark.parametrize(
+    "warning", ["Sample01", "Excerpt1", "Preview02", "Incomplete3", "Truncated4"]
+)
+@pytest.mark.parametrize("evidence", ["release", "file"])
+def test_numbered_partial_markers_hold_automatic_import(warning, evidence):
+    name = f"book-{warning}.epub" if evidence == "file" else "book.epub"
+    title = f"Book-{warning}" if evidence == "release" else "Book"
+    group = SimpleNamespace(medium="ebook", files=[SimpleNamespace(path=name)])
+    reason = content_reason(
+        group,
+        {name: {"path": name, "extension": "epub", "state": "inspected"}},
+        {"title": title},
+    )
+    assert reason and "partial content" in reason
+
+
 def test_one_part_of_a_book_released_in_parts_needs_review():
     group = SimpleNamespace(medium="ebook", files=[SimpleNamespace(path="book.epub")])
     files = {"book.epub": {"path": "book.epub", "extension": "epub", "state": "inspected"}}

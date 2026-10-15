@@ -41,7 +41,7 @@ from app.importing.starting import DestinationChoice, ImportInput, start_import
 from app.jobs.queue import enqueue
 
 # This is a negative signal, never a positive proof of a book's identity.
-PARTIAL = re.compile(r"\b(sample|excerpt|preview|incomplete|truncated)\b", re.I)
+PARTIAL = re.compile(r"\b(?:sample|excerpt|preview|incomplete|truncated)\d*\b", re.I)
 
 
 async def check_policy(db, row, *, lock=False):

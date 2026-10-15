@@ -163,6 +163,47 @@ def test_dotted_ebook_label_does_not_replace_inspected_content(paths, allowed):
 
 
 @pytest.mark.parametrize(
+    "warning", ["Sample01", "Excerpt1", "Preview02", "Incomplete3", "Truncated4"]
+)
+@pytest.mark.parametrize("evidence", ["indexer", "raw-title", "file"])
+def test_numbered_partial_markers_prevent_automatic_ebook_selection(warning, evidence):
+    from app.adapters.prowlarr import ProwlarrRelease
+
+    value = release().model_copy(update={"medium": "ebook", "formats": ["epub"]})
+    paths = ["Harbor.epub"]
+    if evidence == "indexer":
+        title = f"Writer.Harbor.epub.eBook-{warning}"
+        value = ProwlarrRelease(
+            source_id="fixture",
+            title=title,
+            raw_title=title,
+            authors=[],
+            medium="ebook",
+            language="en",
+            protocol="torrent",
+            seeders=5,
+            formats=["epub"],
+            indexer_name="Fixture",
+            categories=[7020],
+            observed_at=datetime.now(UTC),
+            acquisition_supported=True,
+        )
+    elif evidence == "raw-title":
+        value = value.model_copy(update={"raw_title": f"Harbor-{warning}"})
+    else:
+        paths = [f"Harbor-{warning}.epub"]
+    reasons = eligibility(
+        value,
+        WORK,
+        {**RULE, "medium": "ebook"},
+        ReleasePreferences(),
+        descriptor=descriptor(paths),
+        unattended=True,
+    )
+    assert any("partial content" in reason for reason in reasons), reasons
+
+
+@pytest.mark.parametrize(
     ("title", "allowed"),
     [
         (
