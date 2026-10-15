@@ -143,8 +143,6 @@ def inspect_epub(fd):
         names = {entry.filename for entry in entries}
         if len(names) != len(entries):
             raise InspectionError("EPUB contains conflicting duplicate entries")
-        if "META-INF/encryption.xml" in names:
-            raise InspectionError("EPUB declares encrypted resources; review is required")
 
         def read(name):
             relative_parts(name)
@@ -167,6 +165,7 @@ def inspect_epub(fd):
         if metadata is None or manifest is None or spine is None or len(spine) == 0:
             raise InspectionError("EPUB has no readable metadata and book spine")
         items = {item.attrib.get("id"): item for item in manifest}
+        spine_paths = set()
         for ref in spine:
             item = items.get(ref.attrib.get("idref"))
             if item is None:
@@ -175,10 +174,20 @@ def inspect_epub(fd):
             if href.scheme or href.netloc:
                 raise InspectionError("EPUB spine references external content")
             path = epub_resource_path(package_path, href.path)
+            spine_paths.add(path)
             if path not in names or archive.getinfo(path).file_size == 0:
                 raise InspectionError("EPUB spine content is missing or empty")
             if archive.getinfo(path).flag_bits & 1:
                 raise InspectionError("EPUB spine content is encrypted")
+
+        if "META-INF/encryption.xml" in names:
+            check_epub_encryption(
+                ElementTree.fromstring(read("META-INF/encryption.xml")),
+                package_path,
+                manifest,
+                spine_paths,
+                archive,
+            )
 
         def values(name):
             return [
@@ -203,6 +212,60 @@ def inspect_epub(fd):
             ][:30],
             "spine_entries": len(spine),
         }
+
+
+def check_epub_encryption(document, package_path, manifest, spine_paths, archive):
+    """Allow only IDPF font obfuscation; no content is decrypted or rewritten.
+
+    https://www.w3.org/TR/epub-33/#sec-obfuscation-specifying
+    """
+    ocf = "{urn:oasis:names:tc:opendocument:xmlns:container}"
+    enc = "{http://www.w3.org/2001/04/xmlenc#}"
+    font_types = {
+        "font/ttf",
+        "font/otf",
+        "font/woff",
+        "font/woff2",
+        "application/font-sfnt",
+        "application/vnd.ms-opentype",
+        "application/font-woff",
+    }
+    reason = "EPUB declares unsupported encrypted resources; review is required"
+    if document.tag != f"{ocf}encryption" or not len(document):
+        raise InspectionError(reason)
+    fonts, non_fonts = set(), set(spine_paths)
+    names = set(archive.namelist())
+    for item in manifest:
+        href = urlsplit(item.attrib.get("href", ""))
+        if href.scheme or href.netloc or href.query or href.fragment:
+            continue
+        path = epub_resource_path(package_path, href.path)
+        (fonts if item.attrib.get("media-type") in font_types else non_fonts).add(path)
+    for data in document:
+        if data.tag != f"{enc}EncryptedData" or sorted(node.tag for node in data) != sorted(
+            [f"{enc}EncryptionMethod", f"{enc}CipherData"]
+        ):
+            raise InspectionError(reason)
+        method = data.find(f"{enc}EncryptionMethod")
+        cipher = data.find(f"{enc}CipherData")
+        if (
+            method.attrib.get("Algorithm") != "http://www.idpf.org/2008/embedding"
+            or len(method)
+            or len(cipher) != 1
+            or cipher[0].tag != f"{enc}CipherReference"
+            or len(cipher[0])
+        ):
+            raise InspectionError(reason)
+        href = urlsplit(cipher[0].attrib.get("URI", ""))
+        if href.scheme or href.netloc or href.query or href.fragment:
+            raise InspectionError(reason)
+        # CipherReference is relative to the container root, not encryption.xml or the OPF.
+        path = epub_resource_path("root", href.path)
+        if path not in fonts or path in non_fonts or path not in names:
+            raise InspectionError(reason)
+        info = archive.getinfo(path)
+        if info.file_size == 0 or info.flag_bits & 1:
+            raise InspectionError(reason)
 
 
 def epub_resource_path(package_path, href):

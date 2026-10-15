@@ -96,6 +96,7 @@ pytestmark = pytest.mark.integration
         "automatic-identified-missing-tags-audio",
         "automatic-subtitle-audio",
         "automatic-linked-ebook",
+        "automatic-obfuscated-font",
         "automatic-multiple-isbns",
         "automatic-multiple-isbns-unlisted",
         "automatic-identified-subtitle",
@@ -139,6 +140,7 @@ async def test_single_epub_download_to_confirmed_library_keeps_neighbor_private(
         "automatic-identified-missing-tags-audio",
         "automatic-subtitle-audio",
         "automatic-linked-ebook",
+        "automatic-obfuscated-font",
         "automatic-multiple-isbns",
         "automatic-multiple-isbns-unlisted",
         "automatic-identified-subtitle",
@@ -223,6 +225,7 @@ async def test_single_epub_download_to_confirmed_library_keeps_neighbor_private(
             language="en-US"
             if handoff in {"automatic-linked-ebook", "automatic-language-alias"}
             else "en",
+            obfuscated_font=handoff == "automatic-obfuscated-font",
         )
     neighbor = source.parent.parent if numbered_audio else source.parent
     epub(neighbor / "unrelated.epub", title="Not part of this torrent")

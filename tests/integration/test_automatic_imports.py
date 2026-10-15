@@ -343,8 +343,9 @@ async def test_linked_review_retries_automatic_matching_without_new_inspection(
     assert downloader.calls.count("submit") == 1
 
 
+@pytest.mark.parametrize("obfuscated_font", [False, True])
 async def test_retry_reinspects_unreadable_book_without_redownloading(
-    client, database, automatic_job, downloader
+    client, database, automatic_job, downloader, obfuscated_font
 ):
     from app.importing.workflow import run_inspection
 
@@ -358,7 +359,10 @@ async def test_retry_reinspects_unreadable_book_without_redownloading(
 
         from tests.media_fixtures import epub
 
-        epub(Path(inspection.source_path) / inspection.relative_path / "book.epub")
+        epub(
+            Path(inspection.source_path) / inspection.relative_path / "book.epub",
+            obfuscated_font=obfuscated_font,
+        )
     await run_inspection(operation_id)
     async with database() as db, db.begin():
         row = await db.get(AutomaticImport, automatic_job)
@@ -369,7 +373,13 @@ async def test_retry_reinspects_unreadable_book_without_redownloading(
             **original,
             "groups": [],
             "files": [
-                {**file, "state": "held", "reason": "Invalid media metadata"}
+                {
+                    **file,
+                    "state": "held",
+                    "reason": "EPUB declares encrypted resources; review is required"
+                    if obfuscated_font
+                    else "Invalid media metadata",
+                }
                 for file in original["files"]
             ],
         }

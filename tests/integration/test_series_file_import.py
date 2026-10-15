@@ -24,6 +24,7 @@ pytestmark = pytest.mark.integration
     [
         ("First Harbor (Harbor #1) (Unabridged)", False),
         ("Harbor, Book 1", False),
+        ("Harbor, Book I", False),
         ("First Harbor (Harbor #1)", True),
     ],
 )

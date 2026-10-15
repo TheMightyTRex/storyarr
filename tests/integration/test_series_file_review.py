@@ -213,6 +213,7 @@ async def review(client, download):
     "series_download",
     [
         {},
+        {"title": "Harbor, Book I"},
         {"identified": True},
         {"title": "First and Last Harbor (Harbor #1)", "connector": True, "identified": True},
     ],

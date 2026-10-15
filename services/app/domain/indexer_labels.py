@@ -7,7 +7,7 @@ from app.domain.catalog_language import LANGUAGE_ALIASES
 # Full names avoid mistaking short language codes for initials or title words.
 LANGUAGES = {name: code for name, code in LANGUAGE_ALIASES.items() if len(name) > 3}
 LANGUAGES["deutsch"] = "de"
-MEDIA = frozenset({"audiobook", "abook", "hoerbuch", "hörbuch", "hoerspiel", "hörspiel"})
+MEDIA = frozenset({"audiobook", "abook", "hoerbuch", "hörbuch", "hoerspiel", "hörspiel", "ebook"})
 FORMATS = frozenset({"m4b", "mp3", "epub", "pdf", "flac", "aac", "ogg", "opus", "azw3", "mobi"})
 LABELS = MEDIA | FORMATS | LANGUAGES.keys() | {"unabridged", "ungekuerzt", "ungekürzt", "retail"}
 _LABEL = rf"(?:{'|'.join(sorted(LABELS))}|(?:19|20)\d{{2}})"
@@ -17,7 +17,10 @@ _SUFFIX = re.compile(
     rf"[.\s_]+(?P<bare>{_LABEL}))\s*$",
     re.I,
 )
-_GROUP = re.compile(r"(?i:(?:\.|\s)(?:m4b|mp3|flac|aac|ogg|opus))-(?P<group>[A-Z0-9]{2,16})$")
+_GROUP = re.compile(
+    rf"(?:\.|\s)(?:{'|'.join(sorted(FORMATS))})(?:[.\s]+ebook)?-(?P<group>[a-z0-9]{{2,16}})$",
+    re.I,
+)
 
 
 def indexer_suffixes(value):
@@ -29,9 +32,14 @@ def indexer_suffixes(value):
     labels = []
     yield value, labels
     if group := _GROUP.search(value):
-        # A scene group after an audio extension is metadata. Partial/preview
+        # A scene group after a media extension is metadata. Partial/preview
         # markers are content warnings even if they use the same spelling.
-        if not re.fullmatch(r"SAMPLE|PREVIEW|SUMMARY|PART\d*|CD\d*|DISC\d*", group["group"]):
+        if not re.fullmatch(
+            r"sample|preview|summary|excerpt|incomplete|truncated|collection|pack|omnibus|"
+            r"anthology|boxset|part\d*|cd\d*|disc\d*",
+            group["group"],
+            re.I,
+        ):
             value = value[: group.start("group") - 1]
     while match := _SUFFIX.search(value):
         prefix = value[: match.start()].rstrip()

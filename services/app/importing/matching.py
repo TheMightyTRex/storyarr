@@ -29,7 +29,7 @@ from app.importing.match_evidence import (
 from app.importing.naming import StrictModel, fingerprint
 from app.importing.versioning import version_revision
 
-MATCHER_VERSION = 7
+MATCHER_VERSION = 8
 MAX_CANDIDATES = 50
 
 
