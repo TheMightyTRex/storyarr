@@ -28,6 +28,10 @@ test("library review links unmatched items to Dewarr and Hardcover books", async
   page.on("pageerror", (e) => errors.push(e.message));
   const matchSearches: string[] = [];
   const matches: { asset: string; body: unknown }[] = [];
+  let releaseNextSearch!: () => void;
+  const nextSearch = new Promise<void>((resolve) => {
+    releaseNextSearch = resolve;
+  });
   let imported = false;
   const items = [
     { kind: "asset", asset: asset("a1", "Untagged Folder", ["title"]) },
@@ -115,6 +119,7 @@ test("library review links unmatched items to Dewarr and Hardcover books", async
       data = { items: shown, total: shown.length };
     } else if (path === "/api/catalog/works") {
       matchSearches.push(url.searchParams.get("q") || "");
+      if (url.searchParams.get("q") === "The Long Way") await nextSearch;
       data = { items: [work], total: 1 };
     } else if (path.endsWith("/match") && method === "POST") {
       const id = path.split("/").at(-2)!;
@@ -214,9 +219,16 @@ test("library review links unmatched items to Dewarr and Hardcover books", async
       part_total: null,
     },
   });
-  await expect(page.getByRole("status")).toContainText(
-    "Linked “Untagged Folder”",
-  );
+  try {
+    // Saving and continuing can announce success while the next lookup is pending.
+    await expect(detail.getByRole("status")).toHaveText("Searching catalog…");
+    await expect(
+      page.getByRole("status").filter({ hasText: "Linked “Untagged Folder”" }),
+    ).toBeVisible();
+  } finally {
+    releaseNextSearch();
+  }
+  await expect(detail.getByRole("status")).toHaveCount(0);
   await expect(cards).toHaveCount(2);
   await expect(
     nav.getByRole("link", { name: /^Library review/ }),
