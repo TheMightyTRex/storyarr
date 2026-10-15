@@ -669,3 +669,53 @@ async def test_ranking_can_inspect_more_than_five_candidates_without_repeating_f
     assert value["status"] == "completed" and value["inspections"] == 6
     assert len(calls) == len(set(calls)) == 6
     assert value["artifact_id"] == str(source["artifact"])
+
+
+@pytest.mark.parametrize("eligible", [True, False])
+async def test_non_vip_policy_skips_vip_results_before_any_inspection(
+    client, database, source, monkeypatch, eligible
+):
+    blocked = {source["result"]}
+    for index in range(3):
+        result_id, _, _ = await additional_candidate(
+            database, source, source_id=str(502 + index), seeders=8 - index
+        )
+        blocked.add(result_id)
+    if eligible:
+        chosen, artifact_id, release = await additional_candidate(
+            database, source, source_id="600", seeders=1
+        )
+    async with database() as db, db.begin():
+        connection = await db.get(SourceConnection, "mam")
+        connection.automation = {"exclude_vip": True}
+        for result_id in blocked:
+            row = await db.get(SourceResult, result_id)
+            row.release_snapshot = {
+                **row.release_snapshot,
+                "vip": True,
+                "vip_freeleech": True,
+                "freeleech": False,
+                "personal_freeleech": False,
+            }
+    calls = []
+
+    async def resolve(owner, row, use_wedge=False):
+        calls.append(row.id)
+        assert eligible and row.id == chosen
+        assert not use_wedge
+        return artifact_id, release
+
+    monkeypatch.setattr(automatic, "resolve_candidate", resolve)
+    operation = await start(client, source)
+    await automatic.run(UUID(operation["id"]))
+    await automatic.run(UUID(operation["id"]))
+    result = await detail(client, operation["id"])
+    assert result["status"] == ("completed" if eligible else "held"), result
+    assert result["inspections"] == (1 if eligible else 0)
+    assert calls == ([chosen] if eligible else [])
+    for decision in result["decisions"]:
+        if UUID(decision["result_id"]) in blocked:
+            assert not decision["inspected"]
+            assert "VIP releases are excluded in MAM settings" in decision["reasons"]
+    if not eligible:
+        assert "VIP releases are excluded" in result["message"]

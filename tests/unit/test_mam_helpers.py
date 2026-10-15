@@ -66,6 +66,7 @@ def test_helpers_do_nothing_until_an_administrator_enables_one():
     now = datetime(2026, 9, 21, tzinfo=UTC)
     assert due_command({}, {}, now) is None
     assert due_command({"use_wedge": True}, {}, now) is None
+    assert due_command({"exclude_vip": True}, {}, now) is None
     assert due_command({"seedbox_ip": "yes"}, {}, now) is None
     command = due_command({"seedbox_ip": True, "auto_vip": True, "protect_ratio": True}, {}, now)
     assert command is not None
@@ -371,3 +372,48 @@ async def test_bonus_purchases_stop_when_points_fall_under_the_threshold():
         result = await client.maintain({"upload_bonus": True, "bonus_above": 5000})
     assert result.upload_purchased
     assert amounts == ["50", "50"]
+
+
+@pytest.mark.parametrize("vip", [True, False, None])
+async def test_exclude_vip_rechecks_fresh_detail_without_inferring_unknown_access(vip):
+    calls = []
+
+    def handler(request):
+        calls.append(request)
+        if "download.php" in request.url.path:
+            assert dict(request.url.params) == {"tid": "501"}
+            return httpx.Response(200, content=b"d4:infod4:name6:Harboree")
+        assert request.url.path.endswith("loadSearchJSONbasic.php")
+        return httpx.Response(
+            200, json=search_response(data=[release_row(vip=vip, free=0, fl_vip=1)])
+        )
+
+    async with _client(handler) as client:
+        client.automation = AccountAutomation(exclude_vip=True)
+        if vip is True:
+            # Even an explicit wedge request cannot bypass the saved exclusion.
+            with pytest.raises(AdapterError, match="VIP releases are excluded") as error:
+                await client.resolve({"source_id": "501", "use_wedge": True})
+            assert error.value.kind == FailureKind.UNSUPPORTED
+        else:
+            artifact = await client.resolve("501")
+            assert artifact.release.vip is vip
+    assert len(calls) == (1 if vip is True else 2)
+
+
+async def test_vip_without_download_reference_explains_access_without_account_or_spending_calls():
+    calls = []
+
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(
+            200, json=search_response(data=[release_row(vip=1, free=0, fl_vip=1, dl=None)])
+        )
+
+    async with _client(handler) as client:
+        with pytest.raises(
+            AdapterError, match="Check account access or enable Exclude VIP releases"
+        ) as error:
+            await client.resolve("501")
+        assert error.value.kind == FailureKind.UNSUPPORTED
+    assert len(calls) == 1

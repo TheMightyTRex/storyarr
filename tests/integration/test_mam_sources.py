@@ -510,3 +510,27 @@ async def test_unavailable_proxy_falls_back_direct_unless_strict_mode_is_enabled
     assert failed["status"] == "unhealthy"
     assert failed["route"] == "proxy"
     assert attempts == ["http://proxy.test:8888", None, "http://proxy.test:8888"]
+
+
+async def test_non_vip_search_policy_reaches_provider_and_survives_reload(
+    client, admin, source_http
+):
+    import json
+
+    configured = await configure(client, automation={"exclude_vip": True})
+    assert configured.status_code == 200, configured.text
+    found = await search(client, medium="audio", offset=50, limit=50)
+    assert found.status_code == 200, found.text
+    body = json.loads(source_http["calls"][-1].content)
+    assert body["tor"]["searchType"] == "nVIP"
+    assert body["tor"]["startNumber"] == 50 and body["tor"]["main_cat"] == [13]
+    assert "dlLink" not in body
+    reloaded = (await client.get("/api/sources/mam/connection")).json()
+    assert reloaded["automation"]["exclude_vip"] is True
+    assert reloaded["automation"]["use_wedge"] is False
+    configured = await configure(
+        client, expected_generation=1, mam_id=None, automation={"exclude_vip": False}
+    )
+    assert configured.status_code == 200, configured.text
+    assert (await search(client)).status_code == 200
+    assert json.loads(source_http["calls"][-1].content)["tor"]["searchType"] == "all"
