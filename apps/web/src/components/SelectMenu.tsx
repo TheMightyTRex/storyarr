@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { Check } from "lucide-react";
 
 type MenuOption = {
@@ -20,7 +20,7 @@ type MenuState = {
 const MENU_ID = "app-select-menu";
 
 function customMenusSupported() {
-  return "showPopover" in HTMLElement.prototype;
+  return typeof HTMLElement.prototype.showPopover === "function";
 }
 
 function eligible(select: HTMLSelectElement | null) {
@@ -40,7 +40,9 @@ function readOptions(select: HTMLSelectElement): MenuOption[] {
     return {
       value: option.value,
       label: option.label || option.value,
-      disabled: option.disabled,
+      disabled:
+        option.disabled ||
+        (parent instanceof HTMLOptGroupElement && parent.disabled),
       group,
     };
   });
@@ -103,6 +105,7 @@ function optionId(index: number) {
 
 export default function SelectMenu() {
   const popoverRef = useRef<HTMLDivElement>(null);
+  const nativeFallback = useRef(false);
   const menuRef = useRef<MenuState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
 
@@ -131,7 +134,7 @@ export default function SelectMenu() {
     );
     const fallback = options.findIndex((option) => !option.disabled);
     const index = active >= 0 ? active : fallback;
-    if (index < 0) return;
+    if (index < 0 || nativeFallback.current) return false;
     const previous = menuRef.current;
     if (previous && previous.select !== select) {
       previous.select.removeAttribute("data-open");
@@ -143,13 +146,21 @@ export default function SelectMenu() {
     select.setAttribute("aria-expanded", "true");
     select.setAttribute("aria-controls", MENU_ID);
     select.setAttribute("aria-activedescendant", optionId(index));
-    sync({
-      select,
-      options,
-      active: index,
-      label: selectName(select),
-      moveFocus,
-    });
+    // Show the popover within the initiating event, before canceling the native
+    // picker. A failed custom open must leave that native default available.
+    flushSync(() =>
+      sync({
+        select,
+        options,
+        active: index,
+        label: selectName(select),
+        moveFocus,
+      }),
+    );
+    return (
+      menuRef.current?.select === select &&
+      !!popoverRef.current?.matches(":popover-open")
+    );
   };
 
   const updateActive = (active: number, moveFocus = true) => {
@@ -174,7 +185,7 @@ export default function SelectMenu() {
 
   useLayoutEffect(() => {
     const pop = popoverRef.current;
-    if (!pop) return;
+    if (!pop || !customMenusSupported()) return;
     if (!menu) {
       if (pop.matches(":popover-open")) pop.hidePopover();
       return;
@@ -187,6 +198,11 @@ export default function SelectMenu() {
       try {
         pop.showPopover();
       } catch {
+        // Fall through to the native picker if showing throws or is canceled.
+      }
+      if (!pop.matches(":popover-open")) {
+        nativeFallback.current = true;
+        close(false);
         return;
       }
     }
@@ -215,12 +231,16 @@ export default function SelectMenu() {
 
   useEffect(() => {
     if (!customMenusSupported()) return;
-    let suppressUntil = 0;
+    let pointerHandled = false;
     let buffer = "";
     let bufferTimer = 0;
 
     const targetSelect = (event: Event) => {
-      if (!(event.target instanceof HTMLSelectElement)) return null;
+      if (
+        nativeFallback.current ||
+        !(event.target instanceof HTMLSelectElement)
+      )
+        return null;
       if (popoverRef.current?.contains(event.target)) return null;
       return eligible(event.target);
     };
@@ -286,12 +306,13 @@ export default function SelectMenu() {
 
     const onMouseDown = (event: MouseEvent) => {
       const select = targetSelect(event);
-      if (!select || event.button !== 0) return;
-      event.preventDefault();
+      if (select && event.button === 0 && pointerHandled)
+        event.preventDefault();
     };
 
     const labeledSelect = (event: Event) => {
-      if (!(event.target instanceof Element)) return null;
+      if (nativeFallback.current || !(event.target instanceof Element))
+        return null;
       if (event.target instanceof HTMLSelectElement) return null;
       if (popoverRef.current?.contains(event.target)) return null;
       const label = event.target.closest("label");
@@ -302,43 +323,43 @@ export default function SelectMenu() {
     };
 
     const onPointerDown = (event: PointerEvent) => {
+      pointerHandled = false;
       const select = targetSelect(event) || labeledSelect(event);
-      if (!select || event.button !== 0) return;
-      event.preventDefault();
-      if (menuRef.current?.select === select) {
-        suppressUntil = performance.now() + 400;
-        close(false);
+      if (event.button !== 0) return;
+      if (!select) {
+        if (
+          event.target instanceof Node &&
+          !popoverRef.current?.contains(event.target)
+        )
+          close(false);
         return;
       }
-      if (menuRef.current) close(false);
-    };
-
-    const onPointerUp = (event: PointerEvent) => {
-      const select = targetSelect(event) || labeledSelect(event);
-      if (!select || event.button !== 0) return;
-      if (performance.now() < suppressUntil) return;
-      if (menuRef.current?.select === select) return;
-      select.focus({ preventScroll: true });
-      open(select, false);
+      if (menuRef.current?.select === select) {
+        close(true);
+        pointerHandled = true;
+      } else {
+        if (menuRef.current) close(false);
+        select.focus({ preventScroll: true });
+        pointerHandled = open(select, false);
+      }
+      if (pointerHandled) event.preventDefault();
     };
 
     const onClick = (event: MouseEvent) => {
-      if (performance.now() < suppressUntil) return;
-      if (!(event.target instanceof Element)) return;
-      if (event.target instanceof HTMLSelectElement) return;
-      if (popoverRef.current?.contains(event.target)) return;
-      const label = event.target.closest("label");
-      if (!(label instanceof HTMLLabelElement)) return;
-      const select = eligible(
-        label.control instanceof HTMLSelectElement ? label.control : null,
-      );
-      if (!select || menuRef.current?.select === select) return;
-      event.preventDefault();
+      const select = targetSelect(event) || labeledSelect(event);
+      if (!select || event.button !== 0) return;
+      if (pointerHandled) {
+        pointerHandled = false;
+        event.preventDefault();
+        return;
+      }
+      // Keyboard/assistive-technology clicks need no preceding pointer event.
       select.focus({ preventScroll: true });
-      open(select, false);
+      if (open(select, false)) event.preventDefault();
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
+      if (nativeFallback.current) return;
       const current = menuRef.current;
       const onSelect =
         event.target instanceof HTMLSelectElement
@@ -358,9 +379,9 @@ export default function SelectMenu() {
               event.key === "ArrowUp" ||
               event.key === " "));
         if (!openKey) return;
+        if (!open(onSelect, true)) return;
         event.preventDefault();
         event.stopPropagation();
-        open(onSelect, true);
         if (event.key === "ArrowDown") step(1);
         else if (event.key === "ArrowUp") step(-1);
         return;
@@ -431,11 +452,11 @@ export default function SelectMenu() {
       capture: true,
       passive: false,
     });
-    document.addEventListener("pointerup", onPointerUp, true);
     document.addEventListener("click", onClick, true);
     const onKeyUp = (event: KeyboardEvent) => {
       if (!(event.target instanceof HTMLSelectElement)) return;
-      if (!eligible(event.target)) return;
+      if (!eligible(event.target) || nativeFallback.current || !menuRef.current)
+        return;
       if (
         event.key === " " ||
         event.key === "ArrowDown" ||
@@ -449,7 +470,6 @@ export default function SelectMenu() {
     return () => {
       document.removeEventListener("mousedown", onMouseDown, true);
       document.removeEventListener("pointerdown", onPointerDown, true);
-      document.removeEventListener("pointerup", onPointerUp, true);
       document.removeEventListener("click", onClick, true);
       document.removeEventListener("keydown", onKeyDown, true);
       document.removeEventListener("keyup", onKeyUp, true);
@@ -464,12 +484,19 @@ export default function SelectMenu() {
     <div
       ref={popoverRef}
       id={MENU_ID}
-      popover="auto"
+      // Opening during pointerdown must survive the originating pointerup.
+      // Native auto light-dismiss treats that gesture as outside the popover.
+      popover="manual"
       role="listbox"
       aria-label={menu?.label || "Options"}
       className="app-select-menu"
       onToggle={(event) => {
-        if (event.newState !== "closed" || !menuRef.current) return;
+        if (
+          event.newState !== "closed" ||
+          !menuRef.current ||
+          popoverRef.current?.matches(":popover-open")
+        )
+          return;
         menuRef.current.select.removeAttribute("data-open");
         menuRef.current.select.removeAttribute("aria-expanded");
         menuRef.current.select.removeAttribute("aria-controls");

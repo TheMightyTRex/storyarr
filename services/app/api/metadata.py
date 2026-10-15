@@ -815,6 +815,7 @@ async def work_metadata(
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=40, ge=1, le=100),
     scope: Literal["identity", "display"] = "identity",
+    medium: Literal["ebook", "audio", "print", "unknown"] | None = None,
 ):
     work = await accessible_work(db, user, work_id)
     work_id = work.id
@@ -898,6 +899,8 @@ async def work_metadata(
         accessible_asset.where(owned_coverage(), LibraryAsset.state.in_(["present", "stale"]))
     )
     conditions = [Version.work_id.in_(members)]
+    if medium is not None:
+        conditions.append(Version.medium == medium)
     conditions.append(or_(catalog_version, exists(accessible_asset), file_edition))
     needs_review = exists(
         select(ProviderObject.id).where(

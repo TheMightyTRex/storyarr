@@ -149,11 +149,16 @@ class Hardcover:
                 if codes & {"access-denied", "permission-error", "insufficient_scope"}
                 else FailureKind.PARSER
             )
-            raise AdapterError(
-                kind,
-                "Hardcover could not complete this query. "
-                "Check token scopes and provider compatibility.",
-            )
+            if kind == FailureKind.PERMISSION:
+                message = "Hardcover denied this query. Check the connected token's scopes."
+            elif codes & {"validation-failed", "validation-error"}:
+                message = (
+                    "Hardcover's API schema does not support this query. "
+                    "Check for a Dewarr update with compatible Hardcover queries."
+                )
+            else:
+                message = "Hardcover returned an unsuccessful query response. Try again later."
+            raise AdapterError(kind, message)
         if not isinstance(value.get("data"), dict):
             raise parse_failure()
         return value["data"]
@@ -309,6 +314,7 @@ class Hardcover:
             "e-book": "ebook",
             "audio": "audio",
             "audiobook": "audio",
+            "listened": "audio",
             "physical": "print",
             "print": "print",
         }.get(format_name, "unknown")

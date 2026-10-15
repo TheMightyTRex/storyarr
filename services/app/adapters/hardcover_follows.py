@@ -33,8 +33,8 @@ QUERY = """query FollowCatalog($id: Int!, $after: Int!, $language: String!) {
   order_by: {id: asc}, limit: 100) {
   id title cached_contributors cached_image cached_tags release_date release_year is_partial_book
   book_series(limit: 101, order_by: {id: asc}) { series_id position compilation }
-  matching_editions: editions_aggregate(where: {language: {code2: {_eq: $language}}}) {
-   aggregate { count }
+  matching_editions: editions(where: {language: {code2: {_eq: $language}}}, limit: 1) {
+   id
   }
  }
 }"""
@@ -128,8 +128,14 @@ async def page(query, kind, external_id, cursor, filters):
             day = (
                 date.fromisoformat(raw["release_date"]).isoformat() if raw["release_date"] else None
             )
-            matches = raw["matching_editions"]["aggregate"]["count"]
-            if type(matches) is not int or matches < 0:
+            matches = raw["matching_editions"]
+            if not isinstance(matches, list) or len(matches) > 1:
+                raise invalid()
+            if matches and (
+                not isinstance(matches[0], dict)
+                or type(matches[0].get("id")) is not int
+                or not 1 <= matches[0]["id"] <= 2147483647
+            ):
                 raise invalid()
             record = {
                 "source_kind": kind,
@@ -144,7 +150,7 @@ async def page(query, kind, external_id, cursor, filters):
                 "main_series": (main or (kind == "author" and not memberships))
                 and not raw["is_partial_book"],
                 "classification": (book.title + " " + str(raw.get("cached_tags") or "")).casefold(),
-                "language_match": matches > 0,
+                "language_match": bool(matches),
                 "cover_url": cover_url((raw.get("cached_image") or {}).get("url")),
             }
             record["filter_reason"] = filter_reason(record, filters, kind)
