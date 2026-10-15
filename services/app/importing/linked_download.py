@@ -1,9 +1,12 @@
 """Use the saved book association for one complete, unambiguous download."""
 
+from dataclasses import dataclass
 from types import SimpleNamespace
 from uuid import UUID
 
-from app.db.models import Version
+from sqlalchemy import select
+
+from app.db.models import AcquisitionSelection, DownloadAttempt, Version
 from app.domain.book_sources import identity
 from app.domain.catalog_titles import display_title
 from app.domain.identity import normalized
@@ -18,13 +21,16 @@ MULTIPLE_IDENTIFIERS = "Multiple edition identifiers require review"
 UNSUPPORTED_IDENTIFIERS = "Catalog identifiers do not support all embedded assertions"
 
 
-def request_file_conflicts(work, release, facts, *, series=(), reviewed_collection=False):
+def request_file_conflicts(
+    work, release, facts, *, series=(), reviewed_collection=False, verified_titles=()
+):
     """Absent tags are neutral; contradictory tags need a different download or correction."""
     catalog = {"title": work.title, "authors": work.authors, "series": list(series)}
     credited = release.get("source") in {"audiobookbay", "prowlarr"}
     title_agrees = bool(facts.titles) and all(
         compatible_title(value, work.title, allow_extra_subtitle=reviewed_collection)
         or (title_outside_series_note(value, catalog) is not None)
+        or value in verified_titles
         for value in facts.titles
     )
     authors = sorted(normalized(name) for name in work.authors)
@@ -45,11 +51,11 @@ def request_file_conflicts(work, release, facts, *, series=(), reviewed_collecti
     return conflicts
 
 
-def agrees_with_request(work, release, facts, *, series=()):
+def agrees_with_request(work, release, facts, *, series=(), verified_titles=()):
     # Missing tags are common in M4B files. Conflicting tags still require review.
-    if request_file_conflicts(work, release, facts, series=series) or work.metadata_fields.get(
-        "identity_rejected"
-    ):
+    if request_file_conflicts(
+        work, release, facts, series=series, verified_titles=verified_titles
+    ) or work.metadata_fields.get("identity_rejected"):
         return False
     title = display_title(work.title)
     authors = sorted(normalized(name) for name in work.authors)
@@ -60,6 +66,7 @@ def agrees_with_request(work, release, facts, *, series=()):
     file_titles_agree = bool(facts.titles) and all(
         compatible_title(value, work.title)
         or (title_outside_series_note(value, catalog) is not None)
+        or value in verified_titles
         for value in facts.titles
     )
     file_authors_cover = bool(facts.authors) and all(
@@ -103,6 +110,63 @@ def agrees_with_request(work, release, facts, *, series=()):
     return True
 
 
+@dataclass(frozen=True)
+class RequestFileMatch:
+    work_id: UUID
+    titles: tuple[str, ...]
+    conflicts: list[str]
+    agrees: bool
+
+
+async def file_match(db, work, selection, inspection, group):
+    """One request-scoped decision for automatic import, candidates and review."""
+    facts = group_evidence(inspection.snapshot, group)
+    catalog = {
+        "title": work.title,
+        "series": (await identity(db, work, selection.owner_id))["series"],
+    }
+    titles = tuple(
+        value
+        for value in facts.titles
+        if compatible_title(value, work.title)
+        or title_outside_series_note(value, catalog) is not None
+    )
+    if len(titles) != len(facts.titles):
+        from app.importing.series_identity import corroborated_titles
+
+        titles = await corroborated_titles(
+            db, work, selection, inspection, group, facts, catalog["series"]
+        )
+    options = {"series": catalog["series"], "verified_titles": titles}
+    return RequestFileMatch(
+        work.id,
+        titles,
+        request_file_conflicts(work, selection.frozen["release"], facts, **options),
+        agrees_with_request(work, selection.frozen["release"], facts, **options),
+    )
+
+
+async def inspection_match(db, inspection, group):
+    row = (
+        await db.execute(
+            select(AcquisitionSelection, DownloadAttempt)
+            .join(DownloadAttempt, DownloadAttempt.selection_id == AcquisitionSelection.id)
+            .where(DownloadAttempt.inspection_id == inspection.id)
+        )
+    ).one_or_none()
+    if not row:
+        return None
+    selection, attempt = row
+    if selection.frozen.get("collection_review"):
+        return None
+    from app.domain import download_memberships
+
+    if len(await download_memberships.for_attempt(db, attempt.id)) != 1:
+        return None
+    work = await canonical_work(db, UUID(selection.frozen["origin_work_id"]))
+    return await file_match(db, work, selection, inspection, group)
+
+
 async def linked_version(db, approver, selection, inspection, group, grouping_revision, *, match):
     # Specific-edition requests must retain their stronger edition evidence.
     rule = selection.frozen["requirements"]
@@ -110,8 +174,8 @@ async def linked_version(db, approver, selection, inspection, group, grouping_re
         return None
     work = await canonical_work(db, UUID(selection.frozen["origin_work_id"]))
     facts = group_evidence(inspection.snapshot, group)
-    catalog = await identity(db, work, selection.owner_id)
-    if not agrees_with_request(work, selection.frozen["release"], facts, series=catalog["series"]):
+    decision = await file_match(db, work, selection, inspection, group)
+    if not decision.agrees:
         return None
     identified = [candidate for candidate in match.candidates if candidate.identifier_match]
     if identified:

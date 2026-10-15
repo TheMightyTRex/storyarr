@@ -457,7 +457,9 @@ async def plan_ready(db, row, selection, inspection, approver, destination, curr
     release_rejection = False
     covered_by_existing = set()
     for group in grouping.groups:
-        match = await match_group(db, inspection.snapshot, grouping_revision, group)
+        match = await match_group(
+            db, inspection.snapshot, grouping_revision, group, inspection=inspection
+        )
         reason = content_reason(
             group, files, selection.frozen["release"], omitted_audio_paths=omitted_audio_paths
         )

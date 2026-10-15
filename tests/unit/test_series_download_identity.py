@@ -9,6 +9,32 @@ from app.importing.match_evidence import MatchEvidence
 
 
 @pytest.mark.parametrize(
+    "title,accepted",
+    [
+        ("Angels and Demons (Robert Langdon, Book 1)", True),
+        ("Angels and Demons: Robert Langdon, Book 1", True),
+        ("Angels and Demons (Robert Langdon, Book 1.5)", False),
+        ("Angels and Demons: A Study Guide (Robert Langdon, Book 1)", False),
+        ("Angels and Demons Sequel (Robert Langdon, Book 1)", False),
+        ("Angels and Demons (Robert Langdon, Book 1", False),
+    ],
+)
+def test_series_annotation_preserves_complete_connector_equivalent_title(title, accepted):
+    work = SimpleNamespace(
+        title="Angels & Demons", authors=["Dan Brown"], language="en", metadata_fields={}
+    )
+    assert (
+        linked_download.agrees_with_request(
+            work,
+            {"source": "mam", "title": "Angels & Demons", "authors": ["Dan Brown"]},
+            MatchEvidence(titles=[title], authors=[["dan brown"]]),
+            series=[{"name": "Robert Langdon", "position": "1"}],
+        )
+        is accepted
+    )
+
+
+@pytest.mark.parametrize(
     "title,position,author,accepted",
     [
         ("Midnight Sun (Twilight #5) (Unabridged)", "5", "Stephenie Meyer", True),

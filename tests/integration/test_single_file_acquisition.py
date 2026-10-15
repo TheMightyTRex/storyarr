@@ -478,6 +478,7 @@ async def test_single_epub_download_to_confirmed_library_keeps_neighbor_private(
         async with database() as db:
             auto = await db.scalar(select(AutomaticImport))
             entry = await db.scalar(select(ImportEntry))
+            assert entry is not None, (auto.message, auto.evidence)
             run = await db.get(ImportRun, entry.run_id)
             assert entry.state == "held" and "EACCES" in entry.message
             assert "/private" not in entry.message

@@ -29,7 +29,7 @@ from app.importing.match_evidence import (
 from app.importing.naming import StrictModel, fingerprint
 from app.importing.versioning import version_revision
 
-MATCHER_VERSION = 6
+MATCHER_VERSION = 7
 MAX_CANDIDATES = 50
 
 
@@ -107,7 +107,7 @@ def usable_version():
     return or_(catalog, library, recorded)
 
 
-def candidate_evidence(facts, version, origin, work, needs_review):
+def candidate_evidence(facts, version, origin, work, needs_review, *, request_match=None):
     expected_ids = {(item.namespace, item.value) for item in facts.identifiers}
     ids = catalog_identifiers(version.identifiers)
     shared = expected_ids & ids
@@ -117,7 +117,12 @@ def candidate_evidence(facts, version, origin, work, needs_review):
     if expected_ids and not expected_ids <= ids:
         conflicts.append("Catalog identifiers do not support all embedded assertions")
     if facts.titles and all(
-        any(
+        (
+            request_match is not None
+            and request_match.work_id == work.id
+            and title in request_match.titles
+        )
+        or any(
             compatible_title(title, expected, identified=bool(shared))
             for expected in (origin.title, work.title, version.title)
         )
@@ -191,8 +196,13 @@ def candidate_evidence(facts, version, origin, work, needs_review):
     )
 
 
-async def match_group(db, snapshot, grouping_revision, group):
+async def match_group(db, snapshot, grouping_revision, group, *, inspection=None):
     facts = group_evidence(snapshot, group)
+    request_match = None
+    if inspection is not None:
+        from app.importing.linked_download import inspection_match
+
+        request_match = await inspection_match(db, inspection, group)
     conditions = []
     if facts.identifiers:
         conditions.append(
@@ -249,7 +259,9 @@ async def match_group(db, snapshot, grouping_revision, group):
                 await canonical_work(db, origin.id) if origin.redirect_to else origin
             )
         work = canonical[origin.id]
-        candidates.append(candidate_evidence(facts, version, origin, work, review))
+        candidates.append(
+            candidate_evidence(facts, version, origin, work, review, request_match=request_match)
+        )
     candidates.sort(
         key=lambda row: (not row.identifier_match, len(row.conflicts), str(row.version_id))
     )

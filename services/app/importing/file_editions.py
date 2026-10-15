@@ -10,6 +10,7 @@ from app.domain.catalog_language import catalog_language
 from app.domain.catalog_titles import display_text, display_title, stripped_title, title_narrators
 from app.domain.identity import normalized
 from app.domain.operations import transaction_lock
+from app.domain.title_matching import compatible_title
 from app.domain.visibility import visible_work
 from app.domain.work_graph import canonical_work, graph_lock
 from app.importing.grouping import current_grouping
@@ -153,7 +154,22 @@ async def attach_file_edition(db, admin, inspection_id, work_id, group_key, grou
         raise HTTPException(404, "Book not found")
     if work.metadata_fields.get("identity_rejected"):
         raise HTTPException(409, "Book identity needs review")
+    from app.importing.linked_download import inspection_match
+
+    request_match = await inspection_match(db, row, group)
+    if request_match and request_match.work_id == work.id and request_match.conflicts:
+        raise HTTPException(409, request_match.conflicts[0])
     fields = edition_fields(work, group, facts)
+    if (
+        request_match
+        and request_match.work_id == work.id
+        and facts.titles
+        and all(title in request_match.titles for title in facts.titles)
+        and not compatible_title(fields["title"], work.title)
+    ):
+        # A proved series label identifies the requested work; do not turn that
+        # label into an independent catalog title for later, uncorroborated files.
+        fields["title"] = work.title
     external_id = edition_key(work, group, fields, facts)
     await transaction_lock(db, f"file-edition:{external_id}")
     existing = await matching_version(db, work, group, facts)

@@ -4,6 +4,7 @@ import re
 from decimal import Decimal
 
 from app.domain.catalog_titles import display_title
+from app.domain.title_matching import exact_title_key
 
 
 def position_key(value):
@@ -18,7 +19,7 @@ def series_name(value):
     return re.sub(r"\s+(?:saga|series)$", "", value).strip()
 
 
-def series_note_agrees(note, series):
+def series_note_agrees(note, series, *, require_position=False):
     # Preserve punctuation until numbers have been checked: 5.5 is not 5,
     # and 1-3 is a collection, not a single position.
     note = display_title(note)
@@ -31,6 +32,8 @@ def series_note_agrees(note, series):
             continue
         remainder = note[: match.start()] + " " + note[match.end() :]
         numbers = re.findall(r"\d+(?:\.\d+)?", remainder)
+        if require_position and len(numbers) != 1:
+            continue
         if numbers and (
             len(numbers) != 1
             or position_key(numbers[0]) is None
@@ -52,14 +55,21 @@ def title_outside_series_note(value, work):
     """Strip only a known series annotation after the complete catalog title."""
     title = display_title(work["title"])
     value = display_title(value)
-    if not title or not value.startswith(title):
-        return None
-    suffix = value[len(title) :].strip()
-    if suffix.startswith("(") and suffix.endswith(")"):
-        note = suffix[1:-1]
-    elif suffix.startswith(":"):
-        note = suffix[1:]
-    else:
+    if not title:
         return None
     series = [entry for entry in work.get("series", []) if isinstance(entry, dict)]
-    return title if series_note_agrees(note, series) else None
+    for boundary in re.finditer(r"\(|:", value):
+        # Compare the complete title before interpreting its annotation. Keep
+        # connector/punctuation equivalence without omitting actual subtitles.
+        if exact_title_key(value[: boundary.start()]) != exact_title_key(title):
+            continue
+        suffix = value[boundary.start() :]
+        if suffix.startswith("(") and suffix.endswith(")"):
+            note = suffix[1:-1]
+        elif suffix.startswith(":"):
+            note = suffix[1:]
+        else:
+            continue
+        if series_note_agrees(note, series):
+            return title
+    return None
