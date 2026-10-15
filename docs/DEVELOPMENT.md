@@ -200,6 +200,8 @@ Start with the smallest relevant selection through the bounded local runner:
 npm --prefix apps/web test
 # Specific browser area (also no database).
 npm --prefix apps/web run test:ui -- library-browsing.spec.ts
+# Optional Firefox control checks (install that Playwright browser first).
+BOOK_UI_BROWSER=firefox python3 scripts/check.py ui select-menu.spec.ts
 # Cheap focused Python regressions.
 python3 scripts/check.py unit tests/unit/test_security.py
 # Collection only: no build, browsers, migrations, or worker.

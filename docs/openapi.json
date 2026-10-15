@@ -11122,6 +11122,28 @@
               "default": "identity",
               "title": "Scope"
             }
+          },
+          {
+            "name": "medium",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "ebook",
+                    "audio",
+                    "print",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Medium"
+            }
           }
         ],
         "responses": {

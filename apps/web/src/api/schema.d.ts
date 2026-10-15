@@ -22043,6 +22043,7 @@ export interface operations {
         offset?: number;
         limit?: number;
         scope?: "identity" | "display";
+        medium?: ("ebook" | "audio" | "print" | "unknown") | null;
       };
       header?: never;
       path: {
