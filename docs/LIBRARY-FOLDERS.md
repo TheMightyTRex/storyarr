@@ -56,7 +56,7 @@ Templates accept `{{` and `}}` for literal braces. `{author}/{title}[ {{{narrato
 
 ## Staging and mount boundaries
 
-Staging must share the library's mount so complete folders can be published safely. New Audiobookshelf destinations use the reserved direct hidden child, avoiding any requirement to write to the library's parent. Grimmory uses it when its watcher is disabled; otherwise staging remains outside the watched library. Existing valid staging is retained. Only this private namespace is name-specific; user library and download names are unrestricted. New routes keep journals/locks in application storage, independent of media permissions.
+Staging must share the library's mount so complete folders can be published safely. New Audiobookshelf destinations use the reserved direct hidden child, avoiding any requirement to write to the library's parent. Grimmory uses it when its watcher is disabled; otherwise staging remains outside the watched library. Existing valid staging is retained. The private staging namespace and `.book-search-root` identity marker names are reserved; ordinary library and download names are unrestricted. New routes keep journals/locks in application storage, independent of media permissions.
 
 Two routes using the same local root reuse the same valid staging route. A saved automatic staging choice that now overlaps the selected library incorrectly is reselected. An explicit `BOOK_IMPORT_STAGING_ROOT` override remains authoritative and receives a path-specific error if invalid. Unfinished imports continue to block changing their saved storage; historical journals are retained.
 

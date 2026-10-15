@@ -234,4 +234,8 @@ def test_single_file_parts_become_discs(tmp_path):
     restore_parts(spec)
     mark(spec, "separated")
     assert remove_combined(spec)
-    assert sorted(path.name for path in root.iterdir()) == ["Dark Age 1.m4b", "Dark Age 2.m4b"]
+    assert sorted(path.name for path in root.iterdir()) == [
+        ".book-search-root",
+        "Dark Age 1.m4b",
+        "Dark Age 2.m4b",
+    ]

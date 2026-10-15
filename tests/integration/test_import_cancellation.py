@@ -1,4 +1,6 @@
 import asyncio
+import json
+from pathlib import Path
 from uuid import UUID
 
 import pytest
@@ -7,6 +9,7 @@ from app.config import get_settings
 from app.db.models import ImportEntry, ImportRun, User, Version, Work
 from app.importing import cancellation, execution
 from app.jobs.queue import get_queue
+from tests.filesystem_fixtures import changing_root_inode  # noqa: F401
 from tests.integration.test_import_destinations import route as destination_route  # noqa: F401
 from tests.integration.test_import_execution import ready_route, start  # noqa: F401
 from tests.integration.test_import_inspections import submit
@@ -336,3 +339,42 @@ async def test_cancellation_history_blocks_lossy_downgrade(client, admin, databa
     finally:
         assert (await migrate("upgrade", "head")).returncode == 0
         await get_engine().dispose()
+
+
+async def test_stale_legacy_root_can_stop_owned_stage_and_start_new_import(
+    client,
+    admin,
+    database,
+    ready_route,  # noqa: F811
+    changing_root_inode,  # noqa: F811
+):
+    route = ready_route
+    run = (await start(client, route)).json()
+    entry = run["entries"][0]
+
+    def interrupted(phase):
+        if phase == "prepared":
+            raise execution.PublicationError("Old worker stopped before publication")
+
+    await execution.execute(UUID(entry["operation_id"]), checkpoint=interrupted)
+    await get_queue().run_worker_async(wait=False, concurrency=1)
+    async with database() as db:
+        saved = await db.get(ImportEntry, UUID(entry["id"]))
+        journal = (
+            Path(saved.specification["journal_root"] or saved.specification["staging_root"])
+            / f"{saved.id}.json"
+        )
+    receipt = json.loads(journal.read_text())
+    receipt["destination_identity"].pop("root_marker")
+    journal.write_text(json.dumps(receipt))
+    changing_root_inode(route["target"])()
+    assert (await cancel(client, run)).status_code == 202
+    await get_queue().run_worker_async(wait=False, concurrency=1)
+    assert (await state(client, run))["state"] == "cancelled"
+    assert not list(route["target"].rglob("*.epub"))
+    replacement = (await start(client, route, "new-root-identity")).json()
+    assert replacement["entries"][0]["state"] == "queued"
+    await get_queue().run_worker_async(wait=False, concurrency=1)
+    assert (await state(client, replacement))["state"] == "confirmed"
+    assert len(list(route["target"].rglob("*.epub"))) == 1
+    assert (route["source"] / "pack/book.epub").exists()

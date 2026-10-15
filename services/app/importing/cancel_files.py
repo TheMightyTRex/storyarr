@@ -1,6 +1,5 @@
 """Stop one unpublished item under the same filesystem lock used by publication."""
 
-import json
 import os
 from contextlib import ExitStack, nullcontext
 from uuid import uuid4
@@ -9,16 +8,18 @@ from app.importing.filesystem import beneath, directory
 from app.importing.publication import (
     PUBLICATION_MARKER,
     PublicationError,
+    destination_identity,
+    destination_lock,
     entry_lock,
     generated_files,
     has_publication_marker,
     needs_hardlink,
     object_id,
     private_staging,
-    publication_lock,
     published_names,
     read_receipt,
     remove_publication_marker,
+    same_destination,
     same_object,
     specification_fingerprint,
     sync_directory,
@@ -110,7 +111,7 @@ def cancel_files(spec, *, guard=nullcontext, checkpoint=lambda _: None):
     ):
         with (
             entry_lock(staging, spec.entry_id),
-            publication_lock(staging, json.dumps(object_id(root), sort_keys=True)),
+            destination_lock(staging, root),
             guard(),
         ):
             receipt = read_receipt(staging, name)
@@ -130,20 +131,48 @@ def cancel_files(spec, *, guard=nullcontext, checkpoint=lambda _: None):
                     "schema_version": 1,
                     "entry_id": str(spec.entry_id),
                     "spec_hash": specification_fingerprint(spec),
-                    "destination_identity": object_id(root),
+                    "destination_identity": destination_identity(root),
                     "stage_name": "item-" + uuid4().hex,
                     "state": "cancelled",
                 }
                 # A durable tombstone also fences a delayed pre-cancellation worker.
                 write_receipt(staging, name, receipt, create=True)
                 return receipt
-            if (
-                receipt.get("entry_id") != str(spec.entry_id)
-                or receipt.get("spec_hash") != specification_fingerprint(spec)
-                or receipt.get("destination_identity") != object_id(root)
-            ):
+            if receipt.get("entry_id") != str(spec.entry_id) or receipt.get(
+                "spec_hash"
+            ) != specification_fingerprint(spec):
                 raise PublicationError("Cancellation journal or destination identity changed")
             if receipt["state"] == "cancelled":
+                return receipt
+            if not same_destination(root, receipt.get("destination_identity")):
+                # Never rebind an old receipt to a new root. An owned stage still
+                # present proves this atomic publication has not left staging.
+                # Explicit cancellation can clean only that stage, allowing a new
+                # plan; missing/published/rename evidence remains held for review.
+                if (
+                    spec.mode == "rename"
+                    or receipt["state"] not in {"preparing", "prepared", "cancelling"}
+                    or not receipt.get("stage_identity")
+                    or receipt.get("unconfirmed_stages")
+                ):
+                    raise PublicationError(
+                        "Destination identity changed; review the existing publication "
+                        "before replanning"
+                    )
+                if receipt["state"] != "cancelling":
+                    try:
+                        with beneath(staging, receipt["stage_name"], folder=True) as folder:
+                            if not same_object(folder, receipt["stage_identity"]):
+                                raise PublicationError("Cancellation staging identity changed")
+                    except FileNotFoundError:
+                        raise PublicationError(
+                            "Staged item is missing; publication may have completed elsewhere"
+                        ) from None
+                    receipt["state"] = "cancelling"
+                    write_receipt(staging, name, receipt)
+                remove_stage(staging, receipt, spec, checkpoint)
+                receipt["state"] = "cancelled"
+                write_receipt(staging, name, receipt)
                 return receipt
             if spec.mode == "rename":
                 return cancel_renamed(root, staging, name, receipt, spec)

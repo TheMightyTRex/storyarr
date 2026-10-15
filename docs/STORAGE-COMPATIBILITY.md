@@ -277,3 +277,47 @@ API/worker activation journeys passed through `scripts/check.py`. The latter cov
 qBittorrent and slskd on local, simulated SMB, and read-only sources, including
 copy selection, backend mapping, and import readiness. They used an isolated
 PostgreSQL database that was removed afterward. Lint and formatting checks passed.
+
+## NOR-94: library roots whose directory inode changes
+
+The [Unraid report](https://github.com/logabell/dewarr/issues/61) describes the
+library root switching its reported inode after a first write to a cache-backed
+user share. [Unraid user shares](https://docs.unraid.net/unraid-os/using-unraid-to/manage-storage/shares/)
+combine folders through FUSE. Replaying that root-only inode transition against
+real local publication operations reproduced both the final publication failure
+and the retry failure. This does not establish how every FUSE filesystem behaves.
+
+New publications create a persistent `.book-search-root` file in the destination
+root. Its random token, device and **file inode**, together with the root device,
+identify the destination independently of the root directory inode. Initialization
+writes and flushes a temporary file before publishing it without replacement;
+concurrent creators use the winning marker. A malformed or linked marker is held
+for review. The marker contains no credentials and is not a media file. Keep it
+with the original library; do not copy it to provision another destination.
+
+Publication, seeding moves, combining, cancellation and companion placement use
+the same marker-based destination lock. New receipts require the original marker,
+even if the directory inode still matches. A copied token, different device,
+missing/changed marker or symlink does not authorize publication. Source files,
+item folders, staged files and publication ownership still have their existing
+checks. Recovery scans only read this evidence; they never initialize markers.
+Stop old workers when upgrading so all writers use the same locking protocol.
+
+Older receipts without a root marker retain strict device/inode matching. They
+are never silently rebound to the current folder. If an old receipt is stale,
+**Cancel import** can remove only a still-present, verified owned stage and
+record cancellation; then start a new import. It preserves the source and does
+not remove anything from the library. Missing stages, published receipts,
+unconfirmed staging and seeding moves require review instead. Interrupted
+cancellation remains retryable from its journal.
+
+The regression checks cover root changes during publication and retry, a stable
+shared lock, concurrent marker initialization, actual directory replacement,
+copied/modified markers, symlinks, read-only recovery, Bookdrop restart recovery,
+combining/separating, seeding moves and cancellation followed by a fresh import.
+API/worker checks also retain both ebook/audiobook import orders and multiple
+narrations. They simulate the reported identity transition on local files;
+**no live Unraid or cache-mover interoperability test was available**. If the
+filesystem also changes the marker file's identity, existing receipts remain
+held for review. This fix does not trust a token alone or certify that broader
+filesystem behavior.

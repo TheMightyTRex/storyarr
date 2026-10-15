@@ -33,7 +33,7 @@ from app.importing.filesystem import (
     relative_parts,
     source_scope,
 )
-from app.importing.layout import library_relative, overlaps, unsafe_roots
+from app.importing.layout import ROOT_MARKER, library_relative, overlaps, unsafe_roots
 from app.importing.naming import StrictModel, collision_key, fingerprint
 
 
@@ -174,6 +174,109 @@ def object_id(fd):
 
 def same_object(fd, expected):
     return object_id(fd) == {key: expected[key] for key in ("device", "inode")}
+
+
+# A file's inode and random token anchor the root independently of a union
+# directory's changing inode. Copying the token to a replacement is insufficient.
+def _root_marker(root, *, create=False):
+    try:
+        with beneath(root, ROOT_MARKER) as fd:
+            info = os.fstat(fd)
+            if info.st_nlink != 1 or info.st_size != 33:
+                raise PublicationError(
+                    "Library identity marker is invalid; review the mounted folder"
+                )
+            content = os.read(fd, 34)
+            if not re.fullmatch(rb"[a-f0-9]{32}\n", content):
+                raise PublicationError(
+                    "Library identity marker is invalid; review the mounted folder"
+                )
+            return {**object_id(fd), "token": content.decode().strip()}
+    except FileNotFoundError:
+        if not create:
+            return None
+    except InspectionError as error:
+        if isinstance(error, PublicationError):
+            raise
+        raise PublicationError("Library identity marker is not a regular file") from error
+    temporary = ROOT_MARKER + "-" + uuid4().hex + ".tmp"
+    fd = os.open(
+        temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o666, dir_fd=root
+    )
+    owned = object_id(fd)
+    try:
+        try:
+            write_all(fd, (uuid4().hex + "\n").encode())
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+        try:
+            no_replace(root, temporary, root, ROOT_MARKER)
+        except FileExistsError:
+            pass  # Another worker won; read its complete marker, never overwrite it.
+        sync_directory(root)
+    finally:
+        try:
+            current = os.stat(temporary, dir_fd=root, follow_symlinks=False)
+            if {"device": current.st_dev, "inode": current.st_ino} != owned:
+                raise PublicationError(
+                    "Temporary library identity marker changed; preserved for review"
+                )
+            os.unlink(temporary, dir_fd=root)
+        except FileNotFoundError:
+            pass
+    marker = _root_marker(root)
+    if marker is None:
+        raise PublicationError("Library identity marker disappeared during initialization")
+    return marker
+
+
+def destination_identity(root, *, create=False):
+    marker = _root_marker(root, create=create)
+    value = object_id(root)  # Creating the marker can itself change the root inode.
+    if marker is not None:
+        if marker["device"] != value["device"]:
+            raise PublicationError("Library identity marker is on another mount")
+        value["root_marker"] = marker
+    return value
+
+
+def same_destination(root, expected):
+    if not isinstance(expected, dict):
+        return False
+    actual = object_id(root)
+    if actual["device"] != expected.get("device"):
+        return False
+    if "root_marker" not in expected:
+        return actual == expected  # Old journals never gain new authority implicitly.
+    marker = expected["root_marker"]
+    if not isinstance(marker, dict) or not marker.get("token"):
+        return False
+    try:
+        return marker["device"] == actual["device"] and _root_marker(root) == marker
+    except (OSError, InspectionError, KeyError):
+        return False
+
+
+@contextmanager
+def destination_lock(staging, root):
+    """One stable lock for publication, combination, cancellation and companions."""
+    expected = destination_identity(root, create=True)
+    key = json.dumps(expected["root_marker"], sort_keys=True)
+    with publication_lock(staging, key) as pause:
+        if not same_destination(root, expected):
+            raise PublicationError("Library identity marker changed while acquiring its lock")
+
+        @contextmanager
+        def checked_pause():
+            with pause():
+                yield
+            if not same_destination(root, expected):
+                raise PublicationError(
+                    "Library identity marker changed while publication was paused"
+                )
+
+        yield checked_pause
 
 
 def publication_marker_content(receipt):
@@ -1072,12 +1175,12 @@ def remaining_import_bytes(spec, *, timeout=600):
         private_staging(spec.staging_root, spec.journal_root) as staging,
         directory(spec.destination_root) as target,
     ):
-        with publication_lock(staging, json.dumps(object_id(target), sort_keys=True)):
+        with destination_lock(staging, target):
             receipt = read_receipt(staging, str(spec.entry_id) + ".json")
             if receipt:
-                if receipt.get("spec_hash") != specification_fingerprint(spec) or receipt.get(
-                    "destination_identity"
-                ) != object_id(target):
+                if receipt.get("spec_hash") != specification_fingerprint(
+                    spec
+                ) or not same_destination(target, receipt.get("destination_identity")):
                     raise PublicationError("Publication settings or destination identity changed")
             if spec.mode == "rename":
                 return remaining_rename_bytes(target, receipt, spec, deadline)
@@ -1135,13 +1238,13 @@ def load_rename_plan(spec):
         private_staging(spec.staging_root, spec.journal_root) as staging,
         directory(spec.destination_root) as target,
     ):
-        with publication_lock(staging, json.dumps(object_id(target), sort_keys=True)):
+        with destination_lock(staging, target):
             receipt = read_receipt(staging, str(spec.entry_id) + ".json")
             if receipt is None or "rename_plan" not in receipt:
                 return None
-            if receipt.get("spec_hash") != specification_fingerprint(spec) or receipt.get(
-                "destination_identity"
-            ) != object_id(target):
+            if receipt.get("spec_hash") != specification_fingerprint(spec) or not same_destination(
+                target, receipt.get("destination_identity")
+            ):
                 raise PublicationError("Publication settings or destination identity changed")
             return receipt["rename_plan"]
 
@@ -1155,7 +1258,7 @@ def remember_rename_plan(spec, plan):
     ):
         if same_object(staging, object_id(target)):
             raise PublicationError("Staging and library refer to the same directory")
-        with publication_lock(staging, json.dumps(object_id(target), sort_keys=True)):
+        with destination_lock(staging, target):
             receipt = read_receipt(staging, receipt_name)
             if receipt is None:
                 receipt = {
@@ -1164,14 +1267,14 @@ def remember_rename_plan(spec, plan):
                     "spec_hash": spec_hash,
                     "stage_name": "rename-" + spec.entry_id.hex,
                     "state": "preparing",
-                    "destination_identity": object_id(target),
+                    "destination_identity": destination_identity(target),
                     "rename_plan": plan,
                 }
                 write_receipt(staging, receipt_name, receipt, create=True)
                 return plan
-            if receipt.get("spec_hash") != spec_hash or receipt.get(
-                "destination_identity"
-            ) != object_id(target):
+            if receipt.get("spec_hash") != spec_hash or not same_destination(
+                target, receipt.get("destination_identity")
+            ):
                 raise PublicationError("Publication settings or destination identity changed")
             stored = receipt.get("rename_plan")
             if stored and stored != plan:
@@ -1233,7 +1336,7 @@ def publish_renamed(
     ):
         if same_object(staging, object_id(destination)):
             raise PublicationError("Staging and library refer to the same directory")
-        with publication_lock(staging, json.dumps(object_id(destination), sort_keys=True)):
+        with destination_lock(staging, destination):
             receipt = read_receipt(staging, receipt_name)
             if receipt is None:
                 receipt = {
@@ -1242,12 +1345,12 @@ def publish_renamed(
                     "spec_hash": spec_hash,
                     "stage_name": "rename-" + spec.entry_id.hex,
                     "state": "preparing",
-                    "destination_identity": object_id(destination),
+                    "destination_identity": destination_identity(destination),
                 }
                 write_receipt(staging, receipt_name, receipt, create=True)
-            if receipt.get("spec_hash") != spec_hash or receipt.get(
-                "destination_identity"
-            ) != object_id(destination):
+            if receipt.get("spec_hash") != spec_hash or not same_destination(
+                destination, receipt.get("destination_identity")
+            ):
                 raise PublicationError("Publication settings or destination identity changed")
             if receipt["state"] in {"cancelling", "cancelled"}:
                 raise PublicationError("This import was cancelled; review a new plan")
@@ -1264,7 +1367,7 @@ def publish_renamed(
                     with publication_guard():
                         checkpoint("before-publish")
                         with directory(spec.destination_root) as current:
-                            if not same_object(current, receipt["destination_identity"]):
+                            if not same_destination(current, receipt["destination_identity"]):
                                 raise PublicationError(
                                     "Destination mount changed before publication"
                                 )
@@ -1323,7 +1426,7 @@ def publish_item(
             raise PublicationError("Staging and library refer to the same directory")
         with (
             entry_lock(staging, spec.entry_id),
-            publication_lock(staging, json.dumps(object_id(destination), sort_keys=True)) as pause,
+            destination_lock(staging, destination) as pause,
         ):
             receipt = read_receipt(staging, receipt_name)
             if receipt is None:
@@ -1333,12 +1436,12 @@ def publish_item(
                     "spec_hash": spec_hash,
                     "stage_name": "item-" + uuid4().hex,
                     "state": "preparing",
-                    "destination_identity": object_id(destination),
+                    "destination_identity": destination_identity(destination),
                 }
                 write_receipt(staging, receipt_name, receipt, create=True)
-            if receipt.get("spec_hash") != spec_hash or receipt.get(
-                "destination_identity"
-            ) != object_id(destination):
+            if receipt.get("spec_hash") != spec_hash or not same_destination(
+                destination, receipt.get("destination_identity")
+            ):
                 raise PublicationError("Publication settings or destination identity changed")
             if receipt["state"] in {"cancelling", "cancelled"}:
                 raise PublicationError("This import was cancelled; review a new plan")
@@ -1402,7 +1505,7 @@ def publish_item(
                             # Recheck current permissions/lease immediately before rename.
                             checkpoint("before-publish")
                             with directory(spec.destination_root) as current:
-                                if not same_object(current, receipt["destination_identity"]):
+                                if not same_destination(current, receipt["destination_identity"]):
                                     raise PublicationError(
                                         "Destination mount changed before publication"
                                     )

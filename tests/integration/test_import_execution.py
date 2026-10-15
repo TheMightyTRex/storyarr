@@ -28,6 +28,7 @@ from app.importing import execution
 from app.jobs.queue import get_queue
 from app.jobs.tasks import schedule_import_confirmation
 from tests.abs_import_fixture import ScanningBackend
+from tests.filesystem_fixtures import changing_root_inode  # noqa: F401
 from tests.integration.test_import_destinations import route as destination_route  # noqa: F401
 from tests.integration.test_import_destinations import start_probe
 from tests.integration.test_import_inspections import submit
@@ -628,3 +629,42 @@ async def test_retry_rebinds_staging_after_filesystem_identity_change(
     assert (
         await client.get(f"/api/organization/inspections/{ready_route['plan']['inspection_id']}")
     ).json()["plan_id"] == run["plan_id"]
+
+
+@pytest.mark.parametrize("interrupt", [False, True])
+async def test_root_inode_transition_finishes_import_and_retry(
+    client,
+    admin,
+    database,
+    ready_route,
+    changing_root_inode,  # noqa: F811
+    interrupt,  # noqa: F811
+):
+    route = ready_route
+    change = changing_root_inode(route["target"])
+    run = (await start(client, route)).json()
+    entry = run["entries"][0]
+
+    def transition(phase):
+        if phase == "prepared":
+            change()
+            if interrupt:
+                raise execution.PublicationError("Worker interrupted after staging")
+
+    await execution.execute(UUID(entry["operation_id"]), checkpoint=transition)
+    await get_queue().run_worker_async(wait=False, concurrency=1)
+    if interrupt:
+        held = (await client.get(f"/api/organization/imports/{run['id']}")).json()["entries"][0]
+        assert held["state"] == "held" and held["can_retry"]
+        response = await client.post(
+            f"/api/organization/imports/{run['id']}/entries/{entry['id']}/retry"
+        )
+        assert response.status_code == 202, response.text
+        await get_queue().run_worker_async(wait=False, concurrency=1)
+    current = (await client.get(f"/api/organization/imports/{run['id']}")).json()["entries"][0]
+    assert current["state"] == "confirmed", current["message"]
+    original = route["source"] / "pack/book.epub"
+    published = list(route["target"].rglob("*.epub"))
+    assert len(published) == 1
+    assert published[0].read_bytes() == original.read_bytes()
+    assert published[0].stat().st_ino == original.stat().st_ino
