@@ -5,7 +5,6 @@ a library folder enables it.
 """
 
 import asyncio
-import json
 import os
 import re
 import time
@@ -33,11 +32,10 @@ from app.importing.filesystem import InspectionError, beneath, digest, directory
 from app.importing.naming import AUDIO, EBOOK, fingerprint
 from app.importing.publication import (
     PublicationError,
+    destination_lock,
     generated_files,
     load_rename_plan,
-    object_id,
     private_staging,
-    publication_lock,
     remember_rename_plan,
     verify_item_media,
 )
@@ -523,7 +521,7 @@ def seeding_lock(spec):
         private_staging(spec.staging_root, spec.journal_root) as staging,
         directory(spec.destination_root) as root,
     ):
-        with publication_lock(staging, json.dumps(object_id(root), sort_keys=True)):
+        with destination_lock(staging, root):
             yield
 
 

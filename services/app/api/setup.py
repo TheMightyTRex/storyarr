@@ -5,15 +5,18 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 
 from app.api.dependencies import Admin, CurrentUser, Database
 from app.db.models import (
+    AuditEvent,
     CatalogAccount,
     ImportDestination,
     Integration,
     Library,
+    OnboardingSettings,
     SourceConnection,
     User,
 )
@@ -175,5 +178,30 @@ async def get_onboarding(user: CurrentUser):
 async def save_onboarding(body: OnboardingProgress, user: CurrentUser, db: Database):
     account = await db.scalar(select(User).where(User.id == user.id).with_for_update())
     account.onboarding = body.model_dump()
+    await db.commit()
+    return body
+
+
+class OnboardingPolicy(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    show_member_onboarding: bool = True
+
+
+@router.get("/onboarding-policy", response_model=OnboardingPolicy)
+async def onboarding_policy(admin: Admin, db: Database):
+    row = await db.get(OnboardingSettings, 1)
+    return OnboardingPolicy(show_member_onboarding=row.show_member_onboarding if row else True)
+
+
+@router.put("/onboarding-policy", response_model=OnboardingPolicy)
+async def save_onboarding_policy(body: OnboardingPolicy, admin: Admin, db: Database):
+    await db.execute(
+        insert(OnboardingSettings)
+        .values(id=1, **body.model_dump())
+        .on_conflict_do_update(index_elements=[OnboardingSettings.id], set_=body.model_dump())
+    )
+    db.add(
+        AuditEvent(actor_id=admin.id, action="onboarding.policy_changed", detail=body.model_dump())
+    )
     await db.commit()
     return body

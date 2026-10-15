@@ -46,7 +46,7 @@ async def test_hardcover_separates_authors_narrators_and_catalog_formats():
                             "release_year": 2001,
                         }
                         for i, format_name in enumerate(
-                            ["Audio", "Ebook", "Physical", "Unspecified"], 1
+                            ["Listened", "Ebook", "Physical", "Unspecified"], 1
                         )
                     ],
                 }
@@ -302,3 +302,22 @@ async def test_search_language_filters_provider_results():
 
     result = await Hardcover(hardcover_request).search("Book", 1, "en")
     assert [book.external_id for book in result.items] == ["2"]
+
+
+@pytest.mark.parametrize(
+    "code,kind,message",
+    [
+        ("validation-failed", FailureKind.PARSER, "API schema does not support"),
+        ("insufficient_scope", FailureKind.PERMISSION, "token's scopes"),
+        ("access-denied", FailureKind.PERMISSION, "token's scopes"),
+    ],
+)
+async def test_hardcover_schema_and_scope_errors_have_distinct_safe_guidance(code, kind, message):
+    async def request(*args, **kwargs):
+        return {"errors": [{"message": "private diagnostic", "extensions": {"code": code}}]}
+
+    with pytest.raises(AdapterError) as caught:
+        await Hardcover(request).search("Book", 1)
+    assert caught.value.kind == kind
+    assert message in str(caught.value)
+    assert "private diagnostic" not in str(caught.value)

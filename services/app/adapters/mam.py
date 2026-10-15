@@ -58,9 +58,13 @@ class PrivateDownloadLogFilter(logging.Filter):
 logging.getLogger("httpx").addFilter(PrivateDownloadLogFilter())
 
 
-class AccountAutomation(BaseModel):
-    """Account actions an administrator can turn on. All of them default off."""
+VIP_EXCLUDED = "VIP releases are excluded in MAM settings"
 
+
+class AccountAutomation(BaseModel):
+    """MAM search policy and optional account actions. All switches default off."""
+
+    exclude_vip: bool = False
     seedbox_ip: bool = False
     seedbox_interval_seconds: int = Field(default=3600, ge=60, le=86400)
     auto_vip: bool = False
@@ -80,6 +84,7 @@ class AccountAutomation(BaseModel):
     upload_interval_hours: int = Field(default=UPLOAD_CHECK_HOURS, ge=1, le=168)
 
     @field_validator(
+        "exclude_vip",
         "seedbox_ip",
         "auto_vip",
         "use_wedge",
@@ -816,7 +821,10 @@ class MAMClient:
             raise failure from error
 
     async def search(self, query):
-        return parse_page(await self.request(SEARCH_PATH, query.payload()), query)
+        payload = query.payload()
+        if self.automation.exclude_vip:
+            payload["tor"]["searchType"] = "nVIP"
+        return parse_page(await self.request(SEARCH_PATH, payload), query)
 
     async def detail(self, source_id):
         query = MAMSearch(q="detail", limit=1)
@@ -924,6 +932,16 @@ class MAMClient:
                 FailureKind.PARSER, "MAM returned a different release than requested."
             )
         item = page.items[0]
+        # Recheck fresh detail before a metadata download or any wedge request.
+        # Search flags may have changed since the saved preview.
+        if self.automation.exclude_vip and item.vip is True:
+            raise AdapterError(FailureKind.UNSUPPORTED, VIP_EXCLUDED)
+        if item.vip is True and not value["data"][0].get("dl"):
+            raise AdapterError(
+                FailureKind.UNSUPPORTED,
+                "MAM did not provide a download reference for this VIP release. "
+                "Check account access or enable Exclude VIP releases in MAM settings.",
+            )
         enabled = requested or self.automation.use_wedge
         vip_until = None
         if enabled and item.vip_freeleech is True:

@@ -170,3 +170,34 @@ def group_mapped_media(monkeypatch):
         monkeypatch.setattr(os, "unlink", unlink)
 
     return install
+
+
+@pytest.fixture
+def changing_root_inode(monkeypatch):
+    """Model a union mount switching the backing branch for one directory."""
+    actual = os.fstat
+    roots = {}
+
+    class RemappedStat:
+        def __init__(self, value, inode):
+            self.value, self.st_ino = value, inode
+
+        def __getattr__(self, name):
+            return getattr(self.value, name)
+
+    def fstat(fd):
+        value = actual(fd)
+        shift = roots.get((value.st_dev, value.st_ino), 0)
+        return RemappedStat(value, value.st_ino + shift) if shift else value
+
+    def configure(path):
+        value = path.stat()
+        key = value.st_dev, value.st_ino
+
+        def change():
+            roots[key] = roots.get(key, 0) + 100
+
+        return change
+
+    monkeypatch.setattr(os, "fstat", fstat)
+    return configure

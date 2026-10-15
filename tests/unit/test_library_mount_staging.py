@@ -6,7 +6,7 @@ import pytest
 
 from app.importing.cancel_files import cancel_files
 from app.importing.filesystem import identity
-from app.importing.layout import STAGING_NAME
+from app.importing.layout import ROOT_MARKER, STAGING_NAME
 from app.importing.publication import PublicationSpec, publish_item
 from app.importing.recovery import journal_census
 from tests.filesystem_fixtures import group_mapped_media  # noqa: F401
@@ -84,7 +84,9 @@ def test_private_child_staging_survives_interruption(specification, mode, finish
 
     with pytest.raises(RuntimeError, match="interrupted"):
         publish_item(spec, checkpoint=interrupt)
-    assert list(spec.destination_root.iterdir()) == [stage]
+    marker = spec.destination_root / ROOT_MARKER
+    assert set(spec.destination_root.iterdir()) == {stage, marker}
+    marker_before = marker.read_bytes(), marker.stat().st_ino
     assert any(
         item.get("entry_id") == str(spec.entry_id) for item in journal_census(stage, journals)
     )
@@ -100,7 +102,8 @@ def test_private_child_staging_survives_interruption(specification, mode, finish
         assert publish_item(spec) == receipt
     else:
         assert cancel_files(spec)["state"] == "cancelled"
-        assert list(spec.destination_root.iterdir()) == [stage]
+        assert set(spec.destination_root.iterdir()) == {stage, marker}
+    assert (marker.read_bytes(), marker.stat().st_ino) == marker_before
     if journals:
         assert not list(stage.glob("lock-*"))
         assert (stage / "untrusted.json").read_text() == "not a control journal"

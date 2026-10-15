@@ -177,6 +177,8 @@ class GrimmoryFixture:
             },
         }
         self.bookdrop_queue = []
+        self.bookdrop_paging = "nested"
+        self.bookdrop_pages = []
         self.allowed = []
         self.admin = True
         self.manage = False
@@ -248,7 +250,22 @@ class GrimmoryFixture:
         if path == "/api/v1/settings":
             return httpx.Response(200, json={"metadataPersistenceSettings": self.persistence})
         if path == "/api/v1/bookdrop/files":
-            return httpx.Response(200, json={"content": self.bookdrop_queue, "last": True})
+            page = int(request.url.params["page"])
+            size = int(request.url.params["size"])
+            self.bookdrop_pages.append(page)
+            content = self.bookdrop_queue[page * size : (page + 1) * size]
+            total = len(self.bookdrop_queue)
+            metadata = {
+                "size": size,
+                "number": page,
+                "totalElements": total,
+                "totalPages": (total + size - 1) // size,
+            }
+            if self.bookdrop_paging == "nested":
+                payload = {"content": content, "page": metadata}
+            else:
+                payload = {"content": content, **metadata, "last": (page + 1) * size >= total}
+            return httpx.Response(200, json=payload)
         if path == "/api/v1/version":
             return httpx.Response(200, json={"current": self.version, "latest": "3.5.0"})
         if path == "/api/v1/libraries":
@@ -781,3 +798,151 @@ async def test_bookdrop_rejects_internal_staging_and_final_library_root(tmp_path
                 staging_root=fixture.root.parent / "stage",
             )
     assert not list(fixture.root.iterdir())
+
+
+@pytest.mark.parametrize("paging", ["nested", "legacy"])
+@pytest.mark.parametrize("count", [0, 1, 201])
+async def test_bookdrop_reads_empty_single_and_multiple_pages(paging, count):
+    fixture = GrimmoryFixture()
+    fixture.bookdrop_paging = paging
+    fixture.bookdrop_queue = [
+        {"id": i + 1, "filePath": f"/intake/book-{i}.epub", "fileSize": 1024} for i in range(count)
+    ]
+    async with fixture.client() as adapter:
+        assert await adapter.bookdrop_files() == fixture.bookdrop_queue
+    assert fixture.bookdrop_pages == list(range(max(1, (count + 99) // 100)))
+
+
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        "missing-size",
+        "boolean-number",
+        "wrong-number",
+        "negative-total",
+        "wrong-pages",
+        "zero-size",
+        "oversized-page",
+        "truncated-content",
+        "false-last",
+        "conflicting-total",
+        "changed-total",
+        "duplicate-id",
+        "out-of-order",
+        "negative-file-size",
+        "relative-path",
+        "non-object-page",
+        "changed-format",
+        "over-limit",
+    ],
+)
+async def test_bookdrop_rejects_incomplete_or_changing_queue(invalid):
+    fixture = GrimmoryFixture()
+    fixture.bookdrop_queue = [
+        {"id": i + 1, "filePath": f"/intake/book-{i}.epub", "fileSize": 1024} for i in range(101)
+    ]
+    original = fixture.handle
+
+    def handle(request):
+        response = original(request)
+        if request.url.path != "/api/v1/bookdrop/files":
+            return response
+        value = response.json()
+        page = int(request.url.params["page"])
+        meta = value["page"]
+        if page == 0:
+            if invalid == "missing-size":
+                del meta["size"]
+            elif invalid == "boolean-number":
+                meta["number"] = False
+            elif invalid == "wrong-number":
+                meta["number"] = 1
+            elif invalid == "negative-total":
+                meta["totalElements"] = -1
+            elif invalid == "wrong-pages":
+                meta["totalPages"] = 1
+            elif invalid == "zero-size":
+                meta["size"] = 0
+            elif invalid == "oversized-page":
+                value["content"].append(fixture.bookdrop_queue[-1])
+            elif invalid == "truncated-content":
+                value["content"].pop()
+            elif invalid == "false-last":
+                value["last"] = True
+            elif invalid == "conflicting-total":
+                value["totalElements"] = 1
+            elif invalid == "out-of-order":
+                value["content"].reverse()
+            elif invalid == "negative-file-size":
+                value["content"][0]["fileSize"] = -1
+            elif invalid == "relative-path":
+                value["content"][0]["filePath"] = "book.epub"
+            elif invalid == "non-object-page":
+                value["page"] = None
+            elif invalid == "over-limit":
+                meta.update(totalElements=10_001, totalPages=101)
+        else:
+            if invalid == "changed-total":
+                meta["totalElements"] = 102
+                value["content"].append({"id": 102, "filePath": "/intake/new.epub", "fileSize": 1})
+            elif invalid == "duplicate-id":
+                value["content"][0]["id"] = 100
+            elif invalid == "changed-format":
+                value = {"content": value["content"], "last": True}
+        return httpx.Response(200, json=value)
+
+    fixture.handle = handle
+    async with fixture.client() as adapter:
+        with pytest.raises(AdapterError) as error:
+            await adapter.bookdrop_files()
+    assert error.value.kind in {FailureKind.PARSER, FailureKind.UNCERTAIN}
+    assert len(fixture.bookdrop_pages) <= 2
+
+
+@pytest.mark.parametrize("mode", ["empty", "nonfinal-empty", "unending"])
+async def test_bookdrop_legacy_last_only_is_bounded(mode):
+    requests = []
+    fixture = GrimmoryFixture()
+    original = fixture.handle
+
+    def handle(request):
+        if request.url.path != "/api/v1/bookdrop/files":
+            return original(request)
+        page = int(request.url.params["page"])
+        requests.append(page)
+        content = (
+            []
+            if mode != "unending"
+            else [{"id": page + 1, "filePath": f"/intake/{page}.epub", "fileSize": 1}]
+        )
+        return httpx.Response(200, json={"content": content, "last": mode == "empty"})
+
+    fixture.handle = handle
+    async with fixture.client() as adapter:
+        if mode == "empty":
+            assert await adapter.bookdrop_files() == []
+        else:
+            with pytest.raises(AdapterError):
+                await adapter.bookdrop_files()
+    assert len(requests) == (100 if mode == "unending" else 1)
+
+
+async def test_bookdrop_permission_is_required_but_direct_library_uses_its_own_checks(tmp_path):
+    fixture = GrimmoryFixture(tmp_path.resolve())
+    fixture.admin = False
+    fixture.manage = True
+    async with fixture.client() as adapter:
+        with pytest.raises(PublicationError, match="access to Bookdrop"):
+            await verify_backend(
+                adapter,
+                None,
+                "/intake",
+                fixture.root,
+                "ebook",
+                workflow="bookdrop",
+                staging_root=fixture.root.parent / "stage",
+            )
+        assert fixture.bookdrop_pages == []
+        direct = await verify_backend(adapter, "7", "/books", fixture.root, "ebook")
+    assert direct["configuration_validated"]
+    assert fixture.bookdrop_pages == []

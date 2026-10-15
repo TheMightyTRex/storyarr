@@ -100,7 +100,11 @@ def observe(health, state, policy, now):
     }
     if paused:
         return {}, None
-    failure = state.state in {"error", "missingFiles", "failed"}
+    failure = bool(getattr(state, "failed", False)) or state.state in {
+        "error",
+        "missingFiles",
+        "failed",
+    }
     if failure:
         health.setdefault("error_since", now.isoformat())
         if now - datetime.fromisoformat(health["error_since"]) >= timedelta(

@@ -13,7 +13,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from joserfc import jwk, jwt
 from sqlalchemy import func, select
 
-from app.db.models import OidcIdentity, User
+from app.db.models import LibraryGrant, OidcIdentity, OidcProvider, User
 from app.main import create_app
 
 pytestmark = pytest.mark.integration
@@ -53,21 +53,23 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlsplit(self.path).path
         server = self.server
-        if path == "/.well-known/openid-configuration":
+        root = urlsplit(server.issuer).path.rstrip("/")
+        base = server.issuer.rstrip("/")
+        if path == root + "/.well-known/openid-configuration":
             self._send(
                 200,
                 {
-                    "issuer": server.issuer,
-                    "authorization_endpoint": server.issuer + "/authorize",
-                    "token_endpoint": server.issuer + "/token",
-                    "userinfo_endpoint": server.issuer + "/userinfo",
-                    "jwks_uri": server.issuer + "/jwks",
+                    "issuer": server.discovery_issuer or server.issuer,
+                    "authorization_endpoint": base + "/authorize",
+                    "token_endpoint": base + "/token",
+                    "userinfo_endpoint": base + "/userinfo",
+                    "jwks_uri": base + "/jwks",
                     "id_token_signing_alg_values_supported": ["RS256"],
                 },
             )
-        elif path == "/jwks":
+        elif path == root + "/jwks":
             self._send(200, {"keys": [PUBLIC]})
-        elif path == "/userinfo":
+        elif path == root + "/userinfo":
             if self.headers.get("Authorization") != "Bearer access-token":
                 self._send(401, {"error": "invalid_token"})
                 return
@@ -93,7 +95,7 @@ class Handler(BaseHTTPRequestHandler):
         token = jwt.encode(
             {"alg": "RS256", "kid": "test"},
             {
-                "iss": server.issuer,
+                "iss": server.token_issuer or server.issuer,
                 "sub": server.sub,
                 "aud": server.aud,
                 "exp": now + 300,
@@ -131,6 +133,8 @@ class Provider(ThreadingHTTPServer):
         self.groups = ["members"]
         self.aud = "dewarr"
         self.reject_token = False
+        self.discovery_issuer = None
+        self.token_issuer = None
         self.signing_key = PRIVATE
 
     def profile(self):
@@ -445,7 +449,7 @@ async def test_groups_do_not_change_password_accounts(client, admin, idp):
     assert me.json()["user"]["role"] == "member"
 
 
-async def test_issuer_change_keeps_links_only_on_the_same_socket(client, admin, database, idp):
+async def test_issuer_change_does_not_transfer_links_between_realms(client, admin, database, idp):
     await save_provider(client, idp, auto_register=True)
     state = await start(client, idp)
     assert (await callback(client, state)).status_code == 303
@@ -475,9 +479,7 @@ async def test_issuer_change_keeps_links_only_on_the_same_socket(client, admin, 
     corrected = idp.issuer + "/application/o/dewarr"
     await save_issuer(corrected)
     async with database() as db:
-        identity = await db.scalar(select(OidcIdentity))
-        assert identity.issuer == corrected
-        assert identity.subject == "subject-1"
+        assert await db.scalar(select(OidcIdentity)) is None
     other_port = 9 if urlsplit(idp.issuer).port != 9 else 10
     await save_issuer(f"http://127.0.0.1:{other_port}/application/o/dewarr")
     async with database() as db:
@@ -682,7 +684,7 @@ async def test_explicit_link_rejects_invalidated_attempts(
 
     from sqlalchemy import update
 
-    from app.db.models import OidcLinkAttempt, OidcProvider
+    from app.db.models import OidcLinkAttempt
 
     await save_provider(client, idp)
     state = await begin_account_link(client, idp)
@@ -723,3 +725,198 @@ async def test_explicit_link_requires_session_and_csrf(client, admin, idp):
     assert (
         await client.post("/api/auth/oidc/link", json={"password": "a long test password"})
     ).status_code == 401
+
+
+async def login_admin(client):
+    client.cookies.clear()
+    login = await client.post(
+        "/api/auth/login",
+        json={"username": "admin", "password": "a long test password"},
+    )
+    assert login.status_code == 200, login.text
+    client.headers["X-CSRF-Token"] = login.json()["csrf_token"]
+
+
+@pytest.mark.parametrize("suffix", ["/application/o/dewarr/", "/application/o/dewarr"])
+async def test_exact_issuer_survives_discovery_save_and_returning_sign_in(
+    client, admin, database, idp, suffix
+):
+    idp.issuer += suffix
+    saved = await save_provider(client, idp, auto_register=True)
+    assert saved["issuer"] == idp.issuer
+    response = await callback(client, await start(client, idp))
+    assert response.headers["location"] == "/"
+    first = (await client.get("/api/auth/me")).json()["user"]
+    await login_admin(client)
+    await save_provider(client, idp, auto_register=True, client_secret="")
+    response = await callback(client, await start(client, idp))
+    assert response.headers["location"] == "/"
+    assert (await client.get("/api/auth/me")).json()["user"]["id"] == first["id"]
+    assert await user_count(database) == 2
+
+
+async def test_correcting_legacy_issuer_retains_account_links(client, admin, database, idp):
+    await save_provider(client, idp, auto_register=True)
+    await callback(client, await start(client, idp))
+    first = (await client.get("/api/auth/me")).json()["user"]
+    # Existing installations stored the issuer without its slash. Correct it via settings.
+    idp.issuer += "/"
+    await login_admin(client)
+    await save_provider(client, idp, auto_register=False)
+    response = await callback(client, await start(client, idp))
+    assert response.headers["location"] == "/"
+    assert (await client.get("/api/auth/me")).json()["user"]["id"] == first["id"]
+    async with database() as db:
+        assert (await db.scalar(select(OidcIdentity))).issuer == idp.issuer
+    assert await user_count(database) == 2
+
+
+@pytest.mark.parametrize("difference", ["/", "/other-realm"])
+async def test_discovery_requires_exact_issuer(client, admin, idp, difference):
+    idp.discovery_issuer = idp.issuer + difference
+    response = await client.post("/api/auth/oidc/discover", json={"issuer": idp.issuer})
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize("difference", ["/", "/other-realm"])
+async def test_signed_tokens_require_exact_issuer(client, admin, database, idp, caplog, difference):
+    await save_provider(client, idp, auto_register=True)
+    idp.token_issuer = idp.issuer + difference
+    with caplog.at_level("INFO", logger="app.api.oidc"):
+        response = await callback(client, await start(client, idp))
+    assert response.headers["location"] == "/?oidc_error=rejected"
+    assert "issuer_mismatch" in caplog.text
+    assert "test-client-secret" not in caplog.text
+    assert "access-token" not in caplog.text
+    assert await user_count(database) == 1
+
+
+@pytest.mark.parametrize(
+    "role,label",
+    [
+        ("admin", "Administrator"),
+        ("approver", "Approver"),
+        ("member", "Member"),
+        ("requester", "Requester"),
+        ("viewer", "Viewer"),
+    ],
+)
+@pytest.mark.parametrize("mapped", [False, True])
+async def test_all_oidc_presets_apply_permissions_on_first_and_returning_sign_in(
+    client, admin, database, idp, role, label, mapped
+):
+    settings = {"auto_register": True, "default_role": role}
+    if mapped:
+        settings.update(default_role="viewer", group_claim="groups", **{role + "_group": "access"})
+        idp.groups = ["access"]
+    saved = await save_provider(client, idp, **settings)
+    assert saved["default_role"] == settings["default_role"]
+    response = await callback(client, await start(client, idp))
+    assert response.headers["location"] == "/"
+    first = (await client.get("/api/auth/me")).json()["user"]
+    assert first["access_label"] == label
+    permissions = first["permissions"]
+    assert ("manage_requests" in permissions) == (role in {"admin", "approver"})
+    assert ("auto_approve" in permissions) == (role in {"admin", "approver", "member"})
+    assert ("request" in permissions) == (role != "viewer")
+    response = await callback(client, await start(client, idp))
+    assert response.headers["location"] == "/"
+    returning = (await client.get("/api/auth/me")).json()["user"]
+    assert returning["id"] == first["id"]
+    assert returning["permissions"] == permissions
+    async with database() as db:
+        assert await db.scalar(select(func.count()).select_from(LibraryGrant)) == 0
+    assert await user_count(database) == 2
+
+
+async def test_oidc_group_precedence_and_permission_changes(client, admin, database, idp):
+    await save_provider(
+        client,
+        idp,
+        auto_register=True,
+        default_role="viewer",
+        group_claim="groups",
+        admin_group="admins",
+        approver_group="approvers",
+        member_group="members",
+        requester_group="requesters",
+        viewer_group="viewers",
+    )
+    groups = ["admins", "approvers", "members", "requesters", "viewers"]
+    labels = ["Administrator", "Approver", "Member", "Requester", "Viewer", "Viewer"]
+    for offset, label in enumerate(labels):
+        idp.groups = groups[offset:]
+        response = await callback(client, await start(client, idp))
+        assert response.headers["location"] == "/"
+        me = (await client.get("/api/auth/me")).json()["user"]
+        assert me["access_label"] == label
+    # An administrator's manual promotion of a provider-only account is replaced
+    # at its next sign-in, even when both presets use the legacy member role.
+    async with database() as db, db.begin():
+        from app.domain.permissions import preset_bits, sync_user_permissions
+
+        user = await db.scalar(select(User).where(User.username == "reader"))
+        sync_user_permissions(user, preset_bits("approver"))
+    idp.groups = ["requesters"]
+    await callback(client, await start(client, idp))
+    assert (await client.get("/api/auth/me")).json()["user"]["access_label"] == "Requester"
+    idp.groups = ["members"]
+    await callback(client, await start(client, idp))
+    assert (await client.get("/api/auth/me")).json()["user"]["access_label"] == "Member"
+    assert await user_count(database) == 2
+
+
+async def test_oidc_mapping_cannot_demote_the_last_active_admin(client, admin, database, idp):
+    await save_provider(
+        client,
+        idp,
+        auto_register=True,
+        group_claim="groups",
+        admin_group="admins",
+        requester_group="requesters",
+    )
+    idp.groups = ["admins"]
+    await callback(client, await start(client, idp))
+    async with database() as db, db.begin():
+        local = await db.scalar(select(User).where(User.username == "admin"))
+        local.active = False
+    idp.groups = ["requesters"]
+    response = await callback(client, await start(client, idp))
+    assert response.headers["location"] == "/"
+    assert (await client.get("/api/auth/me")).json()["user"]["role"] == "admin"
+
+
+async def test_slash_correction_conflict_does_not_reassign_accounts(client, admin, database, idp):
+    await save_provider(client, idp, auto_register=True)
+    await callback(client, await start(client, idp))
+    original = idp.issuer
+    async with database() as db, db.begin():
+        local = await db.scalar(select(User).where(User.username == "admin"))
+        db.add(OidcIdentity(user_id=local.id, issuer=original + "/", subject=idp.sub))
+    await login_admin(client)
+    current = (await client.get("/api/auth/oidc/settings")).json()
+    current.pop("secret_set")
+    current.pop("redirect_uri")
+    response = await client.put(
+        "/api/auth/oidc/settings", json={**current, "issuer": original + "/"}
+    )
+    assert response.status_code == 409
+    async with database() as db:
+        assert (await db.get(OidcProvider, 1)).issuer == original
+        assert await db.scalar(select(func.count()).select_from(OidcIdentity)) == 2
+
+
+@pytest.mark.parametrize("role", ["member", "viewer", "requester", "approver", "admin"])
+async def test_oidc_onboarding_policy_applies_at_sign_in(client, admin, database, idp, role):
+    await save_provider(client, idp, auto_register=True, default_role=role)
+    policy = await client.put(
+        "/api/setup/onboarding-policy", json={"show_member_onboarding": False}
+    )
+    assert policy.status_code == 200
+    for _ in range(2):
+        await callback(client, await start(client, idp))
+        me = (await client.get("/api/auth/me")).json()["user"]
+        assert me["onboarding_status"] == "pending"
+        assert me["onboarding_required"] == (role not in {"member", "viewer"})
+    async with database() as db:
+        assert await db.scalar(select(func.count()).select_from(LibraryGrant)) == 0

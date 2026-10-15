@@ -726,6 +726,24 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/setup/onboarding-policy": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Onboarding Policy */
+    get: operations["onboarding_policy_api_setup_onboarding_policy_get"];
+    /** Save Onboarding Policy */
+    put: operations["save_onboarding_policy_api_setup_onboarding_policy_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/recovery": {
     parameters: {
       query?: never;
@@ -5790,9 +5808,14 @@ export interface components {
     };
     /**
      * AccountAutomation
-     * @description Account actions an administrator can turn on. All of them default off.
+     * @description MAM search policy and optional account actions. All switches default off.
      */
     AccountAutomation: {
+      /**
+       * Exclude Vip
+       * @default false
+       */
+      exclude_vip: boolean;
       /**
        * Seedbox Ip
        * @default false
@@ -10992,6 +11015,16 @@ export interface components {
        * @default
        */
       viewer_group: string;
+      /**
+       * Requester Group
+       * @default
+       */
+      requester_group: string;
+      /**
+       * Approver Group
+       * @default
+       */
+      approver_group: string;
     };
     /** OidcSettingsView */
     OidcSettingsView: {
@@ -11029,6 +11062,10 @@ export interface components {
       member_group: string;
       /** Viewer Group */
       viewer_group: string;
+      /** Requester Group */
+      requester_group: string;
+      /** Approver Group */
+      approver_group: string;
       /** Secret Set */
       secret_set: boolean;
       /** Redirect Uri */
@@ -11047,6 +11084,14 @@ export interface components {
       warnings: string[];
       /** Reason */
       reason: string;
+    };
+    /** OnboardingPolicy */
+    OnboardingPolicy: {
+      /**
+       * Show Member Onboarding
+       * @default true
+       */
+      show_member_onboarding: boolean;
     };
     /** OnboardingProgress */
     OnboardingProgress: {
@@ -14693,6 +14738,11 @@ export interface components {
        * @default pending
        */
       onboarding_status: string;
+      /**
+       * Onboarding Required
+       * @default true
+       */
+      onboarding_required: boolean;
       /** Library Ids */
       library_ids?: string[] | null;
     };
@@ -16462,6 +16512,59 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["OnboardingProgress"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  onboarding_policy_api_setup_onboarding_policy_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OnboardingPolicy"];
+        };
+      };
+    };
+  };
+  save_onboarding_policy_api_setup_onboarding_policy_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["OnboardingPolicy"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OnboardingPolicy"];
         };
       };
       /** @description Validation Error */
@@ -22043,6 +22146,7 @@ export interface operations {
         offset?: number;
         limit?: number;
         scope?: "identity" | "display";
+        medium?: ("ebook" | "audio" | "print" | "unknown") | null;
       };
       header?: never;
       path: {

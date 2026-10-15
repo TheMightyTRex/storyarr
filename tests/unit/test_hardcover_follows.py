@@ -21,7 +21,7 @@ def response():
                 "release_year": 2030,
                 "is_partial_book": False,
                 "book_series": [{"series_id": 9, "position": "1", "compilation": False}],
-                "matching_editions": {"aggregate": {"count": 1}},
+                "matching_editions": [{"id": 123}],
             }
         ],
     }
@@ -124,3 +124,27 @@ async def test_future_year_without_street_date_is_explicitly_unreleased():
     result = await page(query, "author", "9", 0, FollowFilters())
     assert result.items[0]["coming_soon"] is True
     assert result.items[0]["release_date"] is None
+
+
+@pytest.mark.parametrize(
+    "matches",
+    [
+        None,
+        {},
+        [None],
+        [{}],
+        [{"id": True}],
+        [{"id": 0}],
+        [{"id": 2147483648}],
+        [{"id": 1}, {"id": 2}],
+    ],
+)
+async def test_language_existence_rows_must_be_bounded_valid_editions(matches):
+    data = response()
+    data["books"][0]["matching_editions"] = matches
+
+    async def query(*args):
+        return data
+
+    with pytest.raises(AdapterError):
+        await page(query, "author", "9", 0, FollowFilters(language="en"))

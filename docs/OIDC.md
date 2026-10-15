@@ -8,7 +8,9 @@ Create that first account in the browser before enabling the provider. Then open
 
 `https://books.example.com/api/auth/oidc/callback`
 
-Copy it into the provider. Dewarr uses authorization code with PKCE (`S256`) and `client_secret_basic`. Correcting the issuer path keeps existing links when the scheme, host, and port stay the same. A different scheme, host, or port removes those links, so a reused subject cannot sign in as the old account.
+Copy it into the provider. Dewarr uses authorization code with PKCE (`S256`) and `client_secret_basic`. Keep the issuer exactly as published by the provider, including any trailing slash. Discovery and signed tokens must match that issuer exactly, as required by [OpenID Connect discovery validation](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationValidation).
+
+If an older Dewarr version removed the issuer's trailing slash, enter the exact issuer, discover endpoints, and save again. An explicit correction that adds or removes one trailing slash preserves existing account links; conflicting links reject the save. Saving the settings again keeps the issuer intact. Other issuer changes, including a different realm/path on the same host, remove the previous issuer's links. Re-link those accounts using their local passwords or your configured matching policy. A subject identifier from a different issuer is not the same identity.
 
 ## Link an existing account (including the first administrator)
 
@@ -32,9 +34,9 @@ From another administrator account, **Account details → Sign-in and account re
 1. Create an application and choose the **OAuth2/OpenID Connect** provider. This is not the proxy provider.
 2. Note the client ID and client secret.
 3. Add the Dewarr redirect URL as a strict authorization redirect URI.
-4. In Dewarr, paste the issuer URL (`https://authentik.example/application/o/<slug>`), choose **Discover endpoints**, enter the client ID and secret, and save.
+4. In Dewarr, paste the issuer URL (`https://authentik.example/application/o/<slug>/`), choose **Discover endpoints**, enter the client ID and secret, and save.
 5. Leave **Match existing accounts** on username or verified email if these people already have Dewarr accounts. Verified email matches only when the provider sets `email_verified` to true. Username matching does not attach an administrator account. Turn on **Create accounts on first sign-in** only when the provider should add new readers.
-6. Optional: set the group claim to `groups` and enter the Authentik group names that should become administrators, members, or viewers. Leave **Group scope** empty unless Authentik releases that claim only when Dewarr requests a scope. A scope the provider does not offer rejects every provider sign-in.
+6. Optional: set the group claim to `groups` and enter the Authentik group names for Administrator, Approver, Member, Requester, or Viewer access. Leave **Group scope** empty unless Authentik releases that claim only when Dewarr requests a scope. A scope the provider does not offer rejects every provider sign-in.
 
 A user's email must not be marked unverified. Authentik does that until the address is confirmed.
 
@@ -79,6 +81,28 @@ In Dewarr, the issuer is the Authelia address (`https://auth.example.com`). Disc
 
 ## Roles
 
-New provider accounts are members unless a group mapping says otherwise. They cannot run list automation until an administrator allows it. Group mapping does not change the role of an account that still has a local password, and it will not remove the last active administrator. Signing out of Dewarr ends the Dewarr session only; the identity provider session can remain.
+**New account access** (or **Default access** when a group claim is configured) supports all five built-in presets. Existing installations keep their saved default; new configurations still default to Member. Choose Requester when downloads must wait for approval. Selecting Administrator deliberately grants full control to accounts that receive the default.
+
+When several configured groups match, the first match in this order wins:
+
+1. Administrator
+2. Approver
+3. Member
+4. Requester
+5. Viewer
+
+When no group matches, the default applies. With a group claim configured, each sign-in synchronizes provider-only accounts to that preset, including its permissions; manual role changes are replaced at the next sign-in. A separate automation grant on a legacy Member account is retained while its mapping stays Member. Accounts with a local password retain their manual access, and a group change cannot demote the last active administrator. Without a group claim, the default applies only when creating an account; returning accounts retain their access.
+
+Requester accounts can ask for books but cannot bypass approval. Approvers can download and decide other people's requests. Neither preset grants library access or personal integration credentials. Non-administrator provider accounts start without list automation. Signing out of Dewarr ends the Dewarr session only; the identity provider session can remain.
 
 People created by the provider have no Dewarr password. Disabling the provider blocks their sign-in until you turn it back on or give them a local account.
+
+## Optional member onboarding
+
+Under **Settings → Users & access → First-run onboarding**, administrators can turn off **Show onboarding wizard to new members and viewers**. It defaults to on. Turning it off allows pending Member/Viewer accounts to browse after local or OIDC sign-in, including subsequent sign-ins, without changing their saved onboarding progress. Administrators, Requesters, Approvers, and custom access presets keep their existing setup behavior.
+
+Everyone can reopen the optional wizard from **Settings → General → Open onboarding setup wizard**. Completed or deferred progress stays saved. This setting does not share personal Hardcover tokens, add library grants, or alter account permissions.
+
+## Issuer troubleshooting
+
+A discovery mismatch explains that the entered issuer must match exactly, including its slash. A signed-token issuer mismatch keeps the generic sign-in rejection in the browser and logs `issuer_mismatch` on the server. Logs do not include tokens, client secrets, or the received issuer claim. Check the configured issuer against the provider's published discovery document, then save its exact value.

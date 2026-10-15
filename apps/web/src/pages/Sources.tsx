@@ -589,6 +589,30 @@ export function MamConnectionForm({ value }: { value: Connection }) {
         }}
       >
         <fieldset className="mam-setup-fields" disabled={busy || controlBusy}>
+          <section aria-label="MAM search policy">
+            <h3>Search results</h3>
+            <label className="check-label">
+              <input
+                type="checkbox"
+                checked={automation.exclude_vip}
+                onChange={(event) =>
+                  setAutomation({
+                    ...automation,
+                    exclude_vip: event.target.checked,
+                  })
+                }
+              />
+              Exclude VIP releases
+            </label>
+            <p className="muted">
+              Enable this if your MAM account cannot download VIP releases.
+              Applies to direct MAM searches and selection; configure Prowlarr
+              separately. Leave off for VIP/Elite access or if unsure. MAM still
+              authorizes each download; missing VIP expiry does not establish
+              access. This setting does not spend points or Freeleech wedges.
+              Refresh existing searches after saving.
+            </p>
+          </section>
           <AccountAutomation
             value={automation}
             onChange={setAutomation}

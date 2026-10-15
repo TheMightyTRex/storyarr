@@ -29,6 +29,22 @@ hostname resolution, connection refusal, HTTPS tunnel rejection, timeouts, TLS
 negotiation, and invalid IP responses. Raw exception messages, cookies, and
 proxy credentials are not returned to the browser.
 
+## Accounts without VIP access
+
+Enable **Exclude VIP releases** in MAM connection settings, save, then refresh
+existing source searches. Dewarr sends the documented `nVIP` search filter and
+skips known VIP releases before automatic inspection, leaving eligible results
+from MAM and other sources available. Fresh release detail is checked again
+before fetching torrent metadata. If every candidate is excluded, the selection
+explains why. This policy applies only to direct MAM; Prowlarr has its own filter.
+
+The switch defaults off for existing installations. Leave it off for VIP/Elite
+accounts or when access is unknown; missing `vip_until` does not establish account
+entitlement. Unknown release flags are left for MAM to authorize. Excluding VIP
+releases does not purchase VIP or spend Freeleech wedges; those remain separate
+explicit settings. The API stores this policy as `automation.exclude_vip` on the
+MAM connection.
+
 ## Gluetun works in MouseSearch but Dewarr cannot resolve it
 
 If Dewarr reports **The proxy hostname could not be resolved**, check the

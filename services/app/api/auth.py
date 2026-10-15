@@ -21,6 +21,7 @@ from app.db.models import (
     LoginSession,
     OidcIdentity,
     OidcProvider,
+    OnboardingSettings,
     PermissionRole,
     PlexIdentity,
     PlexLogin,
@@ -92,6 +93,7 @@ class UserView(BaseModel):
     access_label: str
     permission_role_id: str | None = None
     onboarding_status: str = "pending"
+    onboarding_required: bool = True
     library_ids: list[UUID] | None = None
 
 
@@ -111,7 +113,16 @@ async def named_user_view(db: Database, user: User) -> UserView:
         role_name = await db.scalar(
             select(PermissionRole.name).where(PermissionRole.id == user.permission_role_id)
         )
-    return user_view(user, role_name)
+    view = user_view(user, role_name)
+    view.onboarding_required = view.onboarding_status == "pending"
+    if (
+        view.onboarding_required
+        and not user.permission_role_id
+        and access_label(user) in {"Member", "Viewer"}
+    ):
+        policy = await db.get(OnboardingSettings, 1)
+        view.onboarding_required = policy.show_member_onboarding if policy else True
+    return view
 
 
 def user_view(user: User, role_name: str | None = None, *, library_ids=None) -> UserView:

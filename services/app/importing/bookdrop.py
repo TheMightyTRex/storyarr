@@ -9,9 +9,9 @@ from app.importing.filesystem import beneath, directory
 from app.importing.publication import (
     PublicationError,
     entry_lock,
-    object_id,
     private_staging,
     read_receipt,
+    same_destination,
     specification_fingerprint,
 )
 
@@ -32,9 +32,9 @@ def recovered_handoff(spec):
         if not receipt:
             return None
         with directory(spec.destination_root) as destination:
-            if receipt.get("spec_hash") != specification_fingerprint(spec) or receipt.get(
-                "destination_identity"
-            ) != object_id(destination):
+            if receipt.get("spec_hash") != specification_fingerprint(spec) or not same_destination(
+                destination, receipt.get("destination_identity")
+            ):
                 raise PublicationError(
                     "Bookdrop receipt or intake mount changed; review the existing handoff"
                 )

@@ -1,3 +1,4 @@
+import EditionFormatSelect, { type EditionFormat } from "./EditionFormatSelect";
 import { useState } from "react";
 import BookPagination from "./BookPagination";
 import { Link } from "react-router-dom";
@@ -20,6 +21,10 @@ export default function CatalogEditions({
 }) {
   const cache = useQueryClient();
   const [page, setPage] = useState(1);
+  const [format, setFormat] = useState<EditionFormat>("all");
+  const providerEditions = (readerBook?.editions || []).filter(
+    (edition) => format === "all" || edition.medium === format,
+  );
   const [providerPage, setProviderPage] = useState(1);
   const group = useQuery({
     queryKey: ["work-grouping", work.id],
@@ -51,13 +56,18 @@ export default function CatalogEditions({
     },
   });
   const query = useQuery({
-    queryKey: ["reader-work-metadata", work.id, "editions", page],
+    queryKey: ["reader-work-metadata", work.id, "editions", page, format],
     queryFn: async ({ signal }) =>
       result(
         await api.GET("/api/metadata/works/{work_id}", {
           params: {
             path: { work_id: work.id },
-            query: { offset: (page - 1) * 20, limit: 20, scope: "display" },
+            query: {
+              offset: (page - 1) * 20,
+              limit: 20,
+              scope: "display",
+              medium: format === "all" ? undefined : format,
+            },
           },
           signal,
         }),
@@ -71,7 +81,21 @@ export default function CatalogEditions({
           <span className="muted">{query.data.versions_total} editions</span>
         )}
       </div>
+      <EditionFormatSelect
+        value={format}
+        onChange={(value) => {
+          setFormat(value);
+          setPage(1);
+          setProviderPage(1);
+        }}
+      />
       <Notice error={query.error || group.error || primary.error} />
+      {query.data?.sources.some((source) => source.editions_more) && (
+        <p className="muted">
+          Some catalog editions have not been loaded. More formats may be
+          available; use Book metadata to load more editions.
+        </p>
+      )}
       {query.isPending && <Loading />}
       {query.error && (
         <button onClick={() => query.refetch()}>Retry editions</button>
@@ -186,8 +210,10 @@ export default function CatalogEditions({
           </div>
         ) : (
           <p className="muted">
-            No editions are linked yet. Use Book metadata to match or refresh a
-            catalog source.
+            {format === "all"
+              ? "No editions are linked yet."
+              : "No linked editions match this format."}{" "}
+            Use Book metadata to match or refresh a catalog source.
           </p>
         ))}
       {query.data && (
@@ -218,12 +244,12 @@ export default function CatalogEditions({
           </button>
         </div>
       )}
-      {!!readerBook?.editions?.length && (
+      {readerBook && (
         <section aria-label="Hardcover editions">
           <div className="book-tab-heading">
             <h3>On Hardcover</h3>
             <span className="muted">
-              {readerBook.editions.length}
+              {providerEditions.length}
               {readerBook.editions_more ? "+" : ""} editions
             </span>
           </div>
@@ -238,7 +264,7 @@ export default function CatalogEditions({
                 </tr>
               </thead>
               <tbody>
-                {readerBook.editions
+                {providerEditions
                   .slice((providerPage - 1) * 20, providerPage * 20)
                   .map((edition) => (
                     <tr key={edition.external_id}>
@@ -273,18 +299,28 @@ export default function CatalogEditions({
           </div>
           <BookPagination
             page={providerPage}
-            total={readerBook.editions.length}
+            total={providerEditions.length}
             onPage={setProviderPage}
             label="Hardcover editions"
           />
+          {!providerEditions.length && (
+            <p className="muted">
+              No editions matching this format are in the loaded Hardcover
+              results.
+            </p>
+          )}
           {readerBook.editions_more && (
-            <a
-              href={`https://hardcover.app/books/${encodeURIComponent(readerBook.external_id)}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Explore all editions on Hardcover →
-            </a>
+            <p className="muted">
+              Only the first {readerBook.editions?.length || 0} editions are
+              loaded. More formats may be available.{" "}
+              <a
+                href={`https://hardcover.app/books/${encodeURIComponent(readerBook.external_id)}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Explore all editions on Hardcover →
+              </a>
+            </p>
           )}
         </section>
       )}

@@ -1,3 +1,6 @@
+import EditionFormatSelect, {
+  type EditionFormat,
+} from "../components/EditionFormatSelect";
 import { ReturnLink, safeReturn } from "../components/NavigationContinuity";
 import { AuthorFollows } from "../components/FollowCatalog";
 import BookPagination from "../components/BookPagination";
@@ -110,7 +113,7 @@ function BookPage({
   const [localWork, setLocalWork] = useState<Work | null>(null);
   const [action, setAction] = useState<Action | null>(null);
   const [listId, setListId] = useState("");
-  const [format, setFormat] = useState("all");
+  const [format, setFormat] = useState<EditionFormat>("all");
   const [editionPage, setEditionPage] = useState(1);
   const preview = useQuery({
     queryKey: ["provider-book", provider, externalId],
@@ -534,22 +537,13 @@ function BookPage({
                     Explore print, ebook and audiobook editions.
                   </p>
                 </div>
-                <label>
-                  Edition format
-                  <select
-                    value={format}
-                    onChange={(event) => {
-                      setFormat(event.target.value);
-                      setEditionPage(1);
-                    }}
-                  >
-                    <option value="all">All formats</option>
-                    <option value="ebook">Ebook</option>
-                    <option value="audio">Audiobook</option>
-                    <option value="print">Print</option>
-                    <option value="unknown">Other / unspecified</option>
-                  </select>
-                </label>
+                <EditionFormatSelect
+                  value={format}
+                  onChange={(value) => {
+                    setFormat(value);
+                    setEditionPage(1);
+                  }}
+                />
               </div>
               {shown.length ? (
                 <div className="reader-editions">
@@ -622,7 +616,7 @@ function BookPage({
                     : format === "audio"
                       ? "audiobook "
                       : `${format} `}
-                  editions are available in this catalog page.
+                  editions are in the loaded catalog results.
                 </p>
               )}
               <BookPagination
@@ -632,7 +626,8 @@ function BookPage({
               />
               {book.editions_more && (
                 <p className="muted">
-                  Showing the first {editions.length} editions.{" "}
+                  Only the first {editions.length} editions are loaded. More
+                  formats may be available.{" "}
                   <a href={externalUrl} target="_blank" rel="noreferrer">
                     Explore all editions on {sourceName} →
                   </a>

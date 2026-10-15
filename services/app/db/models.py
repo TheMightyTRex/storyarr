@@ -106,7 +106,7 @@ class OidcProvider(Base):
     __table_args__ = (
         CheckConstraint("id = 1"),
         CheckConstraint("match_existing IN ('off', 'email', 'username')"),
-        CheckConstraint("default_role IN ('member', 'viewer')"),
+        CheckConstraint("default_role IN ('admin', 'approver', 'member', 'requester', 'viewer')"),
         CheckConstraint("signing_algorithm IN ('RS256', 'ES256')"),
     )
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -128,6 +128,8 @@ class OidcProvider(Base):
     admin_group: Mapped[str] = mapped_column(String(120), default="")
     member_group: Mapped[str] = mapped_column(String(120), default="")
     viewer_group: Mapped[str] = mapped_column(String(120), default="")
+    requester_group: Mapped[str] = mapped_column(String(120), default="", server_default="")
+    approver_group: Mapped[str] = mapped_column(String(120), default="", server_default="")
 
 
 class PlexIdentity(Base):
@@ -1200,6 +1202,15 @@ class DownloadIdentityClaim(Identity, Base):
     endpoint_key: Mapped[str] = mapped_column(String(64))
     torrent_hash: Mapped[str] = mapped_column(String(64))
     active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class OnboardingSettings(Base):
+    __tablename__ = "onboarding_settings"
+    __table_args__ = (CheckConstraint("id = 1"),)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    show_member_onboarding: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default="true"
+    )
 
 
 class OrganizationSettings(Base):
