@@ -537,30 +537,91 @@ class Grimmory(JsonEndpoint):
 
     async def bookdrop_files(self) -> list[dict]:
         rows, seen = [], set()
+        snapshot = None
         for page in range(100):
             value = await self.request(
                 "GET", "api/v1/bookdrop/files", params={"page": page, "size": 100, "sort": "id,asc"}
             )
             content = value.get("content")
-            if not isinstance(content, list) or type(value.get("last")) is not bool:
+            fields = ("number", "size", "totalElements", "totalPages")
+            nested = "page" in value
+            metadata = value.get("page") if nested else value
+            has_metadata = nested or any(field in value for field in fields)
+            if not isinstance(content, list) or len(content) > 100:
                 raise AdapterError(
                     FailureKind.PARSER, "Grimmory returned an invalid Bookdrop queue."
                 )
+            if has_metadata:
+                if not isinstance(metadata, dict) or any(
+                    type(metadata.get(field)) is not int for field in fields
+                ):
+                    raise AdapterError(FailureKind.PARSER, "Bookdrop returned invalid pagination.")
+                number, size, total, pages = (metadata[field] for field in fields)
+                if (
+                    number != page
+                    or not 1 <= size <= 100
+                    or total < 0
+                    or pages != (total + size - 1) // size
+                    or (total == 0 and page != 0)
+                    or (total > 0 and page >= pages)
+                    or len(content) != min(size, max(0, total - page * size))
+                ):
+                    raise AdapterError(
+                        FailureKind.PARSER, "Bookdrop returned inconsistent pagination."
+                    )
+                if pages > 100 or total > 10_000:
+                    raise AdapterError(
+                        FailureKind.PARSER, "Bookdrop queue exceeds the supported review limit."
+                    )
+                current = (nested, size, total, pages)
+                last = page + 1 >= pages
+                # If both representations are present, neither may contradict the other.
+                if "last" in value and (type(value["last"]) is not bool or value["last"] != last):
+                    raise AdapterError(
+                        FailureKind.PARSER, "Bookdrop returned inconsistent pagination."
+                    )
+                if nested and any(
+                    field in value
+                    and (type(value[field]) is not int or value[field] != metadata[field])
+                    for field in fields
+                ):
+                    raise AdapterError(
+                        FailureKind.PARSER, "Bookdrop returned inconsistent pagination."
+                    )
+            else:
+                # Older servers expose only content/last. Retain that contract,
+                # with the same row/page bounds and progress checks.
+                last = value.get("last")
+                if type(last) is not bool or (not last and not content):
+                    raise AdapterError(FailureKind.PARSER, "Bookdrop returned invalid pagination.")
+                current = (False, None, None, None)
+            if snapshot is not None and snapshot != current:
+                raise AdapterError(
+                    FailureKind.UNCERTAIN,
+                    "Bookdrop changed while reading its queue; refresh again.",
+                )
+            snapshot = current
             for row in content:
                 if (
                     not isinstance(row, dict)
                     or type(row.get("id")) is not int
+                    or row["id"] <= 0
                     or not isinstance(row.get("filePath"), str)
+                    or not row["filePath"].startswith("/")
                     or type(row.get("fileSize")) is not int
-                    or row["id"] in seen
+                    or row["fileSize"] < 0
                 ):
                     raise AdapterError(
-                        FailureKind.PARSER,
+                        FailureKind.PARSER, "Grimmory returned an invalid Bookdrop file."
+                    )
+                if row["id"] in seen or (rows and row["id"] <= rows[-1]["id"]):
+                    raise AdapterError(
+                        FailureKind.UNCERTAIN,
                         "Bookdrop changed while reading its queue; refresh again.",
                     )
                 seen.add(row["id"])
                 rows.append(row)
-            if value["last"]:
+            if last:
                 return rows
         raise AdapterError(FailureKind.PARSER, "Bookdrop queue exceeds the supported review limit.")
 
