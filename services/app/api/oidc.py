@@ -36,10 +36,10 @@ from app.domain.oidc import (
     discover,
     endpoint,
     identity_claims,
+    is_issuer_slash_correction,
     normalize_issuer,
     redirect_uri,
     resolve_user,
-    same_provider_host,
     same_secret,
     snapshot,
 )
@@ -85,6 +85,8 @@ class OidcSettingsInput(BaseModel):
     admin_group: str = Field(default="", max_length=120)
     member_group: str = Field(default="", max_length=120)
     viewer_group: str = Field(default="", max_length=120)
+    requester_group: str = Field(default="", max_length=120)
+    approver_group: str = Field(default="", max_length=120)
 
     @field_validator("client_secret", mode="before")
     @classmethod
@@ -93,7 +95,9 @@ class OidcSettingsInput(BaseModel):
             return None
         return value
 
-    @field_validator("label", "admin_group", "member_group", "viewer_group")
+    @field_validator(
+        "label", "admin_group", "member_group", "viewer_group", "requester_group", "approver_group"
+    )
     @classmethod
     def trim(cls, value: str) -> str:
         return " ".join(value.split())
@@ -124,6 +128,8 @@ class OidcSettingsView(BaseModel):
     admin_group: str
     member_group: str
     viewer_group: str
+    requester_group: str
+    approver_group: str
     secret_set: bool
     redirect_uri: str
 
@@ -161,6 +167,8 @@ def settings_view(row: OidcProvider | None) -> OidcSettingsView:
         admin_group=row.admin_group if row else "",
         member_group=row.member_group if row else "",
         viewer_group=row.viewer_group if row else "",
+        requester_group=row.requester_group if row else "",
+        approver_group=row.approver_group if row else "",
         secret_set=bool(row and row.encrypted_secret),
         redirect_uri=redirect_uri(),
     )
@@ -171,8 +179,8 @@ def validate_settings(body: OidcSettingsInput) -> str:
         raise HTTPException(422, "Choose RS256 or ES256")
     if body.match_existing not in {"off", "email", "username"}:
         raise HTTPException(422, "Choose how existing accounts are matched")
-    if body.default_role not in {"member", "viewer"}:
-        raise HTTPException(422, "New accounts start as members or viewers")
+    if body.default_role not in {"admin", "approver", "member", "requester", "viewer"}:
+        raise HTTPException(422, "Choose a built-in role for default access")
     if body.group_claim and not CLAIM_NAME.fullmatch(body.group_claim):
         raise HTTPException(422, "Use a group claim name such as groups")
     if body.group_scope and not SCOPE_NAME.fullmatch(body.group_scope):
@@ -420,7 +428,17 @@ async def save_oidc_settings(body: OidcSettingsInput, admin: Admin, db: Database
         raise HTTPException(422, "A client secret is required")
     if row is not None and row.issuer and issuer and row.issuer != issuer:
         identities = OidcIdentity.issuer == row.issuer
-        if same_provider_host(row.issuer, issuer):
+        if is_issuer_slash_correction(row.issuer, issuer):
+            conflict = await db.scalar(
+                select(OidcIdentity.user_id)
+                .where(
+                    OidcIdentity.issuer == issuer,
+                    OidcIdentity.subject.in_(select(OidcIdentity.subject).where(identities)),
+                )
+                .limit(1)
+            )
+            if conflict:
+                raise HTTPException(409, "The corrected issuer has conflicting account links")
             await db.execute(update(OidcIdentity).where(identities).values(issuer=issuer))
         else:
             await db.execute(delete(OidcIdentity).where(identities))
@@ -444,6 +462,8 @@ async def save_oidc_settings(body: OidcSettingsInput, admin: Admin, db: Database
     row.admin_group = body.admin_group
     row.member_group = body.member_group
     row.viewer_group = body.viewer_group
+    row.requester_group = body.requester_group
+    row.approver_group = body.approver_group
     if body.client_secret is not None:
         row.encrypted_secret = encrypt_secrets(
             {"client_secret": body.client_secret.get_secret_value()}
@@ -460,6 +480,12 @@ async def discover_provider(body: DiscoverInput, admin: Admin, db: Database):
     except ValueError as error:
         raise HTTPException(422, str(error)) from None
     except OidcRejected as error:
+        if error.reason == "discovery_issuer_mismatch":
+            raise HTTPException(
+                422,
+                "The discovery issuer must exactly match the entered issuer URL, "
+                "including its trailing slash",
+            ) from None
         raise HTTPException(
             422 if error.code == "rejected" else 502, ERRORS.get(error.code, ERRORS["unavailable"])
         ) from None
@@ -566,6 +592,8 @@ async def callback(request: Request, db: Database):
             return response
         user = await resolve_user(db, provider, claims)
     except OidcRejected as error:
+        if error.reason:
+            logger.info("OIDC sign-in validation failed (%s)", error.reason)
         await db.rollback()
         return failed(error.code if error.code in ERRORS else "rejected")
     except IntegrityError:

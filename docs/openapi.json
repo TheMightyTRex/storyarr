@@ -1590,6 +1590,66 @@
         }
       }
     },
+    "/api/setup/onboarding-policy": {
+      "get": {
+        "tags": [
+          "setup"
+        ],
+        "summary": "Onboarding Policy",
+        "operationId": "onboarding_policy_api_setup_onboarding_policy_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingPolicy"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "setup"
+        ],
+        "summary": "Save Onboarding Policy",
+        "operationId": "save_onboarding_policy_api_setup_onboarding_policy_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnboardingPolicy"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingPolicy"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/recovery": {
       "get": {
         "tags": [
@@ -32457,6 +32517,18 @@
             "maxLength": 120,
             "title": "Viewer Group",
             "default": ""
+          },
+          "requester_group": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Requester Group",
+            "default": ""
+          },
+          "approver_group": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Approver Group",
+            "default": ""
           }
         },
         "additionalProperties": false,
@@ -32533,6 +32605,14 @@
             "type": "string",
             "title": "Viewer Group"
           },
+          "requester_group": {
+            "type": "string",
+            "title": "Requester Group"
+          },
+          "approver_group": {
+            "type": "string",
+            "title": "Approver Group"
+          },
           "secret_set": {
             "type": "boolean",
             "title": "Secret Set"
@@ -32561,6 +32641,8 @@
           "admin_group",
           "member_group",
           "viewer_group",
+          "requester_group",
+          "approver_group",
           "secret_set",
           "redirect_uri"
         ],
@@ -32597,6 +32679,18 @@
           "reason"
         ],
         "title": "OmittedSeriesBook"
+      },
+      "OnboardingPolicy": {
+        "properties": {
+          "show_member_onboarding": {
+            "type": "boolean",
+            "title": "Show Member Onboarding",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "OnboardingPolicy"
       },
       "OnboardingProgress": {
         "properties": {
@@ -42265,6 +42359,11 @@
             "type": "string",
             "title": "Onboarding Status",
             "default": "pending"
+          },
+          "onboarding_required": {
+            "type": "boolean",
+            "title": "Onboarding Required",
+            "default": true
           },
           "library_ids": {
             "anyOf": [
