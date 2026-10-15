@@ -6,7 +6,6 @@ before publication, and publication never overwrites existing library contents.
 
 import asyncio
 import errno
-import json
 import os
 import time
 from contextlib import nullcontext
@@ -38,10 +37,10 @@ from app.importing.naming import EBOOK
 from app.importing.publication import (
     PublicationBusy,
     PublicationError,
+    destination_lock,
     no_replace,
     object_id,
     private_staging,
-    publication_lock,
     sync_directory,
     write_all,
 )
@@ -119,7 +118,7 @@ def place_companion(
             Path(target["staging_path"]),
             Path(target["journal_path"]) if target.get("journal_path") else None,
         ) as staging,
-        publication_lock(staging, json.dumps(object_id(root), sort_keys=True)),
+        destination_lock(staging, root),
         beneath(root, str(relative.parent), folder=True) as folder,
     ):
         if object_id(folder) != configuration["target_folder_identity"]:

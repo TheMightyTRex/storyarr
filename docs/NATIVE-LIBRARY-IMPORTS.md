@@ -18,6 +18,15 @@ Activating Bookdrop changes the administrator's personal ebook destination. It p
 
 The connection needs access to Bookdrop and its queue. Folder verification checks local publication access, the selected backend configuration, and queue readability; it does not prove that the two services share a filesystem. Grimmory does not expose its configured Bookdrop root through this API, so Dewarr cannot prove that the chosen path is watched until a delivered EPUB appears in the queue. **Refresh review status** checks for that exact intake path and size.
 
+Bookdrop queue reads support both legacy top-level paging and Grimmory 3.5.0's
+nested Spring `page` metadata, including an empty queue. Reads stop at 100 pages
+or 10,000 files and reject inconsistent page sizes/counts, repeated or unordered
+IDs, and malformed files. A queue changing during a read must be refreshed;
+these pages do not provide a transactional snapshot. **Send to Bookdrop on
+completion** controls delivery timing. Turning it off still requires Bookdrop
+access and folder verification. Select the separate direct-library workflow for
+direct imports.
+
 Review metadata and approve the import in Grimmory. Sync the resulting library in Dewarr, then use **Link reviewed copy** in the download's import review. Candidates must be complete, matched copies of the selected edition on the original Grimmory server. Resolve an edition mismatch in library review before linking. Queue disappearance alone does not establish whether a file was imported, discarded or moved.
 
 **Mark rejected** retains the receipt and suppresses another handoff; it does not delete anything in Grimmory. A confirmed or rejected handoff is never automatically resent. Publication receipts also protect against a restart after Grimmory consumes a file but before Dewarr records delivery. Uncertain outcomes require review rather than automatic replacement. Pending human review does not occupy a worker or trigger repeated scans.

@@ -8,7 +8,6 @@ exactly those files, and the journal keeps what is needed to separate the parts 
 
 import asyncio
 import errno
-import json
 import os
 import stat
 from collections import Counter
@@ -47,13 +46,15 @@ from app.importing.publication import (
     HARDLINKS_UNSUPPORTED,
     PublicationError,
     conflicting_name,
+    destination_identity,
+    destination_lock,
     destination_parent,
     journal_fd,
     no_replace,
     object_id,
     private_staging,
-    publication_lock,
     read_receipt,
+    same_destination,
     same_object,
     sync_directory,
     write_all,
@@ -429,11 +430,11 @@ def journal(spec):
     ):
         if same_object(staging, object_id(destination)):
             raise CombineError("Staging and library refer to the same folder")
-        with publication_lock(staging, json.dumps(object_id(destination), sort_keys=True)):
+        with destination_lock(staging, destination):
             receipt = read_receipt(staging, receipt_name(spec))
             if receipt is not None and (
                 receipt.get("spec_hash") != spec_hash(spec)
-                or receipt.get("destination_identity") != object_id(destination)
+                or not same_destination(destination, receipt.get("destination_identity"))
             ):
                 raise CombineError("The combine journal no longer matches this library folder")
             yield staging, destination, receipt
@@ -466,7 +467,7 @@ def publish_combined(spec, *, checkpoint=lambda _: None):
                 "combine_id": str(spec.combine_id),
                 "spec_hash": spec_hash(spec),
                 "state": "preparing",
-                "destination_identity": object_id(destination),
+                "destination_identity": destination_identity(destination),
             }
             write_receipt(staging, receipt_name(spec), receipt, create=True)
         if receipt["state"] not in {"preparing", "staged"}:
@@ -502,7 +503,7 @@ def publish_combined(spec, *, checkpoint=lambda _: None):
             if conflicting_name(parent, leaf) is not None:
                 raise CombineSkipped(f"The folder {spec.folder} already exists in the library")
             with directory(spec.destination_root) as current:
-                if not same_object(current, receipt["destination_identity"]):
+                if not same_destination(current, receipt["destination_identity"]):
                     raise CombineError("The library folder changed before publication")
             with beneath(staging, stage_name(spec), folder=True) as current:
                 if not same_object(current, receipt["stage_identity"]):

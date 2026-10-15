@@ -3,6 +3,7 @@
 from pathlib import Path
 
 STAGING_NAME = ".book-search-staging"
+ROOT_MARKER = ".book-search-root"
 
 
 def overlaps(left: Path, right: Path) -> bool:
@@ -48,8 +49,12 @@ def check_library_layout(roots: dict[str, Path], sources: dict[str, Path], stagi
 def library_relative(value: str) -> None:
     # Reserve this namespace even on case-insensitive media shares. Import and
     # combine targets/sources must never address journals or incomplete media.
-    if value.split("/", 1)[0].casefold() == STAGING_NAME.casefold():
-        raise ValueError("The private staging folder is reserved; choose a library item path")
+    first = value.split("/", 1)[0].casefold()
+    if first == STAGING_NAME.casefold() or first.startswith(ROOT_MARKER):
+        raise ValueError(
+            "The private staging folder and root identity marker are reserved; "
+            "choose a library item path"
+        )
 
 
 def check_staging_backend(kind: str, library: Path, staging: Path, *, watcher_enabled=None) -> None:

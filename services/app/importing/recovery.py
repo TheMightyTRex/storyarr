@@ -11,12 +11,14 @@ from app.importing.publication import (
     PublicationSpec,
     checked_source,
     conversion_inputs,
+    destination_identity,
     has_publication_marker,
     journal_fd,
     object_id,
     private_staging,
     published_names,
     read_receipt,
+    same_destination,
     same_object,
     specification_fingerprint,
     verify_item,
@@ -69,6 +71,7 @@ def read_publication(entry, roots):
         private_staging(spec.staging_root, spec.journal_root) as staging,
         directory(spec.destination_root) as destination,
     ):
+        root_identity = destination_identity(destination)
         receipt = read_receipt(staging, str(entry["id"]) + ".json")
         evidence["journal_present"] = receipt is not None
         if receipt is not None:
@@ -76,7 +79,7 @@ def read_publication(entry, roots):
                 not isinstance(receipt, dict)
                 or receipt.get("entry_id") != str(entry["id"])
                 or receipt.get("spec_hash") != specification_fingerprint(spec)
-                or receipt.get("destination_identity") != object_id(destination)
+                or not same_destination(destination, receipt.get("destination_identity"))
             ):
                 raise ScanHeld("Publication journal identity does not match the frozen import")
             evidence["journal_digest"] = digest(receipt)
@@ -165,7 +168,7 @@ def read_publication(entry, roots):
             private_staging(spec.staging_root, spec.journal_root) as current_staging,
         ):
             if (
-                object_id(current_destination) != object_id(destination)
+                not same_destination(current_destination, root_identity)
                 or object_id(current_staging) != object_id(staging)
                 or object_id(journal_fd(current_staging)) != object_id(journal_fd(staging))
             ):

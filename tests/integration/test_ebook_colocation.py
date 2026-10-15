@@ -1,6 +1,5 @@
 # ruff: noqa: F811
 import asyncio
-import json
 from pathlib import Path
 from types import SimpleNamespace
 from uuid import UUID, uuid4
@@ -26,7 +25,7 @@ from app.importing import colocate
 from app.importing.destinations import destination_configuration
 from app.importing.filesystem import directory
 from app.importing.naming import fingerprint
-from app.importing.publication import object_id, private_staging, publication_lock
+from app.importing.publication import destination_lock, private_staging
 from app.jobs.queue import get_queue
 from tests.integration.test_import_execution import (  # noqa: F401
     destination_route,
@@ -195,7 +194,7 @@ async def test_confirmed_import_job_obeys_real_settings_and_verified_route(
                     Path(target["staging_path"]),
                     Path(target["journal_path"]) if target.get("journal_path") else None,
                 ) as stage,
-                publication_lock(stage, json.dumps(object_id(root), sort_keys=True)),
+                destination_lock(stage, root),
             ):
                 return place(identifier, configuration, expected, **kwargs)
         return place(identifier, configuration, expected, **kwargs)
