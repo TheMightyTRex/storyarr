@@ -98,3 +98,38 @@ def test_indexer_scoped_release_keys_and_cross_source_hashes():
     assert source == "prowlarr:1" and not set(keys).intersection(other)
     _, same = release_keys({"source": "mam", "source_id": "xyz"}, {"infohash_v1": "A" * 40})
     assert set(keys).intersection(same) == {"infohash_v1:" + "a" * 40}
+
+
+@pytest.mark.parametrize("status", ["Failed", "Aborted", "FAILED", "aborted"])
+def test_sab_normalized_failures_obey_grace_and_verification(status):
+    from app.adapters.sabnzbd import parse_job, verify_association
+
+    item = parse_job(
+        {
+            "nzo_id": "SABnzbd_nzo_test",
+            "name": "book-search:test",
+            "category": "books",
+            "status": status,
+        },
+        completed=True,
+    )
+    now = datetime.now(UTC)
+    policy = RecoveryPolicy()
+    assert observe(None, item, policy, now) == ({}, None)
+    item = verify_association(
+        [item], tag="book-search:test", category="books", save_path="/downloads"
+    )
+    health, reason = observe(None, item, policy, now)
+    assert reason is None
+    assert observe(health, item, policy, now + timedelta(minutes=4))[1] is None
+    assert (
+        observe(health, item, policy, now + timedelta(minutes=5))[1]
+        == "Downloader reported " + status
+    )
+    assert observe(health, item, RecoveryPolicy(enabled=False), now + timedelta(days=1)) == (
+        {},
+        None,
+    )
+    assert observe(
+        health, item.model_copy(update={"completed": True}), policy, now + timedelta(days=1)
+    ) == ({}, None)

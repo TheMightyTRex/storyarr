@@ -5,6 +5,7 @@ export type AutomationSettings = components["schemas"]["AccountAutomation"];
 export type UploadAmount = number | "max";
 
 export const AUTOMATION_DEFAULTS: AutomationSettings = {
+  exclude_vip: false,
   seedbox_ip: false,
   seedbox_interval_seconds: 3600,
   auto_vip: false,

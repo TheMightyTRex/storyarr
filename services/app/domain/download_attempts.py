@@ -549,12 +549,16 @@ async def finish_observation(db, attempt, selection, state):
         attempt.recovery_observation, state, policy, datetime.now(UTC)
     )
     attempt.recovery_observation = health
+    # SAB preserves native status labels (Failed/Aborted) and exposes the
+    # normalized terminal flag. Keep its grace polling and capacity lifecycle
+    # consistent with Soulseek's terminal state; qBittorrent errors may resume.
+    stopped_failure = bool(state and (getattr(state, "failed", False) or state.state == "failed"))
     if failure:
         attempt.observation = state.model_dump(mode="json")
         await download_recovery.failed(db, attempt, failure)
         # A dead/error transfer is no longer an active Dewarr acquisition. Keep
         # storage reservations when a stalled transfer is left running.
-        if state.state == "failed":
+        if stopped_failure:
             await capacity.release_slot(db, attempt)
         return
     if not state:
@@ -593,9 +597,9 @@ async def finish_observation(db, attempt, selection, state):
         await download_recovery.failed(db, attempt, message)
         return
     await record(db, attempt, next_state, message, poll=next_state == "downloading")
-    if state.state == "failed":
+    if stopped_failure:
         await capacity.release_slot(db, attempt)
-    if next_state == "held" and state.state == "failed" and policy.enabled:
+    if next_state == "held" and stopped_failure and policy.enabled:
         # Continue verified failure observations until the configured grace expires.
         attempt.next_check_at = datetime.now(UTC) + timedelta(seconds=60)
     if next_state != "complete":

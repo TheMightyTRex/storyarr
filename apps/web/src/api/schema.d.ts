@@ -5808,9 +5808,14 @@ export interface components {
     };
     /**
      * AccountAutomation
-     * @description Account actions an administrator can turn on. All of them default off.
+     * @description MAM search policy and optional account actions. All switches default off.
      */
     AccountAutomation: {
+      /**
+       * Exclude Vip
+       * @default false
+       */
+      exclude_vip: boolean;
       /**
        * Seedbox Ip
        * @default false

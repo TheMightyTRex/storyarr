@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy import select, text
 
 from app.adapters.contracts import AdapterError, FailureKind
+from app.adapters.mam import VIP_EXCLUDED, stored_automation
 from app.adapters.nzb_descriptor import load_descriptor
 from app.adapters.source_releases import release_value as parse_release
 from app.config import get_settings
@@ -458,6 +459,8 @@ async def candidates(db, operation, work, profile, rule, version):
         )
     )
     sources = {s.key: s for s in await db.scalars(select(SourceConnection))}
+    mam = sources.get("mam")
+    exclude_vip = bool(mam and stored_automation(mam.automation).exclude_vip)
     blocked_keys = (
         await release_blocklist.active_keys(db, work.id, rule["medium"]) if rows else set()
     )
@@ -500,6 +503,8 @@ async def candidates(db, operation, work, profile, rule, version):
                 )
             )
         source = sources.get(row.source_key)
+        if row.source_key == "mam" and exclude_vip and release.vip is True:
+            problems.append(VIP_EXCLUDED)
         if (
             not source
             or not source.enabled

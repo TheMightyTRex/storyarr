@@ -310,3 +310,34 @@ test("background results expire cached proxy success and clear old cookie errors
   await expect(account).toContainText("Authenticated");
   await expect(account).not.toContainText("Failed");
 });
+
+test("VIP exclusion saves and reloads without enabling account spending", async ({
+  page,
+}) => {
+  const state = await setupMam(page);
+  const form = formFor(page);
+  const exclude = form.getByRole("checkbox", { name: "Exclude VIP releases" });
+  await expect(exclude).not.toBeChecked();
+  await exclude.check();
+  await form
+    .getByRole("button", { name: "Save connection", exact: true })
+    .click();
+  await expect.poll(() => state.writes.length).toBe(1);
+  expect(state.connection.automation).toMatchObject({
+    exclude_vip: true,
+    use_wedge: false,
+    auto_vip: false,
+    spend_bonus: false,
+  });
+  expect(state.actions).toEqual(["save"]);
+  await page.reload();
+  await page
+    .getByRole("region", { name: "MAM settings" })
+    .locator("summary")
+    .first()
+    .click();
+  await expect(exclude).toBeChecked();
+  await expect(
+    form.getByRole("region", { name: "MAM search policy" }),
+  ).toContainText("Leave off for VIP/Elite access or if unsure");
+});

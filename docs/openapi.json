@@ -18780,6 +18780,11 @@
       },
       "AccountAutomation": {
         "properties": {
+          "exclude_vip": {
+            "type": "boolean",
+            "title": "Exclude Vip",
+            "default": false
+          },
           "seedbox_ip": {
             "type": "boolean",
             "title": "Seedbox Ip",
@@ -18912,7 +18917,7 @@
         },
         "type": "object",
         "title": "AccountAutomation",
-        "description": "Account actions an administrator can turn on. All of them default off."
+        "description": "MAM search policy and optional account actions. All switches default off."
       },
       "AccountInput": {
         "properties": {
