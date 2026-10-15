@@ -1,16 +1,27 @@
 # ruff: noqa: F811
+from datetime import UTC, datetime, timedelta
 from urllib.parse import parse_qs
 from uuid import UUID
 
 import httpx
 import pytest
+from sqlalchemy import func, select
 
 from app.adapters.contracts import SubmissionReceipt
 from app.adapters.prowlarr import ProwlarrRelease
 from app.adapters.sabnzbd import SabClient
 from app.config import get_settings
-from app.db.models import DownloadAttempt, DownloadInspection, Integration, Operation, SourceResult
-from app.domain import automatic_selection
+from app.db.models import (
+    DownloadAttempt,
+    DownloadCapacity,
+    DownloadInspection,
+    DownloadRecovery,
+    Integration,
+    Operation,
+    ReleaseBlock,
+    SourceResult,
+)
+from app.domain import automatic_selection, download_recovery
 from app.domain import download_attempts as downloads
 from app.domain import downloaders as downloader_settings
 from app.security import decrypt_secrets, encrypt_secrets
@@ -123,6 +134,7 @@ class Grab:
         self.category = None
         self.complete = False
         self.visible = True
+        self.status = None
 
     async def __aenter__(self):
         return self
@@ -148,7 +160,7 @@ class Grab:
                         "name" if self.complete else "filename": self.tag.replace(":", "_"),
                         "nzb_name": "book.nzb",
                         "category": self.category,
-                        "status": "Completed" if self.complete else "Downloading",
+                        "status": self.status or ("Completed" if self.complete else "Downloading"),
                         "storage": "/downloads/Finished Book" if self.complete else "",
                     }
                 ]
@@ -265,3 +277,66 @@ async def test_usenet_grab_is_sent_to_sabnzbd_once(
         inspection = await db.get(DownloadInspection, attempt.inspection_id)
         assert attempt.state == "complete"
         assert inspection.relative_path == "Finished Book"
+
+
+@pytest.mark.parametrize("status", ["Failed", "Aborted"])
+async def test_failed_sab_history_keeps_polling_then_queues_one_recovery(
+    client, admin, database, selection_route, monkeypatch, prowlarr_http, status
+):
+    await configure(client)
+    prowlarr_http.update(
+        releases=[release(protocol="usenet", categories=[{"id": 3030}])],
+        bytes=nzb_bytes(),
+    )
+    item = (await search(client)).json()["items"][0]
+    inspected = await resolve(client, item["id"])
+    assert inspected.status_code == 200, inspected.text
+    selection_route["artifact_id"] = inspected.json()["id"]
+    async with database() as db, db.begin():
+        downloader = await db.get(Integration, UUID(selection_route["downloader_id"]))
+        downloader.kind = "sabnzbd"
+        downloader.encrypted_secrets = encrypt_secrets({"api_key": "private-sab-key"})
+    monkeypatch.setattr(get_settings(), "download_dispatch_enabled", True)
+    grab = Grab()
+    monkeypatch.setattr(downloads, "SabClient", lambda *args, **kwargs: grab)
+    prepared = await prepare(client, selection_route)
+    assert prepared.status_code == 201, prepared.text
+    saved = (await start(client, prepared.json())).json()
+    attempt_id = UUID(saved["id"])
+    await downloads.run(attempt_id)
+    grab.complete, grab.status = True, status  # Failed jobs are in SAB history.
+    await downloads.run(attempt_id)
+    async with database() as db, db.begin():
+        attempt = await db.get(DownloadAttempt, attempt_id)
+        assert attempt.state == "held"
+        assert attempt.next_check_at is not None  # The worker must revisit the grace period.
+        assert not (await db.get(DownloadCapacity, attempt_id)).slot_active
+        assert "error_since" in attempt.recovery_observation
+        assert not await db.scalar(select(DownloadRecovery.id))
+        attempt.recovery_observation = {
+            **attempt.recovery_observation,
+            "error_since": (datetime.now(UTC) - timedelta(minutes=6)).isoformat(),
+        }
+    await downloads.run(attempt_id)
+    await downloads.run(attempt_id)
+    async with database() as db:
+        recovery = await db.scalar(select(DownloadRecovery))
+        assert recovery and recovery.state == "queued" and recovery.job_id
+        assert recovery.reason == "Downloader reported " + status
+        recovery_id = recovery.id
+        assert await db.scalar(select(func.count()).select_from(ReleaseBlock)) == 1
+        assert await db.scalar(select(func.count()).select_from(DownloadRecovery)) == 1
+    await download_recovery.run(recovery_id)
+    await download_recovery.run(recovery_id)
+    async with database() as db:
+        recovery = await db.get(DownloadRecovery, recovery_id)
+        assert recovery.state in {"searching", "selecting"}, recovery.message
+        assert recovery.search_id is not None
+        search_id = recovery.search_id
+    await download_recovery.run(recovery_id)
+    async with database() as db:
+        assert (await db.get(DownloadRecovery, recovery_id)).search_id == search_id
+        assert await db.scalar(select(func.count()).select_from(DownloadAttempt)) == 1
+    assert grab.calls.count("submit") == 1
+    detail = (await client.get(f"/api/acquisition/downloads/{attempt_id}")).json()
+    assert status in detail["message"]
