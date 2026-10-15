@@ -5,7 +5,7 @@ import hmac
 import re
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import urlencode, urlsplit, urlunsplit
+from urllib.parse import urlencode, urlsplit
 
 import httpx
 from authlib.oauth2.rfc7636 import create_s256_code_challenge
@@ -26,8 +26,9 @@ MAX_BODY = 1_000_000
 
 
 class OidcRejected(Exception):
-    def __init__(self, code: str):
+    def __init__(self, code: str, *, reason: str | None = None):
         self.code = code
+        self.reason = reason
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,8 @@ class Provider:
     member_group: str
     viewer_group: str
     label: str
+    requester_group: str = ""
+    approver_group: str = ""
 
 
 def allowed_scheme() -> str:
@@ -59,20 +62,13 @@ def redirect_uri() -> str:
     return get_settings().public_url + "/api/auth/oidc/callback"
 
 
-def _issuer_socket(value: str) -> tuple[str, str, int] | None:
-    parts = urlsplit(value)
-    host = (parts.hostname or "").lower()
-    if parts.scheme not in {"http", "https"} or not host:
-        return None
-    port = parts.port
-    if port is None:
-        port = 443 if parts.scheme == "https" else 80
-    return (parts.scheme, host, port)
-
-
-def same_provider_host(left: str, right: str) -> bool:
-    left_socket = _issuer_socket(left)
-    return left_socket is not None and left_socket == _issuer_socket(right)
+def is_issuer_slash_correction(previous: str, current: str) -> bool:
+    # Only an administrator's explicit slash correction can migrate legacy links.
+    # Other paths on the same host can represent independent identity providers.
+    return bool(previous and current) and (
+        (not previous.endswith("/") and previous + "/" == current)
+        or (not current.endswith("/") and current + "/" == previous)
+    )
 
 
 def normalize_issuer(value: str, *, scheme: str | None = None) -> str:
@@ -91,11 +87,10 @@ def normalize_issuer(value: str, *, scheme: str | None = None) -> str:
         or ".." in parts.path.split("/")
     ):
         raise ValueError("Use the issuer URL from the identity provider")
-    path = parts.path.rstrip("/")
-    issuer = urlunsplit((parts.scheme, parts.netloc, path, "", "")).rstrip("/")
-    if len(issuer) > 300:
+    # The issuer is an identifier, not a URL to canonicalize.
+    if len(cleaned) > 300:
         raise ValueError("Use the issuer URL from the identity provider")
-    return issuer
+    return cleaned
 
 
 def same_origin(url: str, issuer: str) -> bool:
@@ -157,6 +152,8 @@ def snapshot(row: OidcProvider | None) -> Provider | None:
         admin_group=row.admin_group,
         member_group=row.member_group,
         viewer_group=row.viewer_group,
+        requester_group=row.requester_group,
+        approver_group=row.approver_group,
         label=row.label,
     )
 
@@ -218,10 +215,12 @@ async def fetch_json(
 
 async def discover(issuer: str) -> dict[str, str]:
     root = normalize_issuer(issuer)
-    document = await fetch_json("GET", root + "/.well-known/openid-configuration", origin=root)
+    document = await fetch_json(
+        "GET", root.rstrip("/") + "/.well-known/openid-configuration", origin=root
+    )
     announced = document.get("issuer")
-    if not isinstance(announced, str) or announced.rstrip("/") != root:
-        raise OidcRejected("rejected")
+    if announced != root:
+        raise OidcRejected("rejected", reason="discovery_issuer_mismatch")
     found = {"issuer": root}
     for name in (
         "authorization_endpoint",
@@ -297,6 +296,8 @@ async def identity_claims(
         decoded = jwt.decode(
             id_token, jwk.KeySet.import_key_set(jwks), algorithms=[provider.signing_algorithm]
         )
+        if decoded.claims.get("iss") != provider.issuer:
+            raise OidcRejected("rejected", reason="issuer_mismatch")
         jwt.JWTClaimsRegistry(
             leeway=60,
             iss={"essential": True, "value": provider.issuer},
@@ -385,13 +386,19 @@ def role_from_groups(
     member_group: str,
     viewer_group: str,
     default: str,
+    requester_group: str = "",
+    approver_group: str = "",
 ) -> str:
     values = groups if isinstance(groups, list) else [groups]
     names = {item for item in values if isinstance(item, str) and item}
     if admin_group and admin_group in names:
         return "admin"
+    if approver_group and approver_group in names:
+        return "approver"
     if member_group and member_group in names:
         return "member"
+    if requester_group and requester_group in names:
+        return "requester"
     if viewer_group and viewer_group in names:
         return "viewer"
     return default
@@ -414,6 +421,8 @@ async def _sync_role(db, user: User, provider: Provider, claims: dict[str, Any])
         admin_group=provider.admin_group,
         member_group=provider.member_group,
         viewer_group=provider.viewer_group,
+        requester_group=provider.requester_group,
+        approver_group=provider.approver_group,
         default=provider.default_role,
     )
     if user.role == "admin" and role != "admin":
@@ -426,11 +435,9 @@ async def _sync_role(db, user: User, provider: Provider, claims: dict[str, Any])
         )
         if not others:
             return
-    if user.role == role:
-        return
     # Null permissions follow the role. Explicit grants have to move with it, or a
     # demoted administrator would keep the stored administrator bits.
-    if user.permissions is None:
+    if user.permissions is None and role in {"admin", "member", "viewer"}:
         user.role = role
         if role == "viewer":
             user.can_automate = False
@@ -513,9 +520,13 @@ async def resolve_user(db, provider: Provider, claims: dict[str, Any]) -> User:
         display_name=display_name(claims, username),
         password_hash=None,
         email=email,
-        role=provider.default_role,
+        role=provider.default_role
+        if provider.default_role in {"admin", "member", "viewer"}
+        else "member",
         can_automate=False,
     )
+    if provider.default_role in {"requester", "approver"}:
+        sync_user_permissions(user, preset_bits(provider.default_role))
     db.add(user)
     await db.flush()
     if email:

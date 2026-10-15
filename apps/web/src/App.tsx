@@ -409,6 +409,7 @@ function Shell({ auth }: { auth: Auth }) {
   }
   if (
     auth.user.onboarding_status === "pending" &&
+    auth.user.onboarding_required !== false &&
     location.pathname !== "/onboarding"
   )
     return <Navigate to="/onboarding" replace />;

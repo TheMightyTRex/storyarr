@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, ApiError, result, setCsrf, type Auth } from "../api/client";
 import type { components } from "../api/schema";
 import BookDialog from "../components/BookDialog";
+import OnboardingPolicy from "./OnboardingPolicy";
 import { Link } from "react-router-dom";
 import { Loading, Notice } from "../components";
 import {
@@ -58,27 +59,35 @@ function OidcSettingsPanel() {
   const [secret, setSecret] = useState("");
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (settings.data) {
-      setDraft(settings.data);
-      setSecret("");
-    }
+    const loaded = settings.data;
+    if (loaded) setDraft((current) => current ?? loaded);
   }, [settings.data]);
   const save = useMutation({
-    mutationFn: async () => {
-      if (!draft) return;
-      const { secret_set, redirect_uri, ...fields } = draft;
+    mutationFn: async (submitted: { draft: OidcSettings; secret: string }) => {
+      const { secret_set, redirect_uri, ...fields } = submitted.draft;
       void secret_set;
       void redirect_uri;
       return result(
         await api.PUT("/api/auth/oidc/settings", {
-          body: { ...fields, client_secret: secret },
+          body: { ...fields, client_secret: submitted.secret },
         }),
       );
     },
-    onSuccess: (saved) => {
-      if (!saved) return;
+    onSuccess: (saved, submitted) => {
       client.setQueryData(["oidc-settings"], saved);
-      setSecret("");
+      // A completed save must not overwrite edits made while it was in flight.
+      setDraft((current) =>
+        current === submitted.draft
+          ? saved
+          : current
+            ? {
+                ...current,
+                secret_set: saved.secret_set,
+                redirect_uri: saved.redirect_uri,
+              }
+            : current,
+      );
+      setSecret((current) => (current === submitted.secret ? "" : current));
     },
   });
   const discover = useMutation({
@@ -133,7 +142,7 @@ function OidcSettingsPanel() {
         className="panel editor"
         onSubmit={(event) => {
           event.preventDefault();
-          save.mutate();
+          if (draft) save.mutate({ draft, secret });
         }}
       >
         <p className="muted">
@@ -236,12 +245,24 @@ function OidcSettingsPanel() {
                       update("default_role", event.target.value)
                     }
                   >
-                    <option value="member">Member</option>
                     <option value="viewer">Viewer</option>
+                    <option value="requester">Requester</option>
+                    <option value="member">Member</option>
+                    <option value="approver">Approver</option>
+                    <option value="admin">Administrator</option>
                   </select>
                 </label>
               )}
             </div>
+            {(draft.auto_register || mapsGroups) &&
+              draft.default_role === "admin" && (
+                <p className="access-hint">
+                  Administrator default grants full control to every new account
+                  or synchronized account with no matching group. Choose it only
+                  when everyone admitted by this provider should administer
+                  Dewarr.
+                </p>
+              )}
             {mapsGroups && (
               <p className="access-hint">
                 Used when no configured group matches. Applies to existing
@@ -363,6 +384,32 @@ function OidcSettingsPanel() {
                   />
                 </label>
               </div>
+              <div className="form-row">
+                <label>
+                  Requester group
+                  <input
+                    value={draft.requester_group}
+                    onChange={(event) =>
+                      update("requester_group", event.target.value)
+                    }
+                  />
+                </label>
+                <label>
+                  Approver group
+                  <input
+                    value={draft.approver_group}
+                    onChange={(event) =>
+                      update("approver_group", event.target.value)
+                    }
+                  />
+                </label>
+              </div>
+              <p className="access-hint">
+                If several groups match: Administrator, Approver, Member,
+                Requester, then Viewer. On each sign-in, mappings replace manual
+                roles for accounts without a local password. Password accounts
+                and the last active administrator keep their existing access.
+              </p>
               <div className="form-row">
                 <label>
                   Viewer group
@@ -788,6 +835,7 @@ export default function Accounts({ embedded = false }: { embedded?: boolean }) {
         )}
       {actor?.role === "admin" && (
         <>
+          <OnboardingPolicy />
           <OidcSettingsPanel />
           <PlexSettingsPanel />
         </>

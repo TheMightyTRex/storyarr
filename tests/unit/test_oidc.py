@@ -11,11 +11,11 @@ from app.domain.oidc import (
     authorization_url,
     email_is_verified,
     exact_username,
+    is_issuer_slash_correction,
     merge_identity,
     normalize_issuer,
     role_from_groups,
     same_origin,
-    same_provider_host,
     sanitize_username,
     unverified,
 )
@@ -38,7 +38,7 @@ def test_signature_changes_only_after_an_oidc_link():
 
 def test_issuer_stays_on_one_origin():
     issuer = normalize_issuer("http://id.example/application/o/dewarr/", scheme="http")
-    assert issuer == "http://id.example/application/o/dewarr"
+    assert issuer == "http://id.example/application/o/dewarr/"
     assert same_origin("http://id.example/application/o/dewarr/token", issuer)
     for value in (
         "https://id.example",
@@ -154,16 +154,19 @@ def test_userinfo_verification_stays_with_its_email():
         )
 
 
-def test_provider_links_follow_the_socket():
-    assert same_provider_host(
-        "https://id.example/application/o/dewarr", "https://ID.Example:443/realms/dewarr"
-    )
-    assert not same_provider_host(
-        "https://id.example/application/o/dewarr", "http://id.example:8443/realms/other"
-    )
-    assert not same_provider_host("https://id.example", "http://id.example")
-    assert not same_provider_host("http://id.example", "http://other.example")
-    assert not same_provider_host("", "http://id.example")
+def test_legacy_link_correction_is_limited_to_one_trailing_slash():
+    issuer = "https://id.example/application/o/dewarr"
+    assert is_issuer_slash_correction(issuer, issuer + "/")
+    assert is_issuer_slash_correction(issuer + "/", issuer)
+    assert not is_issuer_slash_correction(issuer + "/", issuer + "//")
+    for different in (
+        issuer,
+        "",
+        "https://id.example/other",
+        "http://id.example/application/o/dewarr/",
+        issuer + "//",
+    ):
+        assert not is_issuer_slash_correction(issuer, different)
 
 
 class _Headers:

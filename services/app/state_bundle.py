@@ -24,7 +24,7 @@ from app.config import Settings, get_settings
 from app.db.models import Base
 from app.recovery import MAINTENANCE_LOCK
 
-SCHEMA = "0079_book_coverage_index"
+SCHEMA = "0080_member_setup"
 CONFIG_FIELDS = {
     "public_url",
     "cookie_secure",
