@@ -164,6 +164,49 @@ async def test_selected_backlog_is_explicit_and_membership_change_invalidates_pr
         assert not await db.scalar(select(ListAcquisitionPolicy.id))
 
 
+async def test_include_missing_selects_every_missing_book_without_the_25_book_cap(
+    client, database, policy_fixture
+):
+    f = policy_fixture
+    await add(client, f)
+    async with database() as db, db.begin():
+        works = [Work(title=f"Backlog book {n}", authors=["Writer"]) for n in range(30)]
+        db.add_all(works)
+        await db.flush()
+        ids = [str(work.id) for work in works]
+    for work in ids:
+        await add(client, f, work)
+    capped = await client.post(
+        f"/api/lists/{f['list']}/acquisition/preview",
+        json={**f["config"], "include_work_ids": ids[:26]},
+        headers={"Idempotency-Key": str(uuid4())},
+    )
+    assert capped.status_code == 422
+    manual = await client.post(
+        f"/api/lists/{f['list']}/acquisition/preview",
+        json={**f["config"], "mode": "manual", "include_missing": True},
+        headers={"Idempotency-Key": str(uuid4())},
+    )
+    assert manual.status_code == 422
+    plan = await preview(client, f, include_missing=True)
+    missing = {
+        r["work_id"] for r in plan["records"] if any(t["state"] == "wanted" for t in r["targets"])
+    }
+    assert set(ids) <= missing and plan["total"] == 31
+    assert {r["work_id"] for r in plan["records"] if r["selected"]} == missing
+    saved = await activate(client, f, plan)
+    assert saved["message"] == "Monitoring future additions and missing books"
+    async with database() as db:
+        states = list(
+            await db.scalars(
+                select(ListAcquisitionBook.state).where(
+                    ListAcquisitionBook.policy_id == UUID(saved["id"])
+                )
+            )
+        )
+    assert len(states) == 31 and states.count("baseline") == 31 - len(missing)
+
+
 async def test_pause_resume_previews_accumulated_additions_without_implicit_backfill(
     client, database, policy_fixture
 ):

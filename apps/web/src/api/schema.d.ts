@@ -6466,9 +6466,14 @@ export interface components {
       /** Expected Allowed */
       expected_allowed: boolean;
     };
-    /** AutomationSettingsInput */
+    /**
+     * AutomationSettingsInput
+     * @description Only the fields sent are changed.
+     */
     AutomationSettingsInput: {
-      follow_filters: components["schemas"]["FollowFilters"];
+      follow_filters?: components["schemas"]["FollowFilters"] | null;
+      /** Missing Media */
+      missing_media?: ("audio" | "ebook" | "both") | null;
       /** Expected Generation */
       expected_generation: number;
     };
@@ -6482,6 +6487,8 @@ export interface components {
     /** AutomationValues */
     AutomationValues: {
       follow_filters: components["schemas"]["FollowFilters"];
+      /** Missing Media */
+      missing_media: ("audio" | "ebook" | "both") | null;
     };
     /** Availability */
     Availability: {
@@ -9911,6 +9918,11 @@ export interface components {
       };
       /** Include Work Ids */
       include_work_ids?: string[];
+      /**
+       * Include Missing
+       * @default false
+       */
+      include_missing: boolean;
       /**
        * Expected Revision
        * @default 0

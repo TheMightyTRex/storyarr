@@ -7,6 +7,7 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookCover from "../components/BookCover";
 import DetailTabs from "../components/DetailTabs";
+import AddMissingBooks from "../components/AddMissingBooks";
 const FollowSettings = lazy(() => import("./FollowSettings"));
 
 type Summary = components["schemas"]["FollowSummary"];
@@ -352,6 +353,11 @@ function AuthorRow({ follow }: { follow: Summary }) {
               >
                 Manage
               </Link>
+              <AddMissingBooks
+                kind={follow.source_kind}
+                externalId={follow.external_id}
+                name={follow.name}
+              />
             </div>
             {status && (
               <p className="follow-freshness">

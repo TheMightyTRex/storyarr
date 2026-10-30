@@ -54,6 +54,8 @@ class ListPolicyInput(BaseModel):
     downloader_generation: int | None = Field(default=None, ge=1)
     routes: dict[Literal["ebook", "audio"], PolicyRoute] = Field(default_factory=dict)
     include_work_ids: list[UUID] = Field(default_factory=list, max_length=25)
+    # Select every current book that is still missing the requested media, without a cap.
+    include_missing: bool = Field(default=False, exclude_if=lambda value: not value)
     expected_revision: int = Field(default=0, ge=0)
 
     @model_validator(mode="after")
@@ -62,7 +64,7 @@ class ListPolicyInput(BaseModel):
             raise ValueError("Choose exact versions from their book pages")
         if len(set(self.include_work_ids)) != len(self.include_work_ids):
             raise ValueError("Select each backlog book once")
-        if self.mode != "automatic" and self.include_work_ids:
+        if self.mode != "automatic" and (self.include_work_ids or self.include_missing):
             raise ValueError("Use reviewed list requests for manual backlog selection")
         return self
 
@@ -216,15 +218,20 @@ async def preview(db, user, list_id, body, key):
     if not set(map(str, body.include_work_ids)) <= {r["work_id"] for r in records}:
         raise HTTPException(409, "Backlog selection is no longer in this list")
     spec = RequestSpec.model_validate(config["specification"])
+    explicit = set(map(str, body.include_work_ids))
     projected = []
     series_plans = {}
     for record in records:
         await validate_request(db, user, UUID(record["work_id"]), spec)
         outcomes = await assess(db, user, UUID(record["work_id"]), spec)
+        targets = await pending_targets(db, user, UUID(record["work_id"]), spec, outcomes)
+        chosen = record["work_id"] in explicit or (
+            body.include_missing and any(target["state"] == "wanted" for target in targets)
+        )
         if (
             config["mode"] == "automatic"
             and config["profile"]["preferences"].get("series_scope") == "complete_series"
-            and record["work_id"] in set(map(str, body.include_work_ids))
+            and chosen
         ):
             from app.domain.list_series import plan
 
@@ -232,8 +239,8 @@ async def preview(db, user, list_id, body, key):
         projected.append(
             {
                 **record,
-                "targets": await pending_targets(db, user, UUID(record["work_id"]), spec, outcomes),
-                "selected": record["work_id"] in set(map(str, body.include_work_ids)),
+                "targets": targets,
+                "selected": chosen,
                 **(
                     {"series_scope": series_plans[record["work_id"]]}
                     if record["work_id"] in series_plans
@@ -275,6 +282,7 @@ async def preview(db, user, list_id, body, key):
             "members": records,
             "records": projected,
             "counts": counts,
+            "selected_ids": [r["work_id"] for r in projected if r["selected"]],
             **({"series_plans": series_plans} if series_plans else {}),
             "expires_at": (datetime.now(UTC) + timedelta(minutes=15)).isoformat(),
         },
@@ -360,14 +368,20 @@ async def activate(db, user, operation):
     policy.configuration, policy.active = deepcopy(config), True
     policy.baseline_at, policy.next_check_at = now, now
     policy.message = (
-        "Monitoring future additions" if body.mode == "automatic" else f"{body.mode.title()} mode"
+        (
+            "Monitoring future additions and missing books"
+            if body.include_missing
+            else "Monitoring future additions"
+        )
+        if body.mode == "automatic"
+        else f"{body.mode.title()} mode"
     )
     await db.flush()
     from app.domain.list_monitoring import reconcile
 
-    leaders = await reconcile(
-        db, policy, records, now, activation=True, selected=set(map(str, body.include_work_ids))
-    )
+    # Previews made before selected_ids existed hold only the explicit selection.
+    selected = set(payload.get("selected_ids") or map(str, body.include_work_ids))
+    leaders = await reconcile(db, policy, records, now, activation=True, selected=selected)
     for book in await db.scalars(
         select(ListAcquisitionBook).where(ListAcquisitionBook.id.in_(leaders))
     ):

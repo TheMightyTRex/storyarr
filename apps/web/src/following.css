@@ -545,3 +545,19 @@ button.follow-count[aria-expanded="true"] {
   font-size: 13px;
   font-weight: 600;
 }
+
+.entity-follow-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.add-missing {
+  display: grid;
+  gap: 12px;
+}
+.add-missing fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}

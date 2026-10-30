@@ -1,5 +1,7 @@
 """A member's own automation defaults, used for new follows and later automation."""
 
+from typing import Literal
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -13,6 +15,7 @@ router = APIRouter(prefix="/automation/settings", tags=["automation-settings"])
 
 class AutomationValues(BaseModel):
     follow_filters: FollowFilters
+    missing_media: Literal["audio", "ebook", "both"] | None
 
 
 class AutomationSettingsView(BaseModel):
@@ -22,8 +25,11 @@ class AutomationSettingsView(BaseModel):
 
 
 class AutomationSettingsInput(BaseModel):
+    """Only the fields sent are changed."""
+
     model_config = ConfigDict(extra="forbid")
-    follow_filters: FollowFilters
+    follow_filters: FollowFilters | None = None
+    missing_media: Literal["audio", "ebook", "both"] | None = None
     expected_generation: int = Field(ge=0)
 
 
@@ -48,7 +54,10 @@ async def save(body: AutomationSettingsInput, user: Member, db: Database):
     if not row:
         row = AutomationSettings(owner_id=user.id, generation=0, settings={})
         db.add(row)
-    settings = settings.model_copy(update={"follow_filters": body.follow_filters})
+    changes = body.model_dump(exclude={"expected_generation"}, exclude_unset=True)
+    if changes.get("follow_filters") is None:
+        changes.pop("follow_filters", None)
+    settings = AutomationDefaults.model_validate({**settings.model_dump(), **changes})
     # Keep fields a newer release saved, so moving between versions loses nothing.
     row.settings = {**row.settings, **settings.model_dump(mode="json")}
     row.generation += 1

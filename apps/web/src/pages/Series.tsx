@@ -21,6 +21,7 @@ import DetailTabs from "../components/DetailTabs";
 import SeriesRequests from "./SeriesRequests";
 import SeriesScopeReview from "./SeriesScopeReview";
 import FollowCatalog from "../components/FollowCatalog";
+import AddMissingBooks from "../components/AddMissingBooks";
 import FollowRelease from "../components/FollowRelease";
 import { randomUUID } from "../randomUUID";
 
@@ -349,11 +350,18 @@ function SeriesContent({
           <p className="eyebrow">THE SERIES</p>
           <h1>{data.name}</h1>
           {canEdit && (
-            <FollowCatalog
-              kind="series"
-              externalId={externalId}
-              name={data.name}
-            />
+            <span className="entity-follow-actions">
+              <FollowCatalog
+                kind="series"
+                externalId={externalId}
+                name={data.name}
+              />
+              <AddMissingBooks
+                kind="series"
+                externalId={externalId}
+                name={data.name}
+              />
+            </span>
           )}
           <p className="entity-intro">
             {data.authors?.join(", ") || "Books in reading order"}

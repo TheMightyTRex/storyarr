@@ -1,5 +1,7 @@
 """Member automation defaults, separate from release preferences frozen into requests."""
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 
@@ -11,6 +13,8 @@ class AutomationDefaults(BaseModel):
     # Settings saved by a newer release may hold fields this one doesn't know yet.
     model_config = ConfigDict(extra="ignore")
     follow_filters: FollowFilters = Field(default_factory=FollowFilters)
+    # Media for "Add missing books"; None follows the member's download preferences.
+    missing_media: Literal["audio", "ebook", "both"] | None = None
 
 
 async def current(db, owner_id, *, lock=False):

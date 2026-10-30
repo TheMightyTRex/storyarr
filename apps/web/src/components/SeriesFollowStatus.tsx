@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
 import { api, result } from "../api/client";
+import AddMissingBooks from "./AddMissingBooks";
 import FollowCatalog, { useFollowing } from "./FollowCatalog";
 import {
   FollowBooks,
@@ -44,12 +44,7 @@ export default function SeriesFollowStatus({
     <div className="library-series-status">
       <div className="library-series-actions">
         <FollowCatalog kind="series" externalId={externalId} name={name} />
-        <Link
-          className="reader-action-link"
-          to={`/series/hardcover/${encodeURIComponent(externalId)}?request=1&gaps=1`}
-        >
-          Add missing books
-        </Link>
+        <AddMissingBooks kind="series" externalId={externalId} name={name} />
       </div>
       {counts.data && (
         <p className="library-series-counts">

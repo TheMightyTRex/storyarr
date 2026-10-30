@@ -183,6 +183,8 @@ test("library series show follow status, every book and a way to add missing boo
     hardcover_book_id: "101",
   };
   const counts = { in_library: 2, waiting: 1, excluded: 1 };
+  const previews: Record<string, unknown>[] = [];
+  let activated = false;
   await page.route("**/api/**", (route) => {
     const url = new URL(route.request().url());
     let data: unknown = {};
@@ -209,7 +211,12 @@ test("library series show follow status, every book and a way to add missing boo
           source_kind: "series",
           external_id: "7",
           filters: {},
-          subscription: { enabled: true, last_success_at: null },
+          subscription: {
+            enabled: true,
+            last_success_at: null,
+            state: "idle",
+            generation: 1,
+          },
           mode: "automatic",
           active: true,
         },
@@ -240,15 +247,57 @@ test("library series show follow status, every book and a way to add missing boo
         limit: 12,
         status_counts: counts,
       };
-    else if (url.pathname.endsWith("/cover"))
+    else if (url.pathname === "/api/automation/settings")
+      data = {
+        settings: { follow_filters: {}, missing_media: null },
+        built_in: { follow_filters: {}, missing_media: null },
+        generation: 0,
+      };
+    else if (url.pathname === "/api/acquisition/preferences/personal")
+      data = { effective: { desired_media: "audio" } };
+    else if (url.pathname === "/api/lists/earthsea-follow/acquisition")
+      data = null;
+    else if (
+      url.pathname === "/api/lists/earthsea-follow/acquisition/preview"
+    ) {
+      previews.push(route.request().postDataJSON());
+      data = {
+        id: "plan-1",
+        selected: 4,
+        total: 7,
+        counts: { owned: 2, missing: 4, excluded: 1 },
+        records: [],
+      };
+    } else if (url.pathname.endsWith("/previews/plan-1/activate")) {
+      activated = true;
+      data = { id: "policy" };
+    } else if (url.pathname.endsWith("/cover"))
       return route.fulfill({ status: 404 });
     return route.fulfill({ json: data });
   });
   await page.goto("/library?view=series");
   const card = page.getByRole("article").filter({ hasText: "Earthsea" });
+  await card.getByRole("button", { name: "Add missing books" }).click();
+  const dialog = page.getByRole("dialog", {
+    name: "Add missing books · Earthsea",
+  });
   await expect(
-    card.getByRole("link", { name: "Add missing books" }),
-  ).toHaveAttribute("href", "/series/hardcover/7?request=1&gaps=1");
+    dialog.getByRole("radio", { name: "Audiobooks", exact: true }),
+  ).toBeChecked();
+  await dialog.getByRole("radio", { name: "Audiobooks and ebooks" }).check();
+  await dialog.getByRole("button", { name: "Find missing books" }).click();
+  await expect(
+    dialog.getByText("will be searched for automatically"),
+  ).toBeVisible();
+  expect(previews[0]).toMatchObject({
+    mode: "automatic",
+    include_missing: true,
+    specification: { mode: "both" },
+  });
+  await dialog.getByRole("button", { name: "Start searching" }).click();
+  await expect(dialog.getByText("Searching for 4 missing books")).toBeVisible();
+  expect(activated).toBe(true);
+  await dialog.getByRole("button", { name: "Done" }).click();
   await expect(card.getByText("Waiting", { exact: true })).toBeVisible();
   await card.getByRole("button", { name: "Show every book" }).click();
   await expect(

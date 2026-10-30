@@ -11,6 +11,7 @@ import BookCover from "../components/BookCover";
 import DetailTabs from "../components/DetailTabs";
 
 import FollowCatalog from "../components/FollowCatalog";
+import AddMissingBooks from "../components/AddMissingBooks";
 
 const tabs = [
   ["books", "Books"],
@@ -110,11 +111,18 @@ function AuthorContent({
             </Link>
           )}
           {canEdit && (
-            <FollowCatalog
-              kind="author"
-              externalId={externalId}
-              name={author.name}
-            />
+            <span className="entity-follow-actions">
+              <FollowCatalog
+                kind="author"
+                externalId={externalId}
+                name={author.name}
+              />
+              <AddMissingBooks
+                kind="author"
+                externalId={externalId}
+                name={author.name}
+              />
+            </span>
           )}
           <div className="reader-outbound">
             <a

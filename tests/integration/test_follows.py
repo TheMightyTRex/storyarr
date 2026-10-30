@@ -751,6 +751,12 @@ async def test_new_follows_use_saved_automation_defaults(client, database, admin
         "/api/automation/settings", json={"follow_filters": filters, "expected_generation": 0}
     )
     assert stale.status_code == 409
+    media = await client.put(
+        "/api/automation/settings", json={"missing_media": "audio", "expected_generation": 1}
+    )
+    assert media.json()["settings"]["missing_media"] == "audio"
+    assert media.json()["settings"]["follow_filters"]["plays"] is True
+    assert built_in["settings"]["missing_media"] is None
     followed = await client.post(
         "/api/following", json={"source_kind": "author", "external_id": 9, "name": "Writer"}
     )

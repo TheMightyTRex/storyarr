@@ -20540,7 +20540,30 @@
       "AutomationSettingsInput": {
         "properties": {
           "follow_filters": {
-            "$ref": "#/components/schemas/FollowFilters"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FollowFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "missing_media": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "audio",
+                  "ebook",
+                  "both"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Media"
           },
           "expected_generation": {
             "type": "integer",
@@ -20551,10 +20574,10 @@
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "follow_filters",
           "expected_generation"
         ],
-        "title": "AutomationSettingsInput"
+        "title": "AutomationSettingsInput",
+        "description": "Only the fields sent are changed."
       },
       "AutomationSettingsView": {
         "properties": {
@@ -20581,11 +20604,28 @@
         "properties": {
           "follow_filters": {
             "$ref": "#/components/schemas/FollowFilters"
+          },
+          "missing_media": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "audio",
+                  "ebook",
+                  "both"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Media"
           }
         },
         "type": "object",
         "required": [
-          "follow_filters"
+          "follow_filters",
+          "missing_media"
         ],
         "title": "AutomationValues"
       },
@@ -29716,6 +29756,11 @@
             "type": "array",
             "maxItems": 25,
             "title": "Include Work Ids"
+          },
+          "include_missing": {
+            "type": "boolean",
+            "title": "Include Missing",
+            "default": false
           },
           "expected_revision": {
             "type": "integer",

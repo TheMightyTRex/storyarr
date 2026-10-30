@@ -288,6 +288,7 @@ function PolicyEditor({
     preference_overrides: overrides,
     expected_revision: policy?.revision || 0,
     include_work_ids: mode === "automatic" ? selected : [],
+    include_missing: false,
     expected_content_revision:
       mode === "automatic" && selected.length ? contentRevision : undefined,
     downloader_id:
