@@ -619,6 +619,16 @@ async def reject_failed_import(attempt_id: str) -> None:
     await reject_inspected(UUID(attempt_id))
 
 
+@tasks.periodic(cron="0 4 * * *")
+@tasks.task(name="library.held.purge", queue="system", lock="library.held.purge")
+async def purge_held_books(timestamp: int = 0) -> None:
+    if get_settings().recovery_mode:
+        return
+    from app.domain.library_delete import purge_held
+
+    await purge_held()
+
+
 @tasks.periodic(cron="*/5 * * * *")
 @tasks.task(name="connections.health", queue="system", lock="connections.health")
 async def check_connection_health(timestamp: int = 0) -> None:

@@ -3040,6 +3040,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/library/assets/{asset_id}/delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Delete Asset
+     * @description Remove a copy from Audiobookshelf; its files are held for the retention period by default.
+     */
+    post: operations["delete_asset_api_library_assets__asset_id__delete_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/library/review": {
     parameters: {
       query?: never;
@@ -5419,6 +5439,24 @@ export interface paths {
     get: operations["read_api_automation_settings_get"];
     /** Save */
     put: operations["save_api_automation_settings_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/automation/settings/installation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read Installation */
+    get: operations["read_installation_api_automation_settings_installation_get"];
+    /** Save Installation */
+    put: operations["save_installation_api_automation_settings_installation_put"];
     post?: never;
     delete?: never;
     options?: never;
@@ -7948,6 +7986,37 @@ export interface components {
       /** Revision */
       revision: string;
     };
+    /** DeleteInput */
+    DeleteInput: {
+      /**
+       * Files
+       * @default hold
+       * @enum {string}
+       */
+      files: "hold" | "delete";
+      /**
+       * Forget
+       * @default true
+       */
+      forget: boolean;
+    };
+    /** DeleteResult */
+    DeleteResult: {
+      /** Held Path */
+      held_path?: string | null;
+      /**
+       * Withdrawn Requests
+       * @default 0
+       */
+      withdrawn_requests: number;
+      /**
+       * Excluded From Lists
+       * @default 0
+       */
+      excluded_from_lists: number;
+      /** Message */
+      message: string;
+    };
     /** DestinationChoice */
     "DestinationChoice-Input": {
       /**
@@ -9538,6 +9607,28 @@ export interface components {
       /** Plan Id */
       plan_id?: string | null;
       download?: components["schemas"]["DownloadContext"] | null;
+    };
+    /** InstallationDefaults */
+    InstallationDefaults: {
+      /**
+       * Deleted Retention Days
+       * @default 30
+       */
+      deleted_retention_days: number;
+    };
+    /** InstallationSettingsInput */
+    InstallationSettingsInput: {
+      /** Deleted Retention Days */
+      deleted_retention_days: number;
+      /** Expected Generation */
+      expected_generation: number;
+    };
+    /** InstallationSettingsView */
+    InstallationSettingsView: {
+      settings: components["schemas"]["InstallationDefaults"];
+      built_in: components["schemas"]["InstallationDefaults"];
+      /** Generation */
+      generation: number;
     };
     /** InventoryReconciliationItemView */
     InventoryReconciliationItemView: {
@@ -21657,6 +21748,41 @@ export interface operations {
       };
     };
   };
+  delete_asset_api_library_assets__asset_id__delete_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        asset_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeleteInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DeleteResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   review_api_library_review_get: {
     parameters: {
       query?: {
@@ -26633,6 +26759,59 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["AutomationSettingsView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  read_installation_api_automation_settings_installation_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InstallationSettingsView"];
+        };
+      };
+    };
+  };
+  save_installation_api_automation_settings_installation_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InstallationSettingsInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InstallationSettingsView"];
         };
       };
       /** @description Validation Error */

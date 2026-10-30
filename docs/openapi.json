@@ -10239,6 +10239,60 @@
         }
       }
     },
+    "/api/library/assets/{asset_id}/delete": {
+      "post": {
+        "tags": [
+          "library"
+        ],
+        "summary": "Delete Asset",
+        "description": "Remove a copy from Audiobookshelf; its files are held for the retention period by default.",
+        "operationId": "delete_asset_api_library_assets__asset_id__delete_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/library/review": {
       "get": {
         "tags": [
@@ -17710,6 +17764,66 @@
         }
       }
     },
+    "/api/automation/settings/installation": {
+      "get": {
+        "tags": [
+          "automation-settings"
+        ],
+        "summary": "Read Installation",
+        "operationId": "read_installation_api_automation_settings_installation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallationSettingsView"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "automation-settings"
+        ],
+        "summary": "Save Installation",
+        "operationId": "save_installation_api_automation_settings_installation_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstallationSettingsInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallationSettingsView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/acquisition/selections/{selection_id}/pack-preview": {
       "get": {
         "tags": [
@@ -24415,6 +24529,61 @@
         ],
         "title": "DefaultsView"
       },
+      "DeleteInput": {
+        "properties": {
+          "files": {
+            "type": "string",
+            "enum": [
+              "hold",
+              "delete"
+            ],
+            "title": "Files",
+            "default": "hold"
+          },
+          "forget": {
+            "type": "boolean",
+            "title": "Forget",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DeleteInput"
+      },
+      "DeleteResult": {
+        "properties": {
+          "held_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Held Path"
+          },
+          "withdrawn_requests": {
+            "type": "integer",
+            "title": "Withdrawn Requests",
+            "default": 0
+          },
+          "excluded_from_lists": {
+            "type": "integer",
+            "title": "Excluded From Lists",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "DeleteResult"
+      },
       "DestinationChoice-Input": {
         "properties": {
           "id": {
@@ -28704,6 +28873,62 @@
           "message"
         ],
         "title": "InspectionView"
+      },
+      "InstallationDefaults": {
+        "properties": {
+          "deleted_retention_days": {
+            "type": "integer",
+            "maximum": 3650.0,
+            "minimum": 0.0,
+            "title": "Deleted Retention Days",
+            "default": 30
+          }
+        },
+        "type": "object",
+        "title": "InstallationDefaults"
+      },
+      "InstallationSettingsInput": {
+        "properties": {
+          "deleted_retention_days": {
+            "type": "integer",
+            "maximum": 3650.0,
+            "minimum": 0.0,
+            "title": "Deleted Retention Days"
+          },
+          "expected_generation": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Generation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "deleted_retention_days",
+          "expected_generation"
+        ],
+        "title": "InstallationSettingsInput"
+      },
+      "InstallationSettingsView": {
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/InstallationDefaults"
+          },
+          "built_in": {
+            "$ref": "#/components/schemas/InstallationDefaults"
+          },
+          "generation": {
+            "type": "integer",
+            "title": "Generation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "settings",
+          "built_in",
+          "generation"
+        ],
+        "title": "InstallationSettingsView"
       },
       "InventoryReconciliationItemView": {
         "properties": {

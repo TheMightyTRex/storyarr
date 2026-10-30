@@ -24,7 +24,7 @@ from app.config import Settings, get_settings
 from app.db.models import Base
 from app.recovery import MAINTENANCE_LOCK
 
-SCHEMA = "0081_automation_settings"
+SCHEMA = "0082_installation_automation"
 CONFIG_FIELDS = {
     "public_url",
     "cookie_secure",

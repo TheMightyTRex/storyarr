@@ -6,9 +6,14 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.adapters.hardcover_follows import FollowFilters
-from app.api.dependencies import Database, Member
-from app.db.models import AuditEvent, AutomationSettings
-from app.domain.automation_settings import AutomationDefaults, current
+from app.api.dependencies import Admin, Database, Member
+from app.db.models import AuditEvent, AutomationSettings, InstallationAutomation
+from app.domain.automation_settings import (
+    AutomationDefaults,
+    InstallationDefaults,
+    current,
+    installation,
+)
 
 router = APIRouter(prefix="/automation/settings", tags=["automation-settings"])
 
@@ -70,3 +75,47 @@ async def save(body: AutomationSettingsInput, user: Member, db: Database):
     )
     await db.commit()
     return view(row, settings)
+
+
+class InstallationSettingsView(BaseModel):
+    settings: InstallationDefaults
+    built_in: InstallationDefaults
+    generation: int
+
+
+class InstallationSettingsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    deleted_retention_days: int = Field(ge=0, le=3650)
+    expected_generation: int = Field(ge=0)
+
+
+@router.get("/installation", response_model=InstallationSettingsView)
+async def read_installation(admin: Admin, db: Database):
+    row, settings = await installation(db)
+    return InstallationSettingsView(
+        settings=settings, built_in=InstallationDefaults(), generation=row.generation if row else 0
+    )
+
+
+@router.put("/installation", response_model=InstallationSettingsView)
+async def save_installation(body: InstallationSettingsInput, admin: Admin, db: Database):
+    row, settings = await installation(db, lock=True)
+    if (row.generation if row else 0) != body.expected_generation:
+        raise HTTPException(409, "Automation settings changed; reload before saving")
+    if not row:
+        row = InstallationAutomation(id=1, generation=0, settings={})
+        db.add(row)
+    settings = settings.model_copy(update={"deleted_retention_days": body.deleted_retention_days})
+    row.settings = {**row.settings, **settings.model_dump(mode="json")}
+    row.generation += 1
+    db.add(
+        AuditEvent(
+            actor_id=admin.id,
+            action="automation.installation.updated",
+            detail={"generation": row.generation},
+        )
+    )
+    await db.commit()
+    return InstallationSettingsView(
+        settings=settings, built_in=InstallationDefaults(), generation=row.generation
+    )

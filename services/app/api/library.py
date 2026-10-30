@@ -26,6 +26,7 @@ from app.domain.catalog_display import display_family, display_map
 from app.domain.catalog_titles import title_narrators
 from app.domain.corrections import asset_state, correct_asset, revision
 from app.domain.library_access import lock_access
+from app.domain.library_delete import DeleteInput, DeleteResult, delete_copy
 from app.domain.visibility import visible_library, visible_work
 from app.domain.work_graph import canonical_map
 
@@ -520,3 +521,11 @@ async def review_contents(asset_id: UUID, body: ContentsInput, admin: Admin, db:
 
     await review(db, admin.id, asset_id, body.work_ids, body.expected_revision)
     await db.commit()
+
+
+@router.post("/assets/{asset_id}/delete", response_model=DeleteResult)
+async def delete_asset(asset_id: UUID, body: DeleteInput, admin: Admin, db: Database):
+    """Remove a copy from Audiobookshelf; its files are held for the retention period by default."""
+    result = await delete_copy(db, admin, asset_id, body)
+    await db.commit()
+    return result

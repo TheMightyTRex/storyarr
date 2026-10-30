@@ -3,6 +3,7 @@ import InfiniteScroll from "../components/InfiniteScroll";
 import Catalog from "./Catalog";
 import LibraryGroups from "../components/LibraryGroups";
 import BookDialog from "../components/BookDialog";
+import DeleteLibraryCopy from "../components/DeleteLibraryCopy";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
@@ -312,6 +313,7 @@ export function LibraryAssets({
   const [fileDetails, setFileDetails] = useState<Asset | null>(null);
   const [matching, setMatching] = useState<Asset | null>(null);
   const [collection, setCollection] = useState<Asset | null>(null);
+  const [deleting, setDeleting] = useState<Asset | null>(null);
   const assets = usePagedQuery({
     queryKey: ["assets", workId, libraryId, review, q, medium, state, sort],
     queryFn: async (offset, signal) =>
@@ -397,6 +399,9 @@ export function LibraryAssets({
       )}
       {!assets.error && matching && (
         <AssetMatchForm asset={matching} close={() => setMatching(null)} />
+      )}
+      {deleting && (
+        <DeleteLibraryCopy asset={deleting} close={() => setDeleting(null)} />
       )}
       {!assets.error && collection && (
         <CollectionContents
@@ -508,6 +513,14 @@ export function LibraryAssets({
                             }}
                           >
                             Collection
+                          </button>
+                        )}
+                        {admin && asset.server_kind === "audiobookshelf" && (
+                          <button
+                            className="text-button"
+                            onClick={() => setDeleting(asset)}
+                          >
+                            Delete
                           </button>
                         )}
                       </div>
@@ -644,6 +657,9 @@ export function LibraryAssets({
                       >
                         Correct match
                       </button>
+                    )}
+                    {admin && asset.server_kind === "audiobookshelf" && (
+                      <button onClick={() => setDeleting(asset)}>Delete</button>
                     )}
                   </div>
                 </div>

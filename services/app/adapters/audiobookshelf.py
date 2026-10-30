@@ -690,6 +690,15 @@ class Audiobookshelf(JsonEndpoint):
         await self.request("DELETE", f"api/items/{external_id(item_id)}", empty=True)
         return True
 
+    async def delete_item(self, item_id: str, *, delete_files: bool) -> None:
+        """Remove an item. With delete_files, Audiobookshelf also deletes its files from disk."""
+        await self.request(
+            "DELETE",
+            f"api/items/{external_id(item_id)}",
+            params={"hard": 1} if delete_files else None,
+            empty=True,
+        )
+
     async def update_item(self, item_id: str, *, title: str, authors: list[str], narrators):
         """Write metadata only. Audio files are not renamed or retagged."""
         await self.request(

@@ -402,6 +402,16 @@ class AutomationSettings(Base):
     settings: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
 
 
+class InstallationAutomation(Base):
+    """Administrator automation settings for the whole installation (a single row)."""
+
+    __tablename__ = "installation_automation"
+    __table_args__ = (CheckConstraint("id = 1"),)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    generation: Mapped[int] = mapped_column(Integer, default=1)
+    settings: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+
+
 class AcquisitionProfile(Identity, Base):
     __tablename__ = "acquisition_profiles"
     owner_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), index=True)

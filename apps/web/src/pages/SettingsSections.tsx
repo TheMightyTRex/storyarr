@@ -80,7 +80,11 @@ export function settingsSections(role: string, permissions: string[] = []) {
             title: "Download preferences",
             content: <Preferences admin={admin} embedded />,
           },
-          { id: "automation", title: "Automation", content: <Automation /> },
+          {
+            id: "automation",
+            title: "Automation",
+            content: <Automation admin={admin} />,
+          },
         ]
       : []),
     ...(admin
