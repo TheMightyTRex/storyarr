@@ -33,6 +33,9 @@ class UpgradeView(BaseModel):
     releases: list[upgrades.UpgradeRelease]
     backups: list[BackupView]
     restored_from: str | None = None
+    # Upgrades finish on their own: a backup is taken and new settings keep their defaults.
+    automatic: bool
+    automatic_from_environment: bool
 
 
 class RestoreInput(BaseModel):
@@ -62,6 +65,8 @@ async def view(db) -> UpgradeView:
         releases=upgrades.since(acknowledged),
         backups=upgrade_backups.listing(),
         restored_from=saved.get("restored_from"),
+        automatic=bool(saved.get("automatic")) or upgrades.automatic_from_environment(),
+        automatic_from_environment=upgrades.automatic_from_environment(),
     )
 
 
@@ -127,3 +132,41 @@ async def restore(name: str, body: RestoreInput, admin: Admin, db: Database):
     )
     await db.commit()
     return RestoreView(backup_taken=taken, tables=tables)
+
+
+class AutomaticInput(BaseModel):
+    automatic: bool
+
+
+@router.put("/settings", response_model=UpgradeView)
+async def settings(body: AutomaticInput, admin: Admin, db: Database):
+    await upgrades.save_state(db, automatic=body.automatic)
+    db.add(
+        AuditEvent(
+            actor_id=admin.id,
+            action="upgrade.settings",
+            detail={"automatic": body.automatic},
+        )
+    )
+    await db.commit()
+    return await view(db)
+
+
+@router.post("/automatic", response_model=UpgradeView)
+async def automatic(admin: Admin, db: Database):
+    """For scripts: take a backup, keep the defaults for new settings, and finish the upgrade."""
+    try:
+        saved = await upgrades.accept_defaults(db)
+    except OSError as error:
+        raise HTTPException(
+            503, "The backup could not be written. Check that /config can be written to."
+        ) from error
+    db.add(
+        AuditEvent(
+            actor_id=admin.id,
+            action="upgrade.accepted",
+            detail={"release": upgrades.CURRENT, "backup": saved.get("backup")},
+        )
+    )
+    await db.commit()
+    return await view(db)

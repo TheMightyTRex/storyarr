@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import SettingsGroup from "../components/SettingsGroup";
-import UpgradeBackups, { useUpgrade } from "../components/UpgradeBackups";
+import UpgradeBackups, {
+  AutomaticUpgrades,
+  useUpgrade,
+} from "../components/UpgradeBackups";
 
 export default function UpgradeSettings() {
   const upgrade = useUpgrade();
@@ -29,6 +32,7 @@ export default function UpgradeSettings() {
             : "Checking your version…"}
         </p>
         <Link to="/upgrade">Open the upgrade wizard</Link>
+        <AutomaticUpgrades />
       </SettingsGroup>
     </>
   );

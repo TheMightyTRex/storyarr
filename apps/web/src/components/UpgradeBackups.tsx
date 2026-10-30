@@ -166,3 +166,35 @@ export default function UpgradeBackups({
     </div>
   );
 }
+
+/** Upgrade automatically: future upgrades take a backup and keep the defaults, with no wizard. */
+export function AutomaticUpgrades() {
+  const cache = useQueryClient();
+  const upgrade = useUpgrade();
+  const change = useMutation({
+    mutationFn: async (automatic: boolean) =>
+      result(await api.PUT("/api/upgrade/settings", { body: { automatic } })),
+    onSuccess: (value) => cache.setQueryData(["upgrade"], value),
+  });
+  const data = upgrade.data;
+  if (!data) return null;
+  return (
+    <div className="upgrade-automatic">
+      <Notice error={change.error} />
+      <label className="check-label">
+        <input
+          type="checkbox"
+          checked={data.automatic}
+          disabled={data.automatic_from_environment || change.isPending}
+          onChange={(event) => change.mutate(event.target.checked)}
+        />
+        Upgrade automatically
+      </label>
+      <p className="muted">
+        {data.automatic_from_environment
+          ? "Active because BOOK_UPGRADE_AUTOMATIC is set on the server."
+          : "Future upgrades take a settings backup and keep the default for every new setting, without showing this wizard. You can still restore a backup here at any time."}
+      </p>
+    </div>
+  );
+}

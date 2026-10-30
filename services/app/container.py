@@ -221,19 +221,22 @@ def prepare_upgrade(connection) -> dict:
     from alembic.script import ScriptDirectory
 
     from app import upgrade_backups
-    from app.domain.upgrades import CURRENT
+    from app.domain.upgrades import CURRENT, automatic_from_environment
 
     before = _schema(connection)
     if before is None:
         # A new install: its first setup is onboarding, not the upgrade wizard.
         return {"release": CURRENT}
     saved = _upgrade_state(connection)
+    automatic = bool(saved.get("automatic")) or automatic_from_environment()
+    # With automatic upgrades, the backup below is the only step: new settings keep their defaults.
+    finish = {"release": CURRENT} if automatic and saved.get("release") != CURRENT else {}
     try:
         head = ScriptDirectory.from_config(Config("alembic.ini")).get_current_head()
     except Exception:
         head = None
     if saved.get("backed_up_for") == CURRENT and before == head:
-        return {}
+        return finish
     try:
         path = upgrade_backups.snapshot_sync(
             connection,
@@ -244,9 +247,13 @@ def prepare_upgrade(connection) -> dict:
             release_to=CURRENT,
         )
         LOG.info("Saved a settings backup before upgrading: %s", path.name)
-        return {"backed_up_for": CURRENT}
+        if finish:
+            LOG.info("Upgrading automatically: new settings keep their defaults")
+            finish["backup"] = path.name
+        return {"backed_up_for": CURRENT, **finish}
     except Exception:
         LOG.exception("Could not save a settings backup before upgrading; continuing")
+        # Without a backup, leave the upgrade for an admin to finish in the wizard.
         return {}
 
 

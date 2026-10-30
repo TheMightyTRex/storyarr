@@ -18037,6 +18037,69 @@
         }
       }
     },
+    "/api/upgrade/settings": {
+      "put": {
+        "tags": [
+          "upgrade"
+        ],
+        "summary": "Settings",
+        "operationId": "settings_api_upgrade_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomaticInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upgrade/automatic": {
+      "post": {
+        "tags": [
+          "upgrade"
+        ],
+        "summary": "Automatic",
+        "description": "For scripts: take a backup, keep the defaults for new settings, and finish the upgrade.",
+        "operationId": "automatic_api_upgrade_automatic_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/acquisition/selections/{selection_id}/pack-preview": {
       "get": {
         "tags": [
@@ -20555,6 +20618,19 @@
           "title"
         ],
         "title": "AutoMatchCandidate"
+      },
+      "AutomaticInput": {
+        "properties": {
+          "automatic": {
+            "type": "boolean",
+            "title": "Automatic"
+          }
+        },
+        "type": "object",
+        "required": [
+          "automatic"
+        ],
+        "title": "AutomaticInput"
       },
       "AutomaticRoutes": {
         "properties": {
@@ -43238,6 +43314,14 @@
               }
             ],
             "title": "Restored From"
+          },
+          "automatic": {
+            "type": "boolean",
+            "title": "Automatic"
+          },
+          "automatic_from_environment": {
+            "type": "boolean",
+            "title": "Automatic From Environment"
           }
         },
         "type": "object",
@@ -43246,7 +43330,9 @@
           "acknowledged",
           "pending",
           "releases",
-          "backups"
+          "backups",
+          "automatic",
+          "automatic_from_environment"
         ],
         "title": "UpgradeView"
       },

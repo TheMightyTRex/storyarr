@@ -35,6 +35,8 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
           },
         ],
     backups: [backup],
+    automatic: false,
+    automatic_from_environment: false,
   });
   await page.route("**/api/**", async (route) => {
     const request = route.request();
@@ -124,7 +126,7 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
     },
   ]);
 
-  await page.getByRole("button", { name: "Finish" }).click();
+  await page.getByRole("button", { name: "Finish", exact: true }).click();
   await expect(page).toHaveURL(/\/library$/);
   expect(acknowledged).toBe("2026.10.30");
 });
@@ -162,4 +164,44 @@ test("Remind me later hides the wizard until the tab closes", async ({
   await expect(page).toHaveURL(/\/library$/);
   await page.goto("/discover");
   await expect(page).toHaveURL(/\/discover$/);
+});
+
+test("Keep the defaults and finish takes a backup and closes the wizard", async ({
+  page,
+}) => {
+  let accepted = false;
+  await page.route("**/api/**", async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    let data: unknown = { items: [], total: 0, offset: 0, limit: 40 };
+    if (path === "/api/auth/me")
+      data = {
+        user: {
+          id: "admin",
+          role: "admin",
+          username: "admin",
+          display_name: "Admin",
+        },
+        csrf_token: "test",
+      };
+    else if (path === "/api/setup/onboarding") data = { status: "completed" };
+    else if (path === "/api/library/libraries") data = [];
+    else if (path === "/api/upgrade/automatic") accepted = true;
+    if (path === "/api/upgrade" || path === "/api/upgrade/automatic")
+      data = {
+        release: "2026.10.30",
+        acknowledged: accepted ? "2026.10.30" : null,
+        pending: !accepted,
+        releases: [],
+        backups: [],
+        automatic: false,
+        automatic_from_environment: false,
+      };
+    return route.fulfill({ json: data });
+  });
+  await page.goto("/upgrade");
+  await page
+    .getByRole("button", { name: "Keep the defaults and finish" })
+    .click();
+  await expect(page).toHaveURL(/\/library$/);
+  expect(accepted).toBe(true);
 });

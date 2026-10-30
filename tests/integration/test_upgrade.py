@@ -90,3 +90,37 @@ async def test_startup_saves_settings_once_before_an_upgrade(client, admin, back
         # The same release and schema again: no second backup.
         assert container.prepare_upgrade(connection) == {}
         assert len(upgrade_backups.listing()) == 1
+
+
+async def test_scripts_can_finish_an_upgrade_with_defaults_and_a_backup(client, admin, database):
+    await finish_onboarding(database)
+    assert (await client.get("/api/upgrade")).json()["pending"] is True
+    done = await client.post("/api/upgrade/automatic")
+    assert done.status_code == 200, done.text
+    body = done.json()
+    assert body["pending"] is False and body["acknowledged"] == upgrades.CURRENT
+    assert [backup["reason"] for backup in body["backups"]] == ["automatic"]
+    switched = await client.put("/api/upgrade/settings", json={"automatic": True})
+    assert switched.status_code == 200 and switched.json()["automatic"] is True
+    assert switched.json()["automatic_from_environment"] is False
+
+
+@pytest.mark.parametrize("source", ["setting", "environment"])
+async def test_automatic_upgrades_finish_at_startup(client, admin, monkeypatch, source):
+    from app import container
+
+    url = os.environ["BOOK_DATABASE_URL"].replace("postgresql+psycopg://", "postgresql://")
+    with psycopg.connect(url, autocommit=True) as connection:
+        if source == "setting":
+            container._save_upgrade_state(connection, automatic=True)
+        else:
+            monkeypatch.setenv("BOOK_UPGRADE_AUTOMATIC", "true")
+        record = container.prepare_upgrade(connection)
+        [backup] = upgrade_backups.listing()
+        assert record == {
+            "backed_up_for": upgrades.CURRENT,
+            "release": upgrades.CURRENT,
+            "backup": backup["name"],
+        }
+        container._save_upgrade_state(connection, **record)
+    assert (await client.get("/api/upgrade")).json()["acknowledged"] == upgrades.CURRENT

@@ -211,3 +211,20 @@ async def restore(db, name: str) -> dict[str, dict[str, int]]:
         summary[table] = {"restored": restored, "skipped": skipped}
     await save_state(db, restored_from=name, restored_at=datetime.now(UTC).isoformat())
     return summary
+
+
+def automatic_from_environment() -> bool:
+    import os
+
+    return os.environ.get("BOOK_UPGRADE_AUTOMATIC", "").strip().lower() in {"1", "true", "yes"}
+
+
+async def accept_defaults(db, reason="automatic") -> dict[str, Any]:
+    """Finish the upgrade without the wizard: take a backup and keep every new setting's default."""
+    name = await snapshot(db, reason)
+    return await save_state(
+        db,
+        release=CURRENT,
+        backup=name,
+        accepted_at=datetime.now(UTC).isoformat(),
+    )

@@ -98,3 +98,19 @@
     position: static;
   }
 }
+.upgrade-quick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.upgrade-quick p,
+.upgrade-automatic p {
+  margin: 0;
+}
+.upgrade-automatic {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--line);
+}

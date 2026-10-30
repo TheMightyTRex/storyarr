@@ -6,7 +6,10 @@ import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
 import LayoutChoice from "../components/LayoutChoice";
 import DisplayPanel from "../components/DisplayPanel";
-import UpgradeBackups, { useUpgrade } from "../components/UpgradeBackups";
+import UpgradeBackups, {
+  AutomaticUpgrades,
+  useUpgrade,
+} from "../components/UpgradeBackups";
 import SettingsGroup from "../components/SettingsGroup";
 import AudibleStoreSetting from "../components/AudibleStoreSetting";
 import {
@@ -37,6 +40,13 @@ export default function UpgradeWizard() {
   const upgrade = useUpgrade();
   const [current, setCurrent] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
+  const quick = useMutation({
+    mutationFn: async () => result(await api.POST("/api/upgrade/automatic")),
+    onSuccess: (value) => {
+      cache.setQueryData(["upgrade"], value);
+      navigate("/library", { replace: true });
+    },
+  });
   const finish = useMutation({
     mutationFn: async () => result(await api.POST("/api/upgrade/acknowledge")),
     onSuccess: (value) => {
@@ -76,7 +86,21 @@ export default function UpgradeWizard() {
           optional.
         </p>
       </header>
-      <Notice error={upgrade.error || finish.error} />
+      <div className="upgrade-quick">
+        <button
+          type="button"
+          disabled={quick.isPending}
+          onClick={() => quick.mutate()}
+        >
+          {quick.isPending
+            ? "Taking a backup…"
+            : "Keep the defaults and finish"}
+        </button>
+        <p className="muted">
+          Takes a settings backup and keeps the default for every new setting.
+        </p>
+      </div>
+      <Notice error={upgrade.error || finish.error || quick.error} />
       <div className="upgrade-layout">
         <nav aria-label="Upgrade steps" className="onboarding-steps">
           {steps.map(([key, label], index) => (
@@ -137,25 +161,27 @@ export default function UpgradeWizard() {
               </p>
               <LayoutChoice />
               <DisplayPanel />
-              {review
-                .filter((item) => item.id !== "layout")
-                .map((item) =>
-                  settingsFor[item.id] ? (
-                    <SettingsGroup
-                      key={item.id}
-                      id={`upgrade-${item.id}`}
-                      title={item.title}
-                      description={item.description}
-                    >
-                      {settingsFor[item.id]}
-                    </SettingsGroup>
-                  ) : (
-                    <p key={item.id}>
-                      <strong>{item.title}:</strong> {item.description}{" "}
-                      <Link to={item.link}>Open {item.title} settings</Link>
-                    </p>
-                  ),
-                )}
+              <div className="settings-section-body upgrade-settings">
+                {review
+                  .filter((item) => item.id !== "layout")
+                  .map((item) =>
+                    settingsFor[item.id] ? (
+                      <SettingsGroup
+                        key={item.id}
+                        id={`upgrade-${item.id}`}
+                        title={item.title}
+                        description={item.description}
+                      >
+                        {settingsFor[item.id]}
+                      </SettingsGroup>
+                    ) : (
+                      <p key={item.id}>
+                        <strong>{item.title}:</strong> {item.description}{" "}
+                        <Link to={item.link}>Open {item.title} settings</Link>
+                      </p>
+                    ),
+                  )}
+              </div>
             </>
           )}
           {id === "way-back" && (
@@ -166,6 +192,7 @@ export default function UpgradeWizard() {
                 history are not changed.
               </p>
               <UpgradeBackups />
+              <AutomaticUpgrades />
               <h3>Going back to the previous version</h3>
               <p>
                 Restoring settings does not change the app itself. To go back to

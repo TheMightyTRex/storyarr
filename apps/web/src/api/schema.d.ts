@@ -5569,6 +5569,43 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/upgrade/settings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Settings */
+    put: operations["settings_api_upgrade_settings_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/upgrade/automatic": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Automatic
+     * @description For scripts: take a backup, keep the defaults for new settings, and finish the upgrade.
+     */
+    post: operations["automatic_api_upgrade_automatic_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/acquisition/selections/{selection_id}/pack-preview": {
     parameters: {
       query?: never;
@@ -6505,6 +6542,11 @@ export interface components {
       title: string;
       /** Authors */
       authors?: string[];
+    };
+    /** AutomaticInput */
+    AutomaticInput: {
+      /** Automatic */
+      automatic: boolean;
     };
     /** AutomaticRoutes */
     AutomaticRoutes: {
@@ -15058,6 +15100,10 @@ export interface components {
       backups: components["schemas"]["BackupView"][];
       /** Restored From */
       restored_from?: string | null;
+      /** Automatic */
+      automatic: boolean;
+      /** Automatic From Environment */
+      automatic_from_environment: boolean;
     };
     /** Usage */
     Usage: {
@@ -27202,6 +27248,59 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  settings_api_upgrade_settings_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AutomaticInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpgradeView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  automatic_api_upgrade_automatic_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpgradeView"];
         };
       };
     };
