@@ -225,15 +225,25 @@ function AddMissingForm({
     );
   if (preview) {
     const plan = preview.plan;
+    const searching = (plan.records || []).filter(
+      (record) =>
+        !record.selected &&
+        record.targets.some((target) => target.state === "pending"),
+    ).length;
     return (
       <div className="add-missing">
         <Notice error={start.error} />
-        <p>
-          <strong>{plan.selected}</strong> missing{" "}
-          {plan.selected === 1 ? "book" : "books"} will be searched for
-          automatically as {mediaLabels[media].toLowerCase()}.
-        </p>
+        {plan.selected ? (
+          <p>
+            <strong>{plan.selected}</strong> missing{" "}
+            {plan.selected === 1 ? "book" : "books"} will be added to the
+            automatic search as {mediaLabels[media].toLowerCase()}.
+          </p>
+        ) : (
+          <p>Nothing new to add: every missing book is already covered.</p>
+        )}
         <p className="muted">
+          {searching} already being searched or downloading ·{" "}
           {plan.counts?.owned || 0} already in your library ·{" "}
           {plan.counts?.excluded || 0} left out by book type or by you. Future
           books are added automatically too.
@@ -242,10 +252,14 @@ function AddMissingForm({
           <button
             type="button"
             className="primary"
-            disabled={start.isPending || !plan.selected}
-            onClick={() => start.mutate()}
+            disabled={start.isPending}
+            onClick={() => (plan.selected ? start.mutate() : close())}
           >
-            {start.isPending ? "Starting…" : "Start searching"}
+            {!plan.selected
+              ? "Close"
+              : start.isPending
+                ? "Starting…"
+                : "Start searching"}
           </button>
           <button type="button" onClick={() => setPreview(null)}>
             Back

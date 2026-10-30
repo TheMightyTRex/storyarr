@@ -266,7 +266,14 @@ test("library series show follow status, every book and a way to add missing boo
         selected: 4,
         total: 7,
         counts: { owned: 2, missing: 4, excluded: 1 },
-        records: [],
+        records: [
+          {
+            work_id: "book-3",
+            title: "The Other Wind",
+            selected: false,
+            targets: [{ slot: "audio", state: "pending", message: "" }],
+          },
+        ],
       };
     } else if (url.pathname.endsWith("/previews/plan-1/activate")) {
       activated = true;
@@ -287,13 +294,18 @@ test("library series show follow status, every book and a way to add missing boo
   await dialog.getByRole("radio", { name: "Audiobooks and ebooks" }).check();
   await dialog.getByRole("button", { name: "Find missing books" }).click();
   await expect(
-    dialog.getByText("will be searched for automatically"),
+    dialog.getByText("will be added to the automatic search"),
   ).toBeVisible();
   expect(previews[0]).toMatchObject({
     mode: "automatic",
     include_missing: true,
     specification: { mode: "both" },
   });
+  await expect(
+    dialog.getByText("1 already being searched or downloading", {
+      exact: false,
+    }),
+  ).toBeVisible();
   await dialog.getByRole("button", { name: "Start searching" }).click();
   await expect(dialog.getByText("Searching for 4 missing books")).toBeVisible();
   expect(activated).toBe(true);
