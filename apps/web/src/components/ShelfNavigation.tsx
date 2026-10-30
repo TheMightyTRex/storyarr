@@ -1,6 +1,16 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Activity, BookOpen, Compass, LogOut, Settings } from "lucide-react";
+import {
+  Activity,
+  Bookmark,
+  BookOpen,
+  Compass,
+  ListChecks,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import { ApplicationRelease } from "./ApplicationRelease";
+import HeaderSubmenu from "./HeaderSubmenu";
+import type { SubmenuItem } from "./HeaderSubmenu";
 
 // The Shelf layout groups the library pages under one menu item.
 const libraryPaths = /^\/(library|following|review)(\/|$)/;
@@ -94,25 +104,31 @@ export function LibraryTabs({
   admin: boolean;
   reviewing: number;
 }) {
-  const location = useLocation();
-  if (!libraryPaths.test(location.pathname)) return null;
-  return (
-    <nav aria-label="Library" className="shelf-tabs">
-      <NavLink to="/library" end>
-        My library
-      </NavLink>
-      {canEdit && <NavLink to="/following">Following</NavLink>}
-      {admin && (
-        <NavLink to="/review">
-          Library review
-          {reviewing > 0 && (
-            <span className="shelf-count">
-              {count(reviewing)}
-              <span className="sr-only"> items to review</span>
-            </span>
-          )}
-        </NavLink>
-      )}
-    </nav>
-  );
+  const { pathname } = useLocation();
+  if (!libraryPaths.test(pathname)) return null;
+  const items: SubmenuItem[] = [
+    {
+      to: "/library",
+      label: "My library",
+      icon: BookOpen,
+      current: pathname === "/library",
+    },
+  ];
+  if (canEdit)
+    items.push({
+      to: "/following",
+      label: "Following",
+      icon: Bookmark,
+      current: pathname.startsWith("/following"),
+    });
+  if (admin)
+    items.push({
+      to: "/review",
+      label: "Library review",
+      icon: ListChecks,
+      current: pathname.startsWith("/review"),
+      count: reviewing,
+      countLabel: "items to review",
+    });
+  return <HeaderSubmenu label="Library" items={items} />;
 }

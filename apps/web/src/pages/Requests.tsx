@@ -1,11 +1,31 @@
 import { lazy, Suspense } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Activity,
+  CircleCheck,
+  CircleX,
+  Clock,
+  Download,
+  FileSearch,
+  Undo2,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import ContentSkeleton from "../components/ContentSkeleton";
+import HeaderSubmenu from "../components/HeaderSubmenu";
 import { useRequestCounts } from "../hooks/useRequestCounts";
 import { requestFilter, type RequestFilter } from "./requestFilters";
 
 const SavedRequests = lazy(() => import("./ActivityRequests"));
 
+const filterIcons: Record<string, LucideIcon> = {
+  all: Activity,
+  pending: Clock,
+  downloading: Download,
+  library: CircleCheck,
+  declined: CircleX,
+  withdrawn: Undo2,
+  review: FileSearch,
+};
 const filters: {
   id: RequestFilter;
   title: string;
@@ -60,31 +80,50 @@ export default function Requests({
     <div className="requests-page">
       <h1 className="workspace-title">Requests</h1>
       <div className="page-tabs-bar">
-        <nav className="page-tabs" aria-label="Request filters">
-          {visible.map((filter) => (
-            <Link
-              key={filter.id}
-              aria-label={filter.title}
-              to={queryFor(filter.id)}
-              aria-current={status === filter.id ? "page" : undefined}
-            >
-              {filter.title}
-              {(["pending", "downloading", "review"] as string[]).includes(
-                filter.id,
-              ) &&
-                (counts?.[filter.id as "pending" | "downloading" | "review"] ??
-                  0) > 0 && (
-                  <span className="requests-tab-count">
-                    {
-                      counts?.[
-                        filter.id as "pending" | "downloading" | "review"
-                      ]
-                    }
-                  </span>
-                )}
-            </Link>
-          ))}
-        </nav>
+        <HeaderSubmenu
+          label="Request filters"
+          items={visible.map((filter) => ({
+            to: queryFor(filter.id),
+            label: filter.title,
+            icon: filterIcons[filter.id],
+            current: status === filter.id,
+            count: (["pending", "downloading", "review"] as string[]).includes(
+              filter.id,
+            )
+              ? (counts?.[filter.id as "pending" | "downloading" | "review"] ??
+                0)
+              : 0,
+            countLabel: "requests",
+          }))}
+          classic={
+            <nav className="page-tabs" aria-label="Request filters">
+              {visible.map((filter) => (
+                <Link
+                  key={filter.id}
+                  aria-label={filter.title}
+                  to={queryFor(filter.id)}
+                  aria-current={status === filter.id ? "page" : undefined}
+                >
+                  {filter.title}
+                  {(["pending", "downloading", "review"] as string[]).includes(
+                    filter.id,
+                  ) &&
+                    (counts?.[
+                      filter.id as "pending" | "downloading" | "review"
+                    ] ?? 0) > 0 && (
+                      <span className="requests-tab-count">
+                        {
+                          counts?.[
+                            filter.id as "pending" | "downloading" | "review"
+                          ]
+                        }
+                      </span>
+                    )}
+                </Link>
+              ))}
+            </nav>
+          }
+        />
         <div className="page-tabs-tools">
           <label className="request-sort">
             <span className="sr-only">Sort</span>

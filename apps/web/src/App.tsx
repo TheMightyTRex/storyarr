@@ -36,6 +36,7 @@ import { canManageOwnRequests } from "./permissions";
 import { useDisplayPreferences } from "./displayPreferences";
 import { LibraryTabs, ShelfRail } from "./components/ShelfNavigation";
 import { DisplayButton } from "./components/DisplayPanel";
+import { HeaderSubmenuSlot } from "./components/HeaderSubmenu";
 
 const AddDiscoveryList = lazy(() => import("./pages/AddDiscoveryList"));
 const SettingsPage = lazy(() => import("./pages/Settings"));
@@ -400,6 +401,7 @@ function Shell({ auth }: { auth: Auth }) {
   const canEdit = auth.user.role !== "viewer";
   const reviewing = useLibraryReviewCount(admin).data?.total ?? 0;
   const shelf = useDisplayPreferences().layout === "shelf";
+  const [submenuSlot, setSubmenuSlot] = useState<HTMLElement | null>(null);
   const logout = useMutation({
     mutationFn: async () => result(await api.POST("/api/auth/logout")),
     onSuccess: () => {
@@ -538,251 +540,260 @@ function Shell({ auth }: { auth: Auth }) {
           <ApplicationRelease />
         </aside>
       )}
-      <div className="workspace">
-        <header className="topbar">
-          <form className="search" role="search" onSubmit={searchSubmit}>
-            <Search size={18} aria-hidden="true" />
-            <input
-              aria-label="Search books or authors"
-              placeholder="Search books or authors"
-              maxLength={300}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button type="submit">Search</button>
-          </form>
-          <div className="topbar-actions">
-            <ConnectionHealth />
-            {auth.user.role !== "viewer" &&
-              /^\/(discover(?:\/collections\/[^/]+)?|lists(?:\/.*)?|following(?:\/.*)?)$/.test(
-                location.pathname,
-              ) && (
-                <>
-                  <button
-                    className="topbar-action"
-                    onClick={() => setAddingList(true)}
-                  >
-                    <ListPlus size={18} aria-hidden="true" />
-                    Add list
-                  </button>
-                  <RefreshLists refresh={listsRefresh} />
-                </>
-              )}
-            <DisplayButton />
+      <HeaderSubmenuSlot.Provider value={submenuSlot}>
+        <div className="workspace">
+          <div className="topbar-sticky">
+            <header className="topbar">
+              <form className="search" role="search" onSubmit={searchSubmit}>
+                <Search size={18} aria-hidden="true" />
+                <input
+                  aria-label="Search books or authors"
+                  placeholder="Search books or authors"
+                  maxLength={300}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <button type="submit">Search</button>
+              </form>
+              <div className="topbar-actions">
+                <ConnectionHealth />
+                {auth.user.role !== "viewer" &&
+                  /^\/(discover(?:\/collections\/[^/]+)?|lists(?:\/.*)?|following(?:\/.*)?)$/.test(
+                    location.pathname,
+                  ) && (
+                    <>
+                      <button
+                        className="topbar-action"
+                        onClick={() => setAddingList(true)}
+                      >
+                        <ListPlus size={18} aria-hidden="true" />
+                        Add list
+                      </button>
+                      <RefreshLists refresh={listsRefresh} />
+                    </>
+                  )}
+                <DisplayButton />
+              </div>
+            </header>
+            {shelf && <div className="header-submenu" ref={setSubmenuSlot} />}
           </div>
-        </header>
-        {addingList && (
-          <Suspense fallback={<Loading />}>
-            <AddDiscoveryList close={() => setAddingList(false)} />
-          </Suspense>
-        )}
-        <main id="main" className="main-content">
-          {shelf && (
-            <LibraryTabs
-              canEdit={canEdit}
-              admin={admin}
-              reviewing={reviewing}
-            />
+          {addingList && (
+            <Suspense fallback={<Loading />}>
+              <AddDiscoveryList close={() => setAddingList(false)} />
+            </Suspense>
           )}
-          <Notice error={logout.error} />
-          <Notice error={listsRefresh.error} />
-          {(listsRefresh.busy || listsRefresh.message) && (
-            <p role="status">
-              {listsRefresh.busy ? "Refreshing lists…" : listsRefresh.message}
-            </p>
-          )}
-          <Suspense
-            fallback={
-              <ContentSkeleton
-                kind={location.pathname.includes("/books/") ? "book" : "rows"}
+          <main id="main" className="main-content">
+            {shelf && (
+              <LibraryTabs
+                canEdit={canEdit}
+                admin={admin}
+                reviewing={reviewing}
               />
-            }
-          >
-            <Routes>
-              <Route
-                path="/getting-started"
-                element={<SettingsRedirect to="/onboarding" />}
-              />
-              <Route
-                path="/settings"
-                element={
-                  <SettingsPage
-                    role={auth.user.role}
-                    permissions={permissions}
-                  />
-                }
-              />
-              <Route
-                path="/following"
-                element={canEdit ? <Following /> : <Navigate to="/" replace />}
-              />
-              <Route
-                path="/following/:listId"
-                element={
-                  canEdit ? <FollowShelf /> : <Navigate to="/" replace />
-                }
-              />
-              <Route
-                path="/authors/hardcover/:externalId"
-                element={<AuthorDetail canEdit={canEdit} />}
-              />
-              <Route
-                path="/discover"
-                element={<Discover canEdit={auth.user.role !== "viewer"} />}
-              />
-              <Route
-                path="/discover/series"
-                element={<Navigate to="/discover?view=series" replace />}
-              />
-              <Route
-                path="/discover/collections/:collectionId"
-                element={<Discover canEdit={auth.user.role !== "viewer"} />}
-              />
-              <Route
-                path="/discover/books/:provider/:externalId"
-                element={<DiscoverBook canEdit={auth.user.role !== "viewer"} />}
-              />
-              <Route
-                path="/discover/lists"
-                element={
-                  <CommunityLists canEdit={auth.user.role !== "viewer"} />
-                }
-              />
-              <Route
-                path="/discover/lists/:externalId"
-                element={
-                  <CommunityLists canEdit={auth.user.role !== "viewer"} />
-                }
-              />
-              <Route
-                path="/download-preferences"
-                element={<SettingsRedirect to="/settings#preferences" />}
-              />
-              <Route path="/" element={<SettingsRedirect to="/library" />} />
-              <Route
-                path="/books/:id"
-                element={
-                  <BookDetail
-                    canEdit={auth.user.role !== "viewer"}
-                    admin={auth.user.role === "admin"}
-                  />
-                }
-              />
-              <Route
-                path="/search"
-                element={
-                  <ProviderSearch canEdit={auth.user.role !== "viewer"} />
-                }
-              />
-              <Route
-                path="/series/hardcover/:externalId"
-                element={<Series canEdit={auth.user.role !== "viewer"} />}
-              />
-              <Route
-                path="/metadata"
-                element={<SettingsRedirect to="/settings#catalog" />}
-              />
-              <Route
-                path="/sources"
-                element={<SettingsRedirect to="/search" />}
-              />
-              <Route
-                path="/sources/audiobookbay"
-                element={<SettingsRedirect to="/search" />}
-              />
-              <Route
-                path="/sources/prowlarr"
-                element={<SettingsRedirect to="/search" />}
-              />
-              <Route
-                path="/sources/artifacts/:id"
-                element={
-                  auth.user.role !== "viewer" ? (
-                    <SourceArtifact />
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                }
-              />
-              <Route
-                path="/downloaders"
-                element={<SettingsRedirect to="/settings#downloaders" />}
-              />
-              <Route
-                path="/organization/destinations"
-                element={<SettingsRedirect to="/settings#libraries" />}
-              />
-              <Route
-                path="/organization/inspections"
-                element={
-                  auth.user.role === "admin" ? (
-                    <ImportReview />
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                }
-              />
-              <Route
-                path="/organization"
-                element={<SettingsRedirect to="/settings#naming" />}
-              />
-              <Route
-                path="/lists"
-                element={<Lists canEdit={auth.user.role !== "viewer"} />}
-              />
-              <Route
-                path="/lists/:id"
-                element={<Lists canEdit={auth.user.role !== "viewer"} />}
-              />
-              <Route
-                path="/requests"
-                element={
-                  <RequestsPage
-                    admin={auth.user.role === "admin"}
-                    canRequest={canManageOwnRequests(
-                      permissions,
-                      auth.user.role,
-                    )}
-                    canApprove={
-                      auth.user.role === "admin" ||
-                      permissions.includes("manage_requests")
-                    }
-                  />
-                }
-              />
-              <Route path="/activity" element={<LegacyActivityRedirect />} />
-              <Route
-                path="/accounts"
-                element={<SettingsRedirect to="/settings#accounts" />}
-              />
-              <Route
-                path="/library"
-                element={
-                  <MyLibrary
-                    admin={auth.user.role === "admin"}
-                    canEdit={auth.user.role !== "viewer"}
-                  />
-                }
-              />
-              <Route
-                path="/review"
-                element={
-                  auth.user.role === "admin" ? (
-                    <LibraryReview />
-                  ) : (
-                    <Navigate to="/library" replace />
-                  )
-                }
-              />
-              <Route
-                path="/connections"
-                element={<SettingsRedirect to="/settings#libraries" />}
-              />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-        </main>
-      </div>
+            )}
+            <Notice error={logout.error} />
+            <Notice error={listsRefresh.error} />
+            {(listsRefresh.busy || listsRefresh.message) && (
+              <p role="status">
+                {listsRefresh.busy ? "Refreshing lists…" : listsRefresh.message}
+              </p>
+            )}
+            <Suspense
+              fallback={
+                <ContentSkeleton
+                  kind={location.pathname.includes("/books/") ? "book" : "rows"}
+                />
+              }
+            >
+              <Routes>
+                <Route
+                  path="/getting-started"
+                  element={<SettingsRedirect to="/onboarding" />}
+                />
+                <Route
+                  path="/settings"
+                  element={
+                    <SettingsPage
+                      role={auth.user.role}
+                      permissions={permissions}
+                    />
+                  }
+                />
+                <Route
+                  path="/following"
+                  element={
+                    canEdit ? <Following /> : <Navigate to="/" replace />
+                  }
+                />
+                <Route
+                  path="/following/:listId"
+                  element={
+                    canEdit ? <FollowShelf /> : <Navigate to="/" replace />
+                  }
+                />
+                <Route
+                  path="/authors/hardcover/:externalId"
+                  element={<AuthorDetail canEdit={canEdit} />}
+                />
+                <Route
+                  path="/discover"
+                  element={<Discover canEdit={auth.user.role !== "viewer"} />}
+                />
+                <Route
+                  path="/discover/series"
+                  element={<Navigate to="/discover?view=series" replace />}
+                />
+                <Route
+                  path="/discover/collections/:collectionId"
+                  element={<Discover canEdit={auth.user.role !== "viewer"} />}
+                />
+                <Route
+                  path="/discover/books/:provider/:externalId"
+                  element={
+                    <DiscoverBook canEdit={auth.user.role !== "viewer"} />
+                  }
+                />
+                <Route
+                  path="/discover/lists"
+                  element={
+                    <CommunityLists canEdit={auth.user.role !== "viewer"} />
+                  }
+                />
+                <Route
+                  path="/discover/lists/:externalId"
+                  element={
+                    <CommunityLists canEdit={auth.user.role !== "viewer"} />
+                  }
+                />
+                <Route
+                  path="/download-preferences"
+                  element={<SettingsRedirect to="/settings#preferences" />}
+                />
+                <Route path="/" element={<SettingsRedirect to="/library" />} />
+                <Route
+                  path="/books/:id"
+                  element={
+                    <BookDetail
+                      canEdit={auth.user.role !== "viewer"}
+                      admin={auth.user.role === "admin"}
+                    />
+                  }
+                />
+                <Route
+                  path="/search"
+                  element={
+                    <ProviderSearch canEdit={auth.user.role !== "viewer"} />
+                  }
+                />
+                <Route
+                  path="/series/hardcover/:externalId"
+                  element={<Series canEdit={auth.user.role !== "viewer"} />}
+                />
+                <Route
+                  path="/metadata"
+                  element={<SettingsRedirect to="/settings#catalog" />}
+                />
+                <Route
+                  path="/sources"
+                  element={<SettingsRedirect to="/search" />}
+                />
+                <Route
+                  path="/sources/audiobookbay"
+                  element={<SettingsRedirect to="/search" />}
+                />
+                <Route
+                  path="/sources/prowlarr"
+                  element={<SettingsRedirect to="/search" />}
+                />
+                <Route
+                  path="/sources/artifacts/:id"
+                  element={
+                    auth.user.role !== "viewer" ? (
+                      <SourceArtifact />
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/downloaders"
+                  element={<SettingsRedirect to="/settings#downloaders" />}
+                />
+                <Route
+                  path="/organization/destinations"
+                  element={<SettingsRedirect to="/settings#libraries" />}
+                />
+                <Route
+                  path="/organization/inspections"
+                  element={
+                    auth.user.role === "admin" ? (
+                      <ImportReview />
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/organization"
+                  element={<SettingsRedirect to="/settings#naming" />}
+                />
+                <Route
+                  path="/lists"
+                  element={<Lists canEdit={auth.user.role !== "viewer"} />}
+                />
+                <Route
+                  path="/lists/:id"
+                  element={<Lists canEdit={auth.user.role !== "viewer"} />}
+                />
+                <Route
+                  path="/requests"
+                  element={
+                    <RequestsPage
+                      admin={auth.user.role === "admin"}
+                      canRequest={canManageOwnRequests(
+                        permissions,
+                        auth.user.role,
+                      )}
+                      canApprove={
+                        auth.user.role === "admin" ||
+                        permissions.includes("manage_requests")
+                      }
+                    />
+                  }
+                />
+                <Route path="/activity" element={<LegacyActivityRedirect />} />
+                <Route
+                  path="/accounts"
+                  element={<SettingsRedirect to="/settings#accounts" />}
+                />
+                <Route
+                  path="/library"
+                  element={
+                    <MyLibrary
+                      admin={auth.user.role === "admin"}
+                      canEdit={auth.user.role !== "viewer"}
+                    />
+                  }
+                />
+                <Route
+                  path="/review"
+                  element={
+                    auth.user.role === "admin" ? (
+                      <LibraryReview />
+                    ) : (
+                      <Navigate to="/library" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/connections"
+                  element={<SettingsRedirect to="/settings#libraries" />}
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+          </main>
+        </div>
+      </HeaderSubmenuSlot.Provider>
     </div>
   );
 }

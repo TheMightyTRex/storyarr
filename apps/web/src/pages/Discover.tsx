@@ -3,6 +3,17 @@ import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
 import { HardcoverCollections } from "./CommunityLists";
 import { useState } from "react";
+import {
+  Award,
+  CalendarDays,
+  LayoutGrid,
+  Layers,
+  Library,
+  List,
+  Sparkles,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import HeaderSubmenu from "../components/HeaderSubmenu";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
@@ -57,6 +68,15 @@ const views = [
   ["awards", "Awards"],
   ["yours", "Your lists"],
 ] as const;
+const viewIcons: Record<(typeof views)[number][0], LucideIcon> = {
+  home: Sparkles,
+  series: Library,
+  browse: LayoutGrid,
+  calendar: CalendarDays,
+  collections: Layers,
+  awards: Award,
+  yours: List,
+};
 export default function Discover({ canEdit = true }: { canEdit?: boolean }) {
   const [params] = useSearchParams();
   const { collectionId } = useParams();
@@ -107,17 +127,30 @@ function DiscoverNavigation({
 }) {
   return (
     <div className="page-tabs-bar">
-      <nav className="page-tabs" aria-label="Discover navigation">
-        {views.map(([key, label]) => (
-          <Link
-            key={key}
-            to={key === "home" ? "/discover" : `/discover?view=${key}`}
-            aria-current={!collectionId && view === key ? "page" : undefined}
-          >
-            {label}
-          </Link>
-        ))}
-      </nav>
+      <HeaderSubmenu
+        label="Discover navigation"
+        items={views.map(([key, label]) => ({
+          to: key === "home" ? "/discover" : `/discover?view=${key}`,
+          label,
+          icon: viewIcons[key],
+          current: !collectionId && view === key,
+        }))}
+        classic={
+          <nav className="page-tabs" aria-label="Discover navigation">
+            {views.map(([key, label]) => (
+              <Link
+                key={key}
+                to={key === "home" ? "/discover" : `/discover?view=${key}`}
+                aria-current={
+                  !collectionId && view === key ? "page" : undefined
+                }
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+        }
+      />
       {children && <div className="page-tabs-tools">{children}</div>}
     </div>
   );

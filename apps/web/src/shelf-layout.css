@@ -100,37 +100,6 @@
   border-radius: 999px;
 }
 
-.shelf-tabs {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 28px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--c-border-indigo-31);
-}
-.shelf-tabs a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--c-border-indigo-35);
-  color: var(--c-text-slate-86);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-.shelf-tabs a:hover {
-  background: var(--c-bg-indigo-27);
-  color: var(--c-text-grey-100);
-}
-.shelf-tabs a.active {
-  background: var(--c-bg-slate-93);
-  border-color: var(--c-border-slate-93);
-  color: var(--c-text-indigo-26);
-}
-
 @media (max-width: 720px) {
   /* On phones the menu moves to a bar along the bottom of the page. */
   .shelf-rail {
@@ -177,8 +146,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shelf-rail *,
-  .shelf-tabs * {
+  .shelf-rail * {
     transition: none !important;
   }
 }

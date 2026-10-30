@@ -1,12 +1,20 @@
 /* The header with search stays at the top of every page, with Display always at its far right. */
 :root {
-  --topbar-height: 78px;
+  --search-row-height: 78px;
+  --submenu-height: 0px;
+  --topbar-height: calc(var(--search-row-height) + var(--submenu-height));
 }
-.topbar {
+/* The page sub-menu row only takes space when a page puts a sub-menu in it. */
+.app-shell:has(.header-submenu:not(:empty)) {
+  --submenu-height: 52px;
+}
+.topbar-sticky {
   position: sticky;
   top: 0;
   z-index: 9;
-  height: var(--topbar-height);
+}
+.topbar {
+  height: var(--search-row-height);
   flex-wrap: nowrap;
 }
 .topbar .search {
@@ -27,7 +35,7 @@
 
 @media (max-width: 720px) {
   :root {
-    --topbar-height: 63px;
+    --search-row-height: 63px;
   }
   .workspace .settings-nav {
     top: var(--topbar-height);
@@ -40,5 +48,83 @@
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+}
+
+/* Page sub-menu: a row of square tabs with icons under the search row (Shelf layout). */
+.header-submenu {
+  height: var(--submenu-height);
+  padding: 0 38px;
+  border-bottom: 1px solid var(--line);
+  background: var(--c-bg-slate-23);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.header-submenu:empty {
+  display: none;
+}
+.header-submenu-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  height: 100%;
+}
+.header-submenu-nav a {
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.header-submenu-nav a:hover {
+  background: var(--control-active);
+  color: var(--c-text-grey-97);
+}
+.header-submenu-nav a[aria-current="page"] {
+  background: var(--control-active);
+  color: var(--c-text-grey-97);
+}
+.header-submenu-nav a[aria-current="page"]::after {
+  /* A bar under the current page, so it does not rely on colour alone. */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--accent);
+}
+.header-submenu-nav a:focus-visible {
+  outline-offset: -3px;
+}
+.header-submenu-count {
+  min-width: 1.2rem;
+  padding: 1px 6px;
+  border-radius: 0;
+  background: var(--c-bg-orange-64);
+  color: var(--c-on-accent-grey-100);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 1000px) {
+  .header-submenu {
+    padding: 0 18px;
+  }
+}
+@media (max-width: 720px) {
+  .header-submenu {
+    padding: 0 8px;
+  }
+  .header-submenu-nav a {
+    padding: 0 12px;
   }
 }

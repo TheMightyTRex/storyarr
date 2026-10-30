@@ -31,7 +31,7 @@ test("Display and accessibility settings change the theme and reading aids, and 
   );
 
   const header = page.locator("header.topbar");
-  await expect(header).toHaveCSS("position", "sticky");
+  await expect(page.locator(".topbar-sticky")).toHaveCSS("position", "sticky");
   const rightmost = await header.evaluate((element) => {
     const items = [...element.querySelectorAll(".topbar-actions > *")]
       .map((item) => item.getBoundingClientRect())

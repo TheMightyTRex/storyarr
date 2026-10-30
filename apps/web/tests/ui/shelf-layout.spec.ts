@@ -44,6 +44,15 @@ test("the Shelf layout groups library pages and can be switched back to Classic"
   await shelf.getByRole("link", { name: /Library/ }).click();
   await expect(page).toHaveURL(/\/library$/);
   const tabs = page.getByRole("navigation", { name: "Library" });
+  // In Shelf the library sub-menu sits in the header row under search, with square tabs.
+  await expect(
+    page.locator(".header-submenu").getByRole("navigation"),
+  ).toHaveAccessibleName("Library");
+  await expect(tabs.getByRole("link", { name: "My library" })).toHaveCSS(
+    "border-radius",
+    "0px",
+  );
+  await expect(tabs.locator("svg")).toHaveCount(3);
   await expect(tabs.getByRole("link", { name: "My library" })).toHaveAttribute(
     "aria-current",
     "page",
