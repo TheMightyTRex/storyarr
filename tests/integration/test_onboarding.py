@@ -1,8 +1,11 @@
+import re
+from pathlib import Path
 from uuid import UUID
 
 import pytest
 from sqlalchemy import select
 
+from app.api.setup import ONBOARDING_STEPS
 from app.db.models import CatalogAccount, Integration, Library, LibraryGrant
 
 pytestmark = pytest.mark.integration
@@ -56,7 +59,7 @@ async def test_progress_belongs_to_current_user(client, admin):
 
 
 @pytest.mark.parametrize(
-    "body", [{"status": "unknown"}, {"step": 7}, {"skipped": [-1]}, {"skipped": [7]}]
+    "body", [{"status": "unknown"}, {"step": 9}, {"skipped": [-1]}, {"skipped": [9]}]
 )
 async def test_progress_validation(client, admin, body):
     assert (await client.put("/api/setup/onboarding", json=body)).status_code == 422
@@ -265,3 +268,19 @@ async def test_policy_preserves_library_grants_and_personal_catalog_accounts(
                 select(LibraryGrant.library_id).where(LibraryGrant.user_id == reader_id)
             )
         ) == [UUID(granted_id)]
+
+
+async def test_progress_accepts_every_step_of_the_admin_flow(client, admin):
+    last = ONBOARDING_STEPS - 1
+    progress = {"status": "pending", "step": last, "skipped": list(range(last + 1))}
+    response = await client.put("/api/setup/onboarding", json=progress)
+    assert response.status_code == 200, response.text
+    assert (await client.get("/api/setup/onboarding")).json() == progress
+
+
+def test_step_limit_matches_the_setup_page():
+    # The web app's admin step ids must fit saved progress, or saving later steps fails.
+    page = Path(__file__).parents[2] / "apps/web/src/pages/GettingStarted.tsx"
+    admin_flow = re.search(r"const ids = admin\s*\?\s*\[(.*?)\]", page.read_text(), re.S)
+    assert admin_flow
+    assert len(re.findall(r'"[a-z-]+"', admin_flow.group(1))) == ONBOARDING_STEPS

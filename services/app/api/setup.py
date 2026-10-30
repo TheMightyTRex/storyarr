@@ -163,10 +163,17 @@ async def readiness(admin: Admin, db: Database):
     )
 
 
+# Steps in the longest (admin) setup flow in apps/web/src/pages/GettingStarted.tsx.
+# Adding a step there means raising this, or saving the later steps fails.
+ONBOARDING_STEPS = 9
+
+
 class OnboardingProgress(BaseModel):
     status: Literal["pending", "deferred", "completed", "skipped"] = "pending"
-    step: int = Field(default=0, ge=0, le=6)
-    skipped: list[Annotated[int, Field(ge=0, le=6)]] = Field(default_factory=list, max_length=7)
+    step: int = Field(default=0, ge=0, le=ONBOARDING_STEPS - 1)
+    skipped: list[Annotated[int, Field(ge=0, le=ONBOARDING_STEPS - 1)]] = Field(
+        default_factory=list, max_length=ONBOARDING_STEPS
+    )
 
 
 @router.get("/onboarding", response_model=OnboardingProgress)

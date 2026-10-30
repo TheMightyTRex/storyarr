@@ -33345,7 +33345,7 @@
           },
           "step": {
             "type": "integer",
-            "maximum": 6.0,
+            "maximum": 8.0,
             "minimum": 0.0,
             "title": "Step",
             "default": 0
@@ -33353,11 +33353,11 @@
           "skipped": {
             "items": {
               "type": "integer",
-              "maximum": 6.0,
+              "maximum": 8.0,
               "minimum": 0.0
             },
             "type": "array",
-            "maxItems": 7,
+            "maxItems": 9,
             "title": "Skipped"
           }
         },
