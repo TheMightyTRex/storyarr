@@ -30,6 +30,18 @@ test("Display and accessibility settings change the theme and reading aids, and 
     () => getComputedStyle(document.body).backgroundColor,
   );
 
+  const header = page.locator("header.topbar");
+  await expect(header).toHaveCSS("position", "sticky");
+  const rightmost = await header.evaluate((element) => {
+    const items = [...element.querySelectorAll(".topbar-actions > *")]
+      .map((item) => item.getBoundingClientRect())
+      .filter((box) => box.width > 0);
+    return Math.max(...items.map((box) => box.right));
+  });
+  const display = await page
+    .getByRole("button", { name: "Display" })
+    .boundingBox();
+  expect(display!.x + display!.width).toBe(rightmost);
   await page.getByRole("button", { name: "Display" }).click();
   const dialog = page.getByRole("dialog", {
     name: "Display and accessibility",

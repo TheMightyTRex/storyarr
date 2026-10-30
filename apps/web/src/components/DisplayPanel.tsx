@@ -165,12 +165,12 @@ export function DisplayButton() {
     <>
       <button
         type="button"
-        className="topbar-action"
+        className="topbar-action display-button"
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >
         <Contrast size={18} aria-hidden="true" />
-        Display
+        <span className="topbar-label">Display</span>
       </button>
       <dialog
         ref={dialog}

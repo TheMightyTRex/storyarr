@@ -1,0 +1,44 @@
+/* The header with search stays at the top of every page, with Display always at its far right. */
+:root {
+  --topbar-height: 78px;
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  height: var(--topbar-height);
+  flex-wrap: nowrap;
+}
+.topbar .search {
+  min-width: 0;
+}
+.topbar-actions {
+  flex: none;
+}
+.topbar-actions > .display-button {
+  order: 99;
+}
+
+/* Elements that stick while scrolling now sit below the header. */
+.workspace .settings-nav,
+.workspace .series-actions-column {
+  top: calc(var(--topbar-height) + 24px);
+}
+
+@media (max-width: 720px) {
+  :root {
+    --topbar-height: 63px;
+  }
+  .workspace .settings-nav {
+    top: var(--topbar-height);
+  }
+  /* On phones the header keeps its icons and drops the button words to save space. */
+  .topbar-actions .topbar-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

@@ -551,7 +551,6 @@ function Shell({ auth }: { auth: Auth }) {
             <button type="submit">Search</button>
           </form>
           <div className="topbar-actions">
-            <DisplayButton />
             <ConnectionHealth />
             {auth.user.role !== "viewer" &&
               /^\/(discover(?:\/collections\/[^/]+)?|lists(?:\/.*)?|following(?:\/.*)?)$/.test(
@@ -568,6 +567,7 @@ function Shell({ auth }: { auth: Auth }) {
                   <RefreshLists refresh={listsRefresh} />
                 </>
               )}
+            <DisplayButton />
           </div>
         </header>
         {addingList && (

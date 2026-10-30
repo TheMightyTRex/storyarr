@@ -15,6 +15,7 @@
 @import "./workflows.css" layer(controls);
 @import "./shelf-layout.css" layer(controls);
 @import "./theme.css" layer(controls);
+@import "./header.css" layer(controls);
 
 .brand img {
   border-radius: 8px;
