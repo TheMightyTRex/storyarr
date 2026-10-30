@@ -275,6 +275,27 @@ test("library series show follow status, every book and a way to add missing boo
           },
         ],
       };
+    } else if (url.pathname.endsWith("/previews/plan-1")) {
+      expect(url.searchParams.get("selected")).toBe("true");
+      data = {
+        id: "plan-1",
+        selected: 4,
+        total: 4,
+        offset: 0,
+        limit: 100,
+        counts: {},
+        records: [
+          "Tehanu",
+          "The Other Wind",
+          "Tales from Earthsea",
+          "The Farthest Shore",
+        ].map((title, i) => ({
+          work_id: `missing-${i}`,
+          title,
+          selected: true,
+          targets: [],
+        })),
+      };
     } else if (url.pathname.endsWith("/previews/plan-1/activate")) {
       activated = true;
       data = { id: "policy" };
@@ -306,6 +327,9 @@ test("library series show follow status, every book and a way to add missing boo
       exact: false,
     }),
   ).toBeVisible();
+  const list = dialog.getByRole("region", { name: "Books to search for" });
+  await expect(list.getByRole("listitem")).toHaveCount(4);
+  await expect(list.getByText("The Farthest Shore")).toBeVisible();
   await dialog.getByRole("button", { name: "Start searching" }).click();
   await expect(dialog.getByText("Searching for 4 missing books")).toBeVisible();
   expect(activated).toBe(true);

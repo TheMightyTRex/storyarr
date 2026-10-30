@@ -20984,6 +20984,8 @@ export interface operations {
       query?: {
         offset?: number;
         limit?: number;
+        /** @description Only the books selected for acquisition */
+        selected?: boolean;
       };
       header?: never;
       path: {

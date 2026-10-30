@@ -8980,6 +8980,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "selected",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Only the books selected for acquisition",
+              "default": false,
+              "title": "Selected"
+            },
+            "description": "Only the books selected for acquisition"
           }
         ],
         "responses": {

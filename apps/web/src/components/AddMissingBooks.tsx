@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
@@ -248,6 +253,9 @@ function AddMissingForm({
           {plan.counts?.excluded || 0} left out by book type or by you. Future
           books are added automatically too.
         </p>
+        {!!plan.selected && (
+          <SelectedBooks listId={preview.listId} planId={plan.id} />
+        )}
         <div className="button-row">
           <button
             type="button"
@@ -318,5 +326,54 @@ function AddMissingForm({
         {find.isPending ? "Working…" : "Find missing books"}
       </button>
     </form>
+  );
+}
+
+/** Every book the preview selected, so the search can be checked before it starts. */
+function SelectedBooks({ listId, planId }: { listId: string; planId: string }) {
+  const pages = useInfiniteQuery({
+    queryKey: ["list-preview", planId, "selected"],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) =>
+      result(
+        await api.GET(
+          "/api/lists/{list_id}/acquisition/previews/{identifier}",
+          {
+            params: {
+              path: { list_id: listId, identifier: planId },
+              query: { selected: true, offset: pageParam, limit: 100 },
+            },
+          },
+        ),
+      ),
+    getNextPageParam: (last) =>
+      last.offset + last.records.length < last.total
+        ? last.offset + last.records.length
+        : undefined,
+  });
+  const records = pages.data?.pages.flatMap((page) => page.records) || [];
+  return (
+    <section className="missing-book-list" aria-label="Books to search for">
+      <h3>Books to search for</h3>
+      <Notice error={pages.error} />
+      {pages.isPending ? (
+        <Loading />
+      ) : (
+        <ol>
+          {records.map((record) => (
+            <li key={record.work_id}>{record.title}</li>
+          ))}
+        </ol>
+      )}
+      {pages.hasNextPage && (
+        <button
+          type="button"
+          disabled={pages.isFetchingNextPage}
+          onClick={() => void pages.fetchNextPage()}
+        >
+          Show more books
+        </button>
+      )}
+    </section>
   );
 }
