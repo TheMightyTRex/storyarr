@@ -194,6 +194,14 @@ async def test_include_missing_selects_every_missing_book_without_the_25_book_ca
     }
     assert set(ids) <= missing and plan["total"] == 31
     assert {r["work_id"] for r in plan["records"] if r["selected"]} == missing
+    chosen = (
+        await client.get(
+            f"/api/lists/{f['list']}/acquisition/previews/{plan['id']}",
+            params={"selected": "true", "limit": 20},
+        )
+    ).json()
+    assert chosen["total"] == len(missing) and len(chosen["records"]) == 20
+    assert all(r["selected"] for r in chosen["records"])
     saved = await activate(client, f, plan)
     assert saved["message"] == "Monitoring future additions and missing books"
     async with database() as db:

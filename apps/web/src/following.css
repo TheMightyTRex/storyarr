@@ -595,4 +595,17 @@ button.follow-count[aria-expanded="true"] {
 }
 .delete-warning .muted {
   color: #e8d3ad;
+.missing-book-list h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+.missing-book-list ol {
+  max-height: 40vh;
+  overflow-y: auto;
+  margin: 0 0 8px;
+  padding: 8px 12px 8px 32px;
+  border: 1px solid var(--line, #2c3550);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
 }

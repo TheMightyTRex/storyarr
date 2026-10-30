@@ -123,16 +123,17 @@ async def view(db, policy):
     )
 
 
-def preview_view(operation, offset=0, limit=50):
+def preview_view(operation, offset=0, limit=50, *, selected_only=False):
     data = operation.payload
+    records = [r for r in data["records"] if r["selected"]] if selected_only else data["records"]
     return ActivationView(
         id=operation.id,
         status=operation.status,
         message=operation.message,
         expires_at=data["expires_at"],
         configuration=data["configuration"],
-        records=data["records"][offset : offset + limit],
-        total=len(data["records"]),
+        records=records[offset : offset + limit],
+        total=len(records),
         counts=data.get("counts", {}),
         selected=sum(r["selected"] for r in data["records"]),
         offset=offset,
@@ -169,8 +170,14 @@ async def saved_preview(
     db: Database,
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=50, ge=1, le=100),
+    selected: bool = Query(default=False, description="Only the books selected for acquisition"),
 ):
-    return preview_view(await policies.owned_preview(db, user, list_id, identifier), offset, limit)
+    return preview_view(
+        await policies.owned_preview(db, user, list_id, identifier),
+        offset,
+        limit,
+        selected_only=selected,
+    )
 
 
 @router.post("/previews/{identifier}/activate", response_model=ListPolicyView)
