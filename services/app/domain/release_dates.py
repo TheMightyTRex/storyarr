@@ -285,7 +285,8 @@ def due_action(
         return "idle"
     if owned:
         return "available"
-    if release_date is None or release_date > today:
+    # A wanted book with no known release day is treated as released, so it is searched again.
+    if (release_date is None and state != "wanted") or (release_date and release_date > today):
         return "hold"
     if state == "waiting":
         return "resume" if next_check_at is None or next_check_at <= now else "hold"

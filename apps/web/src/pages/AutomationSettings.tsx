@@ -7,6 +7,7 @@ import FollowFilterFields from "../components/FollowFilterFields";
 import SettingsGroup from "../components/SettingsGroup";
 
 type View = components["schemas"]["AutomationSettingsView"];
+type WantedSearch = components["schemas"]["WantedSearch"];
 
 export function useAutomationSettings() {
   return useQuery({
@@ -29,6 +30,13 @@ export default function AutomationSettings({
       >
         <FollowDefaults />
       </SettingsGroup>
+      <SettingsGroup
+        id="wanted-search"
+        title="Wanted books"
+        description="Search again for requested books that no source had yet."
+      >
+        <WantedSearchSettings />
+      </SettingsGroup>
       {admin && (
         <SettingsGroup
           id="deleted-books"
@@ -39,6 +47,95 @@ export default function AutomationSettings({
         </SettingsGroup>
       )}
     </>
+  );
+}
+
+function WantedSearchSettings() {
+  const cache = useQueryClient();
+  const settings = useAutomationSettings();
+  const [draft, setDraft] = useState<WantedSearch | null>(null);
+  const [saved, setSaved] = useState(false);
+  const value = draft ?? settings.data?.settings?.wanted_search;
+  const save = useMutation({
+    mutationFn: async () =>
+      result(
+        await api.PUT("/api/automation/settings", {
+          body: {
+            wanted_search: value!,
+            expected_generation: settings.data!.generation,
+          },
+        }),
+      ),
+    onSuccess: (data) => {
+      cache.setQueryData(["automation-settings"], data);
+      setDraft(null);
+      setSaved(true);
+    },
+  });
+  const change = (next: Partial<WantedSearch>) => {
+    setSaved(false);
+    setDraft({ ...value!, ...next });
+  };
+  return (
+    <form
+      className="policy-settings"
+      aria-label="Wanted books"
+      onSubmit={(e) => {
+        e.preventDefault();
+        save.mutate();
+      }}
+    >
+      <Notice error={settings.error || save.error} />
+      {settings.isPending && <Loading />}
+      {saved && <p role="status">Wanted books settings saved.</p>}
+      {value && (
+        <>
+          <p>
+            When a search finds no suitable release, the book stays wanted. With
+            this on, it is searched again automatically: after 6 hours, then
+            once a day for a week, then once a week until it is found.
+          </p>
+          <label className="check-label">
+            <input
+              type="checkbox"
+              checked={value.enabled}
+              onChange={(e) => change({ enabled: e.target.checked })}
+            />
+            Search again for wanted books
+          </label>
+          <fieldset disabled={!value.enabled}>
+            <legend>Formats to search again</legend>
+            <label className="check-label">
+              <input
+                type="checkbox"
+                checked={value.audio}
+                onChange={(e) => change({ audio: e.target.checked })}
+              />
+              Audiobooks
+            </label>
+            <label className="check-label">
+              <input
+                type="checkbox"
+                checked={value.ebook}
+                onChange={(e) => change({ ebook: e.target.checked })}
+              />
+              Ebooks
+            </label>
+          </fieldset>
+          <p className="muted">
+            Books waiting for their release day are always searched on that day.
+            Requests from lists follow their own list settings.
+          </p>
+          <button
+            type="submit"
+            className="primary"
+            disabled={!draft || save.isPending}
+          >
+            Save wanted books settings
+          </button>
+        </>
+      )}
+    </form>
   );
 }
 

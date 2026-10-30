@@ -21,7 +21,9 @@ from app.db.models import (
     DownloadMembership,
     ListAcquisitionBook,
     ListAcquisitionPolicy,
+    MonitoredRelease,
 )
+from app.domain.automation_settings import current as automation_settings
 from app.domain.work_graph import canonical_map
 
 StatusKind = Literal[
@@ -187,6 +189,24 @@ def _list_status(book):
     return BookStatus(kind="wanted", label="Wanted", detail=book.message)
 
 
+async def _retries(db, user, work_ids):
+    """Next automatic search for wanted requests, when Search again for wanted books covers them."""
+    _, settings = await automation_settings(db, user.id)
+    rows = await db.scalars(
+        select(MonitoredRelease).where(
+            MonitoredRelease.owner_id == user.id,
+            MonitoredRelease.work_id.in_(work_ids),
+            MonitoredRelease.state == "wanted",
+            MonitoredRelease.next_check_at.is_not(None),
+        )
+    )
+    return {
+        row.work_id: row.next_check_at
+        for row in rows
+        if settings.wanted_search.allows((row.specification or {}).get("mode"))
+    }
+
+
 async def statuses(db, user, list_id, records):
     """Status for each catalog record (rows from following_overview.catalog), by work id."""
     if not records:
@@ -194,6 +214,7 @@ async def statuses(db, user, list_id, records):
     work_ids = [record.work_id for record in records]
     policy, list_books = await _list_books(db, list_id, work_ids)
     targets, attempts = await _requests(db, user, work_ids)
+    retries = await _retries(db, user, work_ids)
     automatic = bool(policy and policy.active and policy.configuration["mode"] == "automatic")
     result = {}
     for record in records:
@@ -221,8 +242,19 @@ async def statuses(db, user, list_id, records):
                     kind="not_released", label="Not released yet", detail=release_detail(record.day)
                 )
             if status is None and any(t.state == "wanted" for t in targets.get(work_id, [])):
-                status = BookStatus(
-                    kind="wanted", label="Wanted", detail="Requested; not searched automatically"
+                status = (
+                    BookStatus(
+                        kind="waiting",
+                        label="Waiting",
+                        detail="Next automatic search",
+                        at=retries[work_id],
+                    )
+                    if work_id in retries
+                    else BookStatus(
+                        kind="wanted",
+                        label="Wanted",
+                        detail="Requested; not searched automatically",
+                    )
                 )
             if status is None and targets.get(work_id):
                 status = BookStatus(

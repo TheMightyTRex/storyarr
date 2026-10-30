@@ -6532,6 +6532,7 @@ export interface components {
       follow_filters?: components["schemas"]["FollowFilters"] | null;
       /** Missing Media */
       missing_media?: ("audio" | "ebook" | "both") | null;
+      wanted_search?: components["schemas"]["WantedSearch"] | null;
       /** Expected Generation */
       expected_generation: number;
     };
@@ -6547,6 +6548,7 @@ export interface components {
       follow_filters: components["schemas"]["FollowFilters"];
       /** Missing Media */
       missing_media: ("audio" | "ebook" | "both") | null;
+      wanted_search: components["schemas"]["WantedSearch"];
     };
     /** Availability */
     Availability: {
@@ -15042,6 +15044,27 @@ export interface components {
       owned: boolean;
       /** Needs Review */
       needs_review: boolean;
+    };
+    /**
+     * WantedSearch
+     * @description Search again, on a back-off schedule, for requested books that are still wanted.
+     */
+    WantedSearch: {
+      /**
+       * Enabled
+       * @default true
+       */
+      enabled: boolean;
+      /**
+       * Audio
+       * @default true
+       */
+      audio: boolean;
+      /**
+       * Ebook
+       * @default true
+       */
+      ebook: boolean;
     };
     /** Window */
     Window: {

@@ -3,7 +3,7 @@
 from datetime import UTC, datetime, time, timedelta
 
 from fastapi import HTTPException
-from sqlalchemy import or_, select
+from sqlalchemy import and_, exists, or_, select
 
 from app.db.models import (
     AssetContains,
@@ -17,6 +17,7 @@ from app.db.models import (
     Work,
 )
 from app.db.session import session_factory
+from app.domain.automation_settings import current as automation_settings
 from app.domain.availability import availability_for
 from app.domain.operations import transaction_lock
 from app.domain.release_dates import (
@@ -62,11 +63,19 @@ async def _monitor(db, user, work):
     return row
 
 
-async def sync_monitor(db, user, work, operation, specification):
-    """Record a monitored request when the book has a release day or is explicitly unreleased."""
+async def sync_monitor(db, user, work, operation, specification, *, undated=False):
+    """
+    Record a monitored request when the book has a release day or is explicitly unreleased. With
+    `undated`, a quick-add search for a book with no known day is monitored too, so it is retried.
+    """
     day, basis, coming = release_facts(work.metadata_fields)
     if day is None and not coming:
-        return None
+        payload = operation.payload or {}
+        available = operation.status == "completed" and "Already available" in (
+            operation.message or ""
+        )
+        if not undated or "waiting_for_release" in payload or available:
+            return None
     row = await _monitor(db, user, work)
     if row.state == "stopped":
         return row
@@ -193,7 +202,8 @@ async def advance(db, row, today, now):
         await release_ready(db, row, operation, now)
         return
     in_flight = bool(operation and operation.status in {"queued", "running"})
-    failed = bool(
+    # A monitor added for an older request has no search yet, so it is treated as a miss.
+    failed = (operation is None and row.state == "wanted") or bool(
         operation and operation.status == "held" and "waiting_for_release" not in operation.payload
     )
     action = due_action(
@@ -222,6 +232,12 @@ async def advance(db, row, today, now):
         if row.state == "waiting" and operation.status not in {"queued", "running"}:
             row.next_check_at = now + timedelta(days=1)
         return
+    if row.state == "wanted":
+        _, settings = await automation_settings(db, user.id)
+        if not settings.wanted_search.allows((row.specification or {}).get("mode")):
+            # Search again for wanted books is off for this format: check back tomorrow.
+            row.next_check_at = now + timedelta(days=1)
+            return
     options = RequestOptions.model_validate(row.specification or {})
     stamp = row.next_check_at
     await begin(
@@ -240,6 +256,71 @@ async def advance(db, row, today, now):
         row.next_check_at = now + timedelta(hours=6)
 
 
+async def adopt_wanted_requests(db, now, limit=50):
+    """
+    Monitor approved quick-add requests that are still wanted but have no monitor, such as requests
+    made before undated books were monitored, so they are searched again too.
+    """
+    from app.db.models import AcquisitionIntent, AcquisitionReason, AcquisitionTarget
+
+    intents = list(
+        await db.scalars(
+            select(AcquisitionIntent)
+            .where(
+                exists().where(
+                    AcquisitionReason.intent_id == AcquisitionIntent.id,
+                    AcquisitionReason.active.is_(True),
+                    AcquisitionReason.kind == "manual",
+                    AcquisitionReason.approval_status == "approved",
+                ),
+                exists().where(
+                    AcquisitionTarget.intent_id == AcquisitionIntent.id,
+                    AcquisitionTarget.state == "wanted",
+                ),
+                ~exists().where(
+                    MonitoredRelease.owner_id == AcquisitionIntent.owner_id,
+                    MonitoredRelease.work_id == AcquisitionIntent.work_id,
+                ),
+            )
+            .order_by(AcquisitionIntent.created_at, AcquisitionIntent.id)
+            .limit(limit)
+        )
+    )
+    today = now.date()
+    for index, intent in enumerate(intents):
+        work = await canonical_work(db, intent.work_id)
+        if await db.scalar(
+            select(MonitoredRelease.id).where(
+                MonitoredRelease.owner_id == intent.owner_id,
+                MonitoredRelease.work_id == work.id,
+            )
+        ):
+            continue
+        day, basis, coming = release_facts(work.metadata_fields)
+        unreleased = coming or (day is not None and day > today)
+        if not unreleased:
+            # Spread the first searches out rather than starting them all at once.
+            first_check = now + timedelta(minutes=2 * index)
+        elif day:
+            first_check = datetime.combine(day, time.min, tzinfo=UTC)
+        else:
+            first_check = None
+        db.add(
+            MonitoredRelease(
+                owner_id=intent.owner_id,
+                work_id=work.id,
+                release_date=day,
+                basis=basis if day else "unknown",
+                state="waiting" if unreleased else "wanted",
+                round=0 if unreleased else 1,
+                next_check_at=first_check,
+                specification=intent.specification or {},
+            )
+        )
+    await db.flush()
+    return len(intents)
+
+
 async def schedule():
     from app.config import get_settings
 
@@ -248,13 +329,19 @@ async def schedule():
     async with session_factory()() as db, db.begin():
         now = datetime.now(UTC)
         today = now.date()
+        await adopt_wanted_requests(db, now)
         rows = list(
             await db.scalars(
                 select(MonitoredRelease)
                 .where(
                     MonitoredRelease.state.in_(["waiting", "wanted"]),
-                    MonitoredRelease.release_date.is_not(None),
-                    MonitoredRelease.release_date <= today,
+                    or_(
+                        MonitoredRelease.release_date <= today,
+                        and_(
+                            MonitoredRelease.release_date.is_(None),
+                            MonitoredRelease.state == "wanted",
+                        ),
+                    ),
                     or_(
                         MonitoredRelease.next_check_at.is_(None),
                         MonitoredRelease.next_check_at <= now,

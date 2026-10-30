@@ -20737,6 +20737,16 @@
             ],
             "title": "Missing Media"
           },
+          "wanted_search": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WantedSearch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "expected_generation": {
             "type": "integer",
             "minimum": 0.0,
@@ -20792,12 +20802,16 @@
               }
             ],
             "title": "Missing Media"
+          },
+          "wanted_search": {
+            "$ref": "#/components/schemas/WantedSearch"
           }
         },
         "type": "object",
         "required": [
           "follow_filters",
-          "missing_media"
+          "missing_media",
+          "wanted_search"
         ],
         "title": "AutomationValues"
       },
@@ -43291,6 +43305,28 @@
           "needs_review"
         ],
         "title": "VersionView"
+      },
+      "WantedSearch": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "audio": {
+            "type": "boolean",
+            "title": "Audio",
+            "default": true
+          },
+          "ebook": {
+            "type": "boolean",
+            "title": "Ebook",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "WantedSearch",
+        "description": "Search again, on a back-off schedule, for requested books that are still wanted."
       },
       "Window": {
         "properties": {

@@ -403,3 +403,32 @@ def test_series_write_back_sends_only_the_series():
     assert series_patch("Standalone Tales", None) == {
         "metadata": {"series": [{"name": "Standalone Tales"}]}
     }
+
+
+def test_a_wanted_book_with_no_release_day_is_searched_again():
+    def action(state, failed=True):
+        return due_action(
+            state=state,
+            release_date=None,
+            today=TODAY,
+            now=NOW,
+            next_check_at=NOW,
+            owned=False,
+            in_flight=False,
+            failed=failed,
+        )
+
+    assert action("wanted") == "search"
+    # A book waiting for its day stays on hold until the day is known.
+    assert action("waiting") == "hold"
+
+
+def test_search_again_for_wanted_books_follows_the_chosen_formats():
+    from app.domain.automation_settings import WantedSearch
+
+    both = WantedSearch()
+    assert both.allows("audio") and both.allows("ebook") and both.allows("both")
+    audio_only = WantedSearch(ebook=False)
+    assert audio_only.allows("audio") and not audio_only.allows("ebook")
+    assert audio_only.allows("either")
+    assert not WantedSearch(enabled=False).allows("audio")

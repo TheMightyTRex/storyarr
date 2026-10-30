@@ -89,7 +89,7 @@ export default function GettingStarted({ role }: { role: string }) {
     storage: "Choose where imported books will be saved.",
     preferences: "Choose the formats and sources you prefer.",
     automation:
-      "Choose which kinds of books new author and series follows include.",
+      "Choose which kinds of books new follows include, and whether wanted books are searched again automatically.",
     layout:
       "Choose a layout, a light or dark theme, a text size, and any reading aids you need.",
     finish:

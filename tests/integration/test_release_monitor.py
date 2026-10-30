@@ -200,3 +200,82 @@ async def test_follow_without_a_saved_medium_waits_for_a_choice(
             if intent.specification.get("mode") == "ebook"
         ]
         assert len(followed) == 1
+
+
+async def missed_search(client, database, authorized, work_id, key):
+    """Quick-add an audiobook whose only release is the wrong format, so nothing is found."""
+    from app.domain import quick_add
+
+    await defaults(client, authorized, audio_formats=["flac"])
+    response = await add(client, work_id, "audio", key=key)
+    assert response.status_code == 202, response.text
+    identifier = UUID(response.json()["id"])
+    await complete_search(database, identifier, authorized)
+    await quick_add.run(identifier)
+    for _ in range(4):
+        async with database() as db:
+            operation = await db.get(Operation, identifier)
+            slot = operation.payload["slots"]["audio"]
+            if slot.get("done"):
+                break
+            child = UUID(slot["operation_id"])
+        await automatic_selection.run(child)
+        await quick_add.run(identifier)
+    return identifier
+
+
+async def searches(database):
+    from app.domain.quick_add import KIND
+
+    async with database() as db:
+        return await db.scalar(
+            select(func.count()).select_from(Operation).where(Operation.kind == KIND)
+        )
+
+
+async def test_a_book_with_no_release_day_is_searched_again(client, database, authorized, catalog):
+    await missed_search(client, database, authorized, catalog["work"], "undated-miss")
+    async with database() as db, db.begin():
+        monitor = await db.scalar(select(MonitoredRelease))
+        assert monitor.state == "wanted" and monitor.release_date is None
+        assert monitor.next_check_at > datetime.now(UTC)
+        monitor.next_check_at = datetime.now(UTC) - timedelta(minutes=1)
+    before = await searches(database)
+    await schedule()
+    assert await searches(database) == before + 1
+
+
+async def test_search_again_can_be_turned_off_for_a_format(client, database, authorized, catalog):
+    await missed_search(client, database, authorized, catalog["work"], "undated-off")
+    saved = (await client.get("/api/automation/settings")).json()
+    assert saved["settings"]["wanted_search"] == {"enabled": True, "audio": True, "ebook": True}
+    response = await client.put(
+        "/api/automation/settings",
+        json={
+            "wanted_search": {"enabled": True, "audio": False, "ebook": True},
+            "expected_generation": saved["generation"],
+        },
+    )
+    assert response.status_code == 200, response.text
+    async with database() as db, db.begin():
+        monitor = await db.scalar(select(MonitoredRelease))
+        monitor.next_check_at = datetime.now(UTC) - timedelta(minutes=1)
+    before = await searches(database)
+    await schedule()
+    assert await searches(database) == before
+    async with database() as db:
+        monitor = await db.scalar(select(MonitoredRelease))
+        assert monitor.next_check_at > datetime.now(UTC) + timedelta(hours=23)
+
+
+async def test_older_wanted_requests_without_a_monitor_are_adopted(
+    client, database, authorized, catalog
+):
+    await missed_search(client, database, authorized, catalog["work"], "adopt-old")
+    async with database() as db, db.begin():
+        await db.delete(await db.scalar(select(MonitoredRelease)))
+    await schedule()
+    async with database() as db:
+        monitor = await db.scalar(select(MonitoredRelease))
+        assert monitor is not None and monitor.state == "wanted"
+        assert monitor.specification.get("mode") == "audio"

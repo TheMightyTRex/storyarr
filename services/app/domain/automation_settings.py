@@ -9,12 +9,32 @@ from app.adapters.hardcover_follows import FollowFilters
 from app.db.models import AutomationSettings, InstallationAutomation
 
 
+class WantedSearch(BaseModel):
+    """Search again, on a back-off schedule, for requested books that are still wanted."""
+
+    model_config = ConfigDict(extra="ignore")
+    enabled: bool = True
+    # Formats to keep searching for. A request for both formats is searched while either is on.
+    audio: bool = True
+    ebook: bool = True
+
+    def allows(self, mode):
+        if not self.enabled:
+            return False
+        if mode == "audio":
+            return self.audio
+        if mode == "ebook":
+            return self.ebook
+        return self.audio or self.ebook
+
+
 class AutomationDefaults(BaseModel):
     # Settings saved by a newer release may hold fields this one doesn't know yet.
     model_config = ConfigDict(extra="ignore")
     follow_filters: FollowFilters = Field(default_factory=FollowFilters)
     # Media for "Add missing books"; None follows the member's download preferences.
     missing_media: Literal["audio", "ebook", "both"] | None = None
+    wanted_search: WantedSearch = Field(default_factory=WantedSearch)
 
 
 async def current(db, owner_id, *, lock=False):

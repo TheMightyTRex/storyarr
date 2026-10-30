@@ -11,6 +11,7 @@ from app.db.models import AuditEvent, AutomationSettings, InstallationAutomation
 from app.domain.automation_settings import (
     AutomationDefaults,
     InstallationDefaults,
+    WantedSearch,
     current,
     installation,
 )
@@ -21,6 +22,7 @@ router = APIRouter(prefix="/automation/settings", tags=["automation-settings"])
 class AutomationValues(BaseModel):
     follow_filters: FollowFilters
     missing_media: Literal["audio", "ebook", "both"] | None
+    wanted_search: WantedSearch
 
 
 class AutomationSettingsView(BaseModel):
@@ -35,6 +37,7 @@ class AutomationSettingsInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     follow_filters: FollowFilters | None = None
     missing_media: Literal["audio", "ebook", "both"] | None = None
+    wanted_search: WantedSearch | None = None
     expected_generation: int = Field(ge=0)
 
 
@@ -60,8 +63,9 @@ async def save(body: AutomationSettingsInput, user: Member, db: Database):
         row = AutomationSettings(owner_id=user.id, generation=0, settings={})
         db.add(row)
     changes = body.model_dump(exclude={"expected_generation"}, exclude_unset=True)
-    if changes.get("follow_filters") is None:
-        changes.pop("follow_filters", None)
+    for name in ("follow_filters", "wanted_search"):
+        if changes.get(name) is None:
+            changes.pop(name, None)
     settings = AutomationDefaults.model_validate({**settings.model_dump(), **changes})
     # Keep fields a newer release saved, so moving between versions loses nothing.
     row.settings = {**row.settings, **settings.model_dump(mode="json")}

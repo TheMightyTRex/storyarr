@@ -154,10 +154,10 @@ async def _begin(db, user, work_id, options, key, *, dispatch):
             )
             payload["waiting_for_release"] = day.isoformat() if day else None
             operation.payload = deepcopy(payload)
-            await sync_monitor(db, user, work, operation, command["specification"])
+            await sync_monitor(db, user, work, operation, command["specification"], undated=True)
             return operation
         await start_search(db, user, operation, intent, pending, held, payload)
-        await sync_monitor(db, user, work, operation, command["specification"])
+        await sync_monitor(db, user, work, operation, command["specification"], undated=True)
         return operation
     work = await canonical_work(db, intent.work_id)
     if await db.scalar(
@@ -165,7 +165,7 @@ async def _begin(db, user, work_id, options, key, *, dispatch):
             MonitoredRelease.owner_id == user.id, MonitoredRelease.work_id == work.id
         )
     ):
-        await sync_monitor(db, user, work, operation, command["specification"])
+        await sync_monitor(db, user, work, operation, command["specification"], undated=True)
     return operation
 
 
@@ -262,7 +262,9 @@ async def resume_search(db, user, operation):
             operation.status, operation.message = _idle_outcome(targets, pending, held)
             operation.payload = payload
         work = await canonical_work(db, intent.work_id)
-        await sync_monitor(db, user, work, operation, payload["command"]["specification"])
+        await sync_monitor(
+            db, user, work, operation, payload["command"]["specification"], undated=True
+        )
     finally:
         download_authorization.reset(grant)
         approval_dispatch.reset(token)
