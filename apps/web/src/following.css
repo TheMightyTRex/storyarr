@@ -542,4 +542,6 @@ button.follow-count[aria-expanded="true"] {
 }
 .library-series-status .text-button {
   justify-self: start;
+  font-size: 13px;
+  font-weight: 600;
 }
