@@ -19,7 +19,7 @@
 @import "./wall.css" layer(controls);
 
 .brand img {
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--c-bg-orange-64);
   object-fit: contain;
   flex-shrink: 0;

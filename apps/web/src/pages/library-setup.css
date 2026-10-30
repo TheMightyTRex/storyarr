@@ -35,7 +35,7 @@
   padding: 12px 14px;
   margin-bottom: 16px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--surface);
 }
 .library-verification-next p {
@@ -184,7 +184,7 @@
   align-items: flex-start;
   gap: 10px;
   padding: 14px;
-  border-radius: 10px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--accent) 9%, transparent);
   color: var(--accent);
   font-size: 0.75rem;
@@ -250,7 +250,7 @@
 /* Keep a library and the two ways to reach its folder in one visual group. */
 .library-setup-body .library-setup-options {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 16px;
 }
 .library-setup-body .library-setup-options > legend {
@@ -364,7 +364,7 @@
   display: inline-flex;
   margin-top: 9px;
   padding: 3px 8px;
-  border-radius: 5px;
+  border-radius: 0;
   background: var(--surface);
   font-size: 0.6875rem;
 }

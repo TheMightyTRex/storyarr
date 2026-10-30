@@ -10,7 +10,7 @@
   gap: 24px;
 }
 .settings-section {
-  border-radius: 10px;
+  border-radius: 0;
   margin-bottom: 18px;
 }
 .settings-section-heading {
@@ -68,7 +68,7 @@
   width: 100%;
   max-width: 32rem;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 0;
   font-size: 0.8125rem;
   line-height: 20px;
 }
@@ -120,7 +120,7 @@
   padding: 8px 12px;
   line-height: 18px;
   font-size: 0.8125rem;
-  border-radius: 6px;
+  border-radius: 0;
   flex-shrink: 0;
   align-self: auto;
 }
@@ -390,7 +390,7 @@ button.help-button:hover {
   width: min(280px, 65vw);
   padding: 12px;
   border: 1px solid var(--c-border-indigo-43);
-  border-radius: 7px;
+  border-radius: 0;
   background: var(--c-bg-indigo-32);
   color: var(--c-text-slate-93);
   font-size: 0.75rem;
@@ -481,7 +481,7 @@ button.help-button:hover {
   padding: 3px;
   background: var(--c-bg-slate-21);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   margin-bottom: 18px;
 }
 .segmented-control button {
@@ -537,7 +537,7 @@ button.help-button:hover {
 .folder-preview {
   position: relative;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--c-bg-slate-21);
   padding: 16px;
   min-width: 0;
@@ -620,7 +620,7 @@ button.help-button:hover {
 }
 .onboarding-card {
   padding: 22px;
-  border-radius: 10px;
+  border-radius: 0;
   position: relative;
 }
 .onboarding-title {
@@ -829,7 +829,7 @@ button.help-button:hover {
 .access-table-scroll {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .access-table {
   width: 100%;
@@ -892,7 +892,7 @@ button.help-button:hover {
 .access-you {
   margin-left: 8px;
   padding: 1px 6px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--c-bg-indigo-32);
   color: var(--muted);
   font-size: 0.6875rem;
@@ -1065,7 +1065,7 @@ button.help-button:hover {
   gap: 8px;
   min-height: 34px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--bg);
   padding: 2px 8px 2px 2px;
   font-size: 0.8125rem;
@@ -1147,7 +1147,7 @@ button.help-button:hover {
 .settings-section-body .connection-grid article {
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 0;
 }
 .connection-result {
   display: flex;
@@ -1290,7 +1290,7 @@ button.help-button:hover {
 .settings-empty {
   padding: 24px;
   border: 1px dashed var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   max-width: 680px;
 }
 .settings-empty details {
@@ -1350,15 +1350,15 @@ button.help-button:hover {
 }
 .download-progress progress::-webkit-progress-bar {
   background: var(--line);
-  border-radius: 4px;
+  border-radius: 0;
 }
 .download-progress progress::-webkit-progress-value {
   background: var(--accent);
-  border-radius: 4px;
+  border-radius: 0;
 }
 .download-progress progress::-moz-progress-bar {
   background: var(--accent);
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 /* Reading accounts: one shelf, one row, with its current state and actions. */
@@ -1386,7 +1386,7 @@ button.help-button:hover {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--surface);
   color: var(--accent);
   font:
@@ -1592,7 +1592,7 @@ button.help-button:hover {
 .storygraph-setup code {
   font-size: 0.75rem;
   padding: 1px 5px;
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--surface);
 }
 @media (max-width: 600px) {
@@ -1690,7 +1690,7 @@ button.help-button:hover {
   gap: 5px 20px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
 }
 .library-connections .section-heading {
   margin: 0;
@@ -1752,7 +1752,7 @@ button.help-button:hover {
   margin: 0;
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--surface);
   box-shadow: 0 18px 40px var(--c-shadow-grey-0-a40);
 }
@@ -1776,7 +1776,7 @@ button.help-button:hover {
   padding: 12px 16px;
   margin: 0 0 16px;
   background: var(--surface);
-  border-radius: 8px;
+  border-radius: 0;
   gap: 20px;
 }
 .import-flow li {
@@ -1801,7 +1801,7 @@ button.help-button:hover {
 }
 .settings-section-body .destination-card {
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 16px;
   margin-top: 12px;
 }
@@ -1930,7 +1930,7 @@ button.help-button:hover {
 }
 .setting-help-content .help-scope-list code {
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--c-bg-indigo-26);
   font-size: 0.6875rem;
 }
@@ -1987,7 +1987,7 @@ button.help-button:hover {
 .settings-section-body .settings-empty {
   border: 1px dashed var(--line);
   padding: 18px;
-  border-radius: 8px;
+  border-radius: 0;
   display: grid;
   gap: 10px;
 }
@@ -2115,7 +2115,7 @@ button.help-button:hover {
 .media-folder-list {
   margin-top: 16px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
 }
 .media-folder-row {
@@ -2195,7 +2195,7 @@ button.help-button:hover {
   padding: 12px;
   margin-top: 8px;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 0;
   cursor: pointer;
   max-width: none;
 }
@@ -2262,7 +2262,7 @@ button.help-button:hover {
 }
 .settings-section-body .reading-accounts {
   --control-height: 38px;
-  --control-radius: 8px;
+  --control-radius: 0;
   --control-font-size: 0.75rem;
   max-width: 960px;
   gap: 14px;
@@ -2271,7 +2271,7 @@ button.help-button:hover {
 .reading-accounts .reading-account {
   background: color-mix(in srgb, var(--surface) 25%, transparent);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 0;
   margin: 0;
   gap: 0;
@@ -2328,7 +2328,7 @@ button.help-button:hover {
   min-height: 36px;
   padding: 7px 12px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 0;
   color: var(--accent);
   font-size: 0.75rem;
   font-weight: 550;
@@ -2373,7 +2373,7 @@ button.help-button:hover {
   justify-content: center;
   flex: 0 0 34px;
   height: 34px;
-  border-radius: 7px;
+  border-radius: 0;
   color: var(--muted);
 }
 .reading-more:hover {
@@ -2572,7 +2572,7 @@ button.help-button:hover {
   margin: 0;
   padding: 10px 12px;
   border: 1px solid var(--c-border-indigo-40);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--c-bg-slate-23);
 }
 .naming-pair-hint p {
@@ -2667,7 +2667,7 @@ button.help-button:hover {
   padding: 0 10px 0 0;
   background: var(--surface);
   border-color: var(--c-border-indigo-43);
-  border-radius: 5px;
+  border-radius: 0;
   gap: 0;
 }
 .naming-token-lane .sortable > li:focus-within {
@@ -2691,7 +2691,7 @@ button.help-button:hover {
   flex: 0 0 auto;
   margin-inline: 6px;
   padding: 0 16px 0 6px;
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 0.6875rem;
   line-height: 20px;
 }
@@ -2723,7 +2723,7 @@ button.help-button:hover {
 .settings-section-body .naming-builder .folder-preview {
   background: var(--c-bg-slate-21);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 12px 14px;
 }
 .naming-tree-section {
@@ -2785,7 +2785,7 @@ button.help-button:hover {
 /* Network diagnostics follow the compact source settings hierarchy. */
 .mam-network {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 12px 14px;
   background: var(--surface);
   min-width: 0;
@@ -2814,7 +2814,7 @@ button.help-button:hover {
   gap: 6px;
   flex-shrink: 0;
   padding: 3px 8px;
-  border-radius: 5px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--muted) 10%, transparent);
   color: var(--muted);
   font-size: 0.6875rem;
@@ -2954,7 +2954,7 @@ button.help-button:hover {
 }
 .account-automation {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   margin: 0;
   padding: 0;
   min-width: 0;
@@ -3100,7 +3100,7 @@ button.help-button:hover {
 .logs-table-scroll {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 0;
 }
 .logs-table {
   width: 100%;
@@ -3236,7 +3236,7 @@ button.help-button:hover {
   min-width: 0;
   margin: 0;
   padding: 14px;
-  border-radius: 10px;
+  border-radius: 0;
 }
 .display-shapes legend {
   display: flex;
@@ -3261,7 +3261,7 @@ button.help-button:hover {
   flex-direction: column;
   gap: 0;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 5px;
   background: transparent;
   transition:
@@ -3302,7 +3302,7 @@ button.help-button:hover {
   height: 64px;
   color: var(--c-text-indigo-85-2);
   border: 1px solid var(--c-border-indigo-62);
-  border-radius: 3px 5px 5px 3px;
+  border-radius: 0;
   background: linear-gradient(
     90deg,
     var(--c-bg-indigo-38) 4px,
@@ -3320,7 +3320,7 @@ button.help-button:hover {
   height: 2px;
   width: 22px;
   background: var(--c-bg-slate-75-a50);
-  border-radius: 2px;
+  border-radius: 0;
 }
 .shape-swatch > span:last-child {
   width: 14px;

@@ -213,14 +213,14 @@ button.discovery-book:hover {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 .series-gap-cover {
   flex-shrink: 0;
   width: 76px;
   display: grid;
   place-items: center;
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--c-bg-indigo-34);
   box-shadow: inset 4px 0 0 var(--c-shadow-indigo-29);
   overflow: hidden;
@@ -346,7 +346,7 @@ button {
   border: 1px solid var(--c-border-indigo-43);
   background: var(--c-bg-indigo-32);
   color: var(--c-text-grey-97);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 10px 16px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -377,7 +377,7 @@ select,
 textarea {
   background: var(--c-bg-slate-21);
   border: 1px solid var(--c-border-indigo-43);
-  border-radius: 7px;
+  border-radius: 0;
   color: var(--c-text-grey-97);
   width: 100%;
   padding: 11px 12px;
@@ -480,7 +480,7 @@ nav a {
   color: var(--c-text-slate-77);
   font-size: 0.875rem;
   font-weight: 550;
-  border-radius: 8px;
+  border-radius: 0;
 }
 nav a:hover {
   background: var(--c-bg-indigo-27);
@@ -494,7 +494,7 @@ nav a.active {
   margin-left: auto;
   min-width: 1.15rem;
   padding: 1px 6px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--c-bg-indigo-31);
   color: var(--c-text-indigo-87);
   font-size: 0.6875rem;
@@ -568,7 +568,7 @@ nav a.active .nav-count {
   align-items: center;
   padding: 4px 4px 4px 12px;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 0;
   background: var(--c-bg-slate-21);
   color: var(--c-text-indigo-65);
   transition:
@@ -636,7 +636,7 @@ nav a.active .nav-count {
   min-width: 11rem;
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 0;
   background: var(--panel, var(--c-bg-indigo-27));
   box-shadow: 0 12px 30px var(--c-shadow-grey-0-a27);
 }
@@ -700,7 +700,7 @@ nav a.active .nav-count {
   background: var(--surface);
   border: 1px solid var(--line);
   padding: 24px;
-  border-radius: 12px;
+  border-radius: 0;
 }
 .editor {
   margin-bottom: 28px;
@@ -769,7 +769,7 @@ nav a.active .nav-count {
   position: relative;
   aspect-ratio: 2/3;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid var(--c-border-indigo-46);
   box-shadow: 0 9px 18px var(--c-shadow-slate-14-a25);
   transition: transform 140ms;
@@ -826,7 +826,7 @@ nav a.active .nav-count {
   font: 600 0.625rem system-ui;
   background: var(--c-bg-teal-33);
   color: var(--c-text-teal-92-2);
-  border-radius: 5px;
+  border-radius: 0;
   padding: 5px 6px;
   display: flex;
   align-items: center;
@@ -848,7 +848,7 @@ nav a.active .nav-count {
 .empty {
   text-align: center;
   border: 1px dashed var(--c-border-indigo-40);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 70px 25px;
   margin-top: 24px;
   background: var(--c-bg-slate-23);
@@ -870,7 +870,7 @@ nav a.active .nav-count {
 }
 .notice {
   padding: 12px 15px;
-  border-radius: 7px;
+  border-radius: 0;
   margin: 15px 0;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -970,7 +970,7 @@ nav a.active .nav-count {
 .detail-cover {
   aspect-ratio: 2/3;
   height: auto;
-  border-radius: 8px;
+  border-radius: 0;
   align-self: start;
   padding: 27px;
   border: 1px solid var(--c-border-indigo-46);
@@ -995,7 +995,7 @@ nav a.active .nav-count {
   background: var(--c-bg-indigo-32);
   border: 1px solid var(--c-border-indigo-43);
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 0;
   white-space: nowrap;
 }
 .status.owned {
@@ -1083,7 +1083,7 @@ nav a.active .nav-count {
 }
 .activity-list {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
 }
 .activity-row {
@@ -1102,7 +1102,7 @@ nav a.active .nav-count {
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--c-bg-indigo-34);
   margin: 0;
 }
@@ -1276,7 +1276,7 @@ a.auth-provider {
   border: 1px solid var(--c-border-indigo-43);
   background: var(--c-bg-indigo-32);
   color: var(--c-text-grey-97);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 10px 16px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -1289,7 +1289,7 @@ a.plex-link {
   border: 1px solid var(--c-border-indigo-43);
   background: var(--c-bg-indigo-32);
   color: var(--c-text-grey-97);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 10px 16px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -1318,7 +1318,7 @@ a.auth-provider:hover {
   display: block;
   width: 28px;
   height: 85px;
-  border-radius: 4px 4px 0 0;
+  border-radius: 0;
   background: var(--c-bg-indigo-46);
   border: 1px solid var(--c-border-indigo-61);
   border-top: 8px solid var(--c-border-indigo-71-2);
@@ -1544,7 +1544,7 @@ a.auth-provider:hover {
   gap: 12px;
   padding: 16px;
   border: 1px solid var(--c-border-indigo-43);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .list-differences .button-row {
   margin-top: 0;
@@ -1623,7 +1623,7 @@ a.auth-provider:hover {
   min-width: 0;
   height: 46px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   background-color: var(--c-bg-slate-23);
   color: var(--c-text-grey-97);
   font-size: 0.875rem;
@@ -1644,7 +1644,7 @@ a.auth-provider:hover {
   min-height: 46px;
   flex-shrink: 0;
   padding: 11px 20px;
-  border-radius: 10px;
+  border-radius: 0;
   border-color: var(--c-border-indigo-64);
   background: var(--c-bg-indigo-57);
   color: var(--c-on-accent-grey-100);
@@ -1771,7 +1771,7 @@ a.auth-provider:hover {
 .provider-result {
   display: flex;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   color: inherit;
   text-decoration: none;
   justify-content: flex-start;
@@ -1791,7 +1791,7 @@ a.auth-provider:hover {
   height: 96px;
   object-fit: cover;
   flex-shrink: 0;
-  border-radius: 4px;
+  border-radius: 0;
 }
 .mini-cover {
   display: grid;
@@ -1944,7 +1944,7 @@ img.detail-cover {
   width: calc((100% - 18px) / 4);
   max-width: 90px;
   object-fit: cover;
-  border-radius: 3px;
+  border-radius: 0;
 }
 .community-description {
   display: -webkit-box;
@@ -1985,7 +1985,7 @@ img.detail-cover {
 
 .recovery-decision {
   border: 1px solid var(--c-border-indigo-43);
-  border-radius: 8px;
+  border-radius: 0;
   margin-top: 24px;
   padding: 18px;
   overflow-wrap: anywhere;
@@ -2023,7 +2023,7 @@ img.detail-cover {
   width: 100%;
   aspect-ratio: 2 / 3;
   object-fit: contain;
-  border-radius: 5px 12px 12px 5px;
+  border-radius: 0;
   box-shadow: 8px 15px 35px var(--c-shadow-grey-0-a40);
   background: var(--surface);
 }
@@ -2112,7 +2112,7 @@ img.detail-cover {
 .reader-action-link {
   padding: 9px 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .reader-action-note {
   font-size: 0.75rem;
@@ -2179,7 +2179,7 @@ img.detail-cover {
   gap: 16px;
   padding: 18px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--surface);
   overflow-wrap: anywhere;
 }
@@ -2217,7 +2217,7 @@ img.detail-cover {
   width: 72px;
   height: 90px;
   object-fit: cover;
-  border-radius: 5px;
+  border-radius: 0;
 }
 .reader-author h3 {
   font-size: 1.1875rem;
@@ -2387,7 +2387,7 @@ img.detail-cover {
   justify-content: flex-start;
   border: 1px solid transparent;
   background: transparent;
-  border-radius: 7px;
+  border-radius: 0;
   padding: 11px 12px;
   font-size: 0.8125rem;
   color: var(--muted);
@@ -2413,7 +2413,7 @@ img.detail-cover {
 .settings-section {
   scroll-margin-top: 24px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 0;
   margin-bottom: 28px;
   background: var(--c-bg-slate-23);
 }
@@ -2573,7 +2573,7 @@ img.detail-cover {
   width: 27px;
   height: 27px;
   border: 1px solid var(--c-border-indigo-46);
-  border-radius: 50%;
+  border-radius: 0;
   font-size: 0.75rem;
 }
 .onboarding-steps small {
@@ -2585,7 +2585,7 @@ img.detail-cover {
 .onboarding-card {
   background: var(--c-bg-slate-23);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 0;
   padding: clamp(20px, 3vw, 36px);
   min-width: 0;
 }
@@ -2651,7 +2651,7 @@ img.detail-cover {
   width: 36px;
   height: 36px;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--c-bg-teal-85) 16%, transparent);
   color: var(--c-text-teal-85);
 }
@@ -2787,7 +2787,7 @@ img.detail-cover {
   display: grid;
   gap: 0.75rem;
   border: 1px solid var(--border, var(--c-border-grey-90));
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1rem;
   min-width: 0;
 }
@@ -2852,7 +2852,7 @@ img.detail-cover {
 .book-cover {
   background: var(--c-bg-indigo-29);
   border: 0;
-  border-radius: 5px;
+  border-radius: 0;
 }
 .book-cover.cover-square {
   aspect-ratio: 1;
@@ -2888,7 +2888,7 @@ img.detail-cover {
   right: 8px;
   width: 25px;
   height: 25px;
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--c-bg-teal-49);
   color: var(--c-on-accent-grey-100);
 }
@@ -2902,7 +2902,7 @@ img.detail-cover {
 .cover-format {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: 0;
 }
 .cover-format.is-owned {
   background: var(--c-bg-teal-42-a95);
@@ -2937,7 +2937,7 @@ img.detail-cover {
   top: 8px;
   left: 8px;
   gap: 3px;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 4px 5px;
   font-size: 0.6875rem;
   background: var(--c-bg-slate-28-a92);
@@ -2969,7 +2969,7 @@ img.detail-cover {
   padding: 0;
   border: 1px solid var(--line);
   background: transparent;
-  border-radius: 50%;
+  border-radius: 0;
 }
 .shelf-pagination button:disabled {
   opacity: 0.3;
@@ -2991,7 +2991,7 @@ img.detail-cover {
 }
 .display-settings fieldset {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   margin: 12px 0;
   padding: 16px;
 }
@@ -3010,7 +3010,7 @@ img.detail-cover {
   background: var(--c-bg-indigo-67);
   width: 24px;
   height: 24px;
-  border-radius: 2px;
+  border-radius: 0;
 }
 .shape-swatch.portrait {
   width: 18px;
@@ -3130,7 +3130,7 @@ img.detail-cover {
 .catalog-editions .edition-card {
   padding: 20px;
   background: transparent;
-  border-radius: 10px;
+  border-radius: 0;
 }
 .catalog-editions .edition-card .section-heading {
   padding-bottom: 12px;
@@ -3139,7 +3139,7 @@ img.detail-cover {
 .catalog-reader .library-copy {
   align-items: start;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 20px;
   background: var(--surface);
 }
@@ -3191,7 +3191,7 @@ img.detail-cover {
   gap: 16px;
   padding: 20px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   align-items: start;
 }
 .book-download h3 {
@@ -3261,7 +3261,7 @@ img.detail-cover {
   font-size: 0.75rem;
   padding: 8px 10px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 0;
 }
 .book-manage-link.active {
   color: var(--accent);
@@ -3362,7 +3362,7 @@ img.detail-cover {
   overflow-x: auto;
   margin-block: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .book-data-table {
   width: 100%;
@@ -3441,7 +3441,7 @@ img.detail-cover {
   color: var(--text, var(--c-text-slate-93));
   background: var(--bg, var(--c-bg-slate-21));
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   box-shadow: 0 24px 90px var(--c-shadow-grey-0-a53);
   overflow-y: auto;
 }
@@ -3608,7 +3608,7 @@ img.detail-cover {
   padding: 1rem 1.2rem;
   border: 1px solid var(--line);
   border-left: 3px solid var(--accent);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--surface);
 }
 .book-details-status > svg {
@@ -3777,7 +3777,7 @@ img.detail-cover {
   margin-left: 8px;
   padding: 2px 7px;
   border: 1px solid currentColor;
-  border-radius: 5px;
+  border-radius: 0;
   font-size: 0.85em;
   color: inherit;
 }
@@ -3794,7 +3794,7 @@ img.detail-cover {
   top: -5px;
   left: calc(100% - 8px);
   padding: 1px 3px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--c-bg-teal-42);
   white-space: nowrap;
   font-size: 0.625rem;
@@ -3808,7 +3808,7 @@ img.detail-cover {
 }
 .book-match {
   border: 1px solid var(--border, var(--c-border-indigo-37));
-  border-radius: 14px;
+  border-radius: 0;
   padding: 24px;
   background: var(--panel, var(--c-bg-indigo-27));
 }
@@ -3867,7 +3867,7 @@ img.detail-cover {
   gap: 18px;
   padding: 16px;
   border: 1px solid var(--border, var(--c-border-indigo-37));
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--bg, var(--c-bg-slate-21));
 }
 .book-match-cover {
@@ -4010,7 +4010,7 @@ img.detail-cover {
   position: absolute;
   inset: 0;
   z-index: 1;
-  border-radius: 8px;
+  border-radius: 0;
 }
 .book-link-target:focus-visible {
   outline: 2px solid var(--accent, var(--c-border-amber-84));
@@ -4062,7 +4062,7 @@ img.detail-cover {
   background: var(--c-bg-slate-21-a27);
   color: var(--c-text-grey-100-a94);
   border: 1px solid var(--c-border-grey-100-a19);
-  border-radius: 10px;
+  border-radius: 0;
   box-shadow: 0 2px 8px var(--c-shadow-grey-0-a7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -4081,7 +4081,7 @@ img.detail-cover {
   background: var(--c-bg-slate-21-a19);
   color: var(--c-text-grey-100-a90);
   border: 1px solid var(--c-border-grey-100-a15);
-  border-radius: 10px;
+  border-radius: 0;
   box-shadow: none;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -4133,7 +4133,7 @@ img.detail-cover {
   min-height: 28px;
   padding: 4px 12px;
   border: 1px solid var(--c-border-slate-93);
-  border-radius: 15px;
+  border-radius: 0;
   background: var(--c-bg-indigo-87);
   color: var(--c-text-slate-21);
   box-shadow: 0 2px 8px var(--c-shadow-grey-0-a40);
@@ -4157,7 +4157,7 @@ img.detail-cover {
   max-width: calc(100% - 12px);
   margin: 0;
   padding: 5px 10px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--c-bg-indigo-26);
   color: var(--c-text-grey-100);
   font-size: 0.6875rem;
@@ -4330,7 +4330,7 @@ img.detail-cover {
   margin: 8px 0;
   padding: 12px;
   background: var(--c-bg-slate-21);
-  border-radius: 8px;
+  border-radius: 0;
   font-size: 0.75rem;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -4385,7 +4385,7 @@ img.detail-cover {
   width: 36px;
   height: 36px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 0;
 }
 a:hover .book-source-icon,
 a:focus-visible .book-source-icon {

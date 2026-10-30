@@ -40,7 +40,7 @@
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   margin: 0;
 }
@@ -108,7 +108,7 @@
   padding: 12px 14px;
   border-left: 3px solid var(--accent);
   background: var(--mam-soft);
-  border-radius: 0 6px 6px 0;
+  border-radius: 0;
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
 }
@@ -122,7 +122,7 @@
 .mam-purchase-review {
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--mam-soft);
   font-size: 0.8125rem;
   line-height: 1.6;
@@ -143,7 +143,7 @@
   display: grid;
   gap: 9px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 14px;
   min-width: 0;
 }

@@ -180,7 +180,7 @@
   padding: 14px 16px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
 }
 .reviews-summary label {
   display: flex;
@@ -244,7 +244,7 @@
   margin-top: 10px;
   padding: 0 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   font-size: 0.75rem;
 }
 .review-spoiler[open] {
@@ -311,7 +311,7 @@
 .metadata-workflow .book-match {
   padding: 18px;
   border-color: var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--surface);
 }
 .metadata-workflow .book-match-heading h2 {
@@ -331,7 +331,7 @@
   padding: 18px;
   margin-top: 16px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
 }
 .metadata-card h3 {
   margin: 0 0 5px;
@@ -454,7 +454,7 @@
   width: 88px;
   height: auto;
   padding: 5px;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid var(--line);
   background: var(--surface);
 }
@@ -462,7 +462,7 @@
   width: 76px;
   height: 110px;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: 0;
 }
 .metadata-cover-option span {
   display: flex;
@@ -479,7 +479,7 @@
 .metadata-workflow > .catalog-source-tools {
   margin-top: 16px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 16px 18px;
 }
 .metadata-workflow .source-attribution {
@@ -499,7 +499,7 @@
   padding: 16px 18px;
   margin: 12px 0 0;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   background: transparent;
 }
 .book-management summary:focus-visible {
@@ -534,7 +534,7 @@
   margin: 0 0 16px;
   padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .part-sets h3 {
   margin: 0 0 4px;
@@ -567,7 +567,7 @@
   margin: 0 0 16px;
   padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .part-sets h3 {
   margin: 0 0 4px;

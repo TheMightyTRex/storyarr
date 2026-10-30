@@ -18,7 +18,7 @@
 .skeleton-lines > div {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .skeleton-book .skeleton-cover {
   width: 150px;
@@ -199,7 +199,7 @@
   margin: 20px 0;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .release-decision-facts dt,
 .import-evidence dt {
@@ -313,7 +313,7 @@
   gap: 12px;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
 }
 .match-candidate:has(input:checked) {
@@ -366,7 +366,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 0;
     padding: 16px;
     background: var(--surface);
   }

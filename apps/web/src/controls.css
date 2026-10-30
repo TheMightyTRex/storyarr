@@ -2,7 +2,7 @@
    Navigation tabs, text links, draggable handles, and book cards retain their roles. */
 :root {
   --control-height: 30px;
-  --control-radius: 15px;
+  --control-radius: 0;
   --control-font-size: 0.6875rem;
   --control-gap: 5px;
   --control-padding: 10px;
@@ -40,7 +40,7 @@ button:not(
   min-height: var(--control-height);
   padding: 5px var(--control-padding);
   border: 1px solid var(--line);
-  border-radius: var(--control-radius);
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font-size: var(--control-font-size);
@@ -132,7 +132,7 @@ button:disabled {
   min-height: var(--control-height);
   padding: 0;
   flex-shrink: 0;
-  border-radius: 50%;
+  border-radius: 0;
 }
 button > svg,
 :is(.control-action, .shelf-action, .reader-action-link, .source-search-action)
@@ -157,7 +157,7 @@ button > svg,
   min-height: var(--control-height);
   padding: 4px var(--control-padding);
   border: 1px solid var(--line);
-  border-radius: var(--control-radius);
+  border-radius: 0;
   background-color: transparent;
   color: inherit;
   font-size: 0.75rem;
@@ -184,7 +184,7 @@ input:disabled {
 .quick-add-split {
   height: var(--control-height);
   border: 1px solid var(--line);
-  border-radius: var(--control-radius);
+  border-radius: 0;
   background: transparent;
 }
 .quick-add-split > button.primary {
@@ -194,8 +194,7 @@ input:disabled {
   margin: 0;
   padding: 0 9px;
   border: 0;
-  border-radius: calc(var(--control-radius) - 1px) 0 0
-    calc(var(--control-radius) - 1px);
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font-size: var(--control-font-size);
@@ -214,8 +213,7 @@ input:disabled {
   padding: 0;
   border: 0;
   border-left: 1px solid var(--line);
-  border-radius: 0 calc(var(--control-radius) - 1px)
-    calc(var(--control-radius) - 1px) 0;
+  border-radius: 0;
   color: inherit;
   background: transparent;
 }
@@ -228,7 +226,7 @@ input:disabled {
   height: 14px;
 }
 .quick-add-options {
-  border-radius: 12px;
+  border-radius: 0;
 }
 .quick-add-options > button {
   justify-content: flex-start;
@@ -236,7 +234,7 @@ input:disabled {
   min-height: var(--control-height);
   padding: 5px 10px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 0;
   background: transparent;
   text-align: left;
   font-size: 0.75rem;
@@ -244,7 +242,7 @@ input:disabled {
 .list-refresh {
   height: var(--control-height);
   border: 1px solid var(--line);
-  border-radius: var(--control-radius);
+  border-radius: 0;
   background: transparent;
 }
 .list-refresh > button {
@@ -260,15 +258,13 @@ input:disabled {
 }
 .list-refresh > .list-refresh-main {
   padding: 0 8px 0 10px;
-  border-radius: calc(var(--control-radius) - 1px) 0 0
-    calc(var(--control-radius) - 1px);
+  border-radius: 0;
 }
 .list-refresh > .list-refresh-toggle {
   width: calc(var(--control-height) - 2px);
   padding: 0;
   border-left: 1px solid var(--line);
-  border-radius: 0 calc(var(--control-radius) - 1px)
-    calc(var(--control-radius) - 1px) 0;
+  border-radius: 0;
 }
 .list-refresh > button:hover:not(:disabled) {
   background: var(--surface);
@@ -279,7 +275,7 @@ input:disabled {
   min-height: var(--control-height);
   padding: 5px 10px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 0;
   background: transparent;
   text-align: left;
   font-size: 0.75rem;
@@ -290,7 +286,7 @@ input:disabled {
 }
 /* Joined toggle choices retain a visible selected state without nested pills. */
 .segmented-control {
-  border-radius: var(--control-radius);
+  border-radius: 0;
 }
 .segmented-control button {
   border: 0;
@@ -324,7 +320,7 @@ input:disabled {
   min-height: var(--control-height);
   padding: 5px 10px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 0;
   background: transparent;
   text-align: left;
   font-size: 0.75rem;
@@ -354,7 +350,7 @@ input:disabled {
 
 /* The global search field already has a surrounding control frame. */
 .topbar .search {
-  border-radius: 18px;
+  border-radius: 0;
 }
 .topbar .search input {
   border: 0;
@@ -377,7 +373,7 @@ input:disabled {
 .book-source-icon {
   width: var(--control-height);
   height: var(--control-height);
-  border-radius: 50%;
+  border-radius: 0;
 }
 .shelf-icon .book-source-icon {
   width: 100%;
@@ -416,10 +412,10 @@ input:disabled {
   border-color: var(--c-border-slate-93);
   color: var(--c-text-slate-21);
   font-weight: 650;
-  border-radius: var(--control-radius);
+  border-radius: 0;
 }
 .cover-quick-formats button {
-  border-radius: 50%;
+  border-radius: 0;
 }
 .cover-quick-add button svg {
   stroke-width: 2;
@@ -476,7 +472,7 @@ button.release-day .release-count {
   height: auto;
   min-height: 64px;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 0;
   text-align: left;
   white-space: normal;
   line-height: 1.35;
@@ -487,7 +483,7 @@ button.release-day .release-count {
   padding: 2px 6px;
   border-color: transparent;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 0;
   color: var(--accent);
   font-size: 0.75rem;
   font-weight: 550;
@@ -505,7 +501,7 @@ button.release-day .release-count {
   margin: 0;
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--panel, var(--c-bg-indigo-27));
   color: var(--c-text-grey-97);
   box-shadow: 0 12px 30px var(--c-shadow-grey-0-a67);
@@ -534,7 +530,7 @@ button.app-select-option {
   margin: 0;
   padding: 6px 10px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font-size: 0.8125rem;
@@ -611,7 +607,7 @@ button.list-choice-option {
   min-height: 52px;
   padding: 8px 10px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font-size: 0.875rem;
@@ -656,7 +652,7 @@ button.list-choice-option[aria-checked="true"]:hover:not(:disabled) {
   width: 32px;
   height: 32px;
   flex: 0 0 32px;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--c-bg-slate-21);
   color: var(--accent);
   font:

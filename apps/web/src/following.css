@@ -61,7 +61,7 @@
   padding: 16px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
 }
 .follow-book-copy {
   min-width: 0;
@@ -93,7 +93,7 @@
 .following-page .book-cover {
   width: 100%;
   aspect-ratio: 2 / 3;
-  border-radius: 3px 6px 6px 3px;
+  border-radius: 0;
 }
 .following-page .book-cover img {
   width: 100%;
@@ -180,7 +180,7 @@
   flex-shrink: 0;
   align-self: start;
   background: var(--surface);
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
   color: var(--muted);
 }
@@ -579,7 +579,7 @@ button.follow-count[aria-expanded="true"] {
 
 .delete-warning {
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--c-bg-slate-36);
   color: var(--c-text-amber-88);
 }
@@ -606,7 +606,7 @@ button.follow-count[aria-expanded="true"] {
   margin: 0 0 8px;
   padding: 8px 12px 8px 32px;
   border: 1px solid var(--line, var(--c-border-indigo-33));
-  border-radius: 8px;
+  border-radius: 0;
   font-size: 0.8125rem;
   line-height: 1.6;
 }

@@ -42,6 +42,11 @@ test("Display and accessibility settings change the theme and reading aids, and 
     .getByRole("button", { name: "Display" })
     .boundingBox();
   expect(display!.x + display!.width).toBe(rightmost);
+  // Corners are square across the app.
+  await expect(page.getByRole("button", { name: "Display" })).toHaveCSS(
+    "border-radius",
+    "0px",
+  );
   await page.getByRole("button", { name: "Display" }).click();
   const dialog = page.getByRole("dialog", {
     name: "Display and accessibility",

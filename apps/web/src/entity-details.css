@@ -33,7 +33,7 @@
 }
 .author-portrait {
   aspect-ratio: 4 / 5;
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--surface);
   border: 1px solid var(--line);
   display: grid;
@@ -86,7 +86,7 @@
   height: 240px;
   display: grid;
   place-items: center;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--muted);
@@ -100,7 +100,7 @@
 .series-ownership-track {
   height: 5px;
   background: var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   margin-bottom: 8px;
   overflow: hidden;
 }
@@ -272,7 +272,7 @@
 .library-group-card {
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--surface);
 }
@@ -491,7 +491,7 @@
 .series-list-editor {
   margin: 0;
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 0;
 }
 .series-composer-heading {
   display: flex;
@@ -519,7 +519,7 @@
   gap: 6px;
 }
 .series-format-choices button {
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 10px;
   font-size: 0.75rem;
 }
@@ -665,7 +665,7 @@
   gap: 10px;
   padding: 12px;
   background: color-mix(in srgb, var(--accent) 8%, transparent);
-  border-radius: 8px;
+  border-radius: 0;
   font-size: 0.875rem;
 }
 .series-missing-summary > .muted {
@@ -679,7 +679,7 @@
   display: grid;
   gap: 8px;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--accent) 9%, transparent);
 }
 .series-start-status p {

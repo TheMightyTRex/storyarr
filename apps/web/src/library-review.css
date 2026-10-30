@@ -46,14 +46,14 @@
   gap: 6px;
   padding: 4px 6px 4px 10px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--review-surface);
   color: var(--c-text-slate-91);
 }
 .review-insights strong {
   min-width: 1.4em;
   padding: 0 6px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--c-bg-indigo-31);
   color: var(--c-text-indigo-87);
   font-size: 0.6875rem;
@@ -68,7 +68,7 @@
   margin: 0 0 16px;
   padding: 10px 12px 10px 14px;
   border: 1px solid var(--c-border-teal-47);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--c-bg-slate-29);
   color: var(--c-text-teal-92);
   font-size: 0.875rem;
@@ -97,7 +97,7 @@
   flex-direction: column;
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--review-surface);
   transition: border-color 0.15s ease;
 }
@@ -151,7 +151,7 @@
   display: inline-flex;
   align-items: center;
   padding: 3px 8px;
-  border-radius: 5px;
+  border-radius: 0;
   font-size: 0.6875rem;
   font-weight: 650;
   color: var(--c-text-indigo-87);
@@ -191,7 +191,7 @@
   margin: 0 0 12px;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   font-size: 0.8125rem;
 }
 .review-auto-match p {
@@ -252,7 +252,7 @@
   gap: 18px;
   padding: 20px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--surface);
 }
 .review-report-heading {
@@ -317,7 +317,7 @@
 .review-report code {
   display: block;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--c-bg-slate-21);
   font-size: 0.75rem;
   white-space: pre-wrap;
@@ -344,7 +344,7 @@
 .review-next-step {
   padding: 16px 18px;
   border: 1px solid var(--c-border-amber-43);
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--c-bg-slate-27);
 }
 .review-next-step p {
