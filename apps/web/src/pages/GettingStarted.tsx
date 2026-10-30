@@ -57,11 +57,12 @@ export default function GettingStarted({ role }: { role: string }) {
         "downloaders",
         "storage",
         "reading",
+        "automation",
         "finish",
       ]
     : role === "viewer"
       ? ["catalog", "finish"]
-      : ["catalog", "preferences", "reading", "finish"];
+      : ["catalog", "preferences", "reading", "automation", "finish"];
   const descriptions: Record<string, string> = {
     catalog:
       "Connect Hardcover for discovery, or use Open Library without an account.",
@@ -74,6 +75,8 @@ export default function GettingStarted({ role }: { role: string }) {
       "Connect qBittorrent for torrents, or SABnzbd or NZBGet for Usenet.",
     storage: "Choose where imported books will be saved.",
     preferences: "Choose the formats and sources you prefer.",
+    automation:
+      "Choose which kinds of books new author and series follows include.",
     finish:
       "Your saved settings are ready. You can change them anytime in Settings.",
   };

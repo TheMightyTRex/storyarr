@@ -13,7 +13,7 @@ from app.api.dependencies import Database, Member
 from app.api.list_subscriptions import SubscriptionView
 from app.api.list_subscriptions import view as subscription_view
 from app.db.models import AuditEvent, BookList, CatalogAccount, ListSubscription, Operation
-from app.domain import following_overview, list_policies
+from app.domain import automation_settings, following_overview, list_policies
 from app.domain.follows import source
 from app.domain.list_subscriptions import begin, owned_list
 from app.domain.operations import transaction_lock
@@ -27,7 +27,8 @@ class CatalogFollowInput(BaseModel):
     source_kind: Literal["author", "series"]
     external_id: int = Field(ge=1, le=2147483647, strict=True)
     name: str = Field(min_length=1, max_length=200)
-    filters: FollowFilters = Field(default_factory=FollowFilters)
+    # Omitted filters use the member's automation defaults.
+    filters: FollowFilters | None = None
 
 
 class FollowEdit(BaseModel):
@@ -185,6 +186,7 @@ async def follow(body: CatalogFollowInput, user: Member, db: Database):
             result = await view(db, item, row, config)
             await db.commit()
             return result
+    filters = body.filters or (await automation_settings.current(db, user.id))[1].follow_filters
     item = BookList(owner_id=user.id, name=body.name, shared=False)
     db.add(item)
     await db.flush()
@@ -192,7 +194,7 @@ async def follow(body: CatalogFollowInput, user: Member, db: Database):
         "source_kind": body.source_kind,
         "external_id": str(body.external_id),
         "name": body.name,
-        "filters": body.filters.model_dump(mode="json"),
+        "filters": filters.model_dump(mode="json"),
         "followed_at": datetime.now(UTC).isoformat(),
     }
     row = ListSubscription(

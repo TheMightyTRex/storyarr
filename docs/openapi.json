@@ -17622,6 +17622,66 @@
         }
       }
     },
+    "/api/automation/settings": {
+      "get": {
+        "tags": [
+          "automation-settings"
+        ],
+        "summary": "Read",
+        "operationId": "read_api_automation_settings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationSettingsView"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "automation-settings"
+        ],
+        "summary": "Save",
+        "operationId": "save_api_automation_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomationSettingsInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationSettingsView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/acquisition/selections/{selection_id}/pack-preview": {
       "get": {
         "tags": [
@@ -20449,6 +20509,58 @@
         ],
         "title": "AutomationPermissionInput"
       },
+      "AutomationSettingsInput": {
+        "properties": {
+          "follow_filters": {
+            "$ref": "#/components/schemas/FollowFilters"
+          },
+          "expected_generation": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Generation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "follow_filters",
+          "expected_generation"
+        ],
+        "title": "AutomationSettingsInput"
+      },
+      "AutomationSettingsView": {
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/AutomationValues"
+          },
+          "built_in": {
+            "$ref": "#/components/schemas/AutomationValues"
+          },
+          "generation": {
+            "type": "integer",
+            "title": "Generation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "settings",
+          "built_in",
+          "generation"
+        ],
+        "title": "AutomationSettingsView"
+      },
+      "AutomationValues": {
+        "properties": {
+          "follow_filters": {
+            "$ref": "#/components/schemas/FollowFilters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "follow_filters"
+        ],
+        "title": "AutomationValues"
+      },
       "Availability": {
         "properties": {
           "owned": {
@@ -21410,7 +21522,14 @@
             "title": "Name"
           },
           "filters": {
-            "$ref": "#/components/schemas/FollowFilters"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FollowFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -26662,6 +26781,26 @@
           "coauthored": {
             "type": "boolean",
             "title": "Coauthored",
+            "default": true
+          },
+          "comics": {
+            "type": "boolean",
+            "title": "Comics",
+            "default": false
+          },
+          "plays": {
+            "type": "boolean",
+            "title": "Plays",
+            "default": false
+          },
+          "companions": {
+            "type": "boolean",
+            "title": "Companions",
+            "default": false
+          },
+          "non_fiction": {
+            "type": "boolean",
+            "title": "Non Fiction",
             "default": true
           },
           "language": {

@@ -724,3 +724,41 @@ async def test_release_feed_uses_latest_eligible_snapshot_before_date_filtering(
     ).json()
     assert result["items"][0]["release_date"] == earlier
     assert result["items"][0]["follow_names"] == ["Writer"]
+
+
+async def test_new_follows_use_saved_automation_defaults(client, database, admin, monkeypatch):
+    async with database() as db, db.begin():
+        db.add(
+            CatalogAccount(
+                user_id=UUID(admin["id"]),
+                enabled=True,
+                generation=1,
+                encrypted_token=encrypt_secrets({"token": "fixture-only"}),
+            )
+        )
+    built_in = (await client.get("/api/automation/settings")).json()
+    assert built_in["generation"] == 0
+    assert built_in["settings"]["follow_filters"]["comics"] is False
+    assert built_in["settings"]["follow_filters"]["non_fiction"] is True
+    filters = {**built_in["settings"]["follow_filters"], "plays": True, "non_fiction": False}
+    saved = await client.put(
+        "/api/automation/settings", json={"follow_filters": filters, "expected_generation": 0}
+    )
+    assert saved.status_code == 200, saved.text
+    assert saved.json()["generation"] == 1
+    assert saved.json()["built_in"] == built_in["built_in"]
+    stale = await client.put(
+        "/api/automation/settings", json={"follow_filters": filters, "expected_generation": 0}
+    )
+    assert stale.status_code == 409
+    followed = await client.post(
+        "/api/following", json={"source_kind": "author", "external_id": 9, "name": "Writer"}
+    )
+    assert followed.status_code == 201, followed.text
+    assert followed.json()["filters"]["plays"] is True
+    assert followed.json()["filters"]["non_fiction"] is False
+    chosen = await client.post(
+        "/api/following",
+        json={"source_kind": "series", "external_id": 7, "name": "Saga", "filters": {}},
+    )
+    assert chosen.json()["filters"]["plays"] is False

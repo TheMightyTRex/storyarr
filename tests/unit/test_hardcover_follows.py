@@ -3,7 +3,7 @@ from copy import deepcopy
 import pytest
 
 from app.adapters.contracts import AdapterError
-from app.adapters.hardcover_follows import FollowFilters, filter_reason, page
+from app.adapters.hardcover_follows import FollowFilters, book_types, filter_reason, page
 from app.domain.hardcover_subscriptions import advance
 
 
@@ -148,3 +148,55 @@ async def test_language_existence_rows_must_be_bounded_valid_editions(matches):
 
     with pytest.raises(AdapterError):
         await page(query, "author", "9", 0, FollowFilters(language="en"))
+
+
+def genres(*pairs):
+    return {"Genre": [{"tag": tag, "count": count} for tag, count in pairs]}
+
+
+@pytest.mark.parametrize(
+    ("title", "tags", "kinds"),
+    [
+        ("Mort: The Play", genres(("fantasy", 2)), ["play"]),
+        ("Hogfather: The Illustrated Screenplay", {}, ["play"]),
+        ("Guards! Guards!: The Graphic Novel", genres(("fantasy", 3)), ["comic"]),
+        ("Do Androids Dream of Electric Sheep? (Comic Adaptation) #17", {}, ["comic"]),
+        ("Rivers of London: Body Work #3", genres(("fantasy", 1)), ["comic"]),
+        ("The Discworld Mapp", genres(("fantasy", 1)), ["companion"]),
+        ("Discworld's Unseen University Diary 1998", {}, ["companion"]),
+        ("The Discworld Massif 1000 Piece Puzzle", {}, ["companion"]),
+        ("GURPS Discworld", {}, ["companion"]),
+        ("A Slip of the Keyboard", genres(("nonfiction", 20), ("fantasy", 2)), ["non_fiction"]),
+        # Novels whose titles or stray tags look like something else.
+        ("Guards! Guards!", genres(("fantasy", 120), ("comics", 1)), []),
+        ("Diary of a Wimpy Kid", genres(("fiction", 300)), []),
+        ("The Murderbot Diaries #5- Network Effect", {}, []),
+        ("The Murderbot Diaries #9", genres(("science fiction", 40)), []),
+        ("Murder at the ABA: A Puzzle in Four Days & Sixty Scenes", {}, []),
+        ("The Companion: A Miss Marple Short Story", {}, []),
+        ("The Mammoth Book of Comic Fantasy", {}, []),
+        ("The Ships of Air: Fall of Ile-Rien Series # 2", {}, []),
+        ("Apex Magazine #133", {}, []),
+    ],
+)
+def test_book_types_from_titles_and_genre_tags(title, tags, kinds):
+    assert book_types(title, tags) == kinds
+
+
+def test_book_type_filters_keep_existing_follows_and_name_the_reason():
+    record = {
+        "classification": "mort: the play",
+        "compilation": False,
+        "main_series": True,
+        "authors": ["Writer"],
+        "language_match": True,
+        "book_types": ["play"],
+    }
+    assert filter_reason(record, FollowFilters(), "author") == "Play or screenplay"
+    assert filter_reason(record, FollowFilters(plays=True), "author") is None
+    record["book_types"] = ["non_fiction"]
+    assert filter_reason(record, FollowFilters(), "author") is None
+    assert filter_reason(record, FollowFilters(non_fiction=False), "author") == "Non-fiction"
+    # Snapshots saved before book types existed are never filtered by type.
+    del record["book_types"]
+    assert filter_reason(record, FollowFilters(non_fiction=False), "author") is None

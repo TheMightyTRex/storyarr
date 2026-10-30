@@ -17,6 +17,10 @@ async function fixture(page: Page, initiallyFollowing = false) {
     anthologies: false,
     non_main_series: false,
     coauthored: true,
+    comics: false,
+    plays: false,
+    companions: false,
+    non_fiction: true,
     language: null,
   };
   const profile = {
@@ -135,7 +139,13 @@ async function fixture(page: Page, initiallyFollowing = false) {
     const method = route.request().method();
     if (path === "/api/catalog/cover-image") return route.fallback();
     let data: unknown = [];
-    if (path === "/api/auth/me")
+    if (path === "/api/automation/settings")
+      data = {
+        settings: { follow_filters: filters },
+        built_in: { follow_filters: filters },
+        generation: 0,
+      };
+    else if (path === "/api/auth/me")
       data = {
         user: {
           id: "reader",

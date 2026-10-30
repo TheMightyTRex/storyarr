@@ -18,7 +18,129 @@ class FollowFilters(BaseModel):
     anthologies: bool = False
     non_main_series: bool = False
     coauthored: bool = True
+    comics: bool = False
+    plays: bool = False
+    companions: bool = False
+    non_fiction: bool = True
     language: str | None = Field(default=None, pattern=r"^[a-z]{2}$")
+
+
+# Hardcover genre tags are crowd-sourced, so a single stray tag must not reclassify a novel.
+# Title patterns catch items that carry no useful tags at all (maps, diaries, comic issues).
+FICTION_GENRES = frozenset(
+    {
+        "fiction",
+        "fantasy",
+        "science fiction",
+        "mystery",
+        "thriller",
+        "romance",
+        "horror",
+        "young adult",
+        "literary fiction",
+        "historical fiction",
+        "adventure",
+        "crime",
+        "classics",
+        "dystopian",
+        "paranormal",
+    }
+)
+FACTUAL_GENRES = frozenset(
+    {
+        "nonfiction",
+        "non-fiction",
+        "biography",
+        "autobiography",
+        "memoir",
+        "memoirs",
+        "essays",
+        "history",
+        "true crime",
+        "self help",
+        "philosophy",
+        "reference",
+        "journalism",
+        "politics",
+        "psychology",
+        "popular science",
+    }
+)
+COMIC_GENRES = frozenset({"comics", "comic books", "graphic novels", "graphic novel", "manga"})
+PLAY_GENRES = frozenset({"plays", "theatre", "theater", "screenplays", "drama plays"})
+# "Comic" alone usually means funny ("The Mammoth Book of Comic Fantasy").
+COMIC_TITLE = re.compile(
+    r"\bcomics\b|\bcomic (?:adaptation|book|strip)\b|\bbig comic\b|\bgraphic novel\b|\bmanga\b"
+)
+# A trailing "#3" is a comic issue unless readers tag the book as fiction (numbered novels) or
+# the title names a magazine, anthology or series.
+ISSUE_NUMBER = re.compile(r"#\s?\d+\s*$")
+PERIODICAL = re.compile(r"\bmagazine\b|\bpack\b|\barchive\b|\banthology\b|\bstories\b|\bseries\b")
+PLAY_TITLE = re.compile(
+    r"\bthe play\b|\bscreenplay\b|\bstage (?:play|adaptation|version)\b|\bplayscript\b"
+    r"|\bradio scripts?\b"
+)
+# Anchored where plain words are also series names ("The Murderbot Diaries") or novel titles
+# ("Murder at the ABA: A Puzzle...", "The Companion: A Miss Marple Story").
+COMPANION_TITLE = re.compile(
+    r"\bdiary(?:\s+(?:19|20)\d\d)?\s*$|\bdiary\s+(?:19|20)\d\d\b|\byearbook\b|\bjournal\s*$"
+    r"|\bcalendar\b|\balmana[ck]\b|\bmapp?\s*$|\bmapp\b|\batlas\b|(?<!\bthe )\bcompanion\b"
+    r"|\bhandbook\b|\bcolou?ring book\b|\bjigsaw\b|\b\d+[ -]piece puzzle\b|\bpuzzle book\b"
+    r"|\bquiz(?:book)?\b|\btourist guide\b|\bcook ?book\b|\bnotebook\b|\bthe art of\b"
+    r"|\bportfolio\b|\bfolio\s*$"
+    r"|\brole-?playing game\b|\brpg\b|\bgurps\b|\bcut-?out book\b|\bsticker book\b"
+    r"|\bactivity book\b|\bencyclop(?:a)?edia\b|\bbestiary\b|\bwit and wisdom\b"
+    r"|\bquotations\b|\bpostcards?\b|\bcompleat\b"
+)
+# A title-pattern companion (a "Journal", a "Map") is still a novel when readers tag it as one.
+ESTABLISHED_FICTION = 10
+
+
+def genre_counts(tags):
+    if not isinstance(tags, dict):
+        return {}
+    counts = {}
+    for key, values in tags.items():
+        if str(key).casefold() != "genre" or not isinstance(values, list):
+            continue
+        for item in values:
+            if isinstance(item, dict) and isinstance(item.get("tag"), str):
+                count = item.get("count")
+                name = item["tag"].casefold().strip()
+                counts[name] = counts.get(name, 0) + (
+                    count if type(count) is int and count > 0 else 1
+                )
+    return counts
+
+
+def book_types(title, tags):
+    """Kinds of book a follow can leave out: comic, play, companion, non_fiction."""
+    text = title.casefold()
+    genres = genre_counts(tags)
+
+    def total(names):
+        return sum(count for name, count in genres.items() if name in names)
+
+    fiction, factual = total(FICTION_GENRES), total(FACTUAL_GENRES)
+    kinds = []
+    comic_tags = total(COMIC_GENRES)
+    if (
+        COMIC_TITLE.search(text)
+        or comic_tags >= max(2, fiction / 2)
+        or (
+            ISSUE_NUMBER.search(text)
+            and not PERIODICAL.search(text)
+            and (comic_tags or fiction < ESTABLISHED_FICTION)
+        )
+    ):
+        kinds.append("comic")
+    if PLAY_TITLE.search(text) or total(PLAY_GENRES) >= max(2, fiction / 2):
+        kinds.append("play")
+    if COMPANION_TITLE.search(text) and fiction < ESTABLISHED_FICTION:
+        kinds.append("companion")
+    if factual > fiction:
+        kinds.append("non_fiction")
+    return kinds
 
 
 AUTHOR = """contributions: {author_id: {_eq: $id}, _or: [
@@ -50,6 +172,15 @@ def filter_reason(record, filters, kind):
         record["compilation"] or re.search(r"\bomnibus\b|\bcompilation\b|\bcollected works\b", text)
     ):
         return "Compilation"
+    kinds = record.get("book_types") or []
+    if not filters.comics and "comic" in kinds:
+        return "Comic or graphic novel"
+    if not filters.plays and "play" in kinds:
+        return "Play or screenplay"
+    if not filters.companions and "companion" in kinds:
+        return "Companion, diary, map or game"
+    if not filters.non_fiction and "non_fiction" in kinds:
+        return "Non-fiction"
     if not filters.non_main_series and not record["main_series"]:
         return "Non-main-series title"
     if not filters.coauthored and len(record["authors"]) > 1:
@@ -150,6 +281,7 @@ async def page(query, kind, external_id, cursor, filters):
                 "main_series": (main or (kind == "author" and not memberships))
                 and not raw["is_partial_book"],
                 "classification": (book.title + " " + str(raw.get("cached_tags") or "")).casefold(),
+                "book_types": book_types(book.title, raw.get("cached_tags")),
                 "language_match": bool(matches),
                 "cover_url": cover_url((raw.get("cached_image") or {}).get("url")),
             }

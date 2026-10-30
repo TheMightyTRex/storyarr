@@ -7,70 +7,18 @@ import { Loading, Notice } from "../components";
 import { randomUUID } from "../randomUUID";
 import ListPolicy from "./ListPolicy";
 import ListRequests from "./ListRequests";
+import FollowFilterFields from "../components/FollowFilterFields";
+import { useAutomationSettings } from "./AutomationSettings";
 
 type Follow = components["schemas"]["CatalogFollowView"];
 type Filters = components["schemas"]["FollowFilters"];
-const defaults: Filters = {
-  compilations: false,
-  box_sets: false,
-  anthologies: false,
-  non_main_series: false,
-  coauthored: true,
-  language: null,
-};
-
-function FilterFields({
-  value,
-  change,
-}: {
-  value: Filters;
-  change: (value: Filters) => void;
-}) {
-  const labels = {
-    compilations: "Include compilations",
-    box_sets: "Include box sets",
-    anthologies: "Include anthologies",
-    non_main_series: "Include non-main-series titles",
-    coauthored: "Include co-authored books",
-  } as const;
-  return (
-    <fieldset>
-      <legend>Books to include</legend>
-      {Object.entries(labels).map(([key, label]) => (
-        <label className="check-label" key={key}>
-          <input
-            type="checkbox"
-            checked={value[key as keyof typeof labels] ?? false}
-            onChange={(e) => change({ ...value, [key]: e.target.checked })}
-          />
-          {label}
-        </label>
-      ))}
-      <label>
-        Edition language (optional)
-        <input
-          value={value.language || ""}
-          placeholder="en"
-          pattern="[a-z]{2}"
-          maxLength={2}
-          onChange={(e) =>
-            change({ ...value, language: e.target.value.toLowerCase() || null })
-          }
-        />
-      </label>
-      <p className="muted">
-        Use a two-letter language code. Books without a matching edition are
-        excluded. Collection filters use Hardcover series flags, titles and
-        tags.
-      </p>
-    </fieldset>
-  );
-}
 
 export default function FollowSettings() {
   const [params, setParams] = useSearchParams();
   const cache = useQueryClient();
-  const [filters, setFilters] = useState<Filters>(defaults);
+  const automation = useAutomationSettings();
+  const [chosen, setFilters] = useState<Filters | null>(null);
+  const filters = chosen || automation.data?.settings.follow_filters;
   const kind = params.get("kind");
   const externalId = params.get("externalId");
   const name = params.get("name") || "";
@@ -92,7 +40,7 @@ export default function FollowSettings() {
             source_kind: kind as "author" | "series",
             external_id: Number(externalId),
             name: name.slice(0, 200),
-            filters,
+            filters: filters || null,
           },
         }),
       ),
@@ -116,7 +64,7 @@ export default function FollowSettings() {
         Follow authors and series. Future books only is the default; no existing
         books are requested without a reviewed selection.
       </p>
-      <Notice error={query.error || create.error} />
+      <Notice error={query.error || create.error || automation.error} />
       {query.isPending ? <Loading /> : null}
       {query.error && (
         <button onClick={() => query.refetch()}>Retry following</button>
@@ -136,13 +84,17 @@ export default function FollowSettings() {
           }}
         >
           <h2>Follow {name}</h2>
-          <FilterFields value={filters} change={setFilters} />
+          {filters ? (
+            <FollowFilterFields value={filters} change={setFilters} />
+          ) : (
+            <Loading />
+          )}
           <p>
             First we verify the complete catalog. Then choose Browse, Manual or
             Automatic, media, and a download profile. Include back catalog by
             selecting up to 25 current books in the policy preview.
           </p>
-          <button className="primary" disabled={create.isPending}>
+          <button className="primary" disabled={create.isPending || !filters}>
             Follow and preview catalog
           </button>
         </form>
@@ -295,7 +247,7 @@ function FollowEditor({ follow }: { follow: Follow }) {
             edit.mutate(follow.subscription.enabled);
           }}
         >
-          <FilterFields value={filters} change={setFilters} />
+          <FollowFilterFields value={filters} change={setFilters} />
           <p>
             Saving pauses acquisition until you review a fresh policy preview.
             Exclusions are preserved.

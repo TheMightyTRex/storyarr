@@ -10,6 +10,7 @@ const Libraries = lazy(() => import("./Connections"));
 const Sources = lazy(() => import("./SourceSettings"));
 const Downloaders = lazy(() => import("./Downloaders"));
 const Preferences = lazy(() => import("./DownloadPreferences"));
+const Automation = lazy(() => import("./AutomationSettings"));
 const Naming = lazy(() => import("./Organization"));
 const Recovery = lazy(() => import("./DownloadRecoverySettings"));
 const Capacity = lazy(() => import("./CapacitySettings"));
@@ -79,6 +80,7 @@ export function settingsSections(role: string, permissions: string[] = []) {
             title: "Download preferences",
             content: <Preferences admin={admin} embedded />,
           },
+          { id: "automation", title: "Automation", content: <Automation /> },
         ]
       : []),
     ...(admin

@@ -391,6 +391,17 @@ class AcquisitionDefaults(Base):
     preferences: Mapped[dict[str, Any]] = mapped_column(JSONB)
 
 
+class AutomationSettings(Base):
+    """A member's automation defaults; omitted fields use the built-in defaults."""
+
+    __tablename__ = "automation_settings"
+    owner_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    generation: Mapped[int] = mapped_column(Integer, default=1)
+    settings: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+
+
 class AcquisitionProfile(Identity, Base):
     __tablename__ = "acquisition_profiles"
     owner_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), index=True)

@@ -19,6 +19,7 @@ from app.api import (
     auth,
     automatic_imports,
     automatic_selection,
+    automation_settings,
     book_sources,
     capacity,
     catalog,
@@ -223,6 +224,7 @@ def create_app() -> FastAPI:
     app.include_router(downloaders.router, prefix="/api")
     app.include_router(source_artifacts.router, prefix="/api")
     app.include_router(acquisition_preferences.router, prefix="/api")
+    app.include_router(automation_settings.router, prefix="/api")
     app.include_router(acquisition_selections.router, prefix="/api")
     dist: Path = get_settings().web_dist
     if (dist / "assets").is_dir():

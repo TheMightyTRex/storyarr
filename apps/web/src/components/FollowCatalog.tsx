@@ -11,15 +11,6 @@ import { api, ApiError, result } from "../api/client";
 import type { components } from "../api/schema";
 
 export type CatalogFollow = components["schemas"]["CatalogFollowView"];
-export const followDefaults: components["schemas"]["FollowFilters"] = {
-  compilations: false,
-  box_sets: false,
-  anthologies: false,
-  non_main_series: false,
-  coauthored: true,
-  language: null,
-};
-
 export function useFollowing() {
   return useQuery({
     queryKey: ["following"],
@@ -54,7 +45,6 @@ export default function FollowCatalog({
             source_kind: kind,
             external_id: Number(externalId),
             name: name.slice(0, 200),
-            filters: followDefaults,
           },
         }),
       ),

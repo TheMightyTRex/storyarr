@@ -5408,6 +5408,24 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/automation/settings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read */
+    get: operations["read_api_automation_settings_get"];
+    /** Save */
+    put: operations["save_api_automation_settings_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/acquisition/selections/{selection_id}/pack-preview": {
     parameters: {
       query?: never;
@@ -6448,6 +6466,23 @@ export interface components {
       /** Expected Allowed */
       expected_allowed: boolean;
     };
+    /** AutomationSettingsInput */
+    AutomationSettingsInput: {
+      follow_filters: components["schemas"]["FollowFilters"];
+      /** Expected Generation */
+      expected_generation: number;
+    };
+    /** AutomationSettingsView */
+    AutomationSettingsView: {
+      settings: components["schemas"]["AutomationValues"];
+      built_in: components["schemas"]["AutomationValues"];
+      /** Generation */
+      generation: number;
+    };
+    /** AutomationValues */
+    AutomationValues: {
+      follow_filters: components["schemas"]["FollowFilters"];
+    };
     /** Availability */
     Availability: {
       /**
@@ -6842,7 +6877,7 @@ export interface components {
       external_id: number;
       /** Name */
       name: string;
-      filters?: components["schemas"]["FollowFilters"];
+      filters?: components["schemas"]["FollowFilters"] | null;
     };
     /** CatalogFollowView */
     CatalogFollowView: {
@@ -8794,6 +8829,26 @@ export interface components {
        * @default true
        */
       coauthored: boolean;
+      /**
+       * Comics
+       * @default false
+       */
+      comics: boolean;
+      /**
+       * Plays
+       * @default false
+       */
+      plays: boolean;
+      /**
+       * Companions
+       * @default false
+       */
+      companions: boolean;
+      /**
+       * Non Fiction
+       * @default true
+       */
+      non_fiction: boolean;
       /** Language */
       language?: string | null;
     };
@@ -26468,6 +26523,59 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["DefaultsView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  read_api_automation_settings_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AutomationSettingsView"];
+        };
+      };
+    };
+  };
+  save_api_automation_settings_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AutomationSettingsInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AutomationSettingsView"];
         };
       };
       /** @description Validation Error */
