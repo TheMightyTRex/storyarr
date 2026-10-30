@@ -134,3 +134,48 @@ test("Settings has six groups in the header, each with its own section tabs", as
     "Automation",
   ]);
 });
+
+test("on a narrow window the Discover menu shows icons only, with no scroll bar", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "book-search:display:v1",
+      JSON.stringify({ layout: "shelf" }),
+    ),
+  );
+  await page.route("**/api/**", (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === "/api/discovery/home")
+      return route.fulfill({ json: emptyDiscoveryHome() });
+    let data: unknown = { items: [], total: 0, offset: 0, limit: 40 };
+    if (path === "/api/auth/me")
+      data = {
+        user: {
+          id: "reader",
+          role: "member",
+          username: "reader",
+          display_name: "Reader",
+        },
+        csrf_token: "test",
+      };
+    else if (path === "/api/setup/onboarding") data = { status: "completed" };
+    else if (path === "/api/library/libraries") data = [];
+    return route.fulfill({ json: data });
+  });
+  await page.setViewportSize({ width: 820, height: 800 });
+  await page.goto("/discover");
+  const menu = page.getByRole("navigation", { name: "Discover navigation" });
+  await expect(menu).toHaveClass(/is-compact/);
+  await expect(menu.getByRole("link", { name: "Calendar" })).toHaveAttribute(
+    "title",
+    "Calendar",
+  );
+  const row = page.locator(".header-submenu");
+  expect(
+    await row.evaluate((element) => element.scrollWidth <= element.clientWidth),
+  ).toBe(true);
+  // With room again, the names come back.
+  await page.setViewportSize({ width: 1600, height: 800 });
+  await expect(menu).not.toHaveClass(/is-compact/);
+});

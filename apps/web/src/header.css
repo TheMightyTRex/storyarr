@@ -58,7 +58,22 @@
   border-bottom: 1px solid var(--line);
   background: var(--c-bg-slate-23);
   overflow-x: auto;
-  scrollbar-width: thin;
+  /* Narrow screens show icons only, so the row rarely needs to scroll; never show a scroll bar. */
+  scrollbar-width: none;
+}
+.header-submenu::-webkit-scrollbar {
+  display: none;
+}
+.header-submenu-nav.is-compact a {
+  padding: 0 14px;
+}
+.header-submenu-nav.is-compact .header-submenu-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .header-submenu:empty {
   display: none;
