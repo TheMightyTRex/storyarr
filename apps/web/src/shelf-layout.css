@@ -153,6 +153,7 @@
     flex-direction: row;
     margin: 0;
     gap: 2px;
+    overflow: visible;
   }
   .shelf-rail .shelf-nav a {
     width: 68px;
