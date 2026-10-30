@@ -128,3 +128,13 @@
     padding: 0 12px;
   }
 }
+
+/* Settings groups in the Classic layout sit above the section tabs. */
+.settings-groups {
+  margin-bottom: 12px;
+}
+.settings-groups a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

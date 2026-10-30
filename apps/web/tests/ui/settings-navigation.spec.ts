@@ -124,7 +124,14 @@ for (const role of ["admin", "member", "viewer"]) {
         page.getByRole("region", { name: "General", exact: true }),
       ).toHaveCount(0);
     }
-    await categories.getByRole("link", { name: "Logs", exact: true }).click();
+    // Logs sits in the System group.
+    await page
+      .getByRole("navigation", { name: "Settings groups" })
+      .getByRole("link", { name: "System", exact: true })
+      .click();
+    await expect(
+      categories.getByRole("link", { name: "Logs", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
     await page
       .getByRole("combobox", { name: "Activity status", exact: true })
       .selectOption("failed");
@@ -173,9 +180,11 @@ for (const role of ["admin", "member", "viewer"]) {
     const earlierCategories = page.getByRole("button", {
       name: "Earlier settings categories",
     });
-    if (role === "viewer") {
-      await expect(earlierCategories).toHaveCount(0);
-    } else {
+    // Logs is the only section in the System group, so its tabs fit without scroll arrows.
+    await expect(earlierCategories).toHaveCount(0);
+    if (role === "admin") {
+      // Downloads has four sections, which scroll on a phone.
+      await page.goto("/settings#downloaders");
       await expect(earlierCategories).toBeEnabled();
       await expect
         .poll(() =>

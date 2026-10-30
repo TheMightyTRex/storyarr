@@ -21,7 +21,7 @@ const layouts: {
     id: "shelf",
     title: "Shelf",
     summary:
-      "A slim icon menu with four places: Library, Discover, Activity, and Settings. Following and Library review open as tabs inside Library.",
+      "A slim icon menu with four places: Library, Discover, Activity, and Settings. Each section shows its own menu in a bar under the search box.",
   },
 ];
 

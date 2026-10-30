@@ -144,7 +144,9 @@ test("recovery is grouped with clients, keeps collapsed drafts, and saves source
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(
-    page.locator('.page-tabs a[aria-current="page"]'),
+    page
+      .getByRole("navigation", { name: "Settings categories" })
+      .locator('a[aria-current="page"]'),
   ).toBeInViewport();
   await page.screenshot({
     path: testInfo.outputPath("recovery-mobile.png"),

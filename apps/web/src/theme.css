@@ -101,6 +101,10 @@ body {
 }
 .segmented label {
   position: relative;
+  display: block;
+  width: auto;
+  flex: none;
+  margin: 0;
 }
 .segmented input {
   position: absolute;
@@ -111,6 +115,7 @@ body {
 }
 .segmented span {
   display: inline-flex;
+  width: auto;
   align-items: center;
   min-height: 44px;
   padding: 0 16px;
