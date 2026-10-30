@@ -1,14 +1,22 @@
 # ruff: noqa: F811
 from datetime import UTC, date, datetime, timedelta
 from types import SimpleNamespace
+from uuid import UUID
 
 import pytest
+from sqlalchemy import func, select
 
 from app.adapters.contracts import AdapterError, FailureKind
-from app.db.models import ImportDestination, ImportStorageSettings, LibraryAsset
+from app.db.models import ImportDestination, ImportStorageSettings, LibraryAsset, ListEntry
 from app.domain import library_delete
+from tests.integration.test_acquisition import catalog  # noqa: F401
+from tests.integration.test_acquisition_selections import selection_route  # noqa: F401
+from tests.integration.test_automatic_dispatch import authorized  # noqa: F401
+from tests.integration.test_automatic_selection import source  # noqa: F401
 from tests.integration.test_follows import bind_work, follow_fixture, observe, record  # noqa: F401
 from tests.integration.test_library_discovery import add
+from tests.integration.test_list_policies import activate, policy_fixture, preview  # noqa: F401
+from tests.integration.test_list_policies import add as add_to_list
 
 pytestmark = pytest.mark.integration
 
@@ -75,6 +83,7 @@ async def test_delete_holds_files_and_removes_the_item_from_audiobookshelf(
     assert response.status_code == 200, response.text
     held = shelf.root / ".deleted-books" / datetime.now(UTC).date().isoformat() / "Writer/Book"
     assert response.json()["held_path"] == str(held)
+    assert response.json()["original_path"] == str(shelf.book)
     assert (held / "part 1.mp3").read_bytes() == b"audio"
     assert not shelf.book.exists()
     assert shelf.fake.calls == [("one", False)]
@@ -157,3 +166,43 @@ async def test_forgetting_a_deleted_book_excludes_it_from_follows(
     status = {book["title"]: book["status"] for book in books["items"]}
     assert status["Book"]["detail"] == "Excluded by you"
     assert status["Other book"]["kind"] == "not_requested"
+
+
+async def test_forgetting_takes_the_book_out_of_automatic_manual_lists(
+    client, admin, database, shelf, policy_fixture
+):
+    f = policy_fixture
+    await add_to_list(client, f, shelf.work)
+    await activate(client, f, await preview(client, f))
+    response = await client.post(f"/api/library/assets/{shelf.asset}/delete", json={})
+    assert response.status_code == 200, response.text
+    assert response.json()["removed_from_lists"] == 1
+    async with database() as db:
+        left = await db.scalar(
+            select(func.count())
+            .select_from(ListEntry)
+            .where(ListEntry.list_id == UUID(f["list"]), ListEntry.work_id == UUID(shelf.work))
+        )
+    assert left == 0
+
+
+async def test_keeping_requests_leaves_lists_and_follows_alone(
+    client, admin, database, shelf, policy_fixture
+):
+    f = policy_fixture
+    await add_to_list(client, f, shelf.work)
+    await activate(client, f, await preview(client, f))
+    response = await client.post(
+        f"/api/library/assets/{shelf.asset}/delete", json={"forget": False}
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert (
+        body["withdrawn_requests"],
+        body["excluded_from_lists"],
+        body["removed_from_lists"],
+    ) == (
+        0,
+        0,
+        0,
+    )

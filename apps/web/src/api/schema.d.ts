@@ -8004,6 +8004,8 @@ export interface components {
     DeleteResult: {
       /** Held Path */
       held_path?: string | null;
+      /** Original Path */
+      original_path?: string | null;
       /**
        * Withdrawn Requests
        * @default 0
@@ -8014,6 +8016,11 @@ export interface components {
        * @default 0
        */
       excluded_from_lists: number;
+      /**
+       * Removed From Lists
+       * @default 0
+       */
+      removed_from_lists: number;
       /** Message */
       message: string;
     };

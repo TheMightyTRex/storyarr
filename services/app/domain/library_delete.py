@@ -15,7 +15,7 @@ from typing import Literal
 
 from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import select
+from sqlalchemy import delete, exists, select
 
 from app.adapters.audiobookshelf import Audiobookshelf
 from app.adapters.contracts import AdapterError
@@ -29,6 +29,8 @@ from app.db.models import (
     Integration,
     Library,
     LibraryAsset,
+    ListAcquisitionPolicy,
+    ListEntry,
     ListObservation,
     ListSubscription,
 )
@@ -51,8 +53,12 @@ class DeleteInput(BaseModel):
 
 class DeleteResult(BaseModel):
     held_path: str | None = None
+    # Where the files were, in Dewarr's paths, so they can be moved back.
+    original_path: str | None = None
     withdrawn_requests: int = 0
     excluded_from_lists: int = 0
+    # Automatic manual lists (no catalog subscription) the book was taken out of.
+    removed_from_lists: int = 0
     message: str
 
 
@@ -105,7 +111,7 @@ async def _forget(db, user, asset):
     for work_id in works:
         family |= set(await db.scalars(family_ids(work_id)))
     if not family:
-        return 0, 0
+        return 0, 0, 0
     from app.api.list_subscriptions import ensure_membership, remove_unneeded
     from app.domain.acquisition import evaluate
 
@@ -149,7 +155,34 @@ async def _forget(db, user, asset):
         await db.flush()
         await remove_unneeded(db, user, subscription, observation.work_id)
         await ensure_membership(db, subscription, observation)
-    return withdrawn, excluded
+    # Manual lists have no exclusion; leaving the book in one with automatic acquisition would
+    # download it again. Reading lists elsewhere (writeback) are deliberately left unchanged.
+    from app.domain.acquisition import withdraw_list_reasons
+
+    automatic = (
+        select(ListAcquisitionPolicy.list_id)
+        .join(BookList, BookList.id == ListAcquisitionPolicy.list_id)
+        .where(
+            BookList.owner_id == user.id,
+            ListAcquisitionPolicy.active.is_(True),
+            ListAcquisitionPolicy.configuration["mode"].astext == "automatic",
+            ~exists().where(ListSubscription.list_id == ListAcquisitionPolicy.list_id),
+        )
+    )
+    lists = set(
+        await db.scalars(
+            select(ListEntry.list_id).where(
+                ListEntry.list_id.in_(automatic), ListEntry.work_id.in_(family)
+            )
+        )
+    )
+    for list_id in lists:
+        await db.execute(
+            delete(ListEntry).where(ListEntry.list_id == list_id, ListEntry.work_id.in_(family))
+        )
+        for work_id in works:
+            await withdraw_list_reasons(db, user, list_id, work_id)
+    return withdrawn, excluded, len(lists)
 
 
 async def delete_copy(db, user, asset_id, body: DeleteInput) -> DeleteResult:
@@ -160,7 +193,7 @@ async def delete_copy(db, user, asset_id, body: DeleteInput) -> DeleteResult:
     integration = await db.get(Integration, library.integration_id, with_for_update=True)
     if integration.kind != "audiobookshelf" or not integration.enabled:
         raise HTTPException(409, "Only copies in a connected Audiobookshelf library can be deleted")
-    held = None
+    held = local = None
     try:
         async with Audiobookshelf(
             integration.base_url, library_token(integration.encrypted_secrets)
@@ -185,7 +218,7 @@ async def delete_copy(db, user, asset_id, body: DeleteInput) -> DeleteResult:
     except AdapterError as error:
         raise HTTPException(502, f"Audiobookshelf refused the delete: {error}") from error
     asset.state, asset.missing_since = "intentionally-removed", None
-    withdrawn, excluded = await _forget(db, user, asset) if body.forget else (0, 0)
+    withdrawn, excluded, removed = await _forget(db, user, asset) if body.forget else (0, 0, 0)
     db.add(
         AuditEvent(
             actor_id=user.id,
@@ -197,13 +230,16 @@ async def delete_copy(db, user, asset_id, body: DeleteInput) -> DeleteResult:
                 "held_path": str(held) if held else None,
                 "withdrawn_requests": withdrawn,
                 "excluded_from_lists": excluded,
+                "removed_from_lists": removed,
             },
         )
     )
     return DeleteResult(
         held_path=str(held) if held else None,
+        original_path=str(local) if held else None,
         withdrawn_requests=withdrawn,
         excluded_from_lists=excluded,
+        removed_from_lists=removed,
         message=(
             "Moved to the holding folder and removed from Audiobookshelf"
             if held

@@ -561,3 +561,38 @@ button.follow-count[aria-expanded="true"] {
   flex-wrap: wrap;
   gap: 4px 16px;
 }
+
+.delete-copy-choices {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.delete-copy-choices li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.delete-warning {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #443b2e;
+  color: #f4d49c;
+}
+.delete-warning p,
+.delete-warning ol {
+  margin: 0 0 6px;
+}
+.delete-warning ol {
+  padding-left: 20px;
+}
+.delete-warning code {
+  word-break: break-all;
+}
+.delete-warning .muted {
+  color: #e8d3ad;
+}
