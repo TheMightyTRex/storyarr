@@ -28,6 +28,7 @@ import BookReaderDetails, {
   useReaderDetails,
 } from "../components/BookReaderDetails";
 import { LibraryAssets } from "./MyLibrary";
+import { DeleteBookAction } from "../components/DeleteLibraryCopy";
 import { Loading, Notice } from "../components";
 import BookMetadata from "./BookMetadata";
 import WorkMerge from "./WorkMerge";
@@ -335,6 +336,9 @@ function BookDetailContent({
           )}
           {canEdit && !!community.data?.authors?.length && (
             <AuthorFollows authors={community.data.authors} />
+          )}
+          {admin && work.availability.owned && (
+            <DeleteBookAction workId={work.id} />
           )}
           <div className="reader-outbound">
             {hardcover && (

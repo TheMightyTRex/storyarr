@@ -24563,6 +24563,17 @@
             ],
             "title": "Held Path"
           },
+          "original_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Path"
+          },
           "withdrawn_requests": {
             "type": "integer",
             "title": "Withdrawn Requests",
@@ -24571,6 +24582,11 @@
           "excluded_from_lists": {
             "type": "integer",
             "title": "Excluded From Lists",
+            "default": 0
+          },
+          "removed_from_lists": {
+            "type": "integer",
+            "title": "Removed From Lists",
             "default": 0
           },
           "message": {

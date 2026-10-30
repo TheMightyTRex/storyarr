@@ -66,7 +66,9 @@ test("admins delete a library copy into the holding folder or permanently", asyn
             ? "/data/media/audiobooks/.deleted-books/2026-10-30/Terry Pratchett/Mort"
             : null,
         withdrawn_requests: 0,
+        original_path: "/data/media/audiobooks/Terry Pratchett/Mort",
         excluded_from_lists: 1,
+        removed_from_lists: 0,
         message: "Moved to the holding folder and removed from Audiobookshelf",
       };
     } else if (url.pathname.endsWith("/cover"))
@@ -83,7 +85,9 @@ test("admins delete a library copy into the holding folder or permanently", asyn
     }),
   ).toBeChecked();
   await expect(
-    dialog.getByRole("checkbox", { name: "Don’t download this book again" }),
+    dialog.getByRole("checkbox", {
+      name: "Block this book from future downloads",
+    }),
   ).toBeChecked();
   await dialog.getByRole("radio", { name: "Delete permanently" }).check();
   const confirm = dialog.getByRole("button", { name: "Delete permanently" });
@@ -95,7 +99,21 @@ test("admins delete a library copy into the holding folder or permanently", asyn
   dialog = page.getByRole("dialog", { name: "Delete · Mort" });
   await dialog.getByRole("button", { name: "Move and remove" }).click();
   await expect(dialog.getByText(".deleted-books/2026-10-30")).toBeVisible();
-  await expect(dialog.getByText("for 30 days.")).toBeVisible();
+  await expect(dialog.getByText("To recover this book")).toBeVisible();
+  await expect(
+    dialog.getByText("/data/media/audiobooks/Terry Pratchett/Mort"),
+  ).toBeVisible();
+  await expect(dialog.getByText("Blocked from future downloads")).toBeVisible();
   expect(requests).toEqual([{ files: "hold", forget: true }]);
   await dialog.getByRole("button", { name: "Done" }).click();
+  await page.goto(`/books/${id}?tab=overview`);
+  await page
+    .locator(".reader-actions")
+    .getByRole("button", { name: "Delete", exact: true })
+    .click();
+  dialog = page.getByRole("dialog", { name: "Delete · Mort" });
+  await expect(dialog.getByText("can’t be undone")).toHaveCount(0);
+  await dialog.getByRole("radio", { name: "Delete permanently" }).check();
+  await expect(dialog.getByText("This can’t be undone.")).toBeVisible();
+  await dialog.getByRole("button", { name: "Cancel" }).click();
 });
