@@ -762,3 +762,44 @@ async def test_new_follows_use_saved_automation_defaults(client, database, admin
         json={"source_kind": "series", "external_id": 7, "name": "Saga", "filters": {}},
     )
     assert chosen.json()["filters"]["plays"] is False
+
+
+async def test_follow_books_carry_one_status_each_with_counts_and_a_status_filter(
+    client, database, admin, follow_fixture, catalog
+):
+    remote, follow = follow_fixture
+    today = datetime.now(UTC).date()
+    remote.records = [
+        record(10, "Missing book", release_date="1990-01-01"),
+        record(20, "Owned book", release_date="2000-01-01"),
+        record(30, "Next book", release_date=(today + timedelta(days=12)).isoformat()),
+        record(40, "Announced book", coming_soon=True),
+        record(50, "Mort: The Play", filter_reason="Play or screenplay"),
+    ]
+    await bind_work(database, admin, 20, str(catalog["work"]))
+    await observe(client, database, follow, initial=True)
+    path = f"/api/following/{follow['list_id']}/books"
+    books = (await client.get(path, params={"limit": 50})).json()
+    status = {b["title"]: b["status"] for b in books["items"]}
+    assert status["Owned book"] == {
+        "kind": "in_library",
+        "label": "In library",
+        "detail": "Ebook",
+        "at": None,
+        "progress": None,
+    }
+    assert status["Missing book"]["kind"] == "not_requested"
+    assert status["Next book"]["kind"] == "not_released"
+    assert status["Next book"]["detail"].startswith("Release date ")
+    assert status["Announced book"]["detail"] == "No release date yet"
+    assert (status["Mort: The Play"]["kind"], status["Mort: The Play"]["detail"]) == (
+        "excluded",
+        "Play or screenplay",
+    )
+    counts = books["status_counts"]
+    assert (counts["in_library"], counts["not_released"], counts["excluded"]) == (1, 2, 1)
+    assert counts["not_requested"] == 1 and sum(counts.values()) == books["total"] == 5
+    waiting = (await client.get(path, params={"status": "not_released", "limit": 1})).json()
+    assert waiting["total"] == 2 and len(waiting["items"]) == 1
+    assert waiting["status_counts"] == counts
+    assert (await client.get(path, params={"status": "unknown"})).status_code == 422

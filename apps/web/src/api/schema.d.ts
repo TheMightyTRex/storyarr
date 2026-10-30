@@ -6800,6 +6800,32 @@ export interface components {
        */
       expires_at: string;
     };
+    /** BookStatus */
+    BookStatus: {
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind:
+        | "in_library"
+        | "downloading"
+        | "importing"
+        | "searching"
+        | "waiting"
+        | "not_released"
+        | "attention"
+        | "wanted"
+        | "excluded"
+        | "not_requested";
+      /** Label */
+      label: string;
+      /** Detail */
+      detail?: string | null;
+      /** At */
+      at?: string | null;
+      /** Progress */
+      progress?: number | null;
+    };
     /** BookdropCandidate */
     BookdropCandidate: {
       /**
@@ -8782,6 +8808,7 @@ export interface components {
       stale: boolean;
       /** Follow Names */
       follow_names?: string[];
+      status?: components["schemas"]["BookStatus"] | null;
     };
     /** FollowBooks */
     FollowBooks: {
@@ -8793,6 +8820,10 @@ export interface components {
       offset: number;
       /** Limit */
       limit: number;
+      /** Status Counts */
+      status_counts?: {
+        [key: string]: number;
+      } | null;
     };
     /** FollowEdit */
     FollowEdit: {
@@ -19685,6 +19716,20 @@ export interface operations {
     parameters: {
       query?: {
         filter?: "all" | "library" | "upcoming" | "recent" | "missing";
+        status?:
+          | (
+              | "in_library"
+              | "downloading"
+              | "importing"
+              | "searching"
+              | "waiting"
+              | "not_released"
+              | "attention"
+              | "wanted"
+              | "excluded"
+              | "not_requested"
+            )
+          | null;
         offset?: number;
         limit?: number;
       };

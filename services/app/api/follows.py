@@ -14,6 +14,7 @@ from app.api.list_subscriptions import SubscriptionView
 from app.api.list_subscriptions import view as subscription_view
 from app.db.models import AuditEvent, BookList, CatalogAccount, ListSubscription, Operation
 from app.domain import automation_settings, following_overview, list_policies
+from app.domain.follow_status import StatusKind
 from app.domain.follows import source
 from app.domain.list_subscriptions import begin, owned_list
 from app.domain.operations import transaction_lock
@@ -136,6 +137,7 @@ async def followed_books(
     user: Member,
     db: Database,
     filter: following_overview.BookFilter = "all",
+    status: StatusKind | None = None,
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=24, ge=1, le=50),
 ):
@@ -146,13 +148,8 @@ async def followed_books(
     ]
     if not rows:
         raise HTTPException(404, "Follow not found")
-    return await following_overview.books(
-        db,
-        user,
-        rows,
-        selection=filter,
-        offset=offset,
-        limit=limit,
+    return await following_overview.follow_books(
+        db, user, rows[0], selection=filter, status=status, offset=offset, limit=limit
     )
 
 

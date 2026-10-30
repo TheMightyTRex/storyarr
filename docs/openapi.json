@@ -6869,6 +6869,34 @@
             }
           },
           {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "in_library",
+                    "downloading",
+                    "importing",
+                    "searching",
+                    "waiting",
+                    "not_released",
+                    "attention",
+                    "wanted",
+                    "excluded",
+                    "not_requested"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -21336,6 +21364,70 @@
         ],
         "title": "BookSearchView"
       },
+      "BookStatus": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "in_library",
+              "downloading",
+              "importing",
+              "searching",
+              "waiting",
+              "not_released",
+              "attention",
+              "wanted",
+              "excluded",
+              "not_requested"
+            ],
+            "title": "Kind"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Progress"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "label"
+        ],
+        "title": "BookStatus"
+      },
       "BookdropCandidate": {
         "properties": {
           "id": {
@@ -26690,6 +26782,16 @@
             },
             "type": "array",
             "title": "Follow Names"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BookStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -26721,6 +26823,34 @@
           "limit": {
             "type": "integer",
             "title": "Limit"
+          },
+          "status_counts": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "propertyNames": {
+                  "enum": [
+                    "in_library",
+                    "downloading",
+                    "importing",
+                    "searching",
+                    "waiting",
+                    "not_released",
+                    "attention",
+                    "wanted",
+                    "excluded",
+                    "not_requested"
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Counts"
           }
         },
         "type": "object",

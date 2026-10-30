@@ -15,6 +15,7 @@ from sqlalchemy import and_, func, select
 from app.adapters.catalog_types import cover_url
 from app.db.models import BookList, ListAcquisitionPolicy, ListObservation, ListSubscription
 from app.domain.availability import availability_rows
+from app.domain.follow_status import STATUS_KINDS, BookStatus, StatusKind, statuses
 from app.domain.work_graph import canonical_families, canonical_map
 from app.security import decrypt_secrets
 
@@ -34,6 +35,7 @@ class FollowBook(BaseModel):
     audio: bool = False
     stale: bool = False
     follow_names: list[str] = Field(default_factory=list)
+    status: BookStatus | None = None
 
 
 class FollowBooks(BaseModel):
@@ -41,6 +43,8 @@ class FollowBooks(BaseModel):
     total: int
     offset: int
     limit: int
+    # Per-status totals for the whole selection, set for a single follow's books.
+    status_counts: dict[StatusKind, int] | None = None
 
 
 class FollowSummary(BaseModel):
@@ -387,4 +391,33 @@ async def books(db, user, rows, *, selection, offset, limit, releases=False):
         total=total,
         offset=offset,
         limit=limit,
+    )
+
+
+async def follow_books(db, user, row, *, selection, status, offset, limit):
+    """One follow's books with a status each. Statuses are computed for the whole
+    selection so their counts and the status filter apply before paging."""
+    c = catalog(user, [row])
+    records = (
+        await db.execute(
+            select(c)
+            .where(book_filter(c, selection))
+            .order_by(c.c.day.desc().nullslast(), c.c.work_id)
+        )
+    ).all()
+    found = await statuses(db, user, row[1].list_id, records)
+    counts = dict.fromkeys(STATUS_KINDS, 0)
+    for value in found.values():
+        counts[value.kind] += 1
+    if status:
+        records = [r for r in records if found[r.work_id].kind == status]
+    return FollowBooks(
+        items=[
+            book(r).model_copy(update={"status": found[r.work_id]})
+            for r in records[offset : offset + limit]
+        ],
+        total=len(records),
+        offset=offset,
+        limit=limit,
+        status_counts=counts,
     )

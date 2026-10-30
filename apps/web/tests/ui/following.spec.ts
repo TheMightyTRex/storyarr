@@ -202,7 +202,35 @@ async function fixture(page: Page, initiallyFollowing = false) {
             ? b.upcoming
             : true,
       );
-      data = { items: selected, total: selected.length, offset: 0, limit: 12 };
+      const statusOf = (b: (typeof books)[number]) =>
+        b.ebook
+          ? { kind: "in_library", label: "In library", detail: "Ebook" }
+          : b.upcoming
+            ? {
+                kind: "not_released",
+                label: "Not released yet",
+                detail: "Release date 20 Oct 2100",
+              }
+            : {
+                kind: "waiting",
+                label: "Waiting",
+                detail: "Next automatic search",
+                at: "2026-09-28T16:31:00Z",
+              };
+      const counts: Record<string, number> = {};
+      for (const b of selected)
+        counts[statusOf(b).kind] = (counts[statusOf(b).kind] || 0) + 1;
+      const status = url.searchParams.get("status");
+      const shown = selected
+        .map((b) => ({ ...b, status: statusOf(b) }))
+        .filter((b) => !status || b.status.kind === status);
+      data = {
+        items: shown,
+        total: shown.length,
+        offset: 0,
+        limit: 12,
+        status_counts: counts,
+      };
     } else if (path.endsWith("/reader-details")) {
       data = {
         external_id: "42",
@@ -631,3 +659,38 @@ for (const tab of ["authors", "releases"]) {
     },
   );
 }
+
+test("followed books show one status each and filter by status", async ({
+  page,
+}) => {
+  await fixture(page, true);
+  await page.goto("/following");
+  const author = page.getByRole("article", {
+    name: "Ursula K. Le Guin",
+    exact: true,
+  });
+  await author.getByRole("button", { name: "3 books in catalog" }).click();
+  const expanded = author.getByRole("region", {
+    name: "Ursula K. Le Guin books",
+  });
+  const filters = expanded.getByRole("group", {
+    name: "Show books by status",
+  });
+  await expect(filters.getByRole("button", { name: "All 3" })).toBeVisible();
+  await expect(expanded.getByText("Next automatic search")).toBeVisible();
+  await expect(expanded.getByText("Release date 20 Oct 2100")).toBeVisible();
+  await filters.getByRole("button", { name: "Not released 1" }).click();
+  await expect(
+    expanded.getByRole("link", {
+      name: "Sample future publication",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    expanded.getByRole("link", { name: "A Wizard of Earthsea", exact: true }),
+  ).toHaveCount(0);
+  await filters.getByRole("button", { name: "All 3" }).click();
+  await expect(
+    expanded.getByRole("link", { name: "A Wizard of Earthsea", exact: true }),
+  ).toBeVisible();
+});

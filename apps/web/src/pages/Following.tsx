@@ -11,6 +11,74 @@ const FollowSettings = lazy(() => import("./FollowSettings"));
 
 type Summary = components["schemas"]["FollowSummary"];
 type Book = components["schemas"]["FollowBook"];
+type Status = NonNullable<Book["status"]>;
+type StatusKind = Status["kind"];
+// Same chip colours as request statuses, so a state reads the same on every page.
+const statusChip: Record<StatusKind, string> = {
+  in_library: "satisfied",
+  downloading: "downloading",
+  importing: "downloading",
+  searching: "downloading",
+  waiting: "waiting",
+  not_released: "waiting",
+  attention: "paused",
+  wanted: "paused",
+  excluded: "cancelled",
+  not_requested: "cancelled",
+};
+const statusNames: Record<StatusKind, string> = {
+  in_library: "In library",
+  downloading: "Downloading",
+  importing: "Importing",
+  searching: "Searching",
+  waiting: "Waiting",
+  not_released: "Not released",
+  attention: "Needs attention",
+  wanted: "Wanted",
+  excluded: "Excluded",
+  not_requested: "Not requested",
+};
+const statusLinks: Partial<Record<StatusKind, string>> = {
+  downloading: "/requests?status=downloading",
+  importing: "/requests?status=downloading",
+  attention: "/requests?status=review",
+  wanted: "/requests",
+};
+function when(value: string) {
+  const at = new Date(value);
+  const time = at.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return at.toDateString() === new Date().toDateString()
+    ? time
+    : at.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+        " " +
+        time;
+}
+function BookStatusLine({ status }: { status: Status }) {
+  const chip = (
+    <span className="request-status" data-state={statusChip[status.kind]}>
+      {status.label}
+    </span>
+  );
+  const href = statusLinks[status.kind];
+  const detail = [status.detail, status.at ? when(status.at) : null]
+    .filter(Boolean)
+    .join(" ");
+  return (
+    <div className="follow-book-status">
+      {href ? (
+        <Link to={href} aria-label={`${status.label}: view in Requests`}>
+          {chip}
+        </Link>
+      ) : (
+        chip
+      )}
+      {detail && <p className="follow-book-status-detail">{detail}</p>}
+    </div>
+  );
+}
 type BookFilter = "all" | "library" | "upcoming" | "recent" | "missing";
 type Filter = "all" | "upcoming" | "recent" | "missing" | "paused";
 type Sort = "recent" | "name" | "release" | "library";
@@ -72,13 +140,19 @@ function BookPreview({
           </p>
         )}
         <p className="follow-book-date">{publication(book)}</p>
-        {(book.ebook || book.audio) && (
-          <p className="follow-book-owned">
-            <Check size={12} aria-hidden="true" /> In library
-            {book.stale ? " · Last known" : ""}
-          </p>
+        {book.status ? (
+          <BookStatusLine status={book.status} />
+        ) : (
+          <>
+            {(book.ebook || book.audio) && (
+              <p className="follow-book-owned">
+                <Check size={12} aria-hidden="true" /> In library
+                {book.stale ? " · Last known" : ""}
+              </p>
+            )}
+            {!book.included && <p className="muted">Excluded from updates</p>}
+          </>
         )}
-        {!book.included && <p className="muted">Excluded from updates</p>}
       </div>
     </article>
   );
@@ -92,6 +166,7 @@ function FollowBooks({
   selection: BookFilter;
 }) {
   const [offset, setOffset] = useState(0);
+  const [status, setStatus] = useState<StatusKind | null>(null);
   const query = useQuery({
     queryKey: [
       "following",
@@ -99,6 +174,7 @@ function FollowBooks({
       follow.list_id,
       follow.last_success_at,
       selection,
+      status,
       offset,
     ],
     queryFn: async () =>
@@ -106,11 +182,21 @@ function FollowBooks({
         await api.GET("/api/following/{list_id}/books", {
           params: {
             path: { list_id: follow.list_id },
-            query: { filter: selection, offset, limit: 12 },
+            query: {
+              filter: selection,
+              offset,
+              limit: 12,
+              ...(status ? { status } : {}),
+            },
           },
         }),
       ),
   });
+  const counts = query.data?.status_counts;
+  const pick = (value: StatusKind | null) => {
+    setStatus(value);
+    setOffset(0);
+  };
   return (
     <div className="follow-expanded">
       <Notice error={query.error} />
@@ -120,6 +206,39 @@ function FollowBooks({
         <button onClick={() => query.refetch()}>Retry books</button>
       ) : (
         <>
+          {counts && (
+            <div
+              className="follow-status-filters"
+              role="group"
+              aria-label="Show books by status"
+            >
+              <button
+                type="button"
+                aria-pressed={status === null}
+                onClick={() => pick(null)}
+              >
+                All {Object.values(counts).reduce((a, b) => a + b, 0)}
+              </button>
+              {(Object.keys(statusNames) as StatusKind[])
+                .filter((kind) => counts[kind])
+                .map((kind) => (
+                  <button
+                    type="button"
+                    key={kind}
+                    aria-pressed={status === kind}
+                    onClick={() => pick(status === kind ? null : kind)}
+                  >
+                    <span
+                      className="request-status"
+                      data-state={statusChip[kind]}
+                    >
+                      {statusNames[kind]}
+                    </span>{" "}
+                    {counts[kind]}
+                  </button>
+                ))}
+            </div>
+          )}
           {!query.data?.items.length && (
             <p className="muted">No books match this view.</p>
           )}
