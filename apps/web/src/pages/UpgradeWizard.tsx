@@ -65,7 +65,11 @@ export default function UpgradeWizard() {
     <div className="upgrade-wizard">
       <header className="upgrade-heading">
         <p className="wall-eyebrow">Upgrade</p>
-        <h1>Welcome to the new version</h1>
+        <h1>
+          {data?.release
+            ? `Welcome to version ${data.release}`
+            : "Welcome to the new version"}
+        </h1>
         <p className="muted">
           Dewarr has been upgraded. Take a moment to see what has changed, check
           your settings backup and review the new settings. Every step is

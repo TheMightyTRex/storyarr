@@ -77,7 +77,7 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
   await page.goto("/library");
   await expect(page).toHaveURL(/\/upgrade$/);
   await expect(
-    page.getByRole("heading", { name: "Welcome to the new version" }),
+    page.getByRole("heading", { name: "Welcome to version 2026.10.30" }),
   ).toBeVisible();
   await expect(page.getByText("Settings in six groups.")).toBeVisible();
 
