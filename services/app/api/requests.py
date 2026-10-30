@@ -1,14 +1,11 @@
-import asyncio
 import logging
-import time
-from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import String, and_, cast, exists, func, or_, select, text
+from sqlalchemy import String, and_, cast, exists, func, or_, select
 from sqlalchemy.orm import aliased
 
 from app.api.dependencies import CurrentUser, Database, Member
@@ -1312,63 +1309,13 @@ def _counts_statement(owner_id: UUID | None):
     return statement
 
 
-# STOPGAP (30 Oct 2026): on a large library the counts query takes minutes, and the menu asks
-# for it every few seconds, which used up every database connection. While the query is fast it
-# still runs on every request. Once it is slow, callers get the last counts, and one background
-# refresh runs at most every _COUNTS_REFRESH seconds. Remove this cache when the database speed
-# work (work log item 13) makes the query fast.
-_COUNTS_SLOW = 2.0
-_COUNTS_REFRESH = 120.0
-_COUNTS_TIMEOUT = "15min"
-
-
-@dataclass
-class _CountsEntry:
-    value: RequestCounts | None = None
-    started: float = 0.0
-    duration: float = 0.0
-    task: asyncio.Task | None = None
-
-
-_counts_cache: dict[UUID | None, _CountsEntry] = {}
-
-
-async def _refresh_counts(entry: _CountsEntry, owner_id: UUID | None) -> None:
-    from app.db.session import session_factory
-
-    entry.started = time.monotonic()
-    try:
-        async with session_factory()() as db:
-            await db.execute(text(f"SET LOCAL statement_timeout = '{_COUNTS_TIMEOUT}'"))
-            counts = (await db.execute(_counts_statement(owner_id))).one()
-        entry.value = RequestCounts(
-            **dict(zip(("pending", "downloading", "review", "active"), counts, strict=True))
-        )
-        entry.duration = time.monotonic() - entry.started
-    except Exception:
-        logger.exception("Could not count requests")
-        entry.duration = _COUNTS_REFRESH
-    finally:
-        entry.task = None
-
-
 @router.get("/counts", response_model=RequestCounts)
-async def request_counts(user: CurrentUser):
+async def request_counts(user: CurrentUser, db: Database):
     owner_id = None if has(user, MANAGE_REQUESTS) else user.id
-    entry = _counts_cache.setdefault(owner_id, _CountsEntry())
-    due = (
-        entry.value is None
-        or entry.duration < _COUNTS_SLOW
-        or time.monotonic() - entry.started >= _COUNTS_REFRESH
+    counts = (await db.execute(_counts_statement(owner_id))).one()
+    return RequestCounts(
+        **dict(zip(("pending", "downloading", "review", "active"), counts, strict=True))
     )
-    if entry.task is None and due:
-        entry.task = asyncio.create_task(_refresh_counts(entry, owner_id))
-    if entry.task is not None:
-        try:
-            await asyncio.wait_for(asyncio.shield(entry.task), _COUNTS_SLOW)
-        except TimeoutError:
-            pass
-    return entry.value or RequestCounts(pending=0, downloading=0, review=0, active=0)
 
 
 @router.get("", response_model=RequestPage)

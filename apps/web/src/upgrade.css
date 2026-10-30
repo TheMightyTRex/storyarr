@@ -114,3 +114,15 @@
   padding: 14px;
   border: 1px solid var(--line);
 }
+.upgrade-database {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+}
+.upgrade-database h4 {
+  margin: 0 0 6px;
+  font-size: 0.9375rem;
+}
+.upgrade-database p {
+  margin: 8px 0 0;
+}

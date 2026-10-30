@@ -22,14 +22,12 @@ function count(value: number) {
 export function ShelfRail({
   name,
   role,
-  waiting,
   reviewing,
   signOut,
   signingOut,
 }: {
   name: string;
   role: string;
-  waiting: number;
   reviewing: number;
   signOut: () => void;
   signingOut: boolean;
@@ -63,12 +61,6 @@ export function ShelfRail({
         <NavLink to="/requests">
           <Activity size={20} aria-hidden="true" />
           <span>Activity</span>
-          {waiting > 0 && (
-            <span className="shelf-count">
-              {count(waiting)}
-              <span className="sr-only"> active requests</span>
-            </span>
-          )}
         </NavLink>
         <NavLink to="/settings">
           <Settings size={20} aria-hidden="true" />

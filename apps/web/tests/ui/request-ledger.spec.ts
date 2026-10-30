@@ -229,11 +229,12 @@ test("requests show transfer telemetry, review actions and counts in compact row
     review.getByRole("link", { name: "Review files" }),
   ).toHaveAttribute("href", "/organization/inspections?inspection=inspection");
   await expect(table).not.toContainText("Acquisition pending");
+  // The main menu no longer shows a request count; counts are on the Activity tabs.
   await expect(
     page
       .getByRole("navigation", { name: "Main navigation" })
       .getByRole("link", { name: "Requests", exact: true }),
-  ).toContainText("3");
+  ).toHaveText("Requests");
   const filters = page.getByRole("navigation", { name: "Activity" });
   await expect(filters.getByRole("link")).toHaveText([
     /^Queue/,

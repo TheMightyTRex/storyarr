@@ -15074,6 +15074,13 @@ export interface components {
        * @default []
        */
       review: components["schemas"]["UpgradeReviewItem"][];
+      /**
+       * Database Changes
+       * @default []
+       */
+      database_changes: string[];
+      /** Rollback */
+      rollback?: string | null;
     };
     /** UpgradeReviewItem */
     UpgradeReviewItem: {

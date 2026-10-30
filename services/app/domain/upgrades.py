@@ -23,6 +23,10 @@ class UpgradeRelease(BaseModel):
     highlights: list[str]
     # New settings worth a look after upgrading; each has built-in defaults already applied.
     review: list[UpgradeReviewItem] = []
+    # Changes to the database structure, each with how to undo it. A settings backup is taken
+    # before they run; take a full database backup too.
+    database_changes: list[str] = []
+    rollback: str | None = None
 
 
 # Newest last. Add a release whenever an upgrade brings changes an existing install should hear
@@ -79,6 +83,26 @@ RELEASES = [
                 link="/settings#catalog",
             ),
         ],
+    ),
+    UpgradeRelease(
+        id="2026.10.30.2",
+        title="Faster pages",
+        highlights=[
+            "Request counts take under a second instead of several minutes, so Activity and "
+            "background work are much quicker.",
+            "Leaving a page now stops the database work it started.",
+            "A loading bar under the header shows when a page is fetching data.",
+            "The request count badge is no longer in the main menu.",
+            "Book lookups across the app use a quicker query.",
+        ],
+        database_changes=[
+            "Two new indexes on the operations table: by kind and status, and by request.",
+        ],
+        rollback=(
+            "To undo the indexes, downgrade the database to 0082_installation_automation "
+            "(alembic downgrade 0082_installation_automation). This removes only the indexes; "
+            "no settings or data change."
+        ),
     ),
 ]
 CURRENT = RELEASES[-1].id

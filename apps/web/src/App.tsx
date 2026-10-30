@@ -30,13 +30,13 @@ import {
 import { api, ApiError, result, setCsrf } from "./api/client";
 import type { Auth } from "./api/client";
 import { Loading, Notice } from "./components";
-import { useRequestCounts } from "./hooks/useRequestCounts";
 import { useLibraryReviewCount } from "./hooks/useLibraryReviewCount";
 import { canManageOwnRequests } from "./permissions";
 import { useDisplayPreferences } from "./displayPreferences";
 import { LibraryTabs, ShelfRail } from "./components/ShelfNavigation";
 import { DisplayButton } from "./components/DisplayPanel";
 import { HeaderSubmenuSlot } from "./components/HeaderSubmenu";
+import LoadingBar from "./components/LoadingBar";
 import { useUpgrade } from "./components/UpgradeBackups";
 import { upgradeLaterKey } from "./upgradeLater";
 
@@ -406,8 +406,6 @@ function Shell({ auth }: { auth: Auth }) {
       setSearch(new URLSearchParams(location.search).get("q") || "");
   }, [location.pathname, location.search]);
   const permissions = auth.user.permissions ?? [];
-  const requestCounts = useRequestCounts().data;
-  const waiting = requestCounts?.active ?? 0;
   const admin = auth.user.role === "admin";
   const canEdit = auth.user.role !== "viewer";
   const reviewing = useLibraryReviewCount(admin).data?.total ?? 0;
@@ -457,7 +455,6 @@ function Shell({ auth }: { auth: Auth }) {
         <ShelfRail
           name={auth.user.display_name}
           role={auth.user.role}
-          waiting={waiting}
           reviewing={reviewing}
           signOut={() => logout.mutate()}
           signingOut={logout.isPending}
@@ -520,19 +517,9 @@ function Shell({ auth }: { auth: Auth }) {
                 )}
               </NavLink>
             )}
-            <NavLink
-              to="/requests"
-              aria-label="Requests"
-              title={`${waiting} active requests`}
-            >
+            <NavLink to="/requests">
               <Download size={19} />
               Requests
-              {waiting > 0 && (
-                <span className="nav-count">
-                  {waiting > 99 ? "99+" : waiting}
-                  <span className="sr-only"> active requests</span>
-                </span>
-              )}
             </NavLink>
             <NavLink to="/settings">
               <Settings size={19} />
@@ -595,6 +582,7 @@ function Shell({ auth }: { auth: Auth }) {
               </div>
             </header>
             {shelf && <div className="header-submenu" ref={setSubmenuSlot} />}
+            <LoadingBar />
           </div>
           {addingList && (
             <Suspense fallback={<Loading />}>

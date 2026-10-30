@@ -43231,6 +43231,25 @@
             "type": "array",
             "title": "Review",
             "default": []
+          },
+          "database_changes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Database Changes",
+            "default": []
+          },
+          "rollback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rollback"
           }
         },
         "type": "object",

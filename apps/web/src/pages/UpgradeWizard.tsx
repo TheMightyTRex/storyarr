@@ -138,6 +138,20 @@ export default function UpgradeWizard() {
                       <li key={line}>{line}</li>
                     ))}
                   </ul>
+                  {!!release.database_changes?.length && (
+                    <div className="upgrade-database">
+                      <h4>Database changes</h4>
+                      <ul>
+                        {release.database_changes.map((line) => (
+                          <li key={line}>{line}</li>
+                        ))}
+                      </ul>
+                      <p className="muted">
+                        A settings backup was taken before these changes ran.
+                        {release.rollback ? ` ${release.rollback}` : ""}
+                      </p>
+                    </div>
+                  )}
                 </article>
               ))
             ) : (

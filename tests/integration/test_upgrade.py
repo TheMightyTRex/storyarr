@@ -33,7 +33,12 @@ async def test_the_wizard_shows_once_on_an_existing_install(client, admin, datab
     await finish_onboarding(database, "deferred")
     shown = (await client.get("/api/upgrade")).json()
     assert shown["pending"] is True and shown["acknowledged"] is None
-    assert [release["id"] for release in shown["releases"]] == [upgrades.CURRENT]
+    # A first upgrade shows every release so far, newest last.
+    assert [release["id"] for release in shown["releases"]] == [
+        release.id for release in upgrades.RELEASES
+    ]
+    assert shown["releases"][-1]["id"] == upgrades.CURRENT
+    assert shown["releases"][-1]["database_changes"] and shown["releases"][-1]["rollback"]
     assert {item["id"] for item in shown["releases"][0]["review"]} >= {"layout", "audible-store"}
     done = await client.post("/api/upgrade/acknowledge")
     assert done.status_code == 200, done.text

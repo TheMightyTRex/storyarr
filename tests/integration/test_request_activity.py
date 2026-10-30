@@ -336,30 +336,3 @@ async def test_old_quick_add_failure_is_hidden_after_a_source_is_started(
             )
         )
     assert (await client.get(f"/api/requests/quick-add/latest/{work_id}")).json() is None
-
-
-async def test_slow_request_counts_are_served_from_the_stopgap_cache(client, admin, monkeypatch):
-    from app.api import requests as module
-
-    module._counts_cache.clear()
-    calls = []
-    real = module._refresh_counts
-
-    async def counted(entry, owner_id):
-        calls.append(owner_id)
-        await real(entry, owner_id)
-        entry.duration = module._COUNTS_SLOW + 1  # Pretend the query was slow.
-
-    monkeypatch.setattr(module, "_refresh_counts", counted)
-    first = (await client.get("/api/requests/counts")).json()
-    assert first["active"] == 0 and len(calls) == 1
-    # While slow and recently refreshed, later calls reuse the counts without querying again.
-    for _ in range(3):
-        assert (await client.get("/api/requests/counts")).json() == first
-    assert len(calls) == 1
-    # Once the refresh interval has passed, one more refresh runs.
-    entry = module._counts_cache[None]
-    entry.started -= module._COUNTS_REFRESH
-    await client.get("/api/requests/counts")
-    assert len(calls) == 2
-    module._counts_cache.clear()
