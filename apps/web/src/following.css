@@ -520,3 +520,26 @@ button.follow-count[aria-expanded="true"] {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
+
+.library-series-status {
+  display: grid;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+.library-series-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.library-series-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.library-series-status .text-button {
+  justify-self: start;
+}

@@ -170,3 +170,89 @@ test("My Library browses owned authors and series, filters, and opens books", as
   ).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("library series show follow status, every book and a way to add missing books", async ({
+  page,
+}) => {
+  const series = {
+    name: "Earthsea",
+    key: "earthsea",
+    book_count: 2,
+    external_id: "7",
+    books: works,
+    hardcover_book_id: "101",
+  };
+  const counts = { in_library: 2, waiting: 1, excluded: 1 };
+  await page.route("**/api/**", (route) => {
+    const url = new URL(route.request().url());
+    let data: unknown = {};
+    if (url.pathname === "/api/auth/me")
+      data = {
+        user: {
+          id: "reader",
+          role: "member",
+          username: "reader",
+          display_name: "Reader",
+        },
+        csrf_token: "test",
+      };
+    else if (url.pathname === "/api/setup/onboarding")
+      data = { status: "completed" };
+    else if (url.pathname === "/api/library/libraries") data = [];
+    else if (url.pathname === "/api/library/groups/series")
+      data = { items: [series], total: 1, offset: 0, limit: 24 };
+    else if (url.pathname === "/api/following")
+      data = [
+        {
+          list_id: "earthsea-follow",
+          name: "Earthsea",
+          source_kind: "series",
+          external_id: "7",
+          filters: {},
+          subscription: { enabled: true, last_success_at: null },
+          mode: "automatic",
+          active: true,
+        },
+      ];
+    else if (url.pathname === "/api/following/earthsea-follow/books")
+      data = {
+        items: [
+          {
+            work_id: "book-2",
+            external_id: "9",
+            title: "Tehanu",
+            authors: ["Ursula Le Guin"],
+            upcoming: false,
+            included: true,
+            ebook: false,
+            audio: false,
+            stale: false,
+            follow_names: [],
+            status: {
+              kind: "waiting",
+              label: "Waiting",
+              detail: "Next automatic search",
+            },
+          },
+        ],
+        total: 1,
+        offset: 0,
+        limit: 12,
+        status_counts: counts,
+      };
+    else if (url.pathname.endsWith("/cover"))
+      return route.fulfill({ status: 404 });
+    return route.fulfill({ json: data });
+  });
+  await page.goto("/library?view=series");
+  const card = page.getByRole("article").filter({ hasText: "Earthsea" });
+  await expect(
+    card.getByRole("link", { name: "Add missing books" }),
+  ).toHaveAttribute("href", "/series/hardcover/7?request=1&gaps=1");
+  await expect(card.getByText("Waiting", { exact: true })).toBeVisible();
+  await card.getByRole("button", { name: "Show every book" }).click();
+  await expect(
+    card.getByRole("link", { name: "Tehanu", exact: true }),
+  ).toBeVisible();
+  await expect(card.getByText("Next automatic search")).toBeVisible();
+});

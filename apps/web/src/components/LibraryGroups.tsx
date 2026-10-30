@@ -8,15 +8,18 @@ import type { components } from "../api/schema";
 import { BookCard, Empty, Loading, Notice } from "../components";
 import BookCover from "./BookCover";
 import { useReaderDetails } from "./BookReaderDetails";
+import SeriesFollowStatus from "./SeriesFollowStatus";
 
 type Kind = "authors" | "series";
 type Library = components["schemas"]["LibraryView"];
 export default function LibraryGroups({
   kind,
   libraries,
+  canEdit = false,
 }: {
   kind: Kind;
   libraries: Library[];
+  canEdit?: boolean;
 }) {
   const [params, setParams] = useSearchParams();
   const group = params.get("group") || "";
@@ -242,12 +245,20 @@ export default function LibraryGroups({
                       </div>
                     </Link>
                     {kind === "series" && item.external_id && (
-                      <Link
-                        className="library-group-profile"
-                        to={`/series/hardcover/${encodeURIComponent(item.external_id)}`}
-                      >
-                        Explore full series →
-                      </Link>
+                      <>
+                        <Link
+                          className="library-group-profile"
+                          to={`/series/hardcover/${encodeURIComponent(item.external_id)}`}
+                        >
+                          Explore full series →
+                        </Link>
+                        {canEdit && (
+                          <SeriesFollowStatus
+                            externalId={item.external_id}
+                            name={item.name}
+                          />
+                        )}
+                      </>
                     )}
                   </article>
                 );

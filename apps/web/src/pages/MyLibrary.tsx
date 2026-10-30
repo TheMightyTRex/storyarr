@@ -117,6 +117,7 @@ export default function MyLibrary({
             key={groupView}
             kind={groupView}
             libraries={libraries.data || []}
+            canEdit={canEdit}
           />
         </>
       ) : saved ? (

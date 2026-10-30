@@ -12,9 +12,9 @@ const FollowSettings = lazy(() => import("./FollowSettings"));
 type Summary = components["schemas"]["FollowSummary"];
 type Book = components["schemas"]["FollowBook"];
 type Status = NonNullable<Book["status"]>;
-type StatusKind = Status["kind"];
+export type StatusKind = Status["kind"];
 // Same chip colours as request statuses, so a state reads the same on every page.
-const statusChip: Record<StatusKind, string> = {
+export const statusChip: Record<StatusKind, string> = {
   in_library: "satisfied",
   downloading: "downloading",
   importing: "downloading",
@@ -26,7 +26,7 @@ const statusChip: Record<StatusKind, string> = {
   excluded: "cancelled",
   not_requested: "cancelled",
 };
-const statusNames: Record<StatusKind, string> = {
+export const statusNames: Record<StatusKind, string> = {
   in_library: "In library",
   downloading: "Downloading",
   importing: "Importing",
@@ -158,11 +158,11 @@ function BookPreview({
   );
 }
 
-function FollowBooks({
+export function FollowBooks({
   follow,
   selection,
 }: {
-  follow: Summary;
+  follow: Pick<Summary, "list_id" | "last_success_at">;
   selection: BookFilter;
 }) {
   const [offset, setOffset] = useState(0);
