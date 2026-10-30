@@ -39,13 +39,13 @@ export const statusNames: Record<StatusKind, string> = {
   excluded: "Excluded",
   not_requested: "Not requested",
 };
-const statusLinks: Partial<Record<StatusKind, string>> = {
+export const statusLinks: Partial<Record<StatusKind, string>> = {
   downloading: "/requests?status=downloading",
   importing: "/requests?status=downloading",
   attention: "/requests?status=review",
   wanted: "/requests",
 };
-function when(value: string) {
+export function when(value: string) {
   const at = new Date(value);
   const time = at.toLocaleTimeString(undefined, {
     hour: "2-digit",
@@ -90,7 +90,7 @@ function choice<T extends string>(
 ): T {
   return choices.includes(value as T) ? (value as T) : fallback;
 }
-function publication(book: Book) {
+export function publication(book: Book) {
   return book.release_date
     ? new Date(book.release_date + "T12:00:00Z").toLocaleDateString(undefined, {
         month: "short",
@@ -346,6 +346,13 @@ function AuthorRow({ follow }: { follow: Summary }) {
               <span className="follow-state">
                 <Check size={13} aria-hidden="true" /> Following
               </span>
+              <Link
+                className="reader-action-link"
+                to={"/following/" + follow.list_id}
+                aria-label={"Open " + follow.name + " bookshelf"}
+              >
+                Open bookshelf
+              </Link>
               <Link
                 className="reader-action-link"
                 to={"/following?list=" + follow.list_id}

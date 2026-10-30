@@ -574,6 +574,9 @@ async def test_follow_overview_counts_library_and_dates_before_paging(
     assert summary["next_release"]["title"] == "Next book"
     assert summary["latest_books"][0]["title"] == "Latest book"
     assert summary["complete"]
+    single = await client.get(f"/api/following/{follow['list_id']}/summary")
+    assert single.status_code == 200, single.text
+    assert single.json() == summary
     books = await client.get(
         f"/api/following/{follow['list_id']}/books", params={"filter": "missing", "limit": 1}
     )
@@ -656,6 +659,7 @@ async def test_follow_projection_deduplicates_identities_and_is_owner_scoped(
     assert (await client.get("/api/following/overview")).json()["items"] == []
     assert (await client.get("/api/following/releases")).json()["items"] == []
     assert (await client.get(f"/api/following/{follow['list_id']}/books")).status_code == 404
+    assert (await client.get(f"/api/following/{follow['list_id']}/summary")).status_code == 404
 
 
 @pytest.mark.parametrize("old_days,new_days", [(12, 30), (-1, 30), (12, -1), (12, None)])

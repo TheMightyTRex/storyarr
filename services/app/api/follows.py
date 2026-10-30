@@ -131,6 +131,30 @@ async def releases(
     )
 
 
+@router.get("/{list_id}/summary", response_model=following_overview.FollowSummary)
+async def followed_summary(list_id: UUID, user: Member, db: Database):
+    """One follow's counts and previews, for its bookshelf page."""
+    rows = [
+        (row, summary)
+        for row, summary in await following_overview.sources(db, user)
+        if summary.list_id == list_id
+    ]
+    if not rows:
+        raise HTTPException(404, "Follow not found")
+    found = await following_overview.summaries(
+        db,
+        user,
+        rows,
+        kind=rows[0][1].source_kind,
+        q="",
+        filter="all",
+        sort="recent",
+        offset=0,
+        limit=1,
+    )
+    return found.items[0]
+
+
 @router.get("/{list_id}/books", response_model=following_overview.FollowBooks)
 async def followed_books(
     list_id: UUID,

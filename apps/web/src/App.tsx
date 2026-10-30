@@ -45,6 +45,7 @@ const Discover = lazy(() => import("./pages/Discover"));
 const CommunityLists = lazy(() => import("./pages/CommunityLists"));
 const BookDetail = lazy(() => import("./pages/BookDetail"));
 const Following = lazy(() => import("./pages/Following"));
+const FollowShelf = lazy(() => import("./pages/FollowShelf"));
 const AuthorDetail = lazy(() => import("./pages/AuthorDetail"));
 const Series = lazy(() => import("./pages/Series"));
 const Lists = lazy(() => import("./pages/Lists"));
@@ -614,6 +615,12 @@ function Shell({ auth }: { auth: Auth }) {
               <Route
                 path="/following"
                 element={canEdit ? <Following /> : <Navigate to="/" replace />}
+              />
+              <Route
+                path="/following/:listId"
+                element={
+                  canEdit ? <FollowShelf /> : <Navigate to="/" replace />
+                }
               />
               <Route
                 path="/authors/hardcover/:externalId"

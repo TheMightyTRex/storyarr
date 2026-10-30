@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { api, result } from "../api/client";
 import AddMissingBooks from "./AddMissingBooks";
 import FollowCatalog, { useFollowing } from "./FollowCatalog";
@@ -70,6 +71,11 @@ export default function SeriesFollowStatus({
         >
           {open ? "Hide books" : "Show every book"}
         </button>
+      )}
+      {follow && (
+        <Link className="text-button" to={"/following/" + follow.list_id}>
+          Open bookshelf
+        </Link>
       )}
       {follow && open && (
         <div id={panel}>

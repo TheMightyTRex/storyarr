@@ -2181,6 +2181,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/following/{list_id}/summary": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Followed Summary
+     * @description One follow's counts and previews, for its bookshelf page.
+     */
+    get: operations["followed_summary_api_following__list_id__summary_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/following/{list_id}/books": {
     parameters: {
       query?: never;
@@ -19809,6 +19829,37 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["FollowBooks"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  followed_summary_api_following__list_id__summary_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        list_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FollowSummary"];
         };
       };
       /** @description Validation Error */
