@@ -595,6 +595,7 @@ button.follow-count[aria-expanded="true"] {
 }
 .delete-warning .muted {
   color: #e8d3ad;
+}
 .missing-book-list h3 {
   margin: 0 0 6px;
   font-size: 13px;
