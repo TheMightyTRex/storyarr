@@ -1,5 +1,6 @@
 """Single-container startup: persistent key, migrations, API, and worker."""
 
+import json
 import logging
 import os
 import re
@@ -183,6 +184,72 @@ def stop_children(children, timeout: float = 25) -> None:
             child.wait()
 
 
+def _schema(connection) -> str | None:
+    if not connection.execute("SELECT to_regclass('public.alembic_version')").fetchone()[0]:
+        return None
+    row = connection.execute("SELECT version_num FROM alembic_version").fetchone()
+    return row[0] if row else None
+
+
+def _upgrade_state(connection) -> dict:
+    if not connection.execute("SELECT to_regclass('public.installation_automation')").fetchone()[0]:
+        return {}
+    row = connection.execute(
+        "SELECT settings -> 'upgrade' FROM installation_automation WHERE id = 1"
+    ).fetchone()
+    return (row[0] if row else None) or {}
+
+
+def _save_upgrade_state(connection, **changes) -> None:
+    connection.execute(
+        "INSERT INTO installation_automation (id, generation, settings) "
+        "VALUES (1, 0, jsonb_build_object('upgrade', %(changes)s::jsonb)) "
+        "ON CONFLICT (id) DO UPDATE SET settings = jsonb_set("
+        "coalesce(installation_automation.settings, '{}'::jsonb), '{upgrade}', "
+        "coalesce(installation_automation.settings -> 'upgrade', '{}'::jsonb) "
+        "|| %(changes)s::jsonb)",
+        {"changes": json.dumps(changes)},
+    )
+
+
+def prepare_upgrade(connection) -> dict:
+    """
+    Before migrating an existing install to a newer release, save a copy of its settings, once per
+    release, so the upgrade wizard can offer a way back. Returns what to record after migrating.
+    """
+    from alembic.config import Config
+    from alembic.script import ScriptDirectory
+
+    from app import upgrade_backups
+    from app.domain.upgrades import CURRENT
+
+    before = _schema(connection)
+    if before is None:
+        # A new install: its first setup is onboarding, not the upgrade wizard.
+        return {"release": CURRENT}
+    saved = _upgrade_state(connection)
+    try:
+        head = ScriptDirectory.from_config(Config("alembic.ini")).get_current_head()
+    except Exception:
+        head = None
+    if saved.get("backed_up_for") == CURRENT and before == head:
+        return {}
+    try:
+        path = upgrade_backups.snapshot_sync(
+            connection,
+            "before-upgrade",
+            schema_from=before,
+            schema_to=head,
+            release_from=saved.get("release"),
+            release_to=CURRENT,
+        )
+        LOG.info("Saved a settings backup before upgrading: %s", path.name)
+        return {"backed_up_for": CURRENT}
+    except Exception:
+        LOG.exception("Could not save a settings backup before upgrading; continuing")
+        return {}
+
+
 def run_migrations(connection, stop: threading.Event) -> None:
     deadline = time.monotonic() + 60
     while not connection.execute("SELECT pg_try_advisory_lock(%s)", (MAINTENANCE_LOCK,)).fetchone()[
@@ -240,7 +307,10 @@ def main() -> int:
                 # Explicit administrative commands retain the same user, key, and DB configuration.
                 connection.close()
                 os.execvp(sys.argv[1], sys.argv[1:])
+            upgrade_record = prepare_upgrade(connection)
             run_migrations(connection, stop)
+            if upgrade_record:
+                _save_upgrade_state(connection, **upgrade_record)
             recovering = connection.execute(
                 "SELECT coalesce(current_setting('book_search.restore_pending', true), '') "
                 "= 'true' "

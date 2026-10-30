@@ -5484,6 +5484,91 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/upgrade": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read */
+    get: operations["read_api_upgrade_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/upgrade/acknowledge": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Acknowledge */
+    post: operations["acknowledge_api_upgrade_acknowledge_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/upgrade/backups": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Take Backup */
+    post: operations["take_backup_api_upgrade_backups_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/upgrade/backups/{name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Download */
+    get: operations["download_api_upgrade_backups__name__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/upgrade/backups/{name}/restore": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Restore */
+    post: operations["restore_api_upgrade_backups__name__restore_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/acquisition/selections/{selection_id}/pack-preview": {
     parameters: {
       query?: never;
@@ -6625,6 +6710,29 @@ export interface components {
       parts_total: number;
       /** Parts Medium */
       parts_medium?: string | null;
+    };
+    /** BackupView */
+    BackupView: {
+      /** Name */
+      name: string;
+      /** Created At */
+      created_at?: string | null;
+      /** Reason */
+      reason?: string | null;
+      /** Release From */
+      release_from?: string | null;
+      /** Release To */
+      release_to?: string | null;
+      /** Schema From */
+      schema_from?: string | null;
+      /** Schema To */
+      schema_to?: string | null;
+      /** Size */
+      size: number;
+      /** Rows */
+      rows: {
+        [key: string]: number;
+      };
     };
     /** BatchInput */
     BatchInput: {
@@ -13331,6 +13439,22 @@ export interface components {
       description: string;
       release_policy?: components["schemas"]["ProfileSnapshot"] | null;
     };
+    /** RestoreInput */
+    RestoreInput: {
+      /** Confirm */
+      confirm: boolean;
+    };
+    /** RestoreView */
+    RestoreView: {
+      /** Backup Taken */
+      backup_taken: string;
+      /** Tables */
+      tables: {
+        [key: string]: {
+          [key: string]: number;
+        };
+      };
+    };
     /** ReviewInput */
     ReviewInput: {
       /** Expected Revision */
@@ -14894,6 +15018,46 @@ export interface components {
       path: string;
       /** Size Bytes */
       size_bytes: number;
+    };
+    /** UpgradeRelease */
+    UpgradeRelease: {
+      /** Id */
+      id: string;
+      /** Title */
+      title: string;
+      /** Highlights */
+      highlights: string[];
+      /**
+       * Review
+       * @default []
+       */
+      review: components["schemas"]["UpgradeReviewItem"][];
+    };
+    /** UpgradeReviewItem */
+    UpgradeReviewItem: {
+      /** Id */
+      id: string;
+      /** Title */
+      title: string;
+      /** Description */
+      description: string;
+      /** Link */
+      link: string;
+    };
+    /** UpgradeView */
+    UpgradeView: {
+      /** Release */
+      release: string;
+      /** Acknowledged */
+      acknowledged: string | null;
+      /** Pending */
+      pending: boolean;
+      /** Releases */
+      releases: components["schemas"]["UpgradeRelease"][];
+      /** Backups */
+      backups: components["schemas"]["BackupView"][];
+      /** Restored From */
+      restored_from?: string | null;
     };
     /** Usage */
     Usage: {
@@ -26903,6 +27067,132 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["InstallationSettingsView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  read_api_upgrade_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpgradeView"];
+        };
+      };
+    };
+  };
+  acknowledge_api_upgrade_acknowledge_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpgradeView"];
+        };
+      };
+    };
+  };
+  take_backup_api_upgrade_backups_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BackupView"];
+        };
+      };
+    };
+  };
+  download_api_upgrade_backups__name__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  restore_api_upgrade_backups__name__restore_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RestoreInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RestoreView"];
         };
       };
       /** @description Validation Error */

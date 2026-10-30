@@ -17882,6 +17882,161 @@
         }
       }
     },
+    "/api/upgrade": {
+      "get": {
+        "tags": [
+          "upgrade"
+        ],
+        "summary": "Read",
+        "operationId": "read_api_upgrade_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upgrade/acknowledge": {
+      "post": {
+        "tags": [
+          "upgrade"
+        ],
+        "summary": "Acknowledge",
+        "operationId": "acknowledge_api_upgrade_acknowledge_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upgrade/backups": {
+      "post": {
+        "tags": [
+          "upgrade"
+        ],
+        "summary": "Take Backup",
+        "operationId": "take_backup_api_upgrade_backups_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upgrade/backups/{name}": {
+      "get": {
+        "tags": [
+          "upgrade"
+        ],
+        "summary": "Download",
+        "operationId": "download_api_upgrade_backups__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upgrade/backups/{name}/restore": {
+      "post": {
+        "tags": [
+          "upgrade"
+        ],
+        "summary": "Restore",
+        "operationId": "restore_api_upgrade_backups__name__restore_post",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestoreView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/acquisition/selections/{selection_id}/pack-preview": {
       "get": {
         "tags": [
@@ -20927,6 +21082,98 @@
         },
         "type": "object",
         "title": "Availability"
+      },
+      "BackupView": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "release_from": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release From"
+          },
+          "release_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release To"
+          },
+          "schema_from": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema From"
+          },
+          "schema_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema To"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size"
+          },
+          "rows": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Rows"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "size",
+          "rows"
+        ],
+        "title": "BackupView"
       },
       "BatchInput": {
         "properties": {
@@ -38732,6 +38979,43 @@
         ],
         "title": "RequestView"
       },
+      "RestoreInput": {
+        "properties": {
+          "confirm": {
+            "type": "boolean",
+            "title": "Confirm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "confirm"
+        ],
+        "title": "RestoreInput"
+      },
+      "RestoreView": {
+        "properties": {
+          "backup_taken": {
+            "type": "string",
+            "title": "Backup Taken"
+          },
+          "tables": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Tables"
+          }
+        },
+        "type": "object",
+        "required": [
+          "backup_taken",
+          "tables"
+        ],
+        "title": "RestoreView"
+      },
       "ReviewInput": {
         "properties": {
           "expected_revision": {
@@ -42846,6 +43130,125 @@
           "size_bytes"
         ],
         "title": "TorrentFile"
+      },
+      "UpgradeRelease": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "highlights": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Highlights"
+          },
+          "review": {
+            "items": {
+              "$ref": "#/components/schemas/UpgradeReviewItem"
+            },
+            "type": "array",
+            "title": "Review",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "highlights"
+        ],
+        "title": "UpgradeRelease"
+      },
+      "UpgradeReviewItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "link"
+        ],
+        "title": "UpgradeReviewItem"
+      },
+      "UpgradeView": {
+        "properties": {
+          "release": {
+            "type": "string",
+            "title": "Release"
+          },
+          "acknowledged": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged"
+          },
+          "pending": {
+            "type": "boolean",
+            "title": "Pending"
+          },
+          "releases": {
+            "items": {
+              "$ref": "#/components/schemas/UpgradeRelease"
+            },
+            "type": "array",
+            "title": "Releases"
+          },
+          "backups": {
+            "items": {
+              "$ref": "#/components/schemas/BackupView"
+            },
+            "type": "array",
+            "title": "Backups"
+          },
+          "restored_from": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Restored From"
+          }
+        },
+        "type": "object",
+        "required": [
+          "release",
+          "acknowledged",
+          "pending",
+          "releases",
+          "backups"
+        ],
+        "title": "UpgradeView"
       },
       "Usage": {
         "properties": {

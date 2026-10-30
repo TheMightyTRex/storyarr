@@ -73,6 +73,7 @@ from app.api import (
     slskd,
     source_artifacts,
     sources,
+    upgrade,
 )
 from app.config import get_settings
 from app.db.session import get_engine, session_factory
@@ -225,6 +226,7 @@ def create_app() -> FastAPI:
     app.include_router(source_artifacts.router, prefix="/api")
     app.include_router(acquisition_preferences.router, prefix="/api")
     app.include_router(automation_settings.router, prefix="/api")
+    app.include_router(upgrade.router, prefix="/api")
     app.include_router(acquisition_selections.router, prefix="/api")
     dist: Path = get_settings().web_dist
     if (dist / "assets").is_dir():

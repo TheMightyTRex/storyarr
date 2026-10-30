@@ -16,6 +16,7 @@ const Recovery = lazy(() => import("./DownloadRecoverySettings"));
 const Capacity = lazy(() => import("./CapacitySettings"));
 const AccountSignIn = lazy(() => import("./AccountSignIn"));
 const Accounts = lazy(() => import("./Accounts"));
+const Upgrades = lazy(() => import("./UpgradeSettings"));
 
 export function settingsSections(role: string, permissions: string[] = []) {
   const admin = role === "admin";
@@ -109,5 +110,14 @@ export function settingsSections(role: string, permissions: string[] = []) {
       content: <Notifications admin={admin} />,
     },
     { id: "logs", title: "Logs", content: <Logs admin={admin} /> },
+    ...(admin
+      ? [
+          {
+            id: "upgrades",
+            title: "Upgrades and backups",
+            content: <Upgrades />,
+          },
+        ]
+      : []),
   ];
 }

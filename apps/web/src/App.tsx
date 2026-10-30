@@ -37,6 +37,8 @@ import { useDisplayPreferences } from "./displayPreferences";
 import { LibraryTabs, ShelfRail } from "./components/ShelfNavigation";
 import { DisplayButton } from "./components/DisplayPanel";
 import { HeaderSubmenuSlot } from "./components/HeaderSubmenu";
+import { useUpgrade } from "./components/UpgradeBackups";
+import { upgradeLaterKey } from "./upgradeLater";
 
 const AddDiscoveryList = lazy(() => import("./pages/AddDiscoveryList"));
 const SettingsPage = lazy(() => import("./pages/Settings"));
@@ -47,6 +49,7 @@ const CommunityLists = lazy(() => import("./pages/CommunityLists"));
 const BookDetail = lazy(() => import("./pages/BookDetail"));
 const Following = lazy(() => import("./pages/Following"));
 const FollowShelf = lazy(() => import("./pages/FollowShelf"));
+const UpgradeWizard = lazy(() => import("./pages/UpgradeWizard"));
 const AuthorDetail = lazy(() => import("./pages/AuthorDetail"));
 const Series = lazy(() => import("./pages/Series"));
 const Lists = lazy(() => import("./pages/Lists"));
@@ -381,6 +384,14 @@ function RefreshLists({
   );
 }
 
+function upgradeLater() {
+  try {
+    return sessionStorage.getItem(upgradeLaterKey) === "true";
+  } catch {
+    return false;
+  }
+}
+
 function Shell({ auth }: { auth: Auth }) {
   const client = useQueryClient();
   const navigate = useNavigate();
@@ -402,6 +413,7 @@ function Shell({ auth }: { auth: Auth }) {
   const reviewing = useLibraryReviewCount(admin).data?.total ?? 0;
   const shelf = useDisplayPreferences().layout === "shelf";
   const [submenuSlot, setSubmenuSlot] = useState<HTMLElement | null>(null);
+  const upgrade = useUpgrade(admin);
   const logout = useMutation({
     mutationFn: async () => result(await api.POST("/api/auth/logout")),
     onSuccess: () => {
@@ -420,6 +432,13 @@ function Shell({ auth }: { auth: Auth }) {
     location.pathname !== "/onboarding"
   )
     return <Navigate to="/onboarding" replace />;
+  if (
+    admin &&
+    upgrade.data?.pending &&
+    location.pathname !== "/upgrade" &&
+    !upgradeLater()
+  )
+    return <Navigate to="/upgrade" replace />;
   if (location.pathname === "/onboarding")
     return (
       <main className="onboarding-shell">
@@ -622,6 +641,12 @@ function Shell({ auth }: { auth: Auth }) {
                   path="/following"
                   element={
                     canEdit ? <Following /> : <Navigate to="/" replace />
+                  }
+                />
+                <Route
+                  path="/upgrade"
+                  element={
+                    admin ? <UpgradeWizard /> : <Navigate to="/" replace />
                   }
                 />
                 <Route

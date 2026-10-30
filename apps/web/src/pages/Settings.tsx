@@ -52,7 +52,12 @@ const groups: {
     icon: Download,
     sections: ["sources", "downloaders", "preferences", "automation"],
   },
-  { id: "system", title: "System", icon: ScrollText, sections: ["logs"] },
+  {
+    id: "system",
+    title: "System",
+    icon: ScrollText,
+    sections: ["logs", "upgrades"],
+  },
 ];
 
 export default function Settings({
