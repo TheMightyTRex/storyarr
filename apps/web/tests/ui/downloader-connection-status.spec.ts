@@ -255,7 +255,7 @@ test("advanced mappings browse local volumes, save translations, and fit mobile"
   ]);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/onboarding");
-  await expect(page.getByText("STEP 4 OF 7", { exact: true })).toBeVisible();
+  await expect(page.getByText("STEP 4 OF 9", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("article", { name: "qBittorrent" }),
   ).toContainText("Folder mapping configured");

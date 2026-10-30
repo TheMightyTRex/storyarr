@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Headphones, Library, Check, Star } from "lucide-react";
+import LayoutChoice from "../components/LayoutChoice";
 import {
   displayDefaults,
   saveDisplayPreferences,
@@ -22,6 +23,7 @@ export default function DisplaySettings() {
   }
   return (
     <div className="display-settings">
+      <LayoutChoice />
       <h3>Appearance</h3>
       <p className="muted">
         Choose how covers look on your shelves. Changes save automatically in
@@ -100,7 +102,10 @@ export default function DisplaySettings() {
           appear on covers. Gray icons indicate missing or unknown formats.
         </p>
       </div>
-      <button type="button" onClick={() => update({ ...displayDefaults })}>
+      <button
+        type="button"
+        onClick={() => update({ ...displayDefaults, layout: display.layout })}
+      >
         Reset cover shapes
       </button>
       <p role="status">{message}</p>

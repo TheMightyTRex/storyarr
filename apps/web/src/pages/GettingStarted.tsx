@@ -6,6 +6,7 @@ import { Check, ArrowRight } from "lucide-react";
 import { api, result, type Auth } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
+import LayoutChoice from "../components/LayoutChoice";
 import { settingsSections } from "./SettingsSections";
 
 function setupCount(
@@ -43,6 +44,7 @@ export default function GettingStarted({ role }: { role: string }) {
       ? { ...section, content: <Libraries embedded connectionOnly /> }
       : section,
   );
+  all.push({ id: "layout", title: "Layout", content: <LayoutChoice /> });
   if (admin)
     all.push({
       id: "storage",
@@ -58,11 +60,12 @@ export default function GettingStarted({ role }: { role: string }) {
         "storage",
         "reading",
         "automation",
+        "layout",
         "finish",
       ]
     : role === "viewer"
-      ? ["catalog", "finish"]
-      : ["catalog", "preferences", "reading", "automation", "finish"];
+      ? ["catalog", "layout", "finish"]
+      : ["catalog", "preferences", "reading", "automation", "layout", "finish"];
   const descriptions: Record<string, string> = {
     catalog:
       "Connect Hardcover for discovery, or use Open Library without an account.",
@@ -77,6 +80,8 @@ export default function GettingStarted({ role }: { role: string }) {
     preferences: "Choose the formats and sources you prefer.",
     automation:
       "Choose which kinds of books new author and series follows include.",
+    layout:
+      "Choose Classic for the original menu, or Shelf for a slim icon menu with fewer places to look.",
     finish:
       "Your saved settings are ready. You can change them anytime in Settings.",
   };

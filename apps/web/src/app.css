@@ -12,6 +12,7 @@
 @import "./following.css" layer(app);
 @import "./controls.css" layer(controls);
 @import "./workflows.css" layer(controls);
+@import "./shelf-layout.css" layer(controls);
 
 .brand img {
   border-radius: 8px;

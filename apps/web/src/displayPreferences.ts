@@ -4,11 +4,13 @@ export type DisplayPreferences = {
   defaultShape: "square" | "portrait";
   audioShape: "square" | "portrait";
   ebookShape: "square" | "portrait";
+  layout: "classic" | "shelf";
 };
 export const displayDefaults: DisplayPreferences = {
   defaultShape: "portrait",
   audioShape: "portrait",
   ebookShape: "portrait",
+  layout: "classic",
 };
 const key = "book-search:display:v1";
 let snapshot = displayDefaults;
@@ -26,6 +28,8 @@ function read() {
         name === "defaultShape"
       ) {
         if (value === "square" || value === "portrait") snapshot[name] = value;
+      } else if (name === "layout") {
+        if (value === "classic" || value === "shelf") snapshot.layout = value;
       }
     }
   } catch {

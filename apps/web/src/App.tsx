@@ -33,6 +33,8 @@ import { Loading, Notice } from "./components";
 import { useRequestCounts } from "./hooks/useRequestCounts";
 import { useLibraryReviewCount } from "./hooks/useLibraryReviewCount";
 import { canManageOwnRequests } from "./permissions";
+import { useDisplayPreferences } from "./displayPreferences";
+import { LibraryTabs, ShelfRail } from "./components/ShelfNavigation";
 
 const AddDiscoveryList = lazy(() => import("./pages/AddDiscoveryList"));
 const SettingsPage = lazy(() => import("./pages/Settings"));
@@ -395,6 +397,7 @@ function Shell({ auth }: { auth: Auth }) {
   const admin = auth.user.role === "admin";
   const canEdit = auth.user.role !== "viewer";
   const reviewing = useLibraryReviewCount(admin).data?.total ?? 0;
+  const shelf = useDisplayPreferences().layout === "shelf";
   const logout = useMutation({
     mutationFn: async () => result(await api.POST("/api/auth/logout")),
     onSuccess: () => {
@@ -422,106 +425,117 @@ function Shell({ auth }: { auth: Auth }) {
       </main>
     );
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-layout={shelf ? "shelf" : "classic"}>
       <NavigationContinuity />
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <aside className="sidebar" data-menu-open={mobileMenu}>
-        <button
-          type="button"
-          className="mobile-menu-button"
-          aria-expanded={mobileMenu}
-          aria-controls="main-navigation"
-          onClick={() => setMobileMenu(!mobileMenu)}
-        >
-          {mobileMenu ? "Close menu" : "Menu"}
-        </button>
-        <NavLink to="/" className="brand">
-          <img src="/assets/dewarr.png" width="32" height="32" alt="" />
-          <span>Dewarr</span>
-        </NavLink>
-        <button
-          className="icon-button mobile-signout"
-          aria-label="Sign out"
-          onClick={() => logout.mutate()}
-          disabled={logout.isPending}
-        >
-          <LogOut size={18} />
-        </button>
-        <p className="nav-caption">YOUR COLLECTION</p>
-        <nav
-          id="main-navigation"
-          aria-label="Main navigation"
-          onClick={(event) => {
-            if ((event.target as HTMLElement).closest("a"))
-              setMobileMenu(false);
-          }}
-        >
-          <NavLink to="/discover">
-            <Compass size={19} />
-            Discover
-          </NavLink>
-          {canEdit && (
-            <NavLink to="/following">
-              <ListPlus size={19} />
-              Following
-            </NavLink>
-          )}
-          <NavLink to="/library" end>
-            <BookOpen size={19} />
-            My Library
-          </NavLink>
-          {admin && (
-            <NavLink to="/review">
-              <ListChecks size={19} />
-              Library review
-              {reviewing > 0 && (
-                <span className="nav-count">
-                  {reviewing > 99 ? "99+" : reviewing}
-                  <span className="sr-only"> library items to review</span>
-                </span>
-              )}
-            </NavLink>
-          )}
-          <NavLink
-            to="/requests"
-            aria-label="Requests"
-            title={`${waiting} active requests`}
-          >
-            <Download size={19} />
-            Requests
-            {waiting > 0 && (
-              <span className="nav-count">
-                {waiting > 99 ? "99+" : waiting}
-                <span className="sr-only"> active requests</span>
-              </span>
-            )}
-          </NavLink>
-          <NavLink to="/settings">
-            <Settings size={19} />
-            Settings
-          </NavLink>
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="avatar">
-            {auth.user.display_name.slice(0, 1).toUpperCase()}
-          </div>
-          <div>
-            <strong>{auth.user.display_name}</strong>
-            <small>{auth.user.access_label}</small>
-          </div>
+      {shelf ? (
+        <ShelfRail
+          name={auth.user.display_name}
+          role={auth.user.role}
+          waiting={waiting}
+          reviewing={reviewing}
+          signOut={() => logout.mutate()}
+          signingOut={logout.isPending}
+        />
+      ) : (
+        <aside className="sidebar" data-menu-open={mobileMenu}>
           <button
-            className="icon-button"
+            type="button"
+            className="mobile-menu-button"
+            aria-expanded={mobileMenu}
+            aria-controls="main-navigation"
+            onClick={() => setMobileMenu(!mobileMenu)}
+          >
+            {mobileMenu ? "Close menu" : "Menu"}
+          </button>
+          <NavLink to="/" className="brand">
+            <img src="/assets/dewarr.png" width="32" height="32" alt="" />
+            <span>Dewarr</span>
+          </NavLink>
+          <button
+            className="icon-button mobile-signout"
             aria-label="Sign out"
             onClick={() => logout.mutate()}
             disabled={logout.isPending}
           >
             <LogOut size={18} />
           </button>
-        </div>
-        <ApplicationRelease />
-      </aside>
+          <p className="nav-caption">YOUR COLLECTION</p>
+          <nav
+            id="main-navigation"
+            aria-label="Main navigation"
+            onClick={(event) => {
+              if ((event.target as HTMLElement).closest("a"))
+                setMobileMenu(false);
+            }}
+          >
+            <NavLink to="/discover">
+              <Compass size={19} />
+              Discover
+            </NavLink>
+            {canEdit && (
+              <NavLink to="/following">
+                <ListPlus size={19} />
+                Following
+              </NavLink>
+            )}
+            <NavLink to="/library" end>
+              <BookOpen size={19} />
+              My Library
+            </NavLink>
+            {admin && (
+              <NavLink to="/review">
+                <ListChecks size={19} />
+                Library review
+                {reviewing > 0 && (
+                  <span className="nav-count">
+                    {reviewing > 99 ? "99+" : reviewing}
+                    <span className="sr-only"> library items to review</span>
+                  </span>
+                )}
+              </NavLink>
+            )}
+            <NavLink
+              to="/requests"
+              aria-label="Requests"
+              title={`${waiting} active requests`}
+            >
+              <Download size={19} />
+              Requests
+              {waiting > 0 && (
+                <span className="nav-count">
+                  {waiting > 99 ? "99+" : waiting}
+                  <span className="sr-only"> active requests</span>
+                </span>
+              )}
+            </NavLink>
+            <NavLink to="/settings">
+              <Settings size={19} />
+              Settings
+            </NavLink>
+          </nav>
+          <div className="sidebar-bottom">
+            <div className="avatar">
+              {auth.user.display_name.slice(0, 1).toUpperCase()}
+            </div>
+            <div>
+              <strong>{auth.user.display_name}</strong>
+              <small>{auth.user.access_label}</small>
+            </div>
+            <button
+              className="icon-button"
+              aria-label="Sign out"
+              onClick={() => logout.mutate()}
+              disabled={logout.isPending}
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
+          <ApplicationRelease />
+        </aside>
+      )}
       <div className="workspace">
         <header className="topbar">
           <form className="search" role="search" onSubmit={searchSubmit}>
@@ -560,6 +574,13 @@ function Shell({ auth }: { auth: Auth }) {
           </Suspense>
         )}
         <main id="main" className="main-content">
+          {shelf && (
+            <LibraryTabs
+              canEdit={canEdit}
+              admin={admin}
+              reviewing={reviewing}
+            />
+          )}
           <Notice error={logout.error} />
           <Notice error={listsRefresh.error} />
           {(listsRefresh.busy || listsRefresh.message) && (
