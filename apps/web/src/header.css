@@ -139,15 +139,15 @@
   gap: 6px;
 }
 
-/* Activity → History: one filter for each outcome. */
-.history-outcomes {
+/* Activity: the filters inside each tab (Queue, Wanted, History). */
+.activity-filters {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 8px;
   margin: 0 0 18px;
 }
-.history-outcomes a {
+.activity-filters a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -158,10 +158,10 @@
   font-size: 0.875rem;
   font-weight: 600;
 }
-.history-outcomes a:hover {
+.activity-filters a:hover {
   color: var(--c-text-grey-97);
 }
-.history-outcomes a[aria-current="page"] {
+.activity-filters a[aria-current="page"] {
   border-color: var(--c-text-grey-97);
   background: var(--c-text-grey-97);
   color: var(--c-bg-slate-21);

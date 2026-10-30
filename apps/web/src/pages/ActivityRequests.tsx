@@ -49,6 +49,8 @@ const emptyCopy: Record<RequestFilter, string> = {
   queue:
     "Nothing is queued. Requests appear here while they are searched for and downloaded.",
   pending: "No requests are waiting for approval.",
+  yours: "None of your requests are waiting for approval.",
+  downloading: "Nothing is downloading.",
   history: "No finished requests yet.",
   library: "No requests are in the library yet.",
   declined: "No declined requests.",
@@ -180,7 +182,9 @@ export default function ActivityRequests({
               limit: 10,
               sort,
               q: q || undefined,
-              status,
+              ...(status === "yours"
+                ? { status: "pending", mine: true }
+                : { status }),
             },
           },
         }),

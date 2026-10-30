@@ -239,11 +239,17 @@ test("requests show transfer telemetry, review actions and counts in compact row
     /^Queue/,
     /^Wanted/,
     /^History/,
-    /^Review/,
   ]);
-  await expect(filters.getByRole("link", { name: /^Review/ })).toContainText(
-    "1",
-  );
+  // Review is a filter inside Queue now, with its own count.
+  const queueFilters = page.getByRole("navigation", { name: "Queue filters" });
+  await expect(queueFilters.getByRole("link")).toHaveText([
+    "All",
+    /^Downloading/,
+    /^Needs review/,
+  ]);
+  await expect(
+    queueFilters.getByRole("link", { name: /^Needs review/ }),
+  ).toContainText("1");
   for (const row of await downloading.getByRole("row").all())
     expect((await row.boundingBox())!.height).toBeLessThan(110);
   await expect(

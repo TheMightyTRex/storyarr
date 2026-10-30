@@ -159,7 +159,7 @@ for (const role of ["admin", "member", "viewer"]) {
     });
     await requestFilters.getByRole("link", { name: /^History/ }).click();
     await expect(page).toHaveURL(/status=history/);
-    const outcomes = page.getByRole("navigation", { name: "History outcomes" });
+    const outcomes = page.getByRole("navigation", { name: "History filters" });
     await expect(outcomes.getByRole("link")).toHaveText([
       "All",
       "In library",
@@ -181,8 +181,12 @@ for (const role of ["admin", "member", "viewer"]) {
         { exact: true },
       ),
     ).toBeVisible();
+    await expect(requestFilters.getByRole("link")).toHaveCount(3);
+    const queueFilters = page.getByRole("navigation", {
+      name: "Queue filters",
+    });
     await expect(
-      requestFilters.getByRole("link", { name: /^Review/ }),
+      queueFilters.getByRole("link", { name: /^Needs review/ }),
     ).toHaveCount(role === "admin" ? 1 : 0);
     await page.goto("/activity#downloads");
     await expect(page).toHaveURL(/\/requests#downloads$/);
@@ -232,13 +236,10 @@ for (const role of ["admin", "member", "viewer"]) {
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    // The old Downloads link now opens Queue.
+    // The old Downloads link opens Queue with the Downloading filter.
     await page.goto("/requests#downloads");
     await expect(
-      page.getByText(
-        "Nothing is queued. Requests appear here while they are searched for and downloaded.",
-        { exact: true },
-      ),
+      page.getByText("Nothing is downloading.", { exact: true }),
     ).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath("requests-mobile.png") });
     expect(

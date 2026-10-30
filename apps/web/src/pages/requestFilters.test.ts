@@ -4,6 +4,7 @@ import {
   nextRequestOffset,
   requestCountLabel,
   requestFilter,
+  requestTab,
 } from "./requestFilters.ts";
 
 test("a status query wins over a legacy hash", () => {
@@ -12,20 +13,26 @@ test("a status query wins over a legacy hash", () => {
 });
 
 test("a legacy hash still selects the filter when no status query is present", () => {
-  assert.equal(requestFilter("#downloads", null), "queue");
+  assert.equal(requestFilter("#downloads", null), "downloading");
   assert.equal(requestFilter("#approvals", null), "pending");
   assert.equal(requestFilter("#reviews", null), "review");
   assert.equal(requestFilter("#review", ""), "review");
 });
 
 test("an unknown status falls through to the hash, then to Queue", () => {
-  assert.equal(requestFilter("#downloads", "nope"), "queue");
+  assert.equal(requestFilter("#downloads", "nope"), "downloading");
   assert.equal(requestFilter("", null), "queue");
 });
 
-test("the old Active and Downloading filters open Queue", () => {
+test("the old Active filter opens Queue", () => {
   assert.equal(requestFilter("", "all"), "queue");
-  assert.equal(requestFilter("#approvals", "downloading"), "queue");
+});
+
+test("every filter belongs to one tab", () => {
+  assert.equal(requestTab("downloading"), "queue");
+  assert.equal(requestTab("review"), "queue");
+  assert.equal(requestTab("yours"), "pending");
+  assert.equal(requestTab("withdrawn"), "history");
 });
 
 test("a bounded filter resumes from the candidate cursor", () => {
