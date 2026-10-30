@@ -574,3 +574,30 @@ async def test_catalog_reader_exposes_accepted_snapshot_without_overwriting_loca
         saved_source.accepted = False
         await db.commit()
     assert (await client.get(f"/api/metadata/works/{work_id}")).json()["sources"] == []
+
+
+async def test_the_audible_store_is_a_saved_setting(client, admin):
+    from app.domain import audible_store
+    from app.domain.catalog_network import CatalogGateway, catalog_endpoint
+
+    audible_store.remember(None)
+    capabilities = (await client.get("/api/metadata/capabilities")).json()
+    assert capabilities["audible_region"] == capabilities["audible_default_region"] == "us"
+    assert (await client.get("/api/metadata/preferences")).json()["audible_region"] is None
+
+    saved = await client.put("/api/metadata/preferences", json={"audible_region": "uk"})
+    assert saved.status_code == 200, saved.text
+    assert (await client.get("/api/metadata/preferences")).json()["audible_region"] == "uk"
+    assert catalog_endpoint("audible") == "https://api.audible.co.uk"
+    capabilities = (await client.get("/api/metadata/capabilities")).json()
+    assert (capabilities["audible_region"], capabilities["audible_default_region"]) == ("uk", "us")
+
+    # Another process reads the saved store when it next opens an Audible connection.
+    audible_store.remember(None)
+    audible_store._checked = float("-inf")
+    async with CatalogGateway("audible", "public") as gateway:
+        assert gateway.endpoint == "https://api.audible.co.uk"
+    assert (
+        await client.put("/api/metadata/preferences", json={"audible_region": "xx"})
+    ).status_code == 422
+    audible_store.remember(None)

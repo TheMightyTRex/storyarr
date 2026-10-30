@@ -38,6 +38,10 @@ class MetadataPreferences(BaseModel):
     language: str = Field(default="en", min_length=2, max_length=20)
     filter_language: bool = False
     covers: Literal["automatic", "hardcover", "openlibrary"] = "automatic"
+    # Audible store for recording details and Audible search. None uses BOOK_AUDIBLE_REGION.
+    audible_region: Literal["us", "uk", "au", "ca", "de", "es", "fr", "in", "it", "jp"] | None = (
+        None
+    )
     field_providers: dict[str, Literal["hardcover", "openlibrary"]] = Field(default_factory=dict)
 
     @field_validator("field_providers")

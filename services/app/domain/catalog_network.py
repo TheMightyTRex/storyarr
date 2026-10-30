@@ -17,6 +17,7 @@ from app.adapters.http import JsonEndpoint
 from app.config import get_settings
 from app.db.models import ProviderBudget, ProviderCache
 from app.db.session import session_factory
+from app.domain import audible_store
 from app.domain.cache_entries import read_through
 from app.domain.catalog_cache_policy import lifetime
 from app.domain.operations import transaction_lock
@@ -41,8 +42,8 @@ def catalog_endpoint(provider):
     endpoints = {
         "hardcover": settings.hardcover_url,
         "openlibrary": settings.openlibrary_url,
-        "audible": f"https://api.audible.{MARKETPLACES[settings.audible_region]}",
-        "audible-storefront": f"https://www.audible.{MARKETPLACES[settings.audible_region]}",
+        "audible": f"https://api.audible.{MARKETPLACES[audible_store.region()]}",
+        "audible-storefront": f"https://www.audible.{MARKETPLACES[audible_store.region()]}",
         "audnexus": "https://api.audnex.us",
         "nyt": "https://api.nytimes.com",
         "custom": settings.custom_metadata_url,
@@ -100,14 +101,12 @@ class CatalogGateway:
             if provider == "nyt" and settings.nyt_api_key
             else None
         )
-        self.http = JsonEndpoint(
-            endpoint,
+        self._connection = (
             token,
-            transport=transport,
-            proxy=settings.metadata_proxy_url.get_secret_value()
-            if settings.metadata_proxy_url
-            else None,
+            transport,
+            settings.metadata_proxy_url.get_secret_value() if settings.metadata_proxy_url else None,
         )
+        self.http = self._endpoint(endpoint)
         self.provider, self.scope, self.force = provider, scope, force
         digest = hmac.new(
             settings.encryption_key(), (token or self.api_key or provider).encode(), hashlib.sha256
@@ -121,7 +120,17 @@ class CatalogGateway:
         self.on_stale = on_stale
         self.request_interval = max(REQUEST_INTERVAL, request_interval)
 
+    def _endpoint(self, endpoint):
+        token, transport, proxy = self._connection
+        return JsonEndpoint(endpoint, token, transport=transport, proxy=proxy)
+
     async def __aenter__(self):
+        if self.provider in {"audible", "audible-storefront"}:
+            # The Audible store is a saved setting; use its current address.
+            await audible_store.refresh()
+            endpoint = catalog_endpoint(self.provider)
+            if endpoint != self.endpoint:
+                self.endpoint, self.http = endpoint, self._endpoint(endpoint)
         await self.http.__aenter__()
         return self
 

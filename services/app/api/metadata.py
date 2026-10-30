@@ -43,6 +43,7 @@ from app.db.models import (
     Work,
     WorkMetadataSource,
 )
+from app.domain import audible_store
 from app.domain.availability import availability_for, owned_coverage
 from app.domain.catalog_bindings import displayed_provider_works, visible_provider_works
 from app.domain.catalog_display import display_family
@@ -291,6 +292,7 @@ async def save_preferences(body: MetadataPreferences, user: Admin, db: Database)
         row = MetadataSettings(id=1)
         db.add(row)
     row.preferences = body.model_dump()
+    audible_store.remember(body.audible_region)
     db.add(AuditEvent(actor_id=user.id, action="metadata.preferences.updated"))
     await db.commit()
     return body
@@ -315,7 +317,9 @@ async def known_works(db, user, provider, external_ids, books=None):
 
 class MetadataCapabilities(BaseModel):
     custom_metadata: bool
+    # The store in use, and the server's default when no store is saved.
     audible_region: str
+    audible_default_region: str
     proxy_configured: bool
     nyt_configured: bool
 
@@ -327,7 +331,8 @@ async def capabilities(user: CurrentUser):
     settings = get_settings()
     return MetadataCapabilities(
         custom_metadata=bool(settings.custom_metadata_url),
-        audible_region=settings.audible_region,
+        audible_region=await audible_store.refresh(),
+        audible_default_region=settings.audible_region,
         proxy_configured=bool(settings.metadata_proxy_url),
         nyt_configured=bool(settings.nyt_api_key),
     )

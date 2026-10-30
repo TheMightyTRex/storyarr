@@ -10660,6 +10660,8 @@ export interface components {
       custom_metadata: boolean;
       /** Audible Region */
       audible_region: string;
+      /** Audible Default Region */
+      audible_default_region: string;
       /** Proxy Configured */
       proxy_configured: boolean;
       /** Nyt Configured */
@@ -10732,6 +10734,10 @@ export interface components {
        * @enum {string}
        */
       covers: "automatic" | "hardcover" | "openlibrary";
+      /** Audible Region */
+      audible_region?:
+        | ("us" | "uk" | "au" | "ca" | "de" | "es" | "fr" | "in" | "it" | "jp")
+        | null;
       /** Field Providers */
       field_providers?: {
         [key: string]: "hardcover" | "openlibrary";

@@ -22,7 +22,7 @@ from app.db.models import (
     WorkMetadataSource,
 )
 from app.db.session import session_factory
-from app.domain import download_reviews
+from app.domain import audible_store, download_reviews
 from app.domain.catalog_metadata import attach_source, preferences
 from app.domain.catalog_network import CatalogGateway
 from app.domain.catalog_titles import identity_authors, parse_title_labels
@@ -91,7 +91,7 @@ async def context(db, row, group_key, *, lock=False):
         "account_generation": account.generation if account and account.enabled else None,
         "settings": settings.model_dump(mode="json"),
         "endpoints": [get_settings().hardcover_url, get_settings().openlibrary_url],
-        "audible_region": get_settings().audible_region,
+        "audible_region": audible_store.region(),
         "sources": [
             {
                 "provider": source.provider,

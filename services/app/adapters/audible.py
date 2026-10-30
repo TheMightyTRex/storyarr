@@ -14,6 +14,7 @@ from app.adapters.catalog_types import (
     year,
 )
 from app.adapters.contracts import AdapterError, FailureKind
+from app.domain import audible_store
 from app.domain.catalog_language import catalog_language
 
 MARKETPLACES = {
@@ -97,10 +98,9 @@ def product(value, *, nexus=False):
         series = value.get("series") or []
         if nexus:
             series = [value[k] for k in ("seriesPrimary", "seriesSecondary") if value.get(k)]
-        from app.config import get_settings
 
         return BookData(
-            source_url=f"https://www.audible.{MARKETPLACES[get_settings().audible_region]}/pd/{external_id}",
+            source_url=f"https://www.audible.{MARKETPLACES[audible_store.region()]}/pd/{external_id}",
             provider="audible",
             external_id=external_id,
             title=edition.title,
@@ -168,7 +168,6 @@ class Audible:
 
 async def recording(external_id):
     """Audnexus only fills missing fields on the same ASIN; it cannot corroborate identity."""
-    from app.config import get_settings
     from app.domain.catalog_network import CatalogGateway
 
     async with CatalogGateway("audible", "public") as gateway:
@@ -185,7 +184,7 @@ async def recording(external_id):
                     "GET",
                     f"books/{asin(external_id)}",
                     params={
-                        "region": get_settings().audible_region,
+                        "region": audible_store.region(),
                     },
                 )
                 other = product(raw, nexus=True)

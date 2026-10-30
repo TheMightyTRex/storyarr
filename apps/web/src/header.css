@@ -166,3 +166,47 @@
   background: var(--c-text-grey-97);
   color: var(--c-bg-slate-21);
 }
+
+/* Audible results in the library match form. */
+.audible-search {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.audible-search h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.audible-search > button {
+  align-self: flex-start;
+  min-height: 40px;
+}
+.audible-candidate {
+  align-items: flex-start;
+}
+.audible-candidate img,
+.audible-cover {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  background: var(--line);
+}
+.audible-candidate small {
+  display: block;
+}
+.audible-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.audible-tag {
+  padding: 1px 8px;
+  border: 1px solid var(--line);
+  font-size: 0.75rem;
+  font-weight: 600;
+}

@@ -1,3 +1,5 @@
+import { audibleStores, suggestedAudibleStore } from "../audibleStores";
+import type { AudibleStore } from "../audibleStores";
 import ConnectionStatus from "../components/ConnectionStatus";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -252,7 +254,10 @@ export default function MetadataSettings({
 
 function PreferenceForm({ value }: { value: Preferences }) {
   const client = useQueryClient();
-  const [settings, setSettings] = useState(value);
+  const [settings, setSettings] = useState<Preferences>(() => ({
+    ...value,
+    audible_region: value.audible_region ?? suggestedAudibleStore(),
+  }));
   const [saved, setSaved] = useState(false);
   const save = useMutation({
     mutationFn: async () =>
@@ -303,6 +308,30 @@ function PreferenceForm({ value }: { value: Preferences }) {
               setSettings({ ...settings, language });
             }}
           />
+        </label>
+        <label>
+          Audible store
+          <select
+            value={settings.audible_region ?? "us"}
+            onChange={(e) => {
+              setSaved(false);
+              setSettings({
+                ...settings,
+                audible_region: e.target.value as AudibleStore,
+              });
+            }}
+          >
+            {audibleStores.map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <small className="muted">
+            {value.audible_region
+              ? "Used for Audible search and recording details, such as narrators and length."
+              : "Suggested from this browser's country. Save to use it for Audible search and recording details."}
+          </small>
         </label>
       </div>
       <label className="check-label">

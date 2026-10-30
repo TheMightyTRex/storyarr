@@ -31736,6 +31736,10 @@
             "type": "string",
             "title": "Audible Region"
           },
+          "audible_default_region": {
+            "type": "string",
+            "title": "Audible Default Region"
+          },
           "proxy_configured": {
             "type": "boolean",
             "title": "Proxy Configured"
@@ -31749,6 +31753,7 @@
         "required": [
           "custom_metadata",
           "audible_region",
+          "audible_default_region",
           "proxy_configured",
           "nyt_configured"
         ],
@@ -31841,6 +31846,29 @@
             ],
             "title": "Covers",
             "default": "automatic"
+          },
+          "audible_region": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "us",
+                  "uk",
+                  "au",
+                  "ca",
+                  "de",
+                  "es",
+                  "fr",
+                  "in",
+                  "it",
+                  "jp"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audible Region"
           },
           "field_providers": {
             "additionalProperties": {

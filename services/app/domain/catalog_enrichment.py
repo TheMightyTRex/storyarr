@@ -11,6 +11,7 @@ from app.adapters.contracts import AdapterError, FailureKind
 from app.config import get_settings
 from app.db.models import AuditEvent, Operation, User, Work, WorkMetadataSource
 from app.db.session import session_factory
+from app.domain import audible_store
 from app.domain.catalog_metadata import attach_source, preferences
 from app.domain.catalog_network import CatalogGateway
 from app.domain.catalog_titles import identity_authors, parse_title_labels
@@ -95,7 +96,7 @@ async def proposal(db, work, settings):
         "missing": missing,
         "provider": provider,
         "recording_id": recording_id,
-        "audible_region": get_settings().audible_region if provider == "audible" else None,
+        "audible_region": audible_store.region() if provider == "audible" else None,
     }
 
 

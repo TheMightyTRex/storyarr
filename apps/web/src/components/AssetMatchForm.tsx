@@ -7,6 +7,9 @@ import IdentityHistory from "../pages/IdentityHistory";
 import { searchTitle, titlePart } from "../titleLabels";
 
 type Asset = components["schemas"]["AssetView"];
+type Book = components["schemas"]["BookData"];
+// An Audible recording that is not in the catalog yet is chosen as "audible:<ASIN>" and imported on save.
+const AUDIBLE = "audible:";
 
 type Part = [number, number] | null;
 
@@ -85,12 +88,23 @@ export default function AssetMatchForm({
     staleTime: 30_000,
   });
   const match = useAssetMatch(asset, onMatched);
+  const importBook = useMutation({
+    mutationFn: async (externalId: string) =>
+      result(
+        await api.POST("/api/metadata/books/{provider}/{external_id}/import", {
+          params: { path: { provider: "audible", external_id: externalId } },
+        }),
+      ),
+  });
   return (
     <form
       className="panel editor"
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        match.mutate({ id: workId, part });
+        let id = workId;
+        if (id.startsWith(AUDIBLE))
+          id = (await importBook.mutateAsync(id.slice(AUDIBLE.length))).id;
+        match.mutate({ id, part });
       }}
     >
       {heading && <h2>Match {asset.title}</h2>}
@@ -98,7 +112,7 @@ export default function AssetMatchForm({
         Your correction is preserved during future syncs. Confirming a match
         also accepts the current edition or recording details.
       </p>
-      <Notice error={works.error || match.error} />
+      <Notice error={works.error || match.error || importBook.error} />
       {asset.work_ids.length > 1 && (
         <p className="notice">
           This replaces all current book associations for this library item. The
@@ -145,7 +159,16 @@ export default function AssetMatchForm({
           </p>
         )}
         {works.isSuccess && !works.data.items.length && (
-          <p>No catalog matches. Try another title or search Hardcover.</p>
+          <p>No catalog matches. Try another title or search Audible.</p>
+        )}
+        {asset.medium !== "ebook" && (
+          <AudibleCandidates
+            key={query}
+            query={query}
+            narrators={asset.narrators}
+            selected={workId}
+            choose={setWorkId}
+          />
         )}
       </fieldset>
       <label className="check-label">
@@ -193,7 +216,12 @@ export default function AssetMatchForm({
       <div className="button-row">
         <button
           className="primary"
-          disabled={!workId || match.isPending || query !== search.trim()}
+          disabled={
+            !workId ||
+            match.isPending ||
+            importBook.isPending ||
+            query !== search.trim()
+          }
         >
           {continueReview ? "Save and review next" : "Confirm match"}
         </button>
@@ -210,5 +238,124 @@ export default function AssetMatchForm({
       </div>
       <IdentityHistory entityId={asset.id} onChanged={close} />
     </form>
+  );
+}
+
+function runtime(minutes: number | null | undefined) {
+  if (!minutes) return null;
+  const hours = Math.floor(minutes / 60);
+  return hours ? `${hours} h ${minutes % 60} min` : `${minutes} min`;
+}
+
+/** Audible recordings for the search, with narrators and length to help pick the right one. */
+function AudibleCandidates({
+  query,
+  narrators,
+  selected,
+  choose,
+}: {
+  query: string;
+  narrators: string[];
+  selected: string;
+  choose: (id: string) => void;
+}) {
+  const [asked, setAsked] = useState(false);
+  const audible = useQuery({
+    queryKey: ["match-search-audible", query],
+    queryFn: async ({ signal }) =>
+      result(
+        await api.GET("/api/metadata/search", {
+          params: { query: { q: query, provider: "audible" } },
+          signal,
+        }),
+      ),
+    enabled: asked && query.length > 1,
+    staleTime: 300_000,
+  });
+  const ours = new Set(narrators.map((name) => name.toLowerCase()));
+  if (!asked)
+    return (
+      <div className="audible-search">
+        <button
+          type="button"
+          onClick={() => setAsked(true)}
+          disabled={query.length < 2}
+        >
+          Search Audible
+        </button>
+        <p className="muted">
+          Audible results show the narrator and length of each recording.
+        </p>
+      </div>
+    );
+  return (
+    <div className="audible-search">
+      <h3>Audible results</h3>
+      <Notice error={audible.error} />
+      {audible.isFetching && <p role="status">Searching Audible…</p>}
+      {audible.isSuccess && !audible.data.items.length && (
+        <p>Audible has no results for this search.</p>
+      )}
+      {audible.data?.items.map((book: Book) => {
+        const known = audible.data.known_works?.[book.external_id];
+        const value = known ? known.id : AUDIBLE + book.external_id;
+        const edition = book.editions?.[0];
+        const voices = edition?.narrators ?? [];
+        const sameVoice = voices.some((name) => ours.has(name.toLowerCase()));
+        const length = runtime(edition?.runtime_minutes);
+        const series = book.series?.[0];
+        return (
+          <label
+            key={book.external_id}
+            className="match-candidate audible-candidate"
+          >
+            <input
+              type="radio"
+              name="matched-book"
+              value={value}
+              checked={selected === value}
+              onChange={() => choose(value)}
+              required
+            />
+            {book.cover_url ? (
+              <img
+                src={
+                  "/api/catalog/cover-image?url=" +
+                  encodeURIComponent(book.cover_url)
+                }
+                alt=""
+                loading="lazy"
+              />
+            ) : (
+              <span className="audible-cover" aria-hidden="true" />
+            )}
+            <span>
+              <strong>{book.title}</strong>
+              <small>{book.authors?.join(", ") || "Unknown author"}</small>
+              {!!voices.length && (
+                <small>Narrated by {voices.join(", ")}</small>
+              )}
+              <small>
+                {[
+                  length,
+                  book.publication_year,
+                  series &&
+                    `${series.name}${series.position ? ` #${series.position}` : ""}`,
+                  `ASIN ${book.external_id}`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </small>
+              <span className="audible-tags">
+                {sameVoice && (
+                  <span className="audible-tag">Narrator matches</span>
+                )}
+                {known && <span className="audible-tag">In your catalog</span>}
+              </span>
+            </span>
+          </label>
+        );
+      })}
+    </div>
   );
 }

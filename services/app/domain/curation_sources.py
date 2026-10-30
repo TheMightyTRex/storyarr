@@ -8,6 +8,7 @@ from app.adapters.catalog_types import cover_url
 from app.adapters.contracts import AdapterError, FailureKind
 from app.adapters.goodreads_discovery import CollectionBook
 from app.config import get_settings
+from app.domain import audible_store
 from app.domain.catalog_network import CatalogGateway
 
 
@@ -81,7 +82,7 @@ def storefront_asins(html):
 def audible_collections():
     from app.adapters.audible import MARKETPLACES
 
-    region = get_settings().audible_region
+    region = audible_store.region()
     return {
         f"audible-{region}-{kind}": snapshot(
             f"audible-{region}-{kind}",
@@ -193,7 +194,7 @@ async def fetch_audible(value):
 
     from app.adapters.audible import GROUPS, product
 
-    if value.get("region") != get_settings().audible_region:
+    if value.get("region") != audible_store.region():
         raise AdapterError(
             FailureKind.UNSUPPORTED, "This shelf belongs to a different Audible marketplace"
         )
