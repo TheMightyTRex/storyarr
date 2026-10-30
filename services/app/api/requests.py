@@ -261,7 +261,13 @@ def approval_of(reasons) -> str:
 
 
 _LIVE_DOWNLOADS = ("queued", "preflight", "submitting", "uncertain", "downloading", "held")
-RequestStatus = Literal["pending", "downloading", "library", "declined", "withdrawn", "review"]
+RequestStatus = Literal[
+    "queue", "history", "pending", "downloading", "library", "declined", "withdrawn", "review"
+]
+# History combines these three; Queue is everything still being worked on.
+_HISTORY = ("library", "declined", "withdrawn")
+_HISTORY_CHIPS = {"in-library", "declined", "withdrawn"}
+_NOT_QUEUED_CHIPS = _HISTORY_CHIPS | {"pending"}
 
 
 def _active_reasons(*extra):
@@ -440,6 +446,16 @@ def _partial_collection_review():
 
 
 def _status_filters(status: RequestStatus):
+    if status == "queue":
+        # Approved or automatic requests still being worked on, and anything downloading.
+        return [
+            or_(
+                exists(_active_reasons(AcquisitionReason.approval_status == "approved")),
+                *_status_filters("downloading"),
+            )
+        ]
+    if status == "history":
+        return [or_(*(and_(*_status_filters(part)) for part in _HISTORY))]
     if status == "pending":
         return [exists(_active_reasons(AcquisitionReason.approval_status == "pending"))]
     if status == "declined":
@@ -576,6 +592,10 @@ def _chip(card, target) -> str:
 
 def _matches_card(card, status: str) -> bool:
     chips = [_chip(card, target) for target in card.targets]
+    if status == "queue":
+        return any(chip not in _NOT_QUEUED_CHIPS for chip in chips)
+    if status == "history":
+        return any(chip in _HISTORY_CHIPS for chip in chips)
     if status == "review":
         return "review" in chips or "needs-review" in chips
     if status == "library":
@@ -1363,7 +1383,7 @@ async def all_requests(
     if where:
         listing = listing.where(*where)
         counted = counted.where(*where)
-    if status in {"library", "downloading", "review"}:
+    if status in {"queue", "history", "library", "downloading", "review"}:
         return await _projected_page(db, user, listing, counted, order, status, offset, limit)
     intents = (await db.scalars(listing.order_by(*order).offset(offset).limit(limit))).all()
     total = await db.scalar(counted)

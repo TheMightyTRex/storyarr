@@ -514,7 +514,7 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
                 </button>
               )}
               {["committed", "fulfilled"].includes(item.state) && (
-                <Link to="/requests?status=downloading">View download</Link>
+                <Link to="/requests">View download</Link>
               )}
               {item.state === "prepared" && (
                 <button

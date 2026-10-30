@@ -46,9 +46,10 @@ type Target = components["schemas"]["TargetView"];
 export type { RequestFilter };
 
 const emptyCopy: Record<RequestFilter, string> = {
-  all: "No active requests.",
+  queue:
+    "Nothing is queued. Requests appear here while they are searched for and downloaded.",
   pending: "No requests are waiting for approval.",
-  downloading: "No downloads yet.",
+  history: "No finished requests yet.",
   library: "No requests are in the library yet.",
   declined: "No declined requests.",
   withdrawn: "No withdrawn requests.",
@@ -179,7 +180,7 @@ export default function ActivityRequests({
               limit: 10,
               sort,
               q: q || undefined,
-              ...(status === "all" ? { active_only: true } : { status }),
+              status,
             },
           },
         }),

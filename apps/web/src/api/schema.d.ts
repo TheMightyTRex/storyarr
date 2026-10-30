@@ -22975,6 +22975,8 @@ export interface operations {
         mine?: boolean;
         status?:
           | (
+              | "queue"
+              | "history"
               | "pending"
               | "downloading"
               | "library"

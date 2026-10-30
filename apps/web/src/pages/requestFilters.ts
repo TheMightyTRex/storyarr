@@ -1,12 +1,14 @@
 export const requestFilterIds = [
-  "all",
+  "queue",
   "pending",
-  "downloading",
+  "history",
   "library",
   "declined",
   "withdrawn",
   "review",
 ] as const;
+/** History's outcome filters. "history" itself shows all three. */
+export const historyFilters = ["library", "declined", "withdrawn"] as const;
 
 export type RequestFilter = (typeof requestFilterIds)[number];
 
@@ -14,16 +16,20 @@ function isRequestFilter(value: string | null): value is RequestFilter {
   return requestFilterIds.some((id) => id === value);
 }
 
-/** A status query selects the filter. A legacy hash applies only when that query is absent. */
+/**
+ * A status query selects the filter. A legacy hash applies only when that query is absent. The old
+ * Active and Downloading filters are now Queue.
+ */
 export function requestFilter(
   hash: string,
   status: string | null,
 ): RequestFilter {
   if (isRequestFilter(status)) return status;
+  if (status === "all" || status === "downloading") return "queue";
   if (hash === "#approvals") return "pending";
-  if (hash === "#downloads") return "downloading";
+  if (hash === "#downloads") return "queue";
   if (hash === "#reviews" || hash === "#review") return "review";
-  return "all";
+  return "queue";
 }
 
 type RequestPageSlice = {

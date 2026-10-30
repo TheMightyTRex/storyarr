@@ -42,7 +42,7 @@ export default function RequestNextAction({
         </Link>
       ) : null;
     case "downloads":
-      return <Link to="/requests?status=downloading">View download queue</Link>;
+      return <Link to="/requests">View download queue</Link>;
     case "book":
       return (
         <Link to={`/books/${request.work_id}`}>

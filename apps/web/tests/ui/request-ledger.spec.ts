@@ -234,10 +234,16 @@ test("requests show transfer telemetry, review actions and counts in compact row
       .getByRole("navigation", { name: "Main navigation" })
       .getByRole("link", { name: "Requests", exact: true }),
   ).toContainText("3");
-  const filters = page.getByRole("navigation", { name: "Request filters" });
-  await expect(
-    filters.getByRole("link", { name: "Download review", exact: true }),
-  ).toContainText("1");
+  const filters = page.getByRole("navigation", { name: "Activity" });
+  await expect(filters.getByRole("link")).toHaveText([
+    /^Queue/,
+    /^Wanted/,
+    /^History/,
+    /^Review/,
+  ]);
+  await expect(filters.getByRole("link", { name: /^Review/ })).toContainText(
+    "1",
+  );
   for (const row of await downloading.getByRole("row").all())
     expect((await row.boundingBox())!.height).toBeLessThan(110);
   await expect(

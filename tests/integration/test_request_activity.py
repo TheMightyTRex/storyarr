@@ -176,6 +176,8 @@ async def test_committed_transfer_links_activity_without_any_read_side_effect(
     downloading = (await client.get("/api/requests?status=downloading")).json()
     assert downloading["total"] >= 1
     assert any(item["id"] == selection_route["intent_id"] for item in downloading["items"])
+    queue = (await client.get("/api/requests?status=queue")).json()
+    assert any(item["id"] == selection_route["intent_id"] for item in queue["items"])
 
 
 async def test_request_cards_filter_by_status_and_role(client, admin, catalog, database):
@@ -234,6 +236,25 @@ async def test_request_cards_filter_by_status_and_role(client, admin, catalog, d
     ]
     assert titles == ["Alpha Tale", "Zebra Tale"]
 
+    def ids(page):
+        return {item["id"] for item in page["items"]}
+
+    # Queue: approved work still in progress. Wanted (pending) and finished requests stay out.
+    queued = ids((await client.get("/api/requests?status=queue")).json())
+    wanted = {
+        item["id"] for item in (await client.get("/api/requests?status=pending")).json()["items"]
+    }
+    assert wanted == {waiting["id"]}
+    # The "both" request has its ebook in the library and its audiobook wanted: it is in both.
+    assert waiting["id"] not in queued and saved["id"] in queued
+    assert {
+        item["work_title"]
+        for item in (await client.get("/api/requests?status=queue")).json()["items"]
+    } >= {"Alpha Tale", "Zebra Tale"}
+    # History: in library, declined and withdrawn together.
+    history = ids((await client.get("/api/requests?status=history")).json())
+    assert saved["id"] in history and waiting["id"] not in history
+
     declined = await client.post(
         f"/api/requests/{waiting['id']}/decision",
         json={"status": "declined", "expected_status": "pending"},
@@ -248,6 +269,11 @@ async def test_request_cards_filter_by_status_and_role(client, admin, catalog, d
     assert saved["id"] not in {
         item["id"] for item in (await client.get("/api/requests?active_only=true")).json()["items"]
     }
+    history = ids((await client.get("/api/requests?status=history")).json())
+    assert {saved["id"], waiting["id"]} <= history
+    assert not {saved["id"], waiting["id"]} & ids(
+        (await client.get("/api/requests?status=queue")).json()
+    )
 
 
 async def test_approver_status_follows_the_requesters_library(client, admin, catalog):

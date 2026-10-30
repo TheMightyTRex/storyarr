@@ -1,50 +1,48 @@
 import { lazy, Suspense } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Activity,
   CircleCheck,
   CircleX,
   Clock,
-  Download,
   FileSearch,
+  History,
+  ListOrdered,
   Undo2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import ContentSkeleton from "../components/ContentSkeleton";
 import HeaderSubmenu from "../components/HeaderSubmenu";
 import { useRequestCounts } from "../hooks/useRequestCounts";
-import { requestFilter, type RequestFilter } from "./requestFilters";
+import {
+  historyFilters,
+  requestFilter,
+  type RequestFilter,
+} from "./requestFilters";
 
 const SavedRequests = lazy(() => import("./ActivityRequests"));
 
-const filterIcons: Record<string, LucideIcon> = {
-  all: Activity,
-  pending: Clock,
-  downloading: Download,
-  library: CircleCheck,
-  declined: CircleX,
-  withdrawn: Undo2,
-  review: FileSearch,
-};
-const filters: {
-  id: RequestFilter;
+type Tab = "queue" | "pending" | "history" | "review";
+const tabs: {
+  id: Tab;
   title: string;
-  approve?: boolean;
+  icon: LucideIcon;
   admin?: boolean;
 }[] = [
-  { id: "all", title: "Active" },
-  { id: "pending", title: "Pending", approve: true },
-  { id: "downloading", title: "Downloading" },
-  { id: "library", title: "In library" },
-  { id: "declined", title: "Declined" },
-  { id: "withdrawn", title: "Withdrawn" },
-  { id: "review", title: "Download review", admin: true },
+  { id: "queue", title: "Queue", icon: ListOrdered },
+  { id: "pending", title: "Wanted", icon: Clock },
+  { id: "history", title: "History", icon: History },
+  { id: "review", title: "Review", icon: FileSearch, admin: true },
+];
+const outcomes: { id: RequestFilter; title: string; icon: LucideIcon }[] = [
+  { id: "history", title: "All", icon: History },
+  { id: "library", title: "In library", icon: CircleCheck },
+  { id: "declined", title: "Declined", icon: CircleX },
+  { id: "withdrawn", title: "Withdrawn", icon: Undo2 },
 ];
 
 export default function Requests({
   admin,
   canRequest,
-  canApprove,
 }: {
   admin: boolean;
   canRequest: boolean;
@@ -56,17 +54,25 @@ export default function Requests({
   const selected = requestFilter(hash, params.get("status"));
   const sort = params.get("sort") === "title" ? "title" : "newest";
   const counts = useRequestCounts().data;
-  const visible = filters.filter(
-    (filter) => (!filter.approve || canApprove) && (!filter.admin || admin),
-  );
-  const status =
-    (selected === "review" && !admin) || (selected === "pending" && !canApprove)
-      ? "all"
-      : selected;
+  const visible = tabs.filter((tab) => !tab.admin || admin);
+  const status = selected === "review" && !admin ? "queue" : selected;
+  const tab: Tab = (historyFilters as readonly string[]).includes(status)
+    ? "history"
+    : (status as Tab);
+  const tabCount: Partial<Record<Tab, number>> = {
+    queue: counts?.downloading ?? 0,
+    pending: counts?.pending ?? 0,
+    review: counts?.review ?? 0,
+  };
+  const countLabel: Partial<Record<Tab, string>> = {
+    queue: "downloading",
+    pending: "waiting for approval",
+    review: "to review",
+  };
 
   function queryFor(nextStatus: RequestFilter, nextSort = sort) {
     const next = new URLSearchParams(search);
-    if (nextStatus === "all") next.delete("status");
+    if (nextStatus === "queue") next.delete("status");
     else next.set("status", nextStatus);
     if (nextSort === "newest") next.delete("sort");
     else next.set("sort", nextSort);
@@ -81,44 +87,30 @@ export default function Requests({
       <h1 className="workspace-title">Requests</h1>
       <div className="page-tabs-bar">
         <HeaderSubmenu
-          label="Request filters"
-          items={visible.map((filter) => ({
-            to: queryFor(filter.id),
-            label: filter.title,
-            icon: filterIcons[filter.id],
-            current: status === filter.id,
-            count: (["pending", "downloading", "review"] as string[]).includes(
-              filter.id,
-            )
-              ? (counts?.[filter.id as "pending" | "downloading" | "review"] ??
-                0)
-              : 0,
-            countLabel: "requests",
+          label="Activity"
+          items={visible.map((item) => ({
+            to: queryFor(item.id),
+            label: item.title,
+            icon: item.icon,
+            current: tab === item.id,
+            count: tabCount[item.id],
+            countLabel: countLabel[item.id],
           }))}
           classic={
-            <nav className="page-tabs" aria-label="Request filters">
-              {visible.map((filter) => (
+            <nav className="page-tabs" aria-label="Activity">
+              {visible.map((item) => (
                 <Link
-                  key={filter.id}
-                  aria-label={filter.title}
-                  to={queryFor(filter.id)}
-                  aria-current={status === filter.id ? "page" : undefined}
+                  key={item.id}
+                  to={queryFor(item.id)}
+                  aria-current={tab === item.id ? "page" : undefined}
                 >
-                  {filter.title}
-                  {(["pending", "downloading", "review"] as string[]).includes(
-                    filter.id,
-                  ) &&
-                    (counts?.[
-                      filter.id as "pending" | "downloading" | "review"
-                    ] ?? 0) > 0 && (
-                      <span className="requests-tab-count">
-                        {
-                          counts?.[
-                            filter.id as "pending" | "downloading" | "review"
-                          ]
-                        }
-                      </span>
-                    )}
+                  {item.title}
+                  {!!tabCount[item.id] && (
+                    <span className="requests-tab-count">
+                      {tabCount[item.id]}
+                      <span className="sr-only"> {countLabel[item.id]}</span>
+                    </span>
+                  )}
                 </Link>
               ))}
             </nav>
@@ -153,6 +145,23 @@ export default function Requests({
           </Link>
         </div>
       </div>
+      {tab === "history" && (
+        <nav className="history-outcomes" aria-label="History outcomes">
+          {outcomes.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.id}
+                to={queryFor(item.id)}
+                aria-current={status === item.id ? "page" : undefined}
+              >
+                <Icon size={15} aria-hidden="true" />
+                {item.title}
+              </Link>
+            );
+          })}
+        </nav>
+      )}
       <form
         className="request-search"
         role="search"

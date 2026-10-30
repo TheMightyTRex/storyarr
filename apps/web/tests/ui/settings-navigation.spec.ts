@@ -154,19 +154,35 @@ for (const role of ["admin", "member", "viewer"]) {
       page.getByRole("heading", { name: "Background activity" }),
     ).toHaveCount(0);
     const requestFilters = page.getByRole("navigation", {
-      name: "Request filters",
+      name: "Activity",
+      exact: true,
     });
-    await requestFilters
-      .getByRole("link", { name: "Downloading", exact: true })
-      .click();
+    await requestFilters.getByRole("link", { name: /^History/ }).click();
+    await expect(page).toHaveURL(/status=history/);
+    const outcomes = page.getByRole("navigation", { name: "History outcomes" });
+    await expect(outcomes.getByRole("link")).toHaveText([
+      "All",
+      "In library",
+      "Declined",
+      "Withdrawn",
+    ]);
+    await outcomes.getByRole("link", { name: "Declined" }).click();
+    await expect(page).toHaveURL(/status=declined/);
     await expect(
-      page.getByText("No downloads yet.", { exact: true }),
+      requestFilters.getByRole("link", { name: /^History/ }),
+    ).toHaveAttribute("aria-current", "page");
+    await expect(
+      page.getByText("No declined requests.", { exact: true }),
+    ).toBeVisible();
+    await requestFilters.getByRole("link", { name: /^Queue/ }).click();
+    await expect(
+      page.getByText(
+        "Nothing is queued. Requests appear here while they are searched for and downloaded.",
+        { exact: true },
+      ),
     ).toBeVisible();
     await expect(
-      requestFilters.getByRole("link", {
-        name: "Download review",
-        exact: true,
-      }),
+      requestFilters.getByRole("link", { name: /^Review/ }),
     ).toHaveCount(role === "admin" ? 1 : 0);
     await page.goto("/activity#downloads");
     await expect(page).toHaveURL(/\/requests#downloads$/);
@@ -216,9 +232,13 @@ for (const role of ["admin", "member", "viewer"]) {
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    // The old Downloads link now opens Queue.
     await page.goto("/requests#downloads");
     await expect(
-      page.getByText("No downloads yet.", { exact: true }),
+      page.getByText(
+        "Nothing is queued. Requests appear here while they are searched for and downloaded.",
+        { exact: true },
+      ),
     ).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath("requests-mobile.png") });
     expect(

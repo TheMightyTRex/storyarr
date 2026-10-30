@@ -12,15 +12,20 @@ test("a status query wins over a legacy hash", () => {
 });
 
 test("a legacy hash still selects the filter when no status query is present", () => {
-  assert.equal(requestFilter("#downloads", null), "downloading");
+  assert.equal(requestFilter("#downloads", null), "queue");
   assert.equal(requestFilter("#approvals", null), "pending");
   assert.equal(requestFilter("#reviews", null), "review");
   assert.equal(requestFilter("#review", ""), "review");
 });
 
-test("an unknown status falls through to the hash, then to all", () => {
-  assert.equal(requestFilter("#downloads", "nope"), "downloading");
-  assert.equal(requestFilter("", null), "all");
+test("an unknown status falls through to the hash, then to Queue", () => {
+  assert.equal(requestFilter("#downloads", "nope"), "queue");
+  assert.equal(requestFilter("", null), "queue");
+});
+
+test("the old Active and Downloading filters open Queue", () => {
+  assert.equal(requestFilter("", "all"), "queue");
+  assert.equal(requestFilter("#approvals", "downloading"), "queue");
 });
 
 test("a bounded filter resumes from the candidate cursor", () => {

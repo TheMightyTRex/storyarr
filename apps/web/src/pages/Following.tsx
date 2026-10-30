@@ -40,8 +40,8 @@ export const statusNames: Record<StatusKind, string> = {
   not_requested: "Not requested",
 };
 export const statusLinks: Partial<Record<StatusKind, string>> = {
-  downloading: "/requests?status=downloading",
-  importing: "/requests?status=downloading",
+  downloading: "/requests",
+  importing: "/requests",
   attention: "/requests?status=review",
   wanted: "/requests",
 };
