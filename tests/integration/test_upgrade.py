@@ -19,17 +19,18 @@ def backup_folder(tmp_path, monkeypatch):
     audible_store.remember(None)
 
 
-async def finish_onboarding(database):
+async def finish_onboarding(database, status="completed"):
     async with database() as db, db.begin():
         user = await db.scalar(select(User).where(User.username == "admin"))
-        user.onboarding = {**(user.onboarding or {}), "status": "completed"}
+        user.onboarding = {**(user.onboarding or {}), "status": status}
 
 
 async def test_the_wizard_shows_once_on_an_existing_install(client, admin, database):
     fresh = (await client.get("/api/upgrade")).json()
     # Before setup is finished this is a new install: onboarding comes first, not the wizard.
     assert fresh["pending"] is False and fresh["release"] == upgrades.CURRENT
-    await finish_onboarding(database)
+    # Setup put off for later still means the install is in use.
+    await finish_onboarding(database, "deferred")
     shown = (await client.get("/api/upgrade")).json()
     assert shown["pending"] is True and shown["acknowledged"] is None
     assert [release["id"] for release in shown["releases"]] == [upgrades.CURRENT]

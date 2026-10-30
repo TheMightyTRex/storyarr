@@ -46,7 +46,10 @@ class RestoreView(BaseModel):
 
 async def _existing_install(db) -> bool:
     accounts = await db.scalars(select(User.onboarding).where(User.role == "admin"))
-    return any((value or {}).get("status") in {"completed", "skipped"} for value in accounts)
+    # Setup that was finished, skipped or put off for later all mean the install is in use.
+    return any(
+        (value or {}).get("status") in {"completed", "skipped", "deferred"} for value in accounts
+    )
 
 
 async def view(db) -> UpgradeView:
