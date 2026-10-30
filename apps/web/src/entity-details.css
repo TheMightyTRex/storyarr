@@ -11,7 +11,7 @@
 }
 .entity-hero h1 {
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(30px, 3.6vw, 48px);
+  font-size: clamp(1.875rem, 3.6vw, 3rem);
   line-height: 1.12;
   font-weight: 500;
   letter-spacing: -0.025em;
@@ -74,7 +74,7 @@
 .series-cover-stack .book-cover {
   width: 100%;
   aspect-ratio: 2 / 3;
-  box-shadow: 0 12px 24px #0004;
+  box-shadow: 0 12px 24px var(--c-shadow-grey-0-a27);
 }
 .series-cover-stack .cover-owned,
 .series-cover-stack .cover-formats,
@@ -94,7 +94,7 @@
 .series-ownership {
   max-width: 380px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-top: 20px;
 }
 .series-ownership-track {
@@ -126,7 +126,7 @@
   justify-content: center;
   gap: 20px;
   margin-block: 28px 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .series-book-list {
   margin-top: 24px;
@@ -149,11 +149,11 @@
 }
 .series-position span {
   font-family: Georgia, serif;
-  font-size: 27px;
+  font-size: 1.6875rem;
   color: var(--accent);
 }
 .series-position small {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .series-row-cover .book-cover {
   width: 74px;
@@ -168,17 +168,17 @@
 }
 .series-row-copy h2 {
   margin: 0 0 6px;
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
 .series-row-copy p {
   margin: 5px 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .series-row-copy .check-label {
   margin-bottom: 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .entity-detail .book-tabs {
   margin-top: 24px;
@@ -191,22 +191,22 @@
     padding-bottom: 20px;
   }
   .entity-hero h1 {
-    font-size: 29px;
+    font-size: 1.8125rem;
   }
   .entity-intro {
-    font-size: 13px;
+    font-size: 0.8125rem;
     margin-bottom: 12px;
   }
   .entity-bio-preview {
     -webkit-line-clamp: 2;
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .entity-hero .reader-facts {
     gap: 12px;
     flex-wrap: wrap;
   }
   .entity-hero .reader-facts dd {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
   .entity-hero .reader-outbound {
     margin-top: 14px;
@@ -239,10 +239,10 @@
     width: 56px;
   }
   .series-row-copy h2 {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .series-position span {
-    font-size: 21px;
+    font-size: 1.3125rem;
   }
 }
 
@@ -290,7 +290,7 @@
   height: 190px;
   overflow: hidden;
   padding: 18px 16px;
-  background: #111827;
+  background: var(--c-bg-slate-21);
 }
 .library-group-portrait {
   display: grid;
@@ -319,7 +319,7 @@
   flex: 0 0 84px;
   width: 84px;
   aspect-ratio: 2 / 3;
-  box-shadow: -8px 0 20px #0005;
+  box-shadow: -8px 0 20px var(--c-shadow-grey-0-a33);
 }
 .library-group-covers .book-cover + .book-cover {
   margin-left: -39px;
@@ -342,13 +342,13 @@
 }
 .library-group-caption h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.125rem;
   overflow-wrap: anywhere;
 }
 .library-group-caption p {
   margin: 7px 0 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .library-group-caption > svg {
   flex-shrink: 0;
@@ -358,7 +358,7 @@
   display: block;
   padding: 0 20px 18px;
   color: var(--accent);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 @media (max-width: 600px) {
   .library-group-shelf .section-heading {
@@ -370,7 +370,7 @@
   padding: 10px;
 }
 .library-group-covers .type-cover span {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.25;
 }
 .library-group-covers .type-cover small {
@@ -406,7 +406,7 @@
   height: 156px;
 }
 .series-detail .entity-hero h1 {
-  font-size: clamp(28px, 3vw, 40px);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
 }
 .series-detail .reader-facts {
   margin-block: 14px;
@@ -463,11 +463,11 @@
   width: 44px;
 }
 .series-detail .series-row-copy h2 {
-  font-size: 15px;
+  font-size: 0.9375rem;
   margin: 0 0 3px;
 }
 .series-detail .series-row-copy p {
-  font-size: 12px;
+  font-size: 0.75rem;
   margin: 3px 0;
 }
 .series-workspace .series-book-row {
@@ -500,12 +500,12 @@
 }
 .series-composer-heading h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 .series-request-composer > p,
 .series-request-composer p,
 .series-request-composer small {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .series-request-composer fieldset {
   min-width: 0;
@@ -521,7 +521,7 @@
 .series-format-choices button {
   border-radius: 8px;
   padding: 8px 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .series-format-choices button[aria-pressed="true"] {
   color: var(--text);
@@ -530,7 +530,7 @@
 }
 .series-request-composer .check-label {
   align-items: start;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .series-request-hint {
   margin: 0;
@@ -541,7 +541,7 @@
   padding-top: 12px;
 }
 .series-request-options > summary {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .series-request-options > label {
   display: grid;
@@ -566,19 +566,19 @@
 }
 .series-request-result h3 {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .series-request-result p {
   margin: 5px 0;
 }
 .series-request-result > a {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .series-request-composer .button-row {
   gap: 8px;
 }
 .series-request-composer .button-row button {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .series-about-facts {
   display: flex;
@@ -588,7 +588,7 @@
 }
 .series-about-facts dt {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 8px;
 }
 .series-about-facts dd {
@@ -622,7 +622,7 @@
     height: 110px;
   }
   .series-detail .series-row-copy h2 {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .series-selection-toolbar {
     align-items: start;
@@ -633,7 +633,7 @@
 }
 .series-compact-summary {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 12px 0;
 }
 .series-detail .series-review-button {
@@ -666,10 +666,10 @@
   padding: 12px;
   background: color-mix(in srgb, var(--accent) 8%, transparent);
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .series-missing-summary > .muted {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .series-route-options fieldset {
   padding-top: 12px;

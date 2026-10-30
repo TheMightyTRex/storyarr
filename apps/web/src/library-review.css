@@ -1,7 +1,7 @@
 /* Library review: one card per item that needs an admin's decision. */
 .library-review {
-  --review-surface: #172233;
-  --review-raised: #1c293d;
+  --review-surface: var(--c-bg-indigo-26);
+  --review-raised: var(--c-bg-indigo-27);
   min-width: 0;
 }
 .library-review :is(.page-tabs, .settings-subtabs) a:hover {
@@ -27,7 +27,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .review-insights > span {
   color: var(--muted);
@@ -48,15 +48,15 @@
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--review-surface);
-  color: #dbe3f0;
+  color: var(--c-text-slate-91);
 }
 .review-insights strong {
   min-width: 1.4em;
   padding: 0 6px;
   border-radius: 999px;
-  background: #292d52;
-  color: #c7d2fe;
-  font-size: 11px;
+  background: var(--c-bg-indigo-31);
+  color: var(--c-text-indigo-87);
+  font-size: 0.6875rem;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
@@ -67,15 +67,15 @@
   gap: 10px;
   margin: 0 0 16px;
   padding: 10px 12px 10px 14px;
-  border: 1px solid #2c6655;
+  border: 1px solid var(--c-border-teal-47);
   border-radius: 10px;
-  background: #16312c;
-  color: #c4f0dd;
-  font-size: 14px;
+  background: var(--c-bg-slate-29);
+  color: var(--c-text-teal-92);
+  font-size: 0.875rem;
 }
 .review-resolved svg {
   flex-shrink: 0;
-  color: #7fd8b4;
+  color: var(--c-text-teal-82-2);
 }
 .review-resolved button {
   margin-left: auto;
@@ -83,8 +83,8 @@
   padding: 4px 10px;
   border-color: transparent;
   background: transparent;
-  color: #c4f0dd;
-  font-size: 12px;
+  color: var(--c-text-teal-92);
+  font-size: 0.75rem;
 }
 
 .review-grid {
@@ -103,7 +103,7 @@
 }
 .review-card:hover,
 .review-card:focus-within {
-  border-color: #4a5b7a;
+  border-color: var(--c-border-indigo-47);
 }
 .review-card-body {
   display: grid;
@@ -123,7 +123,7 @@
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 650;
   line-height: 1.35;
   letter-spacing: -0.02em;
@@ -132,14 +132,14 @@
 .review-card-main > .muted {
   margin: 3px 0 0;
   overflow: hidden;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .review-card-source {
   margin: 2px 0 0;
-  color: #8390a6;
-  font-size: 12px;
+  color: var(--c-text-indigo-65);
+  font-size: 0.75rem;
 }
 .review-chips {
   display: flex;
@@ -152,28 +152,28 @@
   align-items: center;
   padding: 3px 8px;
   border-radius: 5px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 650;
-  color: #c8d4ff;
-  background: #2b3653;
+  color: var(--c-text-indigo-87);
+  background: var(--c-bg-indigo-34);
 }
 .review-chip[data-tone="warn"] {
-  color: #f4d49c;
-  background: #443b2e;
+  color: var(--c-text-amber-88);
+  background: var(--c-bg-slate-36);
 }
 .review-chip[data-tone="error"] {
-  color: #ffc1c6;
-  background: #482634;
+  color: var(--c-text-red-87);
+  background: var(--c-bg-red-32);
 }
 .review-chip[data-tone="linked"] {
-  color: #c4f0dd;
-  background: #1d3d35;
+  color: var(--c-text-teal-92);
+  background: var(--c-bg-teal-34);
 }
 .review-card-linked {
   margin: 4px 0 0;
   overflow: hidden;
-  color: #9fdcc4;
-  font-size: 12px;
+  color: var(--c-text-teal-85);
+  font-size: 0.75rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -185,14 +185,14 @@
   text-decoration: none;
 }
 .review-insights li:has(a[aria-current]) {
-  border-color: #818cf8;
+  border-color: var(--c-border-indigo-68);
 }
 .review-auto-match {
   margin: 0 0 12px;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .review-auto-match p {
   margin: 0;
@@ -202,7 +202,7 @@
 }
 .review-filter-count {
   margin: 0 0 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .review-read-values {
   margin: 0;
@@ -226,12 +226,12 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .review-card-actions button {
   min-height: 34px;
   padding: 6px 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .library-review :is(a, button):focus-visible {
   outline: 2px solid var(--accent);
@@ -267,20 +267,20 @@
 .review-report-eyebrow {
   margin: 0 0 4px;
   color: var(--accent);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .review-report h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.25rem;
   letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
 .review-report-heading .muted {
   margin: 4px 0 0;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .review-report dl {
   display: grid;
@@ -293,14 +293,14 @@
 .review-report dt {
   margin-bottom: 4px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 650;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 .review-report dd {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.45;
   min-width: 0;
 }
@@ -318,15 +318,15 @@
   display: block;
   padding: 8px 10px;
   border-radius: 6px;
-  background: #111a2b;
-  font-size: 12px;
+  background: var(--c-bg-slate-21);
+  font-size: 0.75rem;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .review-find h3,
 .review-next-step h3 {
   margin: 0 0 12px;
-  font-size: 16px;
+  font-size: 1rem;
   letter-spacing: -0.01em;
 }
 .review-find > .settings-subtabs {
@@ -343,14 +343,14 @@
 }
 .review-next-step {
   padding: 16px 18px;
-  border: 1px solid #5c4d33;
+  border: 1px solid var(--c-border-amber-43);
   border-radius: 12px;
-  background: #2a2519;
+  background: var(--c-bg-slate-27);
 }
 .review-next-step p {
   margin: 0;
-  color: #eadbbd;
-  font-size: 14px;
+  color: var(--c-text-amber-90);
+  font-size: 0.875rem;
   line-height: 1.55;
 }
 

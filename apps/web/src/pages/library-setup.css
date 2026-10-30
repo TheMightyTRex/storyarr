@@ -27,7 +27,7 @@
 }
 .library-setup-intro {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 0 0 20px;
   line-height: 1.6;
 }
@@ -40,7 +40,7 @@
 }
 .library-verification-next p {
   margin: 0 0 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--muted);
   line-height: 1.6;
 }
@@ -58,12 +58,12 @@
 .library-setup-options legend {
   padding: 0;
   margin-bottom: 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 650;
 }
 .library-selection-summary code,
 .library-browse-context code {
-  font-size: 12px;
+  font-size: 0.75rem;
   overflow-wrap: anywhere;
 }
 .library-setup-body .library-selection {
@@ -71,7 +71,7 @@
   gap: 8px;
   max-width: none;
   margin: 0 0 14px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-selection select {
   width: 100%;
@@ -88,11 +88,11 @@
   align-items: baseline;
   gap: 6px 10px;
   margin: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .library-selection-summary span {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-local-heading {
   display: flex;
@@ -105,12 +105,12 @@
   margin-top: 1px;
 }
 .library-local-heading h3 {
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 0 0 5px;
 }
 .library-local-heading p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.6;
   margin: 0;
 }
@@ -121,7 +121,7 @@
   margin: 0;
 }
 .library-setup-body .library-mapping-help {
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.5;
   color: var(--muted);
   margin: 0;
@@ -135,7 +135,7 @@
   flex-direction: row;
   align-items: flex-start;
   gap: 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   max-width: none;
   width: auto;
   margin: 0;
@@ -150,12 +150,12 @@
 }
 .library-toggle strong {
   font-weight: 550;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .library-toggle small,
 .library-client-path small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.6;
 }
@@ -163,14 +163,14 @@
 .library-client-path {
   display: grid;
   gap: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   width: 100%;
   max-width: none;
 }
 .library-advanced {
   border-top: 1px solid var(--line);
   padding-top: 14px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-advanced summary {
   cursor: pointer;
@@ -187,7 +187,7 @@
   border-radius: 10px;
   background: color-mix(in srgb, var(--accent) 9%, transparent);
   color: var(--accent);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-verification-progress svg {
   flex-shrink: 0;
@@ -209,7 +209,7 @@
   border-top: 1px solid var(--line);
 }
 .library-setup-footer > p {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   margin: 0;
 }
@@ -219,11 +219,11 @@
   margin-bottom: 20px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .library-browse-context span {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 /* The body scrolls independently so the action row stays visible. */
 .library-advanced summary {
@@ -269,13 +269,13 @@
   width: 100%;
   padding: 0;
   margin-bottom: 4px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .library-setup-body .library-path-help {
   clear: both;
   margin: 0 0 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .library-setup-body label.library-path-option {
@@ -297,12 +297,12 @@
   gap: 4px;
 }
 .library-path-option strong {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 550;
 }
 .library-path-option small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -326,13 +326,13 @@
   min-width: 0;
   max-width: none;
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-custom-path input {
   width: 100%;
   min-width: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-custom-path > button {
   flex-shrink: 0;
@@ -354,11 +354,11 @@
 }
 .library-folder-settings .media-folder-copy h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .library-folder-settings .media-folder-copy p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-folder-settings .library-folder-status {
   display: inline-flex;
@@ -366,7 +366,7 @@
   padding: 3px 8px;
   border-radius: 5px;
   background: var(--surface);
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .library-folder-settings .library-shared-status {
   align-items: center;
@@ -379,7 +379,7 @@
 }
 .library-staging-details {
   margin: 0 0 16px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .library-staging-details summary {
@@ -400,7 +400,7 @@
   align-items: center;
   gap: 7px;
   margin-bottom: 14px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-folder-settings .media-folder-actions {
   display: flex;
@@ -410,7 +410,7 @@
 }
 .library-folder-settings .media-folder-actions > button {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 7px 10px;
 }
 .library-folder-settings .media-folder-actions > button[aria-label^="Delete"] {
@@ -429,7 +429,7 @@
   background: color-mix(in srgb, var(--surface) 45%, transparent);
 }
 .library-folder-paths dt {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   margin-bottom: 5px;
 }
@@ -438,7 +438,7 @@
 }
 .library-folder-paths dd {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   overflow-wrap: anywhere;
 }
 .library-folder-settings .library-verification-next {
@@ -451,18 +451,18 @@
   background: transparent;
 }
 .library-verification-next strong {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 .library-folder-settings .library-verification-next p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .library-verification-next > button,
 .library-setup-link {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-setup-link {
   color: var(--accent);
@@ -481,7 +481,7 @@
   margin: 0;
 }
 .library-folder-settings .automatic-import-setting h3 {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .library-folder-settings .automatic-import-setting > p {
   grid-column: 1;
@@ -494,7 +494,7 @@
   margin: 0;
 }
 .library-folder-settings .automatic-import-setting > .button-row button {
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 7px 10px;
 }
 .library-folder-settings .automatic-import-setting > .notice {

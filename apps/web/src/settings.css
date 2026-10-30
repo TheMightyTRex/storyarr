@@ -17,7 +17,7 @@
   padding: 16px 20px;
 }
 .settings-section-heading h2 {
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 .settings-section-body {
   padding: 20px;
@@ -50,13 +50,13 @@
 }
 .settings-section-body h2,
 .settings-section-body h3 {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 650;
   margin: 0;
 }
 .settings-section-body label {
   gap: 6px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.45;
   max-width: 32rem;
   width: 100%;
@@ -69,7 +69,7 @@
   max-width: 32rem;
   padding: 8px 10px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 20px;
 }
 .settings-section-body input[type="number"] {
@@ -84,7 +84,7 @@
   height: 16px;
   min-width: 16px;
   margin: 0;
-  accent-color: #777bf2;
+  accent-color: var(--c-text-indigo-64);
 }
 .settings-section-body label:has(> input[type="checkbox"]),
 .settings-section-body .check-label {
@@ -119,7 +119,7 @@
   min-height: 36px;
   padding: 8px 12px;
   line-height: 18px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   border-radius: 6px;
   flex-shrink: 0;
   align-self: auto;
@@ -140,7 +140,7 @@
 }
 .settings-section-body p {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .settings-section-body .notice,
@@ -186,7 +186,7 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .settings-section-body .setting-subheading h3 {
   margin: 0;
@@ -196,18 +196,18 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   text-transform: capitalize;
   font-weight: 450;
 }
 .settings-section-body .connection-state[data-state="connected"],
 .connection-state[data-state="connected"] {
-  color: #93d6bc;
+  color: var(--c-text-teal-82);
 }
 .settings-section-body .connection-state[data-state="attention"],
 .connection-state[data-state="attention"] {
-  color: #e9bd75;
+  color: var(--c-text-amber-82);
 }
 .connection-state svg {
   flex-shrink: 0;
@@ -225,7 +225,7 @@
   margin-top: 16px;
 }
 .save-state {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   white-space: nowrap;
 }
@@ -242,7 +242,7 @@
   cursor: pointer;
   padding: 12px 0;
   min-height: 42px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 550;
 }
 .settings-section-body details > summary::-webkit-details-marker {
@@ -301,7 +301,7 @@
 }
 .saved-secret-indicator {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -323,7 +323,7 @@
   gap: 4px 8px;
   min-width: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.45;
 }
 .connection-test-status-label {
@@ -343,11 +343,11 @@
   background: currentColor;
 }
 .connection-test-status[data-state="connected"] .connection-test-status-label {
-  color: #81c9a3;
+  color: var(--c-text-teal-78);
 }
 .connection-test-status:is([data-state="failed"], [data-state="attention"])
   .connection-test-status-label {
-  color: #e9bd75;
+  color: var(--c-text-amber-82);
 }
 .connection-test-status[data-state="pending"] .connection-test-status-label {
   color: var(--accent);
@@ -379,8 +379,8 @@ button.help-button,
   color: var(--muted);
 }
 button.help-button:hover {
-  color: #e4e8f4;
-  background: #263249;
+  color: var(--c-text-slate-93);
+  background: var(--c-bg-indigo-32);
 }
 .setting-help-content {
   position: absolute;
@@ -389,14 +389,14 @@ button.help-button:hover {
   top: calc(100% + 5px);
   width: min(280px, 65vw);
   padding: 12px;
-  border: 1px solid #45516a;
+  border: 1px solid var(--c-border-indigo-43);
   border-radius: 7px;
-  background: #263249;
-  color: #e4e8f4;
-  font-size: 12px;
+  background: var(--c-bg-indigo-32);
+  color: var(--c-text-slate-93);
+  font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.6;
-  box-shadow: 0 8px 25px #0005;
+  box-shadow: 0 8px 25px var(--c-shadow-grey-0-a33);
 }
 .setting-help-row {
   display: flex;
@@ -415,7 +415,7 @@ button.help-button:hover {
   background: transparent;
   min-height: 28px;
   padding: 2px 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .settings-section-body fieldset {
   border: 0;
@@ -424,7 +424,7 @@ button.help-button:hover {
   min-width: 0;
 }
 .settings-section-body legend {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 550;
   margin-bottom: 8px;
 }
@@ -446,13 +446,13 @@ button.help-button:hover {
 }
 .settings-section-body .preference-order li::before {
   content: counter(priority);
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   width: 18px;
 }
 .settings-section-body .preference-order li > span {
   flex: 1;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .settings-section-body .preference-order li > div {
   display: flex;
@@ -479,7 +479,7 @@ button.help-button:hover {
   display: inline-flex;
   gap: 3px;
   padding: 3px;
-  background: #101827;
+  background: var(--c-bg-slate-21);
   border: 1px solid var(--line);
   border-radius: 8px;
   margin-bottom: 18px;
@@ -490,9 +490,9 @@ button.help-button:hover {
   color: var(--muted);
 }
 .segmented-control button[aria-pressed="true"] {
-  background: #2a3450;
-  color: #f2f4ff;
-  border-color: #43516b;
+  background: var(--c-bg-indigo-34);
+  color: var(--c-text-grey-97-2);
+  border-color: var(--c-border-indigo-43);
 }
 .naming-workspace {
   display: grid;
@@ -515,30 +515,30 @@ button.help-button:hover {
 .settings-section-body .preset-options button,
 .settings-section-body .metadata-toggles button {
   min-height: 32px;
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 5px 9px;
   background: transparent;
-  border-color: #3b4860;
+  border-color: var(--c-border-indigo-40);
 }
 .settings-section-body .preset-options button[aria-pressed="true"],
 .settings-section-body .metadata-toggles button[aria-pressed="true"] {
-  background: #292d50;
-  border-color: #656bc0;
-  color: #dce1ff;
+  background: var(--c-bg-indigo-31);
+  border-color: var(--c-border-indigo-56);
+  color: var(--c-text-indigo-92);
 }
 .required-token {
   display: inline-flex;
   gap: 5px;
   align-items: center;
   padding: 5px 9px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .folder-preview {
   position: relative;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #101827;
+  background: var(--c-bg-slate-21);
   padding: 16px;
   min-width: 0;
 }
@@ -546,12 +546,12 @@ button.help-button:hover {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.06em;
   color: var(--muted);
 }
 .settings-section-body .preview-example {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 550;
   margin: 12px 0;
 }
@@ -565,21 +565,21 @@ button.help-button:hover {
   gap: 7px;
   align-items: flex-start;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.55;
   padding-block: 5px;
   overflow-wrap: anywhere;
 }
 .folder-tree svg {
   flex-shrink: 0;
-  color: #99a4cd;
+  color: var(--c-text-indigo-72-2);
   margin-top: 1px;
 }
 .folder-preview > .setting-help {
   margin-top: 8px;
 }
 .preview-updating {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
 }
 .naming-builder > details {
@@ -589,7 +589,7 @@ button.help-button:hover {
   display: grid;
   grid-template-columns: minmax(100px, 1fr) 2fr;
   gap: 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 5px 0;
 }
 .token-reference dd {
@@ -608,11 +608,11 @@ button.help-button:hover {
 .onboarding-intro h1 {
   font-family: inherit;
   font-weight: 650;
-  font-size: 28px;
+  font-size: 1.75rem;
   margin: 0 0 6px;
 }
 .onboarding-intro > p:last-child {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .onboarding-layout {
   grid-template-columns: 190px minmax(0, 1fr);
@@ -627,10 +627,10 @@ button.help-button:hover {
   margin: 6px 0 18px;
 }
 .onboarding-title h2 {
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 .onboarding-card > .eyebrow {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .onboarding-actions {
   margin-top: 16px;
@@ -639,7 +639,7 @@ button.help-button:hover {
 }
 .onboarding-save-note {
   margin-top: 12px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 @container (max-width: 520px) {
   .naming-workspace {
@@ -777,14 +777,14 @@ button.help-button:hover {
   border-radius: 0;
   background: transparent;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 650;
   box-shadow: none;
 }
 .settings-section-body .access-switch button:hover,
 .access-page .access-switch button:hover {
   background: transparent;
-  color: #fff;
+  color: var(--c-text-grey-100);
 }
 .settings-section-body .access-switch button[aria-selected="true"],
 .access-page .access-switch button[aria-selected="true"] {
@@ -802,7 +802,7 @@ button.help-button:hover {
   max-width: 42rem;
 }
 .settings-section-body .access-provider > summary h2 {
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .settings-section-body .access-provider > summary .connection-state {
   margin-left: 8px;
@@ -835,14 +835,14 @@ button.help-button:hover {
   width: 100%;
   min-width: 520px;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-align: left;
 }
 .access-table th {
   padding: 10px 14px;
-  background: #1b2536;
+  background: var(--c-bg-indigo-27);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 650;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -854,7 +854,7 @@ button.help-button:hover {
   overflow-wrap: anywhere;
 }
 .access-table tbody tr:hover {
-  background: #1c293d;
+  background: var(--c-bg-indigo-27);
 }
 .access-table-users th:nth-child(1) {
   width: 34%;
@@ -880,7 +880,7 @@ button.help-button:hover {
 .access-username,
 .access-meta {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.45;
 }
 .access-username-inline {
@@ -893,9 +893,9 @@ button.help-button:hover {
   margin-left: 8px;
   padding: 1px 6px;
   border-radius: 999px;
-  background: #263249;
+  background: var(--c-bg-indigo-32);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 650;
   vertical-align: 1px;
 }
@@ -910,7 +910,7 @@ button.help-button:hover {
   width: min(960px, calc(100vw - 32px));
 }
 .access-dialog .book-dialog-heading {
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .settings-section-body .access-dialog .book-dialog-heading button {
   min-height: 0;
@@ -949,7 +949,7 @@ button.help-button:hover {
   margin: 0 0 4px;
   padding: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 650;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -965,7 +965,7 @@ button.help-button:hover {
 .access-dialog .permission-grid small {
   display: block;
   margin-top: 2px;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.4;
 }
 .access-dialog .permission-grid label:has(input:disabled) {
@@ -986,10 +986,10 @@ button.help-button:hover {
   margin-right: auto;
   background: transparent;
   border-color: transparent;
-  color: #ffc1c6;
+  color: var(--c-text-red-87);
 }
 .settings-section-body .access-dialog .access-delete:hover {
-  background: #3a2430;
+  background: var(--c-bg-pink-29);
 }
 .access-confirm {
   display: flex;
@@ -1068,7 +1068,7 @@ button.help-button:hover {
   border-radius: 6px;
   background: var(--bg);
   padding: 2px 8px 2px 2px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .sortable .drag-handle {
   min-width: 28px;
@@ -1094,7 +1094,7 @@ button.help-button:hover {
   max-width: none;
 }
 .sortable-horizontal code {
-  font-size: 12px;
+  font-size: 0.75rem;
   white-space: pre;
 }
 .settings-section-body .preference-ranking-grid {
@@ -1153,13 +1153,13 @@ button.help-button:hover {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .connection-result.success {
-  color: #91dfbf;
+  color: var(--c-text-teal-84);
 }
 .connection-result.failure {
-  color: #f0a1b1;
+  color: var(--c-text-red-79);
 }
 .settings-section-body select,
 .onboarding-page select {
@@ -1192,7 +1192,7 @@ button.help-button:hover {
   padding-block: 8px;
 }
 .settings-section-body .reading-profile-link {
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-left: auto;
 }
 .settings-section-body .reading-accounts .button-row {
@@ -1218,7 +1218,7 @@ button.help-button:hover {
 }
 .settings-section-body .folder-preview-heading .setting-help-content {
   letter-spacing: normal;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-transform: none;
 }
 @container (min-width: 720px) {
@@ -1261,7 +1261,7 @@ button.help-button:hover {
 .settings-subtabs a {
   flex: 0 0 auto;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   padding: 12px 0;
   border-bottom: 2px solid transparent;
   border-radius: 0;
@@ -1269,7 +1269,7 @@ button.help-button:hover {
   text-decoration: none;
 }
 .settings-subtabs a:hover {
-  color: #fff;
+  color: var(--c-text-grey-100);
 }
 .settings-subtabs a[aria-current] {
   color: var(--accent);
@@ -1390,7 +1390,7 @@ button.help-button:hover {
   background: var(--surface);
   color: var(--accent);
   font:
-    26px Georgia,
+    1.625rem Georgia,
     serif;
 }
 .reading-account-title {
@@ -1398,26 +1398,26 @@ button.help-button:hover {
   gap: 3px;
 }
 .reading-account-title a {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .reading-profile-link {
   margin-left: auto;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .reading-status {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
-  color: #93d6bc;
+  font-size: 0.75rem;
+  color: var(--c-text-teal-82);
   white-space: nowrap;
 }
 .reading-status.is-paused {
   color: var(--muted);
 }
 .reading-status.is-error {
-  color: #f3aa9f;
+  color: var(--c-text-orange-80);
 }
 .reading-accounts .reading-choices {
   display: grid;
@@ -1428,7 +1428,7 @@ button.help-button:hover {
 }
 .reading-choices legend {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 0;
 }
 .reading-accounts .reading-choice,
@@ -1442,7 +1442,7 @@ button.help-button:hover {
   width: 100%;
   max-width: none;
   border-top: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 0.8125rem;
   cursor: pointer;
 }
 .reading-list-name {
@@ -1450,11 +1450,11 @@ button.help-button:hover {
   min-width: 0;
   overflow-wrap: anywhere;
   color: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
 }
 .reading-count {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -1472,7 +1472,7 @@ button.help-button:hover {
   padding-block: 10px;
 }
 .reading-connected-icon {
-  color: #93d6bc;
+  color: var(--c-text-teal-82);
   flex-shrink: 0;
 }
 .reading-row-actions {
@@ -1488,7 +1488,7 @@ button.help-button:hover {
   width: auto;
   min-height: 32px;
   padding: 6px 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .reading-accounts button.reading-icon-button {
   width: 32px;
@@ -1507,7 +1507,7 @@ button.help-button:hover {
   margin: -6px 0 6px 28px;
 }
 .reading-accounts .reading-tracked details > summary {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   min-height: 26px;
   padding: 3px 0;
@@ -1515,14 +1515,14 @@ button.help-button:hover {
 .reading-frequency {
   margin-left: 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .reading-accounts .reading-list-filter {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .reading-accounts .reading-list-filter select {
@@ -1566,7 +1566,7 @@ button.help-button:hover {
 .storygraph-setup ol {
   margin: 0;
   padding-left: 1.35rem;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.55;
   list-style: decimal;
 }
@@ -1590,7 +1590,7 @@ button.help-button:hover {
   text-underline-offset: 2px;
 }
 .storygraph-setup code {
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 1px 5px;
   border-radius: 4px;
   background: var(--surface);
@@ -1673,7 +1673,7 @@ button.help-button:hover {
   gap: 6px;
 }
 .settings-section-body .settings-inline-link {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--accent);
 }
 .setting-subheading > .settings-inline-link {
@@ -1700,7 +1700,7 @@ button.help-button:hover {
 }
 .library-connections .section-heading .status {
   padding: 2px 8px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .library-connections p {
   grid-column: 1;
@@ -1754,7 +1754,7 @@ button.help-button:hover {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface);
-  box-shadow: 0 18px 40px #0006;
+  box-shadow: 0 18px 40px var(--c-shadow-grey-0-a40);
 }
 .settings-section-body .library-connections button {
   display: inline-flex;
@@ -1792,11 +1792,11 @@ button.help-button:hover {
   color: var(--muted);
 }
 .import-flow span {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .import-flow small {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
 }
 .settings-section-body .destination-card {
@@ -1821,7 +1821,7 @@ button.help-button:hover {
 }
 .destination-state {
   margin-left: auto;
-  font-size: 11px;
+  font-size: 0.6875rem;
   white-space: nowrap;
 }
 .settings-section-body .destination-card form > button {
@@ -1877,7 +1877,7 @@ button.help-button:hover {
 .audiobook-download-option p {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.45;
 }
 .settings-section-body .audiobook-download-option .check-label {
@@ -1931,15 +1931,15 @@ button.help-button:hover {
 .setting-help-content .help-scope-list code {
   padding: 2px 6px;
   border-radius: 4px;
-  background: #1a2334;
-  font-size: 11px;
+  background: var(--c-bg-indigo-26);
+  font-size: 0.6875rem;
 }
 .settings-section-body .metadata-form {
   gap: 12px;
 }
 .settings-section-body .metadata-actions > .metadata-token-link {
   margin-left: auto;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .settings-section-body .metadata-form > .metadata-actions,
@@ -1982,7 +1982,7 @@ button.help-button:hover {
 }
 .settings-section-body .naming-customize input {
   font-family: ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .settings-section-body .settings-empty {
   border: 1px dashed var(--line);
@@ -2017,7 +2017,7 @@ button.help-button:hover {
     padding: 12px;
   }
   .import-flow small {
-    font-size: 10px;
+    font-size: 0.625rem;
   }
   .settings-section-body .settings-form-footer {
     align-items: start;
@@ -2144,7 +2144,7 @@ button.help-button:hover {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   margin-top: 5px;
 }
 .media-folder-row button {
@@ -2170,7 +2170,7 @@ button.help-button:hover {
   margin: 0;
 }
 .abs-folder-options legend {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
   margin-bottom: 12px;
 }
@@ -2184,7 +2184,7 @@ button.help-button:hover {
 }
 .abs-folder-library h3 small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 400;
 }
 .folder-picker-body label.abs-folder-option {
@@ -2251,7 +2251,7 @@ button.help-button:hover {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .reading-overview p {
   margin: 0;
@@ -2263,7 +2263,7 @@ button.help-button:hover {
 .settings-section-body .reading-accounts {
   --control-height: 38px;
   --control-radius: 8px;
-  --control-font-size: 12px;
+  --control-font-size: 0.75rem;
   max-width: 960px;
   gap: 14px;
 }
@@ -2319,7 +2319,7 @@ button.help-button:hover {
 .reading-connection-note,
 .reading-connection-tools p {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .reading-connection-tools .reading-sign-in {
@@ -2330,7 +2330,7 @@ button.help-button:hover {
   border: 1px solid var(--line);
   border-radius: 6px;
   color: var(--accent);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 550;
 }
 .reading-sign-in:hover {
@@ -2342,7 +2342,7 @@ button.help-button:hover {
     flex-wrap: wrap;
   }
   .reading-connection > summary > .connection-state {
-    font-size: 10px;
+    font-size: 0.625rem;
   }
   .settings-section-body .reading-connection > .reading-connection-body {
     padding: 0 12px 14px;
@@ -2360,12 +2360,12 @@ button.help-button:hover {
 }
 .reading-connection-tools a:not(.reading-sign-in) {
   margin-left: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .reading-account-title p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .reading-more {
   display: inline-flex;
@@ -2390,7 +2390,7 @@ button.help-button:hover {
   min-width: 0;
   height: 34px;
   padding: 5px 24px 5px 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
   background-color: transparent;
 }
 .reading-row-actions {
@@ -2409,7 +2409,7 @@ button.help-button:hover {
 .reading-details-form label {
   display: grid;
   gap: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .reading-details-form .check-label {
   display: flex;
@@ -2426,7 +2426,7 @@ button.help-button:hover {
 }
 .reading-details-section p {
   margin: 0 0 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 @media (max-width: 700px) {
@@ -2489,19 +2489,19 @@ button.help-button:hover {
   border-top: 1px solid var(--line);
 }
 .naming-block > legend {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 650;
   margin-bottom: 0;
 }
 .naming-block h3 {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   margin-bottom: 8px;
 }
 .naming-section-note {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.45;
 }
 .naming-choice-grid {
@@ -2522,45 +2522,45 @@ button.help-button:hover {
   padding: 10px 12px;
   text-align: left;
   background: transparent;
-  border-color: #3b4860;
+  border-color: var(--c-border-indigo-40);
   font-weight: 550;
   flex-shrink: 1;
 }
 .naming-builder button.naming-choice:hover,
 .settings-section-body .naming-builder button.naming-choice:hover {
-  background: #1c2740;
+  background: var(--c-bg-indigo-28);
 }
 .naming-builder button.naming-choice[aria-pressed="true"],
 .settings-section-body
   .naming-builder
   button.naming-choice[aria-pressed="true"] {
-  background: #292d50;
-  border-color: #656bc0;
-  color: #dce1ff;
+  background: var(--c-bg-indigo-31);
+  border-color: var(--c-border-indigo-56);
+  color: var(--c-text-indigo-92);
 }
 .naming-builder button.naming-choice[aria-pressed="true"]:hover,
 .settings-section-body
   .naming-builder
   button.naming-choice[aria-pressed="true"]:hover {
-  background: #323864;
+  background: var(--c-bg-indigo-36);
 }
 .naming-choice-wide {
   grid-column: 1 / -1;
 }
 .naming-choice-name {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #9aa6c8;
+  color: var(--c-text-indigo-72-2);
 }
 .naming-builder button.naming-choice[aria-pressed="true"] .naming-choice-name {
-  color: #c9d0ff;
+  color: var(--c-text-indigo-87);
 }
 .naming-choice-example {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.4;
-  color: #e7ebff;
+  color: var(--c-text-slate-94);
   white-space: normal;
   overflow-wrap: anywhere;
 }
@@ -2571,31 +2571,31 @@ button.help-button:hover {
   gap: 8px 12px;
   margin: 0;
   padding: 10px 12px;
-  border: 1px solid #3b4860;
+  border: 1px solid var(--c-border-indigo-40);
   border-radius: 8px;
-  background: #161e30;
+  background: var(--c-bg-slate-23);
 }
 .naming-pair-hint p {
   margin: 0;
   flex: 1 1 220px;
-  color: #c5cceb;
-  font-size: 12px;
+  color: var(--c-text-indigo-85);
+  font-size: 0.75rem;
   line-height: 1.45;
 }
 .naming-builder button.naming-text-button,
 .settings-section-body .naming-builder button.naming-text-button {
   background: transparent;
   border-color: transparent;
-  color: #b9c4ef;
+  color: var(--c-text-indigo-83-2);
   min-height: 28px;
   padding: 2px 6px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 550;
 }
 .naming-builder button.naming-text-button:hover,
 .settings-section-body .naming-builder button.naming-text-button:hover {
-  background: #1c2740;
-  color: #e7ebff;
+  background: var(--c-bg-indigo-28);
+  color: var(--c-text-slate-94);
 }
 .naming-result {
   display: grid;
@@ -2613,16 +2613,16 @@ button.help-button:hover {
   border-top: 1px solid var(--line);
 }
 .naming-result-line > span {
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
 .naming-result-line code {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.45;
   overflow-wrap: anywhere;
-  color: #e7ebff;
+  color: var(--c-text-slate-94);
 }
 @container (max-width: 640px) {
   .naming-choice-grid {
@@ -2645,7 +2645,7 @@ button.help-button:hover {
 }
 .naming-lane-heading > span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .naming-token-lane {
   min-width: 0;
@@ -2659,14 +2659,14 @@ button.help-button:hover {
   margin: 0;
   gap: 6px;
   scrollbar-width: thin;
-  scrollbar-color: #657391 transparent;
+  scrollbar-color: var(--c-text-indigo-56) transparent;
 }
 .naming-token-lane .sortable > li {
   flex: 0 0 auto;
   min-height: 30px;
   padding: 0 10px 0 0;
   background: var(--surface);
-  border-color: #43516b;
+  border-color: var(--c-border-indigo-43);
   border-radius: 5px;
   gap: 0;
 }
@@ -2680,7 +2680,7 @@ button.help-button:hover {
 }
 .naming-token-label {
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 .settings-section-body .naming-token-lane select.naming-token-join {
@@ -2692,7 +2692,7 @@ button.help-button:hover {
   margin-inline: 6px;
   padding: 0 16px 0 6px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 20px;
 }
 .naming-builder .metadata-toggles {
@@ -2702,7 +2702,7 @@ button.help-button:hover {
   width: auto;
   gap: 5px;
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   min-height: 24px;
 }
 .naming-file-controls {
@@ -2718,10 +2718,10 @@ button.help-button:hover {
   align-items: center;
   gap: 8px;
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .settings-section-body .naming-builder .folder-preview {
-  background: #101827;
+  background: var(--c-bg-slate-21);
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 12px 14px;
@@ -2735,7 +2735,7 @@ button.help-button:hover {
 }
 .naming-tree-section .folder-tree li {
   padding-block: 2px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .naming-tree-section .folder-tree a {
   margin-left: auto;
@@ -2755,11 +2755,11 @@ button.help-button:hover {
   white-space: nowrap;
   margin-top: 10px;
   padding-block: 4px;
-  font-size: 13px;
-  color: #dce1ff;
+  font-size: 0.8125rem;
+  color: var(--c-text-indigo-92);
 }
 .library-local-path {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-local-path code {
   overflow-wrap: anywhere;
@@ -2772,7 +2772,7 @@ button.help-button:hover {
   padding-top: 14px;
 }
 .media-folder-automation .automatic-import-setting p {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
   margin: 8px 0;
 }
@@ -2805,7 +2805,7 @@ button.help-button:hover {
   gap: 12px;
 }
 .settings-section-body .mam-network-title h3 {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .mam-network-badge {
@@ -2817,7 +2817,7 @@ button.help-button:hover {
   border-radius: 5px;
   background: color-mix(in srgb, var(--muted) 10%, transparent);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 550;
   line-height: 1.5;
   text-transform: capitalize;
@@ -2830,24 +2830,24 @@ button.help-button:hover {
   background: currentColor;
 }
 .mam-network[data-health="healthy"] .mam-network-badge {
-  color: #81c9a3;
-  background: #81c9a312;
+  color: var(--c-text-teal-78);
+  background: var(--c-bg-teal-78-a7);
 }
 .mam-network[data-health="unhealthy"] .mam-network-badge,
 .mam-network[data-health="degraded"] .mam-network-badge,
 .mam-action-status[data-health="unhealthy"] .mam-network-badge,
 .mam-action-status[data-health="degraded"] .mam-network-badge {
-  color: #e9bd75;
-  background: #e9bd7512;
+  color: var(--c-text-amber-82);
+  background: var(--c-bg-amber-81-a7);
 }
 .mam-action-status[data-health="healthy"] .mam-network-badge {
-  color: #81c9a3;
-  background: #81c9a312;
+  color: var(--c-text-teal-78);
+  background: var(--c-bg-teal-78-a7);
 }
 .mam-network .mam-network-description {
   margin: 8px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .mam-network dl {
@@ -2864,14 +2864,14 @@ button.help-button:hover {
 }
 .mam-network dt {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 450;
   line-height: 1.5;
   margin: 0;
 }
 .mam-network dd {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.5;
   overflow-wrap: anywhere;
@@ -2884,7 +2884,7 @@ button.help-button:hover {
 .mam-network .mam-network-checked {
   margin: 12px 0 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.5;
 }
 .mam-network-checked time {
@@ -2914,12 +2914,12 @@ button.help-button:hover {
 .mam-setup .mam-check-hint {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .mam-check-error {
-  color: #e9bd75;
-  font-size: 12px;
+  color: var(--c-text-amber-82);
+  font-size: 0.75rem;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -2968,7 +2968,7 @@ button.help-button:hover {
   cursor: pointer;
   padding: 12px 14px;
   min-height: 44px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .account-automation > summary::-webkit-details-marker {
@@ -2990,7 +2990,7 @@ button.help-button:hover {
 .account-automation-state {
   margin-left: auto;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 500;
 }
 .account-automation[open] {
@@ -3044,7 +3044,7 @@ button.help-button:hover {
   gap: 8px;
   max-width: 640px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .mam-action-status-line {
@@ -3095,7 +3095,7 @@ button.help-button:hover {
 }
 .settings-section-body .logs-count {
   margin: 10px 0;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .logs-table-scroll {
   overflow-x: auto;
@@ -3108,12 +3108,12 @@ button.help-button:hover {
   table-layout: fixed;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .logs-table th {
   padding: 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 500;
   background: var(--surface);
 }
@@ -3139,7 +3139,7 @@ button.help-button:hover {
 }
 .logs-time {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -3160,7 +3160,7 @@ button.help-button:hover {
   align-items: center;
   gap: 6px;
   text-transform: capitalize;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .logs-status::before {
   content: "";
@@ -3171,18 +3171,18 @@ button.help-button:hover {
   flex-shrink: 0;
 }
 .logs-status[data-status="completed"]::before {
-  background: #81c9a3;
+  background: var(--c-bg-teal-78);
 }
 .logs-status[data-status="failed"]::before,
 .logs-status[data-status="blocked"]::before {
-  background: #f09191;
+  background: var(--c-bg-orange-76);
 }
 .logs-status[data-status="running"]::before {
-  background: #919aff;
+  background: var(--c-bg-indigo-72);
 }
 .logs-status[data-status="attention"]::before,
 .logs-status[data-status="retrying"]::before {
-  background: #e9bd75;
+  background: var(--c-bg-amber-82);
 }
 .operation-history .logs-expand {
   display: flex;
@@ -3243,11 +3243,11 @@ button.help-button:hover {
   align-items: center;
   gap: 7px;
   padding: 0 4px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .display-shapes legend svg {
-  color: #a6a8ff;
+  color: var(--c-text-indigo-76);
 }
 .display-settings .shape-options {
   display: grid;
@@ -3272,8 +3272,8 @@ button.help-button:hover {
   border-color: var(--muted);
 }
 .settings-section-body .shape-option.is-selected {
-  border-color: #919aff;
-  background: #919aff12;
+  border-color: var(--c-border-indigo-72);
+  background: var(--c-bg-indigo-72-a7);
 }
 .settings-section-body .shape-option input {
   position: absolute;
@@ -3282,7 +3282,7 @@ button.help-button:hover {
   height: 1px;
 }
 .shape-option:focus-within {
-  outline: 2px solid #a6a8ff;
+  outline: 2px solid var(--c-border-indigo-76);
   outline-offset: 3px;
 }
 .shape-stage {
@@ -3300,17 +3300,17 @@ button.help-button:hover {
   gap: 6px;
   width: 64px;
   height: 64px;
-  color: #c7cbf4;
-  border: 1px solid #7983b0;
+  color: var(--c-text-indigo-85-2);
+  border: 1px solid var(--c-border-indigo-62);
   border-radius: 3px 5px 5px 3px;
   background: linear-gradient(
     90deg,
-    #35405e 4px,
-    #5c678f 5px,
-    #454f73 9px,
-    #35405e
+    var(--c-bg-indigo-38) 4px,
+    var(--c-bg-indigo-52) 5px,
+    var(--c-bg-indigo-43) 9px,
+    var(--c-bg-indigo-38)
   );
-  box-shadow: 3px 4px 8px #0002;
+  box-shadow: 3px 4px 8px var(--c-shadow-grey-0-a13);
 }
 .display-settings .shape-swatch.portrait {
   width: 49px;
@@ -3319,7 +3319,7 @@ button.help-button:hover {
 .shape-swatch > span {
   height: 2px;
   width: 22px;
-  background: #a4aec180;
+  background: var(--c-bg-slate-75-a50);
   border-radius: 2px;
 }
 .shape-swatch > span:last-child {
@@ -3330,12 +3330,12 @@ button.help-button:hover {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   white-space: nowrap;
 }
 .shape-label svg {
   visibility: hidden;
-  color: #b2b7ff;
+  color: var(--c-text-indigo-80);
 }
 .is-selected .shape-label svg {
   visibility: visible;
@@ -3349,10 +3349,10 @@ button.help-button:hover {
 .display-overlay-icons {
   display: flex;
   gap: 6px;
-  color: #81c9a3;
+  color: var(--c-text-teal-78);
 }
 .display-overlay-icons svg:last-child {
-  color: #e9bd75;
+  color: var(--c-text-amber-82);
 }
 .display-settings > [role="status"]:not(:empty) {
   margin-top: 8px;
@@ -3388,7 +3388,7 @@ button.help-button:hover {
   justify-content: space-between;
   gap: 12px;
   margin-top: 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .logs-pagination > div {
   display: flex;

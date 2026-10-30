@@ -12,7 +12,7 @@
 }
 .access-choices legend {
   margin-bottom: 6px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 650;
 }
 .access-choices .access-hint {
@@ -48,10 +48,10 @@
   border-top: 1px solid var(--line);
 }
 .access-choice:hover {
-  background: #1c293f;
+  background: var(--c-bg-indigo-28);
 }
 .access-choice:has(input:checked) {
-  background: #202c45;
+  background: var(--c-bg-indigo-29);
 }
 .access-choice:has(input:disabled) {
   opacity: 0.65;
@@ -71,7 +71,7 @@
 .library-access-summary small {
   display: block;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.45;
 }
 .access-badge {
@@ -81,7 +81,7 @@
   border-radius: 5px;
   padding: 3px 7px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.4;
 }
 .user-library-choices {
@@ -91,15 +91,15 @@
 .access-selection-summary {
   margin: 8px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .access-attention {
-  color: #f2c979;
+  color: var(--c-text-amber-85);
 }
 .access-user-libraries {
   display: block;
   margin-top: 3px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .library-access-list {
   margin-top: 12px;
@@ -120,11 +120,11 @@
 }
 .library-access-row h4 {
   margin: 0 0 4px;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .library-access-summary {
   min-width: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .library-access-summary small {
   margin-top: 4px;
@@ -136,7 +136,7 @@
   margin-top: 4px;
   padding: 14px 0 4px;
   border-top: 1px solid var(--line);
-  background: #101827;
+  background: var(--c-bg-slate-21);
 }
 .access-advanced {
   padding-top: 12px;
@@ -144,7 +144,7 @@
 }
 .access-advanced summary {
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .access-advanced summary span {

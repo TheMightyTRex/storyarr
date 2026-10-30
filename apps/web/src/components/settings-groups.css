@@ -12,13 +12,13 @@
   min-width: 0;
 }
 .settings-group-title {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 650;
 }
 .settings-group-description,
 .policy-settings .field-hint {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -50,7 +50,7 @@
 .policy-section > legend,
 .policy-window > legend {
   padding-inline: 6px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .policy-fields {
@@ -126,7 +126,7 @@
 }
 .policy-usage-table {
   width: 100%;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .policy-usage-table th,
 .policy-usage-table td {

@@ -1,0 +1,217 @@
+/* Theme switching and the Display and accessibility settings. Colour values live in theme-tokens.css. */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+  }
+}
+body {
+  background: var(--c-bg-slate-21);
+  color: var(--c-text-grey-97);
+}
+
+/* A visible focus ring on every control, in every theme. */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+:root.pref-readable body,
+:root.pref-readable button,
+:root.pref-readable input,
+:root.pref-readable select,
+:root.pref-readable textarea {
+  font-family:
+    "Atkinson Hyperlegible Next Variable",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+:root.pref-underline .main-content a:not(:has(img, svg)),
+:root.pref-underline .main-content :is(p, li, dd, td, small) a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+:root.pref-spacing
+  :is(p, li, dd, dt, td, th, label, a, small, strong, span, h1, h2, h3, h4) {
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important;
+}
+:root.pref-spacing :is(p, li, dd, td) {
+  line-height: 1.8 !important;
+}
+
+:root.pref-calm *,
+:root.pref-calm *::before,
+:root.pref-calm *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.display-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+.display-panel > :is(h2, h3) {
+  margin: 0;
+  font-size: 1.125rem;
+}
+.display-panel > p {
+  margin: -10px 0 0;
+}
+.display-group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.display-group legend {
+  font-weight: 650;
+  margin-bottom: 8px;
+}
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+.segmented label {
+  position: relative;
+}
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.segmented span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 9px;
+  font-weight: 600;
+}
+.segmented input:checked + span {
+  background: var(--c-text-grey-97);
+  color: var(--c-bg-slate-21);
+}
+.segmented input:checked + span::before {
+  /* A tick, so the choice does not rely on colour alone. */
+  content: "✓";
+  margin-right: 6px;
+}
+.segmented input:focus-visible + span {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.display-switches {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.display-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 52px;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+.display-switch + .display-switch {
+  border-top: 1px solid var(--line);
+}
+.display-switch-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.45;
+}
+.display-switch input {
+  appearance: none;
+  flex: none;
+  width: 48px;
+  height: 28px;
+  margin: 0;
+  border-radius: 999px;
+  border: 2px solid var(--muted);
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+}
+.display-switch input::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.15s;
+}
+.display-switch input:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.display-switch input:checked::after {
+  transform: translateX(20px);
+  background: var(--c-bg-slate-21);
+}
+.display-panel > button {
+  align-self: flex-start;
+  min-height: 44px;
+}
+.display-status:empty {
+  display: none;
+}
+.display-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  color: inherit;
+}
+.display-dialog::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+.display-dialog .display-panel {
+  margin-bottom: 16px;
+}
+.display-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.display-dialog-actions button {
+  min-height: 44px;
+  min-width: 96px;
+}

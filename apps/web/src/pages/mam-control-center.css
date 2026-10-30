@@ -15,7 +15,7 @@
 }
 .mam-control .mam-control-heading h3 {
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 24px;
+  font-size: 1.5rem;
   margin: 3px 0 5px;
   overflow-wrap: anywhere;
 }
@@ -24,14 +24,14 @@
   margin: 0;
 }
 .mam-control .eyebrow {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .mam-control .muted,
 .mam-control-footnote,
 .mam-account-timestamp,
 .mam-store-heading span {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.6;
 }
 .mam-balances {
@@ -51,12 +51,12 @@
 }
 .mam-balances dt {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 7px;
 }
 .mam-balances dd {
   margin: 0;
-  font-size: 19px;
+  font-size: 1.1875rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
@@ -80,7 +80,7 @@
   display: grid;
   gap: 7px;
   min-width: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .mam-control select,
 .mam-control input,
@@ -96,7 +96,7 @@
   min-width: 0;
 }
 .mam-purchase-description {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.6;
   color: var(--muted);
 }
@@ -109,7 +109,7 @@
   border-left: 3px solid var(--accent);
   background: var(--mam-soft);
   border-radius: 0 6px 6px 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
 }
 .mam-exchange span:last-child {
@@ -124,7 +124,7 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--mam-soft);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.6;
 }
 .mam-purchase-review {
@@ -159,7 +159,7 @@
 }
 .mam-rule .muted,
 .mam-rule-note .muted {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.6;
 }
 .mam-rule .automation-fields {
@@ -186,14 +186,14 @@
     width: 100%;
   }
   .mam-balances dd {
-    font-size: 17px;
+    font-size: 1.0625rem;
   }
 }
 .mam-automation-checks {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .mam-automation-checks dt {
   font-weight: 600;

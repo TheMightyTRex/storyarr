@@ -35,6 +35,7 @@ import { useLibraryReviewCount } from "./hooks/useLibraryReviewCount";
 import { canManageOwnRequests } from "./permissions";
 import { useDisplayPreferences } from "./displayPreferences";
 import { LibraryTabs, ShelfRail } from "./components/ShelfNavigation";
+import { DisplayButton } from "./components/DisplayPanel";
 
 const AddDiscoveryList = lazy(() => import("./pages/AddDiscoveryList"));
 const SettingsPage = lazy(() => import("./pages/Settings"));
@@ -550,6 +551,7 @@ function Shell({ auth }: { auth: Auth }) {
             <button type="submit">Search</button>
           </form>
           <div className="topbar-actions">
+            <DisplayButton />
             <ConnectionHealth />
             {auth.user.role !== "viewer" &&
               /^\/(discover(?:\/collections\/[^/]+)?|lists(?:\/.*)?|following(?:\/.*)?)$/.test(

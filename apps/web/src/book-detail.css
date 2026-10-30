@@ -9,7 +9,7 @@
   margin-top: 10px;
 }
 .reader-page .book-detail-hero h1:not(.reader-title-long) {
-  font-size: clamp(30px, 3vw, 44px);
+  font-size: clamp(1.875rem, 3vw, 2.75rem);
   margin: 8px 0;
 }
 .book-detail-hero .eyebrow {
@@ -17,7 +17,7 @@
 }
 .reader-page .book-detail-hero .author-line {
   margin: 0 0 12px;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 .reader-page .book-detail-hero .reader-facts {
   gap: 12px 28px;
@@ -89,13 +89,13 @@
   .reader-page .book-detail-hero h1:not(.reader-title-long) {
     grid-column: 2;
     grid-row: 2;
-    font-size: 28px;
+    font-size: 1.75rem;
     margin: 0;
   }
   .reader-page .book-detail-hero .author-line {
     grid-column: 2;
     grid-row: 3;
-    font-size: 15px;
+    font-size: 0.9375rem;
     margin: 0;
   }
   .reader-page .book-detail-hero .reader-facts,
@@ -143,7 +143,7 @@
 .book-pagination {
   justify-content: space-between;
   padding-block: 14px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .book-pagination button {
   display: inline-flex;
@@ -163,17 +163,17 @@
 }
 .reader-page #reviews h2 {
   margin: 0 0 4px;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 .reviews-toolbar p {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .reviews-source {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .reviews-summary {
   margin-top: 18px;
@@ -187,11 +187,11 @@
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .reviews-count {
-  font-size: 12px;
+  font-size: 0.75rem;
   margin: 14px 0 0;
 }
 #reviews .reader-reviews {
@@ -217,35 +217,35 @@
   color: var(--accent);
   border: 1px solid var(--line);
   border-radius: 50%;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .review-byline {
   display: grid;
   gap: 3px;
   min-width: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
   overflow-wrap: anywhere;
 }
 .reader-review .review-byline time {
   margin: 0;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .review-score {
   margin-left: auto;
   flex-shrink: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 #reviews .reader-prose {
   margin: 12px 0 0;
   line-height: 1.65;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .review-spoiler {
   margin-top: 10px;
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .review-spoiler[open] {
   padding-bottom: 12px;
@@ -300,13 +300,13 @@
   margin-bottom: 18px;
 }
 .metadata-page-heading h2 {
-  font-size: 21px;
+  font-size: 1.3125rem;
   margin: 0 0 5px;
 }
 .metadata-page-heading p,
 .metadata-card-heading p {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .metadata-workflow .book-match {
   padding: 18px;
@@ -315,16 +315,16 @@
   background: var(--surface);
 }
 .metadata-workflow .book-match-heading h2 {
-  font-size: 18px;
+  font-size: 1.125rem;
   margin-block: 4px 6px;
 }
 .metadata-workflow .book-match-heading p {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .metadata-workflow .book-match-connected {
   margin-top: 14px;
   padding-top: 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   border-color: var(--line);
 }
 .metadata-card {
@@ -335,7 +335,7 @@
 }
 .metadata-card h3 {
   margin: 0 0 5px;
-  font-size: 16px;
+  font-size: 1rem;
 }
 .metadata-card .metadata-edit-row {
   padding: 0;
@@ -344,7 +344,7 @@
   flex-wrap: wrap;
 }
 .metadata-card .metadata-edit-row p {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .metadata-card button {
   display: inline-flex;
@@ -367,19 +367,19 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
 }
 .metadata-details-grid dd {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
   overflow-wrap: anywhere;
 }
 .metadata-protected {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--accent);
 }
 .metadata-description {
@@ -387,10 +387,10 @@
   padding-top: 12px;
 }
 .metadata-description summary {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .metadata-description .reader-prose {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.7;
   margin-bottom: 0;
 }
@@ -398,7 +398,7 @@
   margin-top: 16px;
 }
 .metadata-editor > p {
-  font-size: 12px;
+  font-size: 0.75rem;
   margin: 0 0 16px;
 }
 .metadata-editor-grid {
@@ -408,7 +408,7 @@
 }
 .metadata-editor-grid label {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .metadata-editor-grid input,
 .metadata-editor-grid textarea {
@@ -427,7 +427,7 @@
   padding-top: 16px;
   margin-top: 16px;
   border-top: 1px solid var(--line);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .metadata-editor-footer > span,
 .metadata-feedback {
@@ -439,7 +439,7 @@
   margin: 0;
 }
 .metadata-feedback {
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 12px 0;
 }
 .metadata-cover-options {
@@ -469,7 +469,7 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  font-size: 10px;
+  font-size: 0.625rem;
   padding: 3px 0;
 }
 .metadata-covers .metadata-cover-option[aria-pressed="true"] {
@@ -486,7 +486,7 @@
   gap: 10px;
   flex-wrap: wrap;
   padding-block: 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .metadata-workflow .source-attribution > span {
   flex: 1 1 240px;
@@ -558,7 +558,7 @@
 }
 .part-set p {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .part-set .button-row {
   margin-top: 8px;
@@ -591,7 +591,7 @@
 }
 .part-set p {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .part-set .button-row {
   margin-top: 8px;

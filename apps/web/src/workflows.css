@@ -5,7 +5,7 @@
 }
 .workspace-title {
   margin: 0 0 18px;
-  font-size: 26px;
+  font-size: 1.625rem;
   letter-spacing: -0.025em;
 }
 .content-skeleton {
@@ -85,7 +85,7 @@
   gap: 8px;
 }
 .request-book-cell h2 {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .request-book-cell[data-continuation] {
   position: relative;
@@ -102,7 +102,7 @@
 .request-book-cell[data-continuation]::after {
   content: "↳ Same request";
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .request-ledger .request-row-tools {
   flex-wrap: wrap;
@@ -124,7 +124,7 @@
 .request-transfer-progress {
   min-width: 0;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .request-transfer-progress progress {
   max-width: 100%;
@@ -138,11 +138,11 @@
 }
 .reader-operational .book-detail-hero h1:not(.reader-title-long),
 .reader-operational .book-detail-hero .reader-title-long {
-  font-size: 25px;
+  font-size: 1.5625rem;
   margin: 0 0 6px;
 }
 .reader-operational .book-detail-hero .author-line {
-  font-size: 15px;
+  font-size: 0.9375rem;
   margin-bottom: 8px;
 }
 .reader-operational
@@ -169,7 +169,7 @@
   gap: 12px;
 }
 .book-cover .type-cover span {
-  font-size: clamp(13px, 1.5vw, 19px);
+  font-size: clamp(0.8125rem, 1.5vw, 1.1875rem);
   -webkit-line-clamp: 4;
 }
 .book-cover .type-cover small {
@@ -178,7 +178,7 @@
 .source-coverage {
   padding: 10px 0;
   margin: 4px 0 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--muted);
 }
 .source-coverage summary {
@@ -204,13 +204,13 @@
 .release-decision-facts dt,
 .import-evidence dt {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 4px;
 }
 .release-decision-facts dd,
 .import-evidence dd {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   overflow-wrap: anywhere;
 }
 .download-review-book {
@@ -222,18 +222,18 @@
   flex-basis: 64px;
 }
 .download-review-identity h2 {
-  font-size: 24px;
+  font-size: 1.5rem;
   margin: 4px 0 8px;
 }
 .download-review-author {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .download-review .book-cover .type-cover {
   padding: 10px;
 }
 .download-review .book-cover .type-cover span {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .download-file-list li {
   display: block;
@@ -242,7 +242,7 @@
 }
 .download-file-list li > p {
   margin: 6px 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .import-source-fields {
   border: 0;
@@ -284,7 +284,7 @@
 }
 .review-evidence summary {
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--muted);
   min-height: 36px;
 }
@@ -382,7 +382,7 @@
     content: attr(data-label);
     display: block;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 0.6875rem;
     margin-bottom: 4px;
   }
   .source-table :is(.release-title-cell, .source-actions-cell) {
@@ -457,7 +457,7 @@
     padding: 20px 16px;
   }
   .workspace-title {
-    font-size: 23px;
+    font-size: 1.4375rem;
     margin-bottom: 12px;
   }
   .page-tabs {
@@ -482,10 +482,10 @@
   }
   .reader-operational .book-detail-hero h1:not(.reader-title-long),
   .reader-operational .book-detail-hero .reader-title-long {
-    font-size: 21px;
+    font-size: 1.3125rem;
   }
   .reader-operational .book-detail-hero .author-line {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .reader-operational .book-detail-hero .reader-series {
     display: none;
@@ -514,14 +514,14 @@
     padding: 16px;
   }
   .download-review-identity h2 {
-    font-size: 21px;
+    font-size: 1.3125rem;
   }
   .download-attention,
   .download-review-status {
     padding: 16px;
   }
   .download-attention h3 {
-    font-size: 19px;
+    font-size: 1.1875rem;
   }
   .download-view-files {
     margin-left: 0;
@@ -598,7 +598,7 @@
     content: "Time left · ";
   }
   .request-book-cell h2 {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .request-detail-row,
   .request-detail-row > td {
@@ -618,13 +618,13 @@
 }
 .deferred-shelf h2 {
   color: var(--muted);
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 .request-cover span {
   display: grid;
   place-items: center;
   padding: 2px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.04em;
 }
 @media (max-width: 720px) {
@@ -651,7 +651,7 @@
   padding: 8px;
 }
 .reader-operational .book-cover .type-cover span {
-  font-size: 10px;
+  font-size: 0.625rem;
   -webkit-line-clamp: 4;
 }
 :is(.reader-operational, .download-review-cover)
@@ -689,7 +689,7 @@
 .review-item-context {
   color: var(--muted);
   margin: 0 0 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   overflow-wrap: anywhere;
 }
 @media (max-width: 720px) {

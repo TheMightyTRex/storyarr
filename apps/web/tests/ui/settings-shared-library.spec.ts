@@ -136,11 +136,11 @@ test("reuse an arbitrary library mount for both formats", async ({
   await expect(
     card.getByText("/Reading Room/.book-search-staging", { exact: true }),
   ).toBeVisible();
-  // Dewarr currently has one dark theme; native controls must stay legible
-  // even when the operating system requests light colors.
+  // The default theme is light whatever the device asks for, so native
+  // controls follow the chosen theme rather than the operating system.
   for (const theme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: theme });
-    await expect(page.locator("html")).toHaveCSS("color-scheme", "dark");
+    await expect(page.locator("html")).toHaveCSS("color-scheme", "light");
     await expect
       .poll(() =>
         page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),

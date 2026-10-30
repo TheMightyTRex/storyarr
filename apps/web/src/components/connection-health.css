@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--warning, #e9b65c);
+  color: var(--warning, var(--c-text-amber-81));
   cursor: pointer;
   list-style: none;
 }
@@ -28,7 +28,7 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface);
-  box-shadow: 0 12px 36px #0002;
+  box-shadow: 0 12px 36px var(--c-shadow-grey-0-a13);
 }
 .connection-health-panel ul {
   list-style: none;

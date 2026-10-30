@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Headphones, Library, Check, Star } from "lucide-react";
 import LayoutChoice from "../components/LayoutChoice";
+import DisplayPanel from "../components/DisplayPanel";
 import {
   displayDefaults,
   saveDisplayPreferences,
@@ -24,6 +25,7 @@ export default function DisplaySettings() {
   return (
     <div className="display-settings">
       <LayoutChoice />
+      <DisplayPanel />
       <h3>Appearance</h3>
       <p className="muted">
         Choose how covers look on your shelves. Changes save automatically in

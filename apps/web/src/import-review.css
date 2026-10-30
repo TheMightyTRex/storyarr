@@ -5,7 +5,7 @@
 }
 .import-review-back {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .import-review-page .page-heading {
   margin: 24px 0 28px;
@@ -38,7 +38,7 @@
   cursor: pointer;
   color: var(--muted);
   font-weight: 500;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .import-review-advanced[open] > summary {
   margin-bottom: 24px;
@@ -49,19 +49,19 @@
   gap: 7px;
   white-space: nowrap;
   padding: 7px 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   border-radius: 6px;
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--accent);
 }
 .download-import-state.is-held {
-  color: #e4ba73;
-  background: #e4ba7312;
+  color: var(--c-text-amber-82);
+  background: var(--c-bg-amber-81-a7);
 }
 .download-import-state.is-complete {
-  color: #84c7ac;
-  background: #84c7ac12;
+  color: var(--c-text-teal-78-2);
+  background: var(--c-bg-teal-78-a7-2);
 }
 .import-execution-compact .library-access {
   padding: 0;
@@ -76,24 +76,24 @@
 }
 .import-result.is-held,
 .import-result.is-cancel-held {
-  border-left: 3px solid #e4ba73;
-  background: #e4ba7305;
+  border-left: 3px solid var(--c-border-amber-81);
+  background: var(--c-bg-amber-81-a2);
 }
 .import-result.is-confirmed,
 .import-result.is-skipped {
-  border-left: 3px solid #84c7ac;
+  border-left: 3px solid var(--c-border-teal-78);
 }
 .import-result > strong {
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .import-result > p {
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 10px 0 16px;
   line-height: 1.65;
 }
 .import-result-options {
   margin-top: 16px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .import-result-options > button {
@@ -125,13 +125,13 @@
 }
 .download-review-identity h2 {
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(25px, 3vw, 34px);
+  font-size: clamp(1.5625rem, 3vw, 2.125rem);
   line-height: 1.2;
   margin: 8px 0 12px;
 }
 .download-review-subtitle {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.55;
   margin: 8px 0;
 }
@@ -143,7 +143,7 @@
   display: inline-block;
   margin-top: 10px;
   color: var(--accent);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .download-review-status {
   display: flex;
@@ -152,7 +152,7 @@
   gap: 12px 20px;
   padding: 16px 32px;
   border-block: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .download-view-files {
   margin-left: auto;
@@ -161,7 +161,7 @@
   padding: 28px 32px 32px;
 }
 .download-attention h3 {
-  font-size: 20px;
+  font-size: 1.25rem;
   margin: 0 0 12px;
 }
 .download-attention p {
@@ -176,7 +176,7 @@
   align-items: center;
   gap: 16px;
   margin-top: 24px;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .download-attention .actions .button {
   display: inline-flex;
@@ -236,7 +236,7 @@
   border-left: 2px solid var(--accent);
 }
 .download-file-title span {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .download-file-title strong {
   color: var(--text);
@@ -269,10 +269,10 @@
     flex-basis: 76px;
   }
   .download-review-identity h2 {
-    font-size: 25px;
+    font-size: 1.5625rem;
   }
   .download-review-subtitle {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .download-review-status {
     padding: 16px 20px;
@@ -304,7 +304,7 @@
   padding: 12px;
 }
 .download-review-cover .type-cover span {
-  font-size: 12px;
+  font-size: 0.75rem;
   overflow-wrap: anywhere;
 }
 
@@ -315,5 +315,5 @@
   flex-basis: 100%;
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }

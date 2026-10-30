@@ -31,7 +31,7 @@
 }
 .downloader-heading h2 {
   margin: 0 0 4px;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 .downloader-settings p {
   margin: 0;
@@ -45,12 +45,12 @@
 }
 .downloader-facts dt {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 4px;
 }
 .downloader-facts dd {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .downloader-folder {
   display: flex;
@@ -72,19 +72,19 @@
   gap: 6px;
 }
 .downloader-folder h3 {
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 0;
 }
 .downloader-folder code,
 .download-folder-location code {
   overflow-wrap: anywhere;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .downloader-folder-status {
   display: flex;
   align-items: flex-start;
   gap: 9px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .downloader-folder-status > svg {
   color: var(--muted);
@@ -105,7 +105,7 @@
 .downloader-details {
   border-top: 1px solid var(--line);
   padding-top: 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .downloader-details summary {
   cursor: pointer;
@@ -113,7 +113,7 @@
 }
 .downloader-details summary span {
   margin-left: 8px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 400;
 }
 .downloader-details[open] > p {
@@ -148,7 +148,7 @@
   gap: 7px;
   width: auto;
   max-width: none;
-  font-size: 12px;
+  font-size: 0.75rem;
   min-width: 0;
 }
 .downloader-map-row input {

@@ -9,13 +9,13 @@
   align-items: center;
   gap: 18px;
   padding: 20px 0 12px;
-  background: #0c1423;
-  border-right: 1px solid #263146;
+  background: var(--c-bg-slate-19);
+  border-right: 1px solid var(--c-border-indigo-31);
 }
 .shelf-brand img {
   display: block;
   border-radius: 12px;
-  background: #cf6b42;
+  background: var(--c-bg-orange-64);
 }
 .shelf-rail .shelf-nav {
   display: flex;
@@ -35,18 +35,18 @@
   justify-content: center;
   gap: 5px;
   border-radius: 14px;
-  color: #a8b3c9;
-  font-size: 12px;
+  color: var(--c-text-slate-77);
+  font-size: 0.75rem;
   font-weight: 600;
   text-align: center;
 }
 .shelf-rail .shelf-nav a:hover {
-  background: #1b263b;
-  color: white;
+  background: var(--c-bg-indigo-27);
+  color: var(--c-text-grey-100);
 }
 .shelf-rail .shelf-nav a.active {
-  background: #292d52;
-  color: #e0e7ff;
+  background: var(--c-bg-indigo-31);
+  color: var(--c-text-slate-93-2);
 }
 .shelf-rail .shelf-nav a.active::before {
   /* A bar beside the current page, so the state does not rely on colour alone. */
@@ -57,15 +57,15 @@
   bottom: 14px;
   width: 4px;
   border-radius: 999px;
-  background: #a5b4fc;
+  background: var(--c-bg-indigo-79);
 }
 .shelf-count {
   min-width: 1.15rem;
   padding: 1px 6px;
   border-radius: 999px;
-  background: #cf6b42;
-  color: #fff;
-  font-size: 11px;
+  background: var(--c-bg-orange-64);
+  color: var(--c-on-accent-grey-100);
+  font-size: 0.6875rem;
   font-weight: 700;
   line-height: 1.4;
   font-variant-numeric: tabular-nums;
@@ -107,7 +107,7 @@
   gap: 8px;
   margin: 0 0 28px;
   padding-bottom: 14px;
-  border-bottom: 1px solid #263146;
+  border-bottom: 1px solid var(--c-border-indigo-31);
 }
 .shelf-tabs a {
   display: inline-flex;
@@ -116,19 +116,19 @@
   min-height: 40px;
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid #303c51;
-  color: #c8d0e0;
-  font-size: 14px;
+  border: 1px solid var(--c-border-indigo-35);
+  color: var(--c-text-slate-86);
+  font-size: 0.875rem;
   font-weight: 600;
 }
 .shelf-tabs a:hover {
-  background: #1b263b;
-  color: white;
+  background: var(--c-bg-indigo-27);
+  color: var(--c-text-grey-100);
 }
 .shelf-tabs a.active {
-  background: #e0e7ff;
-  border-color: #e0e7ff;
-  color: #1e1b4b;
+  background: var(--c-bg-slate-93);
+  border-color: var(--c-border-slate-93);
+  color: var(--c-text-indigo-26);
 }
 
 @media (max-width: 720px) {
@@ -142,7 +142,7 @@
     gap: 0;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
     border-right: 0;
-    border-top: 1px solid #263146;
+    border-top: 1px solid var(--c-border-indigo-31);
   }
   .shelf-brand,
   .shelf-account .avatar,
@@ -189,7 +189,7 @@
   margin: 0 0 32px;
 }
 .layout-choice legend {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 650;
   margin-bottom: 6px;
 }
@@ -204,12 +204,12 @@
   display: flex;
   gap: 14px;
   padding: 16px;
-  border: 1px solid #303c51;
+  border: 1px solid var(--c-border-indigo-35);
   border-radius: 14px;
   cursor: pointer;
 }
 .layout-option.is-selected {
-  border: 2px solid #a5b4fc;
+  border: 2px solid var(--c-border-indigo-79);
   padding: 15px;
 }
 .layout-option input {
@@ -217,7 +217,7 @@
   opacity: 0;
 }
 .layout-option:has(input:focus-visible) {
-  outline: 3px solid #a5b4fc;
+  outline: 3px solid var(--c-border-indigo-79);
   outline-offset: 3px;
 }
 .layout-text {
@@ -236,15 +236,15 @@
   width: 72px;
   height: 54px;
   border-radius: 8px;
-  background: #111827;
-  border: 1px solid #303c51;
+  background: var(--c-bg-slate-21);
+  border: 1px solid var(--c-border-indigo-35);
   display: grid;
   gap: 3px;
   padding: 5px;
 }
 .layout-preview span {
   border-radius: 3px;
-  background: #303c51;
+  background: var(--c-bg-indigo-35);
 }
 .layout-preview-classic {
   grid-template-columns: 22px 1fr;
@@ -257,5 +257,5 @@
   grid-template-columns: 9px repeat(2, 1fr);
 }
 .layout-preview-shelf span:first-child {
-  background: #a5b4fc;
+  background: var(--c-bg-indigo-79);
 }

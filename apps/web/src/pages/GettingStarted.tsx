@@ -7,6 +7,7 @@ import { api, result, type Auth } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import LayoutChoice from "../components/LayoutChoice";
+import DisplayPanel from "../components/DisplayPanel";
 import { settingsSections } from "./SettingsSections";
 
 function setupCount(
@@ -44,7 +45,16 @@ export default function GettingStarted({ role }: { role: string }) {
       ? { ...section, content: <Libraries embedded connectionOnly /> }
       : section,
   );
-  all.push({ id: "layout", title: "Layout", content: <LayoutChoice /> });
+  all.push({
+    id: "layout",
+    title: "Layout and display",
+    content: (
+      <>
+        <LayoutChoice />
+        <DisplayPanel />
+      </>
+    ),
+  });
   if (admin)
     all.push({
       id: "storage",
@@ -81,7 +91,7 @@ export default function GettingStarted({ role }: { role: string }) {
     automation:
       "Choose which kinds of books new author and series follows include.",
     layout:
-      "Choose Classic for the original menu, or Shelf for a slim icon menu with fewer places to look.",
+      "Choose a layout, a light or dark theme, a text size, and any reading aids you need.",
     finish:
       "Your saved settings are ready. You can change them anytime in Settings.",
   };

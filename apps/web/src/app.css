@@ -1,5 +1,6 @@
 /* Load page layouts once, then apply the shared controls consistently on every route. */
 @import "tailwindcss";
+@import "./theme-tokens.css" layer(app);
 @import "./styles.css" layer(app);
 @import "./settings.css" layer(app);
 @import "./entity-details.css" layer(app);
@@ -13,10 +14,11 @@
 @import "./controls.css" layer(controls);
 @import "./workflows.css" layer(controls);
 @import "./shelf-layout.css" layer(controls);
+@import "./theme.css" layer(controls);
 
 .brand img {
   border-radius: 8px;
-  background: #cf6b42;
+  background: var(--c-bg-orange-64);
   object-fit: contain;
   flex-shrink: 0;
 }
