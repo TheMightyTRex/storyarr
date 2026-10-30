@@ -50,7 +50,7 @@ export default function AutomationSettings({
   );
 }
 
-function WantedSearchSettings() {
+export function WantedSearchSettings() {
   const cache = useQueryClient();
   const settings = useAutomationSettings();
   const [draft, setDraft] = useState<WantedSearch | null>(null);
@@ -139,7 +139,7 @@ function WantedSearchSettings() {
   );
 }
 
-function DeletedRetention() {
+export function DeletedRetention() {
   const cache = useQueryClient();
   const [saved, setSaved] = useState(false);
   const query = useQuery({
@@ -209,7 +209,7 @@ function DeletedRetention() {
   );
 }
 
-function FollowDefaults() {
+export function FollowDefaults() {
   const [saved, setSaved] = useState(false);
   const cache = useQueryClient();
   const settings = useAutomationSettings();

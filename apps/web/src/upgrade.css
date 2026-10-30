@@ -15,7 +15,11 @@
   align-items: start;
 }
 .upgrade-wizard .onboarding-steps {
+  position: sticky;
   top: calc(var(--topbar-height) + 24px);
+  z-index: 1;
+  align-self: start;
+  background: var(--c-bg-slate-21);
 }
 .upgrade-step {
   display: flex;
@@ -44,21 +48,6 @@
 }
 .upgrade-release li + li {
   margin-top: 4px;
-}
-.upgrade-review {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
-}
-.upgrade-review li {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px;
-  border: 1px solid var(--line);
 }
 .upgrade-actions {
   margin-top: 8px;
@@ -103,5 +92,9 @@
 @media (max-width: 900px) {
   .upgrade-layout {
     grid-template-columns: minmax(0, 1fr);
+  }
+  /* In one column the step list scrolls with the page, so it never covers the step. */
+  .upgrade-wizard .onboarding-steps {
+    position: static;
   }
 }

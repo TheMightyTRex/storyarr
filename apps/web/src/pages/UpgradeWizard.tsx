@@ -7,6 +7,13 @@ import { Loading, Notice } from "../components";
 import LayoutChoice from "../components/LayoutChoice";
 import DisplayPanel from "../components/DisplayPanel";
 import UpgradeBackups, { useUpgrade } from "../components/UpgradeBackups";
+import SettingsGroup from "../components/SettingsGroup";
+import AudibleStoreSetting from "../components/AudibleStoreSetting";
+import {
+  DeletedRetention,
+  FollowDefaults,
+  WantedSearchSettings,
+} from "./AutomationSettings";
 import { upgradeLaterKey } from "../upgradeLater";
 
 const steps = [
@@ -15,6 +22,14 @@ const steps = [
   ["settings", "New settings"],
   ["way-back", "The way back"],
 ] as const;
+
+// New settings shown in place, so they can be changed without leaving the wizard.
+const settingsFor: Record<string, React.ReactNode> = {
+  "follow-types": <FollowDefaults />,
+  "wanted-search": <WantedSearchSettings />,
+  "deleted-books": <DeletedRetention />,
+  "audible-store": <AudibleStoreSetting />,
+};
 
 export default function UpgradeWizard() {
   const cache = useQueryClient();
@@ -118,19 +133,25 @@ export default function UpgradeWizard() {
               </p>
               <LayoutChoice />
               <DisplayPanel />
-              {!!review.length && (
-                <ul className="upgrade-review">
-                  {review
-                    .filter((item) => item.id !== "layout")
-                    .map((item) => (
-                      <li key={item.id}>
-                        <strong>{item.title}</strong>
-                        <span className="muted">{item.description}</span>
-                        <Link to={item.link}>Open {item.title} settings</Link>
-                      </li>
-                    ))}
-                </ul>
-              )}
+              {review
+                .filter((item) => item.id !== "layout")
+                .map((item) =>
+                  settingsFor[item.id] ? (
+                    <SettingsGroup
+                      key={item.id}
+                      id={`upgrade-${item.id}`}
+                      title={item.title}
+                      description={item.description}
+                    >
+                      {settingsFor[item.id]}
+                    </SettingsGroup>
+                  ) : (
+                    <p key={item.id}>
+                      <strong>{item.title}:</strong> {item.description}{" "}
+                      <Link to={item.link}>Open {item.title} settings</Link>
+                    </p>
+                  ),
+                )}
             </>
           )}
           {id === "way-back" && (

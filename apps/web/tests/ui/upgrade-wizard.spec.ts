@@ -5,6 +5,7 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
 }) => {
   let acknowledged: string | null = null;
   const restores: unknown[] = [];
+  let saved: unknown = null;
   const backup = {
     name: "settings-20261030-190000-before-upgrade.json",
     created_at: "2026-10-30T19:00:00Z",
@@ -52,7 +53,14 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
     else if (path === "/api/setup/onboarding") data = { status: "completed" };
     else if (path === "/api/library/libraries") data = [];
     else if (path === "/api/upgrade") data = view();
-    else if (path === "/api/upgrade/acknowledge") {
+    else if (path === "/api/metadata/preferences") {
+      if (request.method() === "PUT") saved = request.postDataJSON();
+      data = saved ?? {
+        primary: "hardcover",
+        language: "en",
+        audible_region: null,
+      };
+    } else if (path === "/api/upgrade/acknowledge") {
       acknowledged = "2026.10.30";
       data = view();
     } else if (path.endsWith("/restore")) {
@@ -74,6 +82,11 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
   await expect(page.getByText("Settings in six groups.")).toBeVisible();
 
   const steps = page.getByRole("navigation", { name: "Upgrade steps" });
+  // On a narrow screen the step list scrolls away rather than covering the step.
+  await page.setViewportSize({ width: 800, height: 700 });
+  await expect(steps).toHaveCSS("position", "static");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(steps).toHaveCSS("position", "sticky");
   await steps.getByRole("button", { name: /Your backup/ }).click();
   await expect(
     page.getByRole("heading", { name: "Your backup" }),
@@ -88,9 +101,14 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
   ).toHaveCount(0);
 
   await page.getByRole("button", { name: "Next step" }).click();
-  await expect(
-    page.getByRole("link", { name: "Open Audible store settings" }),
-  ).toHaveAttribute("href", "/settings#catalog");
+  // New settings open in place, so changing one does not leave the wizard.
+  await page.getByText("Audible store", { exact: true }).click();
+  const store = page.getByRole("form", { name: "Audible store" });
+  await store.getByRole("combobox").selectOption("uk");
+  await store.getByRole("button", { name: "Save Audible store" }).click();
+  await expect(store.getByRole("status")).toHaveText("Audible store saved.");
+  expect(saved).toMatchObject({ primary: "hardcover", audible_region: "uk" });
+  await expect(page).toHaveURL(/\/upgrade$/);
   await page.getByRole("button", { name: "Next step" }).click();
   await page.getByRole("button", { name: "Restore settings" }).click();
   const confirm = page.getByRole("group", { name: "Confirm restore" });
