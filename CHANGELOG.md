@@ -3,6 +3,12 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.4.1 (31 October 2026)
+
+### Fixed
+- **Release notes window:** left-aligned in the Shelf layout, with bold section headings. Long list items stay
+  together, numbered lists work, and the release title is not repeated.
+
 ## v0.4.0 (31 October 2026): the first Storyarr release
 
 ### Published
