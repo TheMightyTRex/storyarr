@@ -98,8 +98,11 @@ export default function LibraryGroups({
     return `?${next}`;
   };
   const total = active.data?.total || 0;
+  // Start from the address as it is now, not as it was at the last render,
+  // so a quick change after switching tab keeps the new tab.
+  const current = () => new URLSearchParams(window.location.search);
   const change = (key: string, value: string) => {
-    const next = new URLSearchParams(params);
+    const next = current();
     if (value) next.set(key, value);
     else next.delete(key);
     if (key !== "offset") next.delete("offset");
@@ -227,7 +230,7 @@ export default function LibraryGroups({
               items={query.data?.items ?? []}
               selected={picked}
               onSelect={(key) => {
-                const next = new URLSearchParams(params);
+                const next = current();
                 next.set("pick", key);
                 setParams(next, { replace: true });
               }}

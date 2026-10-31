@@ -157,7 +157,13 @@ test("My library browses owned authors and series, filters, and opens books", as
     page.getByRole("link", { name: "Ursula Le Guin, books in your library" }),
   ).toBeVisible();
   await tabs.getByRole("link", { name: "Series", exact: true }).click();
-  const row = page.getByRole("row").filter({ hasText: "Earthsea" });
+  // Wait for the Series list: an author's row can mention Earthsea too, through its covers.
+  await expect(
+    page.getByRole("heading", { name: "Series in your collection" }),
+  ).toBeVisible();
+  const row = page.getByRole("row").filter({
+    has: page.getByRole("link", { name: "Earthsea, books in your library" }),
+  });
   await expect(row.getByText("Ursula Le Guin")).toBeVisible();
   await expect(row.getByText("2 in your library")).toBeVisible();
   await page
