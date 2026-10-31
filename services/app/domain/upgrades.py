@@ -160,6 +160,28 @@ RELEASES = [
             "removed."
         ),
     ),
+    UpgradeRelease(
+        id="2026.10.31.4",
+        title="Sorting and releases Storyarr could not confirm",
+        highlights=[
+            "Series, Authors and Following can be sorted by Newest, Number of books, Date "
+            "published, Author or A to Z, with Reverse order.",
+            "Review release lets an administrator confirm a release whose name does not clearly "
+            "match the book, or whose language is not stated, before downloading it.",
+            "Requests has Review sources, which shows a request's sources in a dialog.",
+            "Series whose names differ only in punctuation, a leading The or a trailing Series "
+            "are grouped together.",
+        ],
+        review=[
+            UpgradeReviewItem(
+                id="override-releases",
+                title="Download unconfirmed releases",
+                description="A new permission. Give it to people who are not administrators so "
+                "they can choose these releases too.",
+                link="/accounts",
+            ),
+        ],
+    ),
 ]
 CURRENT = RELEASES[-1].id
 

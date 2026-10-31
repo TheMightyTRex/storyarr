@@ -3,7 +3,7 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
-## v0.4.4 (unreleased)
+## v0.4.4 (31 October 2026)
 
 ### Added
 - **Sort by** on Series, Authors and Following: Newest, Number of books, Date published, Author (by surname)

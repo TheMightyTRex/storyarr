@@ -327,7 +327,7 @@ wheels = [
 
 [[package]]
 name = "dewarr"
-version = "0.4.3"
+version = "0.4.4"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
