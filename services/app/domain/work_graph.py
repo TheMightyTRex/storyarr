@@ -4,26 +4,15 @@ import hashlib
 from uuid import UUID
 
 from fastapi import HTTPException
-from sqlalchemy import select, text, union_all
+from sqlalchemy import select, text
 
 from app.db.models import Work
 from app.domain.operations import transaction_lock
 
 
 def canonical_map(origin_ids=None):
-    """
-    Map each origin work to its canonical work. Most works are their own canonical work, so they are
-    mapped directly, which lets Postgres use the primary key for a single lookup; only works with a
-    redirect walk the chain.
-    """
-    direct = select(Work.id.label("origin_id"), Work.id.label("work_id")).where(
-        Work.redirect_to.is_(None)
-    )
-    seed = select(Work.id.label("origin_id"), Work.id.label("work_id"), Work.redirect_to).where(
-        Work.redirect_to.is_not(None)
-    )
+    seed = select(Work.id.label("origin_id"), Work.id.label("work_id"), Work.redirect_to)
     if origin_ids is not None:
-        direct = direct.where(Work.id.in_(origin_ids))
         seed = seed.where(Work.id.in_(origin_ids))
     paths = seed.cte(recursive=True)
     step = select(paths.c.origin_id, Work.id, Work.redirect_to).join(
@@ -31,11 +20,12 @@ def canonical_map(origin_ids=None):
     )
     # Bound point/page traversals even if a legacy chain contains a cycle.
     paths = paths.union(step) if origin_ids is not None else paths.union_all(step)
-    redirected = (
-        select(paths.c.origin_id, paths.c.work_id).where(paths.c.redirect_to.is_(None)).distinct()
+    return (
+        select(paths.c.origin_id, paths.c.work_id)
+        .where(paths.c.redirect_to.is_(None))
+        .distinct()
+        .subquery()
     )
-    # The two halves never share an origin, so they can be joined without removing duplicates.
-    return union_all(direct, redirected).subquery()
 
 
 def canonical_families(root_ids):
