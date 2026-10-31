@@ -60,6 +60,8 @@ backups/
 !/scripts/check.py
 !/scripts/smoke_proxy_auth.py
 !/scripts/release.py
+!/scripts/storyarr_rename.py
+!/scripts/upstream_watch.py
 !/scripts/e2e_downloader_cleanup.py
 !/scripts/dependency_notices.py
 !/scripts/build_discovery_catalog.py
