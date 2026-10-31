@@ -259,6 +259,9 @@ test("activity requests preserve independent reasons and route missing media to 
     .getByRole("link", { name: /^Queue/ })
     .click();
   const filters = page.getByRole("navigation", { name: "Queue filters" });
+  await expect(
+    filters.getByRole("link", { name: /^Needs review/ }),
+  ).toBeVisible();
   const filterPositions = await filters
     .getByRole("link")
     .evaluateAll((links) =>
