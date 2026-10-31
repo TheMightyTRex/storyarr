@@ -133,6 +133,7 @@ async function fixture(page: Page, initiallyFollowing = false) {
     next_release: refreshing ? null : books[2],
     latest_books: [books[1], books[0]],
   });
+  let collectionView = "detail";
   await page.route("**/api/**", async (route) => {
     const url = new URL(route.request().url());
     const path = url.pathname;
@@ -186,6 +187,12 @@ async function fixture(page: Page, initiallyFollowing = false) {
         offset: 0,
         limit: 20,
       };
+    } else if (path === "/api/following/follow-list/summary") {
+      data = summary();
+    } else if (path === "/api/preferences") {
+      if (route.request().method() === "PATCH")
+        collectionView = route.request().postDataJSON().collection_view;
+      data = { collection_view: collectionView };
     } else if (path === "/api/following/releases") {
       data = {
         items: exists && !refreshing ? [books[2]] : [],
@@ -452,27 +459,25 @@ test("Following shows library coverage, releases, and useful filtered books", as
 }, testInfo) => {
   await fixture(page, true);
   await page.goto("/following");
-  const author = page.getByRole("article", {
+  // List and detail: the follows beside the chosen follow's bookshelf.
+  const picker = page.getByRole("navigation", { name: "Followed authors" });
+  await expect(
+    picker.getByRole("button", { name: /Ursula K\. Le Guin/ }),
+  ).toHaveAttribute("aria-current", "true");
+  await expect(picker.getByText("1 of 2")).toBeVisible();
+  const detail = page.getByRole("region", {
     name: "Ursula K. Le Guin",
     exact: true,
   });
   await expect(
-    author.getByRole("button", { name: "3 books in catalog" }),
+    detail.getByRole("heading", { name: "Ursula K. Le Guin", level: 2 }),
   ).toBeVisible();
+  await detail
+    .getByRole("group", { name: "Show books by status" })
+    .getByRole("button", { name: /^In library/ })
+    .click();
   await expect(
-    author.getByRole("button", { name: "1 in library" }),
-  ).toBeVisible();
-  await expect(
-    author.getByRole("button", { name: "1 upcoming" }),
-  ).toBeVisible();
-  await author.getByRole("button", { name: "1 in library" }).click();
-  await expect(
-    author.getByRole("heading", { name: "In your library", exact: true }),
-  ).toBeVisible();
-  await expect(
-    author
-      .locator(".follow-expanded")
-      .getByRole("link", { name: "A Wizard of Earthsea", exact: true }),
+    detail.getByRole("button", { name: "A Wizard of Earthsea, In library" }),
   ).toBeVisible();
   await page.screenshot({
     path: testInfo.outputPath("following-overview-desktop.png"),
@@ -494,9 +499,18 @@ test("Following shows library coverage, releases, and useful filtered books", as
     page.getByRole("link", { name: "Sample future publication", exact: true }),
   ).toBeVisible();
   await page.getByRole("tab", { name: /Authors/ }).click();
+  // List: one aligned row per follow, with its coverage and statuses.
+  await page
+    .getByRole("group", { name: "Layout" })
+    .getByRole("button", { name: "List", exact: true })
+    .click();
+  const row = page.getByRole("row").filter({ hasText: "Ursula K. Le Guin" });
+  await expect(row.getByText("1 of 2")).toBeVisible();
+  await expect(row.getByText("1 missing")).toBeVisible();
+  await expect(row.getByText("1 not released")).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(
-    author.getByRole("link", { name: "Manage Ursula K. Le Guin" }),
+    row.getByRole("link", { name: "Manage Ursula K. Le Guin" }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
@@ -588,30 +602,24 @@ test("catalog completion refreshes the shelf and an open book list", async ({
   state.startRefresh();
   await page.clock.install();
   await page.goto("/following");
-  const author = page.getByRole("article", {
+  const picker = page.getByRole("navigation", { name: "Followed authors" });
+  const detail = page.getByRole("region", {
     name: "Ursula K. Le Guin",
     exact: true,
   });
-  await author.getByRole("button", { name: "2 books in catalog" }).click();
-  const expanded = author.getByRole("region", {
-    name: "Ursula K. Le Guin books",
-  });
+  await expect(picker.getByText("1 of 2")).toBeVisible();
   await expect(
-    expanded.getByRole("link", { name: "A Wizard of Earthsea", exact: true }),
+    detail.getByRole("button", { name: "A Wizard of Earthsea, In library" }),
   ).toBeVisible();
+  await expect(detail.getByRole("button", { name: "All 2" })).toBeVisible();
   await expect(
     page.getByRole("region", { name: "Coming up", exact: true }),
   ).toHaveCount(0);
   state.completeRefresh();
   await page.clock.fastForward(5000);
+  await expect(detail.getByRole("button", { name: "All 3" })).toBeVisible();
   await expect(
-    author.getByRole("button", { name: "3 books in catalog" }),
-  ).toBeVisible();
-  await expect(
-    expanded.getByRole("link", {
-      name: "Sample future publication",
-      exact: true,
-    }),
+    detail.getByRole("button", { name: /^Sample future publication/ }),
   ).toBeVisible();
   await expect(
     page
@@ -653,7 +661,9 @@ for (const tab of ["authors", "releases"]) {
       ).toBeVisible();
       if (tab === "authors") {
         await expect(
-          page.getByRole("button", { name: "3 books in catalog" }),
+          page
+            .getByRole("navigation", { name: "Followed authors" })
+            .getByRole("button", { name: /Ursula K\. Le Guin/ }),
         ).toBeVisible();
       }
     },
@@ -665,32 +675,32 @@ test("followed books show one status each and filter by status", async ({
 }) => {
   await fixture(page, true);
   await page.goto("/following");
-  const author = page.getByRole("article", {
+  const detail = page.getByRole("region", {
     name: "Ursula K. Le Guin",
     exact: true,
   });
-  await author.getByRole("button", { name: "3 books in catalog" }).click();
-  const expanded = author.getByRole("region", {
-    name: "Ursula K. Le Guin books",
-  });
-  const filters = expanded.getByRole("group", {
-    name: "Show books by status",
-  });
+  const filters = detail.getByRole("group", { name: "Show books by status" });
   await expect(filters.getByRole("button", { name: "All 3" })).toBeVisible();
-  await expect(expanded.getByText("Next automatic search")).toBeVisible();
-  await expect(expanded.getByText("Release date 20 Oct 2100")).toBeVisible();
-  await filters.getByRole("button", { name: "Not released 1" }).click();
   await expect(
-    expanded.getByRole("link", {
-      name: "Sample future publication",
-      exact: true,
-    }),
+    detail.getByRole("button", { name: /^A Wizard of Earthsea, In library/ }),
   ).toBeVisible();
   await expect(
-    expanded.getByRole("link", { name: "A Wizard of Earthsea", exact: true }),
+    detail.getByRole("button", {
+      name: "Sample future publication, Not released yet",
+    }),
+  ).toBeVisible();
+  await filters.getByRole("button", { name: /^Not released/ }).click();
+  await expect(
+    detail.getByRole("button", { name: /^Sample future publication/ }),
+  ).toBeVisible();
+  await expect(
+    detail.getByRole("button", { name: /^A Wizard of Earthsea/ }),
   ).toHaveCount(0);
   await filters.getByRole("button", { name: "All 3" }).click();
   await expect(
-    expanded.getByRole("link", { name: "A Wizard of Earthsea", exact: true }),
+    detail.getByRole("button", { name: /^A Wizard of Earthsea/ }),
   ).toBeVisible();
+  // A book's own detail opens in the side panel.
+  await detail.getByRole("button", { name: /^The Tombs of Atuan/ }).click();
+  await expect(page.getByText("Next automatic search")).toBeVisible();
 });

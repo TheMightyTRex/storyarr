@@ -321,6 +321,66 @@
         }
       }
     },
+    "/api/preferences": {
+      "get": {
+        "tags": [
+          "preferences"
+        ],
+        "summary": "Read Preferences",
+        "operationId": "read_preferences_api_preferences_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferences"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "preferences"
+        ],
+        "summary": "Save Preferences",
+        "operationId": "save_preferences_api_preferences_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferencesInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferences"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health/live": {
       "get": {
         "tags": [
@@ -35383,6 +35443,28 @@
         "title": "PreferenceOverrides",
         "description": "Omitted fields inherit; explicit empty block lists and null limits override."
       },
+      "PreferencesInput": {
+        "properties": {
+          "collection_view": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "detail",
+                  "list"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collection View"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PreferencesInput"
+      },
       "PresetInfo": {
         "properties": {
           "id": {
@@ -43512,6 +43594,21 @@
           "display_name"
         ],
         "title": "UserInput"
+      },
+      "UserPreferences": {
+        "properties": {
+          "collection_view": {
+            "type": "string",
+            "enum": [
+              "detail",
+              "list"
+            ],
+            "title": "Collection View",
+            "default": "detail"
+          }
+        },
+        "type": "object",
+        "title": "UserPreferences"
       },
       "UserView": {
         "properties": {

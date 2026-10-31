@@ -1,0 +1,328 @@
+/* Series, Authors and Following: "List and detail" and "List" layouts. */
+.group-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 14px;
+  margin-bottom: 16px;
+}
+.group-toolbar .library-search {
+  flex: 1 1 280px;
+  margin: 0;
+}
+.group-toolbar .library-filters {
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  gap: 12px;
+  margin: 0;
+}
+.group-toolbar .library-filters > label {
+  width: 210px;
+}
+/* Small covers here are thumbnails: no ownership tick or format badges. */
+.group-covers :is(.cover-owned, .cover-formats, .type-cover),
+.group-pick-cover :is(.cover-owned, .cover-formats, .type-cover),
+.group-detail-covers :is(.cover-owned, .cover-formats) {
+  display: none;
+}
+.collection-view-switch {
+  display: inline-flex;
+  margin-left: auto;
+  border: 1px solid var(--line);
+}
+.collection-view-switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+}
+.collection-view-switch button[aria-pressed="true"] {
+  background: var(--control-active);
+  color: var(--c-text-grey-97);
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+/* The picture beside the name, under the books. */
+.group-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: inherit;
+}
+.group-picture {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--line);
+  color: var(--muted);
+}
+.group-name.is-large .group-picture {
+  flex-basis: 48px;
+  width: 48px;
+  height: 48px;
+}
+.group-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.group-name-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.group-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.group-name.is-large .group-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  white-space: normal;
+}
+.group-byline {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.group-bar {
+  display: block;
+  height: 6px;
+  background: var(--line);
+}
+.group-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.group-bar > span[data-complete] {
+  background: var(--c-text-teal-87);
+}
+.group-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.group-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* A. List: fixed columns, so every row lines up. */
+.group-table {
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.group-row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) 170px minmax(0, 240px) auto;
+  align-items: center;
+  gap: 16px;
+  min-height: 68px;
+  padding: 6px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.group-row:last-child {
+  border-bottom: 0;
+}
+.group-head {
+  min-height: 40px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.group-actions-head {
+  text-align: right;
+}
+.group-row .group-actions {
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+.group-covers {
+  position: relative;
+  display: flex;
+  height: 54px;
+}
+.group-covers .book-cover {
+  width: 36px;
+  height: 54px;
+  flex: 0 0 36px;
+  margin-right: -10px;
+  box-shadow: 0 1px 3px var(--c-shadow-grey-0-a40, rgba(0, 0, 0, 0.3));
+}
+.group-cell-name a {
+  display: block;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.group-cell-name a:hover .group-title {
+  text-decoration: underline;
+}
+
+/* D. List and detail. */
+.group-split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+.group-picker {
+  flex: 1 1 300px;
+  max-width: 360px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  max-height: calc(100vh - var(--topbar-height, 120px) - 40px);
+  overflow-y: auto;
+  position: sticky;
+  top: calc(var(--topbar-height, 120px) + 16px);
+}
+.group-picker ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.group-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 60px;
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+}
+.group-pick:hover {
+  background: var(--control-active);
+}
+.group-pick[aria-current] {
+  background: var(--control-active);
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+.group-pick-cover {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 42px;
+}
+.group-pick-cover .book-cover {
+  width: 28px;
+  height: 42px;
+}
+.group-pick-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.group-pick .group-progress {
+  font-weight: 500;
+  color: var(--muted);
+  gap: 4px;
+}
+.group-pick .group-bar {
+  height: 4px;
+}
+.group-detail {
+  flex: 999 1 520px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.group-detail-covers {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.group-detail-covers .book-cover {
+  width: 64px;
+  height: 96px;
+  flex: 0 0 64px;
+}
+.group-detail-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+.group-page-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+.group-detail-progress {
+  display: grid;
+  grid-template-columns: minmax(120px, 280px) minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .group-toolbar .library-filters {
+    flex-wrap: wrap;
+  }
+  .group-toolbar .library-filters > label {
+    width: auto;
+    flex: 1 1 160px;
+  }
+  .group-row {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+  .group-row > :nth-child(n + 3) {
+    grid-column: 2;
+  }
+  .group-row .group-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .group-head {
+    display: none;
+  }
+  .group-picker {
+    max-width: none;
+    position: static;
+    max-height: 320px;
+  }
+  .group-detail-progress {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

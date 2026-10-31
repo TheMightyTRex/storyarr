@@ -1,3 +1,11 @@
+import {
+  CollectionViewSwitch,
+  useCollectionView,
+} from "../components/GroupShelf";
+import {
+  FollowDetailView,
+  FollowListView,
+} from "../components/FollowCollection";
 import { lazy, Suspense, useState } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
@@ -7,7 +15,6 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookCover from "../components/BookCover";
 import DetailTabs from "../components/DetailTabs";
-import AddMissingBooks from "../components/AddMissingBooks";
 const FollowSettings = lazy(() => import("./FollowSettings"));
 
 type Summary = components["schemas"]["FollowSummary"];
@@ -104,14 +111,6 @@ export function publication(book: Book) {
 }
 function bookHref(book: Book) {
   return "/books/" + book.work_id;
-}
-function entityHref(follow: Summary) {
-  return (
-    "/" +
-    (follow.source_kind === "author" ? "authors" : "series") +
-    "/hardcover/" +
-    follow.external_id
-  );
 }
 function BookPreview({
   book,
@@ -271,189 +270,6 @@ export function FollowBooks({
         </>
       )}
     </div>
-  );
-}
-
-function AuthorRow({ follow }: { follow: Summary }) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const [selection, setSelection] = useState<BookFilter | null>(null);
-  const toggle = (value: BookFilter) =>
-    setSelection((old) => (old === value ? null : value));
-  const busy = ["queued", "running"].includes(follow.state);
-  const status = !follow.enabled
-    ? "Updates paused"
-    : busy
-      ? "Updating catalog"
-      : follow.state === "failed"
-        ? "Update failed"
-        : !follow.complete
-          ? "Catalog needs review"
-          : null;
-  const count = (
-    value: number | null | undefined,
-    label: string,
-    filter: BookFilter,
-  ) => (
-    <button
-      type="button"
-      className="text-button follow-count"
-      disabled={value == null}
-      onClick={() => toggle(filter)}
-      aria-expanded={selection === filter}
-      aria-controls={"follow-books-" + follow.list_id}
-    >
-      <strong>{value == null ? "—" : value.toLocaleString()}</strong> {label}
-    </button>
-  );
-  return (
-    <article className="follow-author" aria-label={follow.name}>
-      <div className="follow-author-main">
-        <div className="follow-author-identity">
-          <Link
-            to={entityHref(follow)}
-            className="follow-portrait"
-            aria-label={"View " + follow.name}
-          >
-            {follow.image_url && !imageFailed ? (
-              <img
-                src={
-                  "/api/catalog/cover-image?url=" +
-                  encodeURIComponent(follow.image_url)
-                }
-                alt=""
-                loading="lazy"
-                onError={() => setImageFailed(true)}
-              />
-            ) : (
-              <UserRound size={30} aria-hidden="true" />
-            )}
-          </Link>
-          <div>
-            <h2>
-              <Link to={entityHref(follow)}>{follow.name}</Link>
-            </h2>
-            <div className="follow-counts">
-              {count(follow.total_books, "books in catalog", "all")}
-              {count(follow.library_books, "in library", "library")}
-              {count(follow.upcoming_books, "upcoming", "upcoming")}
-            </div>
-            {!!follow.undated_books && (
-              <p className="follow-freshness">
-                {follow.undated_books} upcoming with no date yet
-              </p>
-            )}
-            <div className="follow-row-actions">
-              <span className="follow-state">
-                <Check size={13} aria-hidden="true" /> Following
-              </span>
-              <Link
-                className="reader-action-link"
-                to={"/following/" + follow.list_id}
-                aria-label={"Open " + follow.name + " bookshelf"}
-              >
-                Open bookshelf
-              </Link>
-              <Link
-                className="reader-action-link"
-                to={"/following?list=" + follow.list_id}
-                aria-label={"Manage " + follow.name}
-              >
-                Manage
-              </Link>
-              <AddMissingBooks
-                kind={follow.source_kind}
-                externalId={follow.external_id}
-                name={follow.name}
-              />
-            </div>
-            {status && (
-              <p className="follow-freshness">
-                {status}
-                {follow.last_success_at ? " · Showing saved catalog" : ""}
-              </p>
-            )}
-            {!status && follow.last_success_at && (
-              <p className="follow-freshness">
-                Updated {new Date(follow.last_success_at).toLocaleDateString()}
-              </p>
-            )}
-            {follow.mode !== "browse" && (
-              <p className="follow-freshness">
-                {follow.active
-                  ? follow.mode === "automatic"
-                    ? "Automatic downloads"
-                    : "Review requests"
-                  : "Downloads need review"}
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="follow-next">
-          <p className="follow-label">Next release</p>
-          {follow.next_release ? (
-            <BookPreview book={follow.next_release} compact />
-          ) : (
-            <p className="muted">
-              {follow.total_books == null
-                ? "Checking the catalog…"
-                : "No announced release"}
-            </p>
-          )}
-        </div>
-        <div className="follow-latest">
-          <p className="follow-label">Latest books</p>
-          <div className="follow-latest-books">
-            {(follow.latest_books || []).map((book) => (
-              <Link
-                key={book.work_id}
-                to={bookHref(book)}
-                aria-label={"View " + book.title}
-              >
-                <BookCover
-                  title={book.title}
-                  cover={book.cover_url}
-                  actions={false}
-                />
-                <span>{book.title}</span>
-              </Link>
-            ))}
-          </div>
-          {!follow.latest_books?.length && (
-            <p className="muted">No dated publications yet</p>
-          )}
-          <Link className="follow-view-books" to={entityHref(follow)}>
-            View {follow.source_kind === "author" ? "author" : "series"}{" "}
-            <ArrowRight size={13} aria-hidden="true" />
-          </Link>
-        </div>
-      </div>
-      {selection && (
-        <section
-          id={"follow-books-" + follow.list_id}
-          aria-label={follow.name + " books"}
-        >
-          <div className="follow-expanded-heading">
-            <h3>
-              {
-                {
-                  all: "All catalog books",
-                  library: "In your library",
-                  upcoming: "Upcoming books",
-                  recent: "Published recently",
-                  missing: "Not in your library",
-                }[selection]
-              }
-            </h3>
-            <button onClick={() => setSelection(null)}>Close books</button>
-          </div>
-          <FollowBooks
-            key={selection + follow.last_success_at}
-            follow={follow}
-            selection={selection}
-          />
-        </section>
-      )}
-    </article>
   );
 }
 
@@ -640,6 +456,17 @@ function Overview() {
   });
   const page = query.data?.pages[0];
   const follows = query.data?.pages.flatMap((page) => page.items) || [];
+  const layout = useCollectionView();
+  const loadMore = query.hasNextPage && (
+    <div className="follow-load-more">
+      <button
+        disabled={query.isFetchingNextPage}
+        onClick={() => query.fetchNextPage()}
+      >
+        {query.isFetchingNextPage ? "Loading…" : "Load more " + tab}
+      </button>
+    </div>
+  );
   const set = (key: string, value: string) => {
     const next = new URLSearchParams(params);
     value ? next.set(key, value) : next.delete(key);
@@ -735,6 +562,10 @@ function Overview() {
                   <option value="library">Most books in library</option>
                 </select>
               </label>
+              <CollectionViewSwitch
+                view={layout.view}
+                onChange={layout.setView}
+              />
             </div>
             <Notice error={query.error} />
             {query.error && (
@@ -772,23 +603,32 @@ function Overview() {
                     </p>
                   </div>
                 )}
-                <div className="follow-author-list">
-                  {follows.map((follow) => (
-                    <AuthorRow key={follow.list_id} follow={follow} />
+                {follows.length > 0 &&
+                  (layout.view === "detail" ? (
+                    <FollowDetailView
+                      follows={follows}
+                      label={
+                        tab === "authors"
+                          ? "Followed authors"
+                          : "Followed series"
+                      }
+                      selected={params.get("pick") || undefined}
+                      onSelect={(listId) => set("pick", listId)}
+                      more={loadMore}
+                    />
+                  ) : (
+                    <>
+                      <FollowListView
+                        follows={follows}
+                        label={
+                          tab === "authors"
+                            ? "Followed authors"
+                            : "Followed series"
+                        }
+                      />
+                      {loadMore}
+                    </>
                   ))}
-                </div>
-                {query.hasNextPage && (
-                  <div className="follow-load-more">
-                    <button
-                      disabled={query.isFetchingNextPage}
-                      onClick={() => query.fetchNextPage()}
-                    >
-                      {query.isFetchingNextPage
-                        ? "Loading…"
-                        : "Load more " + tab}
-                    </button>
-                  </div>
-                )}
               </>
             )}
           </>

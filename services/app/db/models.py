@@ -63,6 +63,8 @@ class User(Identity, Base):
         default=lambda: {"status": "pending", "step": 0, "skipped": []},
         server_default='{"status":"pending","step":0,"skipped":[]}',
     )
+    # Choices that follow the person to every browser, such as how the Series tab is laid out.
+    preferences: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
 
 
 class PermissionRole(Identity, Base):

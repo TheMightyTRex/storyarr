@@ -1,14 +1,16 @@
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "./InfiniteScroll";
-import { useState } from "react";
-import { ArrowLeft, ArrowUpRight, UserRound } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { BookCard, Empty, Loading, Notice } from "../components";
-import BookCover from "./BookCover";
-import { useReaderDetails } from "./BookReaderDetails";
-import SeriesFollowStatus from "./SeriesFollowStatus";
+import {
+  CollectionViewSwitch,
+  GroupDetailView,
+  GroupListView,
+  useCollectionView,
+} from "./GroupShelf";
 
 type Kind = "authors" | "series";
 type Library = components["schemas"]["LibraryView"];
@@ -86,6 +88,15 @@ export default function LibraryGroups({
     },
   });
   const active = group ? books : query;
+  const layout = useCollectionView();
+  const picked = params.get("pick") || undefined;
+  const groupLink = (item: { name: string }) => {
+    const next = new URLSearchParams(params);
+    next.set("group", item.name);
+    next.delete("offset");
+    next.delete("pick");
+    return `?${next}`;
+  };
   const total = active.data?.total || 0;
   const change = (key: string, value: string) => {
     const next = new URLSearchParams(params);
@@ -128,66 +139,71 @@ export default function LibraryGroups({
           </span>
         )}
       </div>
-      {!group && (
-        <form
-          className="library-search"
-          onSubmit={(event) => {
-            event.preventDefault();
-            change(
-              "q",
-              String(new FormData(event.currentTarget).get("q") || "").trim(),
-            );
-          }}
-        >
+      <div className="group-toolbar">
+        {!group && (
+          <form
+            className="library-search"
+            onSubmit={(event) => {
+              event.preventDefault();
+              change(
+                "q",
+                String(new FormData(event.currentTarget).get("q") || "").trim(),
+              );
+            }}
+          >
+            <label>
+              Search {kind}
+              <input
+                key={`${kind}:${q}`}
+                name="q"
+                type="search"
+                defaultValue={q}
+                maxLength={300}
+                placeholder={kind === "authors" ? "Author name" : "Series name"}
+              />
+            </label>
+            <button>Search {kind}</button>
+          </form>
+        )}
+        <div className="library-filters library-shelf-filters">
           <label>
-            Search {kind}
-            <input
-              key={`${kind}:${q}`}
-              name="q"
-              type="search"
-              defaultValue={q}
-              maxLength={300}
-              placeholder={kind === "authors" ? "Author name" : "Series name"}
-            />
+            Media
+            <select
+              value={medium}
+              onChange={(event) => change("medium", event.target.value)}
+            >
+              <option value="any">Ebooks and audiobooks</option>
+              <option value="ebook">Ebooks</option>
+              <option value="audio">Audiobooks</option>
+            </select>
           </label>
-          <button>Search {kind}</button>
-        </form>
-      )}
-      <div className="library-filters library-shelf-filters">
-        <label>
-          Media
-          <select
-            value={medium}
-            onChange={(event) => change("medium", event.target.value)}
-          >
-            <option value="any">Ebooks and audiobooks</option>
-            <option value="ebook">Ebooks</option>
-            <option value="audio">Audiobooks</option>
-          </select>
-        </label>
-        <label>
-          Library
-          <select
-            value={libraryId || ""}
-            onChange={(event) => change("library", event.target.value)}
-          >
-            <option value="">All accessible libraries</option>
-            {libraries.map((library) => (
-              <option key={library.id} value={library.id}>
-                {library.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        {(q || medium !== "any" || libraryId) && (
-          <button
-            type="button"
-            onClick={() =>
-              setParams({ view: kind, ...(group ? { group } : {}) })
-            }
-          >
-            Clear filters
-          </button>
+          <label>
+            Library
+            <select
+              value={libraryId || ""}
+              onChange={(event) => change("library", event.target.value)}
+            >
+              <option value="">All accessible libraries</option>
+              {libraries.map((library) => (
+                <option key={library.id} value={library.id}>
+                  {library.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {(q || medium !== "any" || libraryId) && (
+            <button
+              type="button"
+              onClick={() =>
+                setParams({ view: kind, ...(group ? { group } : {}) })
+              }
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+        {!group && (
+          <CollectionViewSwitch view={layout.view} onChange={layout.setView} />
         )}
       </div>
       <Notice error={active.error} />
@@ -205,65 +221,28 @@ export default function LibraryGroups({
                 <BookCard key={work.id} work={work} medium={medium} />
               ))}
             </div>
-          ) : (
-            <div className="library-group-grid">
-              {query.data?.items.map((item) => {
+          ) : layout.view === "detail" ? (
+            <GroupDetailView
+              kind={kind}
+              items={query.data?.items ?? []}
+              selected={picked}
+              onSelect={(key) => {
                 const next = new URLSearchParams(params);
-                next.set("group", item.name);
-                next.delete("offset");
-                return (
-                  <article className="library-group-card" key={item.key}>
-                    <Link
-                      to={`?${next}`}
-                      className="library-group-link"
-                      aria-label={`${item.name}, ${item.book_count} ${item.book_count === 1 ? "book" : "books"} in your collection`}
-                    >
-                      <div className="library-group-art" aria-hidden="true">
-                        <GroupPortrait key={item.key} item={item} kind={kind} />
-                        <div className="library-group-covers">
-                          {item.books.map((work) => (
-                            <BookCover
-                              actions={false}
-                              key={work.id}
-                              title={work.title}
-                              work={work}
-                              medium="ebook"
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      <div className="library-group-caption">
-                        <div>
-                          <h3>{item.name}</h3>
-                          <p>
-                            {item.book_count}{" "}
-                            {item.book_count === 1 ? "book" : "books"} in your
-                            collection
-                          </p>
-                        </div>
-                        <ArrowUpRight size={18} aria-hidden="true" />
-                      </div>
-                    </Link>
-                    {kind === "series" && item.external_id && (
-                      <>
-                        <Link
-                          className="library-group-profile"
-                          to={`/series/hardcover/${encodeURIComponent(item.external_id)}`}
-                        >
-                          Explore full series →
-                        </Link>
-                        {canEdit && (
-                          <SeriesFollowStatus
-                            externalId={item.external_id}
-                            name={item.name}
-                          />
-                        )}
-                      </>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
+                next.set("pick", key);
+                setParams(next, { replace: true });
+              }}
+              canEdit={canEdit}
+              medium={medium}
+              libraryId={libraryId}
+              more={<InfiniteScroll query={active} />}
+            />
+          ) : (
+            <GroupListView
+              kind={kind}
+              items={query.data?.items ?? []}
+              canEdit={canEdit}
+              groupLink={groupLink}
+            />
           )}
           {!active.data.items.length && (
             <Empty
@@ -276,45 +255,11 @@ export default function LibraryGroups({
                   : "Authors appear here when matched books are available in your libraries."}
             </Empty>
           )}
-          <InfiniteScroll query={active} />
+          {(group || layout.view !== "detail") && (
+            <InfiniteScroll query={active} />
+          )}
         </>
       )}
     </section>
-  );
-}
-
-function GroupPortrait({
-  item,
-  kind,
-}: {
-  item: components["schemas"]["LibraryGroup"];
-  kind: Kind;
-}) {
-  const query = useReaderDetails(item.hardcover_book_id || undefined);
-  const [failed, setFailed] = useState<string>();
-  const normalize = (name: string) =>
-    name.trim().replace(/\s+/g, " ").toLowerCase();
-  const authors = query.data?.authors || [];
-  const author =
-    kind === "authors"
-      ? authors.find(
-          (author) => normalize(author.name) === normalize(item.name),
-        )
-      : authors.find((author) => author.image_url) || authors[0];
-  const src = author?.image_url;
-  return (
-    <span className="library-group-portrait">
-      {src && src !== failed ? (
-        <img
-          src={src}
-          alt={author.name}
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          onError={() => setFailed(src)}
-        />
-      ) : (
-        <UserRound size={32} />
-      )}
-    </span>
   );
 }

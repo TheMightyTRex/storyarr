@@ -35,11 +35,25 @@ const PAGE = 48;
 // One followed series or author as a bookshelf: progress, status chips, a cover wall and a book drawer.
 export default function FollowShelf() {
   const { listId = "" } = useParams();
+  return <FollowShelfView listId={listId} />;
+}
+
+/** The bookshelf itself; embedded in Following's list and detail layout without its own page heading. */
+export function FollowShelfView({
+  listId,
+  embedded = false,
+  revision,
+}: {
+  listId: string;
+  embedded?: boolean;
+  // When the follow's catalog was last refreshed, as the caller knows it; a new value reloads.
+  revision?: string | null;
+}) {
   const [status, setStatus] = useState<StatusKind | null>(null);
   const [open, setOpen] = useState<Book | null>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
   const summary = useQuery({
-    queryKey: ["following", "summary", listId],
+    queryKey: ["following", "summary", listId, revision],
     queryFn: async () =>
       result(
         await api.GET("/api/following/{list_id}/summary", {
@@ -117,9 +131,11 @@ export default function FollowShelf() {
   return (
     <div className={open ? "follow-shelf has-drawer" : "follow-shelf"}>
       <div className="follow-shelf-main">
-        <Link to="/following" className="follow-shelf-back">
-          <ArrowLeft size={15} aria-hidden="true" /> Following
-        </Link>
+        {!embedded && (
+          <Link to="/following" className="follow-shelf-back">
+            <ArrowLeft size={15} aria-hidden="true" /> Following
+          </Link>
+        )}
         <section className="wall-header" aria-labelledby="wall-title">
           <div className="wall-header-art" aria-hidden="true">
             {cover ? (
@@ -132,7 +148,11 @@ export default function FollowShelf() {
             <p className="wall-eyebrow">
               {follow.source_kind === "author" ? "Author" : "Series"}
             </p>
-            <h1 id="wall-title">{follow.name}</h1>
+            {embedded ? (
+              <h2 id="wall-title">{follow.name}</h2>
+            ) : (
+              <h1 id="wall-title">{follow.name}</h1>
+            )}
             {counts && (
               <div className="wall-progress">
                 <progress

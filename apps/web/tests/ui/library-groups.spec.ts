@@ -13,10 +13,18 @@ test("My library browses owned authors and series, filters, and opens books", as
 }, testInfo) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  const saved: unknown[] = [];
+  let preferences = { collection_view: "detail" };
   await page.route("**/api/**", (route) => {
     const url = new URL(route.request().url());
     let data: unknown = {};
-    if (url.pathname === "/api/auth/me")
+    if (url.pathname === "/api/preferences") {
+      if (route.request().method() === "PATCH") {
+        saved.push(route.request().postDataJSON());
+        preferences = { ...preferences, ...route.request().postDataJSON() };
+      }
+      data = preferences;
+    } else if (url.pathname === "/api/auth/me")
       data = {
         user: {
           id: "reader",
@@ -94,24 +102,37 @@ test("My library browses owned authors and series, filters, and opens books", as
   await expect(
     page.getByRole("heading", { name: "Authors in your collection" }),
   ).toBeVisible();
-  await expect(page.locator(".library-group-portrait img")).toBeVisible();
+  // List and detail is the default: the list beside the chosen author.
+  const layout = page.getByRole("group", { name: "Layout" });
+  await expect(
+    layout.getByRole("button", { name: "List and detail" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  const picker = page.getByRole("navigation", { name: "Authors" });
+  await expect(
+    picker.getByRole("button", { name: /Ursula Le Guin/ }),
+  ).toHaveAttribute("aria-current", "true");
+  const detail = page.getByRole("region", { name: "Ursula Le Guin" });
+  const picture = detail.locator(".group-picture img");
+  await expect(picture).toBeVisible();
   await expect
     .poll(() =>
-      page
-        .locator(".library-group-portrait img")
-        .evaluate((img) => (img as HTMLImageElement).naturalWidth),
+      picture.evaluate((img) => (img as HTMLImageElement).naturalWidth),
     )
     .toBeGreaterThan(0);
-  await expect(page.locator(".library-group-portrait")).toHaveCSS(
+  await expect(detail.locator(".group-picture")).toHaveCSS(
     "border-radius",
     "50%",
   );
+  await expect(detail.locator(".book-grid .book-card")).toHaveCount(2);
   await page.screenshot({
     path: testInfo.outputPath("library-authors.png"),
     fullPage: true,
   });
+  // The other layout is saved with the account.
+  await layout.getByRole("button", { name: "List", exact: true }).click();
+  await expect.poll(() => saved).toEqual([{ collection_view: "list" }]);
   await page
-    .getByRole("link", { name: "Ursula Le Guin, 2 books in your collection" })
+    .getByRole("link", { name: "Ursula Le Guin, books in your library" })
     .click();
   await expect(
     page.getByRole("heading", { name: "Ursula Le Guin", exact: true }),
@@ -123,6 +144,9 @@ test("My library browses owned authors and series, filters, and opens books", as
   await page.reload();
   await expect(page.locator(".book-grid .book-card")).toHaveCount(2);
   await page.getByRole("link", { name: "All authors", exact: true }).click();
+  await expect(
+    layout.getByRole("button", { name: "List", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("searchbox", { name: "Search authors" }).fill("Nobody");
   await page.getByRole("button", { name: "Search authors" }).click();
   await expect(
@@ -130,24 +154,24 @@ test("My library browses owned authors and series, filters, and opens books", as
   ).toBeVisible();
   await page.getByRole("button", { name: "Clear filters" }).click();
   await expect(
-    page.getByRole("heading", { name: "Ursula Le Guin", exact: true }),
+    page.getByRole("link", { name: "Ursula Le Guin, books in your library" }),
   ).toBeVisible();
   await tabs.getByRole("link", { name: "Series", exact: true }).click();
-  await expect(
-    page.getByRole("link", { name: "Explore full series" }),
-  ).toHaveAttribute("href", "/series/hardcover/7");
+  const row = page.getByRole("row").filter({ hasText: "Earthsea" });
+  await expect(row.getByText("Ursula Le Guin")).toBeVisible();
+  await expect(row.getByText("2 in your library")).toBeVisible();
   await page
     .getByRole("combobox", { name: "Media", exact: true })
     .selectOption("audio");
   await expect(page).toHaveURL(/medium=audio/);
-  await expect(page.locator(".library-group-portrait img")).toBeVisible();
-  await expect(
-    page.locator(".library-group-covers .book-cover").first(),
-  ).toHaveCSS("aspect-ratio", "2 / 3");
-  await page
-    .locator(".library-group-portrait img")
+  await expect(row.locator(".group-covers .book-cover").first()).toHaveCSS(
+    "aspect-ratio",
+    "2 / 3",
+  );
+  await row
+    .locator(".group-picture img")
     .evaluate((img) => img.dispatchEvent(new Event("error")));
-  await expect(page.locator(".library-group-portrait svg")).toBeVisible();
+  await expect(row.locator(".group-picture svg")).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({
     path: testInfo.outputPath("library-series-mobile.png"),
@@ -159,7 +183,7 @@ test("My library browses owned authors and series, filters, and opens books", as
     ),
   ).toBe(true);
   await page
-    .getByRole("link", { name: "Earthsea, 2 books in your collection" })
+    .getByRole("link", { name: "Earthsea, books in your library" })
     .click();
   await expect(
     page.getByRole("heading", { name: "Earthsea", exact: true }),
@@ -203,6 +227,8 @@ test("library series show follow status, every book and a way to add missing boo
     else if (url.pathname === "/api/library/libraries") data = [];
     else if (url.pathname === "/api/library/groups/series")
       data = { items: [series], total: 1, offset: 0, limit: 24 };
+    else if (url.pathname === "/api/preferences")
+      data = { collection_view: "detail" };
     else if (url.pathname === "/api/following")
       data = [
         {
@@ -304,7 +330,17 @@ test("library series show follow status, every book and a way to add missing boo
     return route.fulfill({ json: data });
   });
   await page.goto("/library?view=series");
-  const card = page.getByRole("article").filter({ hasText: "Earthsea" });
+  // List and detail: the chosen series shows its progress, statuses, actions and every book.
+  const card = page.getByRole("region", { name: "Earthsea" });
+  await expect(card.getByText("2 of 3")).toBeVisible();
+  await expect(card.getByText("1 waiting")).toBeVisible();
+  await expect(
+    card.getByRole("link", { name: "Tehanu", exact: true }),
+  ).toBeVisible();
+  await expect(card.getByText("Next automatic search")).toBeVisible();
+  await expect(
+    card.getByRole("link", { name: "Open bookshelf" }),
+  ).toHaveAttribute("href", "/following/earthsea-follow");
   await card.getByRole("button", { name: "Add missing books" }).click();
   const dialog = page.getByRole("dialog", {
     name: "Add missing books · Earthsea",
@@ -334,10 +370,5 @@ test("library series show follow status, every book and a way to add missing boo
   await expect(dialog.getByText("Searching for 4 missing books")).toBeVisible();
   expect(activated).toBe(true);
   await dialog.getByRole("button", { name: "Done" }).click();
-  await expect(card.getByText("Waiting", { exact: true })).toBeVisible();
-  await card.getByRole("button", { name: "Show every book" }).click();
-  await expect(
-    card.getByRole("link", { name: "Tehanu", exact: true }),
-  ).toBeVisible();
-  await expect(card.getByText("Next automatic search")).toBeVisible();
+  await expect(card.getByText("1 waiting")).toBeVisible();
 });
