@@ -34,6 +34,10 @@ jobs:
       - name: Validate release version
         id: version
         run: python3 scripts/release.py version
+      # Image names must be lowercase, and the repository owner's name is not.
+      - name: Image name
+        id: image
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         if: inputs.publish
@@ -48,7 +52,7 @@ jobs:
           context: .
           platforms: linux/${{ matrix.arch }}
           load: ${{ !inputs.publish }}
-          outputs: ${{ inputs.publish && format('type=image,name=ghcr.io/{0},push-by-digest=true,name-canonical=true,push=true', github.repository) || '' }}
+          outputs: ${{ inputs.publish && format('type=image,name={0},push-by-digest=true,name-canonical=true,push=true', steps.image.outputs.name) || '' }}
           tags: ${{ !inputs.publish && 'dewarr:ci' || '' }}
           provenance: ${{ inputs.publish && 'mode=max' || 'false' }}
           build-args: |
@@ -61,7 +65,7 @@ jobs:
           cache-to: type=gha,scope=dewarr-${{ matrix.arch }},mode=max
       - name: Smoke-test final image
         env:
-          IMAGE: ${{ inputs.publish && format('ghcr.io/{0}@{1}', github.repository, steps.build.outputs.digest) || 'dewarr:ci' }}
+          IMAGE: ${{ inputs.publish && format('{0}@{1}', steps.image.outputs.name, steps.build.outputs.digest) || 'dewarr:ci' }}
           EXPECTED_VERSION: ${{ steps.version.outputs.version }}
           EXPECTED_ARCH: ${{ matrix.arch }}
         run: bash scripts/smoke_image.sh

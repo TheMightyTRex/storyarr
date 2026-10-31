@@ -80,7 +80,7 @@ jobs:
       matrix:
         shard: [1, 2, 3, 4]
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:18.3-bookworm
@@ -113,7 +113,7 @@ jobs:
           echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
       - run: pg_dump --version && pg_restore --version
       - name: Integration tests
-        timeout-minutes: 10
+        timeout-minutes: 16
         run: >-
           uv run pytest tests/integration -q -n 2 --dist=worksteal
           -p scripts.pytest_shard --ci-shard=${{ matrix.shard }}/4

@@ -106,6 +106,12 @@ def main():
                     f"TRUNCATE {tables}, book_queue.procrastinate_jobs, "
                     "book_queue.procrastinate_workers RESTART IDENTITY CASCADE"
                 )
+                # Record the release as a new install does at start-up, so onboarding comes first
+                # and the upgrade wizard does not.
+                from app.container import _save_upgrade_state
+                from app.domain.upgrades import CURRENT
+
+                _save_upgrade_state(connection, release=CURRENT)
             commands = [
                 [
                     sys.executable,
