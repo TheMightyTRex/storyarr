@@ -4276,6 +4276,8 @@ img.detail-cover {
 }
 .application-release-dialog {
   width: min(720px, calc(100vw - 32px));
+  /* The dialog sits inside the version link, which the Shelf menu centres. */
+  text-align: left;
 }
 .application-release-history {
   display: flex;
@@ -4314,16 +4316,36 @@ img.detail-cover {
   margin: 8px 0;
   line-height: 1.55;
 }
-.application-release-history .release-notes h3,
+.application-release-history h2,
+.application-release-history h3,
 .application-release-history .release-notes h4,
 .application-release-history .release-notes h5 {
-  margin: 16px 0 6px;
+  font-weight: 650;
+}
+.application-release-history .release-notes h3 {
+  margin: 20px 0 6px;
+  font-size: 1.0625rem;
+}
+.application-release-history .release-notes h4 {
+  margin: 18px 0 4px;
   font-size: 0.9375rem;
 }
-.application-release-history .release-notes ul {
+.application-release-history .release-notes h5 {
+  margin: 14px 0 4px;
+  font-size: 0.875rem;
+}
+.application-release-history .release-notes ul,
+.application-release-history .release-notes ol {
   margin: 0;
-  padding-left: 1.2rem;
+  padding-left: 1.4rem;
   list-style: disc;
+}
+.application-release-history .release-notes ol {
+  list-style: decimal;
+}
+.application-release-history .release-notes li {
+  margin: 4px 0;
+  padding-left: 2px;
 }
 .application-release-history .release-notes pre {
   overflow: auto;
