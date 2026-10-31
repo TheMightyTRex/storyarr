@@ -37,6 +37,7 @@ import { LibraryTabs, ShelfRail } from "./components/ShelfNavigation";
 import { DisplayButton } from "./components/DisplayPanel";
 import { HeaderSubmenuSlot } from "./components/HeaderSubmenu";
 import LoadingBar from "./components/LoadingBar";
+import PageTitle from "./components/PageTitle";
 import { useUpgrade } from "./components/UpgradeBackups";
 import { upgradeLaterKey } from "./upgradeLater";
 
@@ -583,6 +584,7 @@ function Shell({ auth }: { auth: Auth }) {
             </header>
             {shelf && <div className="header-submenu" ref={setSubmenuSlot} />}
             <LoadingBar />
+            <PageTitle />
           </div>
           {addingList && (
             <Suspense fallback={<Loading />}>

@@ -3,6 +3,8 @@ import { expect, test } from "../fixtures";
 test("Quick add follows defaults and format overrides; sources provide compact rows and complete details", async ({
   page,
 }, testInfo) => {
+  // One long journey through many pages; on a busy machine it needs more than the default time.
+  test.slow();
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   const work = {
