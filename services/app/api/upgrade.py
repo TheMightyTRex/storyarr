@@ -1,5 +1,7 @@
 """The upgrade wizard and settings backups (admins)."""
 
+from importlib.metadata import version
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -7,6 +9,7 @@ from sqlalchemy import select
 
 from app import upgrade_backups
 from app.api.dependencies import Admin, Database
+from app.config import get_settings
 from app.db.models import AuditEvent, User
 from app.domain import upgrades
 
@@ -27,6 +30,8 @@ class BackupView(BaseModel):
 
 class UpgradeView(BaseModel):
     release: str
+    # The installed Storyarr version, such as 0.4.0, for the wizard's title.
+    version: str
     acknowledged: str | None
     # True on an existing install that has not finished the wizard for this release.
     pending: bool
@@ -55,11 +60,17 @@ async def _existing_install(db) -> bool:
     )
 
 
+def installed_version() -> str:
+    built = get_settings().build_version
+    return built.removeprefix("v") if built else f"{version('dewarr')}-dev"
+
+
 async def view(db) -> UpgradeView:
     saved = await upgrades.state(db)
     acknowledged = saved.get("release")
     return UpgradeView(
         release=upgrades.CURRENT,
+        version=installed_version(),
         acknowledged=acknowledged,
         pending=acknowledged != upgrades.CURRENT and await _existing_install(db),
         releases=upgrades.since(acknowledged),

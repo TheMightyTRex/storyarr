@@ -135,7 +135,7 @@ Keep running the native development environment above on your workstation. When
 you want to test a batch of changes in your existing homelab stack, publish a dev
 image through the **Publish dev image** workflow. It builds one native architecture
 with Docker layer caching, checks startup, migrations, and the bundled UI against
-a disposable PostgreSQL instance, and then updates `ghcr.io/logabell/dewarr:dev`.
+a disposable PostgreSQL instance, and then updates `ghcr.io/themightytrex/storyarr:dev`.
 It does not run the full application CI suite or create a GitHub release.
 
 One-time setup: the workflow file must be present on GitHub's default branch
@@ -164,7 +164,7 @@ In your existing homelab Compose file, change only the Storyarr image:
 ```yaml
 services:
   dewarr:
-    image: ghcr.io/logabell/dewarr:dev
+    image: ghcr.io/themightytrex/storyarr:dev
 ```
 
 Keep your existing environment, volumes, network, ports, and PostgreSQL service.

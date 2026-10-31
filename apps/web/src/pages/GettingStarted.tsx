@@ -93,7 +93,7 @@ export default function GettingStarted({ role }: { role: string }) {
     layout:
       "Choose a layout, a light or dark theme, a text size, and any reading aids you need.",
     finish:
-      "Your saved settings are ready. You can change them anytime in Settings.",
+      "Your saved settings are ready. You can change them at any time in Settings.",
   };
   const current = Math.min(
     ["completed", "skipped"].includes(progress.data?.status || "")

@@ -31,6 +31,11 @@ backups/
 /docs/*.md
 !/docs/DOCKER.md
 !/docs/DEVELOPMENT.md
+!/docs/INSTALL.md
+!/docs/SETUP.md
+!/docs/UPDATING.md
+!/docs/MIGRATING.md
+!/docs/RELEASING.md
 !/docs/TEST-AUDIT.md
 !/docs/OIDC.md
 !/docs/PLEX.md

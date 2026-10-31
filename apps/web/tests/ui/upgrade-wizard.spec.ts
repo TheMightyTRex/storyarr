@@ -15,6 +15,7 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
   };
   const view = () => ({
     release: "2026.10.30",
+    version: "0.4.0",
     acknowledged,
     pending: acknowledged !== "2026.10.30",
     releases: acknowledged
@@ -79,7 +80,7 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
   await page.goto("/library");
   await expect(page).toHaveURL(/\/upgrade$/);
   await expect(
-    page.getByRole("heading", { name: "Welcome to version 2026.10.30" }),
+    page.getByRole("heading", { name: "Welcome to version 0.4.0" }),
   ).toBeVisible();
   await expect(page.getByText("Settings in six groups.")).toBeVisible();
 

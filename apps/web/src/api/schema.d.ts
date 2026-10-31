@@ -15099,6 +15099,8 @@ export interface components {
     UpgradeView: {
       /** Release */
       release: string;
+      /** Version */
+      version: string;
       /** Acknowledged */
       acknowledged: string | null;
       /** Pending */

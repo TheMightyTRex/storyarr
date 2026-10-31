@@ -2,19 +2,32 @@
 <h1 align="center">Storyarr</h1>
 <p align="center">Follow authors and series, and keep your audiobook library complete.</p>
 
-![Storyarr For you page](docs/images/for-you.png)
+![A Storyarr bookshelf: every book in a followed series with its status, and a side panel for one book](docs/images/bookshelf.png)
 
-## About this fork
+Storyarr connects your reading lists, your audiobook library and your download clients. Follow an author or a
+series, and the books you are missing are found, downloaded and imported into Audiobookshelf or Grimmory.
 
 Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) by logabell, released under the same MIT
-licence. It adds bookshelf pages for followed authors and series, automatic re-searching for wanted books, an
-Audible store choice, a light theme with display and accessibility settings, an upgrade wizard with settings
-backups, and faster database queries. See [CHANGELOG.md](CHANGELOG.md) for the full list.
+licence.
 
-Storyarr does not publish a container image yet. Build it from this repository with `docker build -t storyarr .`
-and use `image: storyarr` in the examples below.
+## What Storyarr adds to Dewarr
 
-## Features
+- **Bookshelf pages** for each followed author or series: a cover wall with a status on every book, a progress
+  bar and a side panel with Search now and Exclude.
+- **One status for every followed book:** In library, Downloading, Waiting (with the next search time), Not
+  released, Wanted, Excluded with the reason, and more.
+- **Smarter searching:** wanted books are searched again automatically, and **Add missing books** fills gaps in a
+  series in one step.
+- **A light theme and accessibility settings:** text size up to 175%, a low-vision font, high contrast,
+  reduced motion, underlined links and wider spacing. WCAG 2.2 AA contrast in every theme.
+- **Two layouts:** Classic, or Shelf with a slim icon menu.
+- **Safe upgrades:** a settings backup before every upgrade, a wizard that explains each change, and a way
+  back. Automatic upgrades if you prefer.
+- **Speed:** request counts that took minutes on large libraries now take under a second.
+
+The full list is in the [changelog](CHANGELOG.md).
+
+## Everything from Dewarr
 
 - **Library integration** — connect Audiobookshelf or Grimmory, see what you own, and import completed downloads into verified library folders.
 - **Chapterized M4B** — merge a multi-file MP3 download into one audiobook, with a chapter per file, before library import. The download itself stays unchanged.
@@ -35,159 +48,44 @@ Early release. Automatic downloads are off by default. Goodreads RSS imports can
 
 ## Quick start
 
-Run **Storyarr + PostgreSQL**. Storyarr handles migrations and background jobs automatically. No Git, Python, setup script, or `.env` file is required.
-
-`latest` tracks stable releases; use a `vX.Y.Z` tag to pin a release. The optional `edge` tag follows checked builds of main.
-
-Choose an option below. Set both database passwords to the same value. For access from another computer, change `PUBLIC_URL` to `http://your-server:8000`.
-
-<details open>
-<summary><strong>Docker Compose — recommended</strong></summary>
-
-Save this as `compose.yaml`. Adjust `PUID`, `PGID`, and the folders to match your server.
-
-```yaml
-name: dewarr
-
-services:
-  dewarr:
-    image: ghcr.io/logabell/dewarr:latest
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: Etc/UTC
-      PUBLIC_URL: http://localhost:8000
-      DB_HOST: postgres
-      DB_NAME: dewarr
-      DB_USER: dewarr
-      DB_PASSWORD: change-me
-    volumes:
-      - ./config:/config
-      - ./data:/data
-    ports:
-      - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    stop_grace_period: 35s
-
-  postgres:
-    image: postgres:18
-    environment:
-      POSTGRES_DB: dewarr
-      POSTGRES_USER: dewarr
-      POSTGRES_PASSWORD: change-me
-    volumes:
-      - postgres:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dewarr -d dewarr"]
-      interval: 5s
-      timeout: 5s
-      retries: 12
-    restart: unless-stopped
-
-volumes:
-  postgres:
-```
+Save [`compose.yaml`](compose.yaml), set both `change-me` passwords to the same value, then:
 
 ```sh
 mkdir -p config data
 docker compose up -d
 ```
 
-</details>
+Open [localhost:8000](http://localhost:8000) and create the first account. Images are published for amd64 and
+arm64 at `ghcr.io/themightytrex/storyarr`.
 
-<details>
-<summary><strong>Docker CLI — download the Compose file</strong></summary>
+- [Installing](docs/INSTALL.md): Compose, `docker run`, image tags and the settings you can add.
+- [Setting up](docs/SETUP.md): the setup steps, Hardcover tokens, folders and following your first series.
+- [Updating](docs/UPDATING.md): how updates reach you, the upgrade wizard, automatic upgrades and going back.
+- [Moving from Dewarr](docs/MIGRATING.md): switch images and keep your database. Tested both ways.
 
-```sh
-mkdir dewarr
-cd dewarr
-curl -fsSL https://raw.githubusercontent.com/logabell/dewarr/main/compose.yaml -o compose.yaml
-```
-
-Edit the passwords, `PUBLIC_URL`, and folder paths in `compose.yaml`, then start:
-
-```sh
-mkdir -p config data
-docker compose up -d
-```
-
-</details>
-
-<details>
-<summary><strong>Docker run — without Compose</strong></summary>
-
-Change both `change-me` passwords to the same value before running these commands.
-
-```sh
-mkdir -p config data
-docker network create dewarr
-docker volume create dewarr-postgres
-
-docker run -d \
-  --name dewarr-postgres \
-  --network dewarr \
-  -e POSTGRES_DB=dewarr \
-  -e POSTGRES_USER=dewarr \
-  -e POSTGRES_PASSWORD=change-me \
-  -v dewarr-postgres:/var/lib/postgresql \
-  --restart unless-stopped \
-  postgres:18
-
-docker run -d \
-  --name dewarr \
-  --network dewarr \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Etc/UTC \
-  -e PUBLIC_URL=http://localhost:8000 \
-  -e DB_HOST=dewarr-postgres \
-  -e DB_NAME=dewarr \
-  -e DB_USER=dewarr \
-  -e DB_PASSWORD=change-me \
-  -p 8000:8000 \
-  -v "$PWD/config:/config" \
-  -v "$PWD/data:/data" \
-  --stop-timeout 35 \
-  --restart unless-stopped \
-  ghcr.io/logabell/dewarr:latest
-```
-
-Already have PostgreSQL? Skip its container and use your existing database host, name, user, and password in the Storyarr command.
-
-</details>
-
-Open [localhost:8000](http://localhost:8000), or your server's address, and create your first account. Connect Audiobookshelf or Grimmory, Goodreads, Hardcover, and download clients in **Settings**.
-
-Before creating a Hardcover token, enable `read:catalog`, `read:me:content`, `read:lists`, `read:library:public`, `read:users`, and `write:lists`. [Create a token with those scopes selected](https://hardcover.app/account/api/keys/new?scope=read:catalog+read:me:content+read:lists+read:library:public+read:users+write:lists). The Metadata setup screen lists what each scope is for. Details are in [reading accounts](docs/READING-ACCOUNTS.md). To let Authentik, Pocket ID, or Authelia manage later sign-ins, see [OpenID Connect](docs/OIDC.md). To let a household sign in with Plex, see [Plex sign-in](docs/PLEX.md).
-
-Storyarr creates its encryption key in `/config` on first start. Keep that folder and the PostgreSQL volume when updating.
-
-[Settings, folders, backups, and upgrades](docs/DOCKER.md) · [Metadata and discovery sources](docs/METADATA-SOURCES.md) · [Download clients](docs/DOWNLOAD-CLIENTS.md) · [MAM proxy setup](docs/MAM-PROXY.md) · [Request quotas](docs/REQUEST-QUOTAS.md) · [Contributing](docs/DEVELOPMENT.md)
+More: [Docker settings and backups](docs/DOCKER.md) · [Metadata sources](docs/METADATA-SOURCES.md) ·
+[Download clients](docs/DOWNLOAD-CLIENTS.md) · [MAM proxy](docs/MAM-PROXY.md) ·
+[Request quotas](docs/REQUEST-QUOTAS.md) · [Notifications](docs/NOTIFICATIONS.md) ·
+[Contributing](docs/DEVELOPMENT.md) · [Releasing](docs/RELEASING.md)
 
 ## Screenshots
 
-Actual Storyarr UI captured with an isolated demo account. Connected services and library contents depend on your setup.
+The books and covers below are invented for the screenshots.
 
-### Browse books
-![Browse discovery shelves](docs/images/browse.png)
+### Bookshelf, in the dark theme
+![The same bookshelf in the dark theme](docs/images/bookshelf-dark.png)
 
-### Collections and awards
-![Book collections](docs/images/collections.png)
-![Reading awards](docs/images/awards.png)
+### Release calendar
+![A month of audiobook release days with small covers, and the Genres and Show menus](docs/images/calendar.png)
 
-### Reading accounts
-![Goodreads and Hardcover connections](docs/images/reading-accounts.png)
+### Display and accessibility
+![Display and accessibility settings: theme, text size, low-vision font, high contrast and more](docs/images/display.png)
 
-### Download preferences
-![Download preferences and priorities](docs/images/download-preferences.png)
+### Settings
+![Settings in six groups, with the Layout choice of Classic or Shelf](docs/images/settings.png)
 
-### Library connections
-![Audiobookshelf library settings](docs/images/library-settings.png)
-
-
+### Upgrade wizard
+![The upgrade wizard: what is new, database changes and the way back](docs/images/upgrade-wizard.png)
 
 ## Updates
 
@@ -196,13 +94,17 @@ docker compose pull
 docker compose up -d
 ```
 
-Back up `config` and PostgreSQL first. Storyarr applies database migrations automatically. [Backup instructions](docs/DOCKER.md#backups).
+Back up `config` and PostgreSQL first. Storyarr saves a settings backup and runs database migrations on its own,
+then shows admins what changed. [Updating](docs/UPDATING.md) has the details.
 
 ## Contributors
 
+Storyarr is maintained by [TheMightyTRexUK](https://github.com/TheMightyTRex), building on Dewarr by
+[logabell](https://github.com/logabell) and its contributors.
+
 Thanks to [@Porthorion](https://github.com/Porthorion) for contributing AudiobookBay fixes through [#42](https://github.com/logabell/dewarr/pull/42), [#43](https://github.com/logabell/dewarr/pull/43), and [#44](https://github.com/logabell/dewarr/pull/44): retrying capitalized searches, matching series-numbered releases, and linking completed downloads to their catalog books. Their changes were adapted with additional identity safeguards in [16879ba](https://github.com/logabell/dewarr/commit/16879bac26137d6e9548ecefd0532a0d544c2dc2) and shipped in [v0.3.5](https://github.com/logabell/dewarr/releases/tag/v0.3.5).
 
-See also [all commit contributors](https://github.com/logabell/dewarr/graphs/contributors) and the contributor acknowledgments in our [release notes](https://github.com/logabell/dewarr/releases).
+See also [all commit contributors](https://github.com/logabell/dewarr/graphs/contributors) and the contributor acknowledgments in [Dewarr's release notes](https://github.com/logabell/dewarr/releases).
 
 ## License
 

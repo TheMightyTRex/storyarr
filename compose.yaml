@@ -1,16 +1,16 @@
-name: dewarr
+name: storyarr
 
 services:
-  dewarr:
-    image: ghcr.io/logabell/dewarr:latest
+  storyarr:
+    image: ghcr.io/themightytrex/storyarr:latest
     environment:
       PUID: 1000
       PGID: 1000
       TZ: Etc/UTC
       PUBLIC_URL: http://localhost:8000
       DB_HOST: postgres
-      DB_NAME: dewarr
-      DB_USER: dewarr
+      DB_NAME: storyarr
+      DB_USER: storyarr
       DB_PASSWORD: change-me
     volumes:
       - ./config:/config
@@ -26,13 +26,13 @@ services:
   postgres:
     image: postgres:18
     environment:
-      POSTGRES_DB: dewarr
-      POSTGRES_USER: dewarr
+      POSTGRES_DB: storyarr
+      POSTGRES_USER: storyarr
       POSTGRES_PASSWORD: change-me
     volumes:
       - postgres:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dewarr -d dewarr"]
+      test: ["CMD-SHELL", "pg_isready -U storyarr -d storyarr"]
       interval: 5s
       timeout: 5s
       retries: 12

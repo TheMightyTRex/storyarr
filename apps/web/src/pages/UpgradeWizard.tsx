@@ -76,8 +76,8 @@ export default function UpgradeWizard() {
       <header className="upgrade-heading">
         <p className="wall-eyebrow">Upgrade</p>
         <h1>
-          {data?.release
-            ? `Welcome to version ${data.release}`
+          {data?.version
+            ? `Welcome to version ${data.version}`
             : "Welcome to the new version"}
         </h1>
         <p className="muted">

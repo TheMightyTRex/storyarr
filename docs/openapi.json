@@ -43306,6 +43306,10 @@
             "type": "string",
             "title": "Release"
           },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
           "acknowledged": {
             "anyOf": [
               {
@@ -43358,6 +43362,7 @@
         "type": "object",
         "required": [
           "release",
+          "version",
           "acknowledged",
           "pending",
           "releases",

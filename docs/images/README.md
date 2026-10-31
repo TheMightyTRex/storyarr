@@ -1,9 +1,6 @@
 # UI screenshots
 
-Captured from the actual Storyarr frontend with an isolated browser-test account and the bundled discovery catalog. Book covers and provider names belong to their respective owners. These are UI examples, not evidence of a connected production library or completed downloads.
-
-The old `screenshots.spec.ts` capture script was retired in the September 2026 test
-audit: it tried to bootstrap an account after the foundation project had already
-created one, and it provided no screenshot comparisons. Refresh documentation images
-deliberately from the current UI using synthetic data. Documentation capture is not
-part of the regression suite.
+Captured from the real Storyarr interface with invented data: the books, authors and covers are made up, and
+the covers are generated, so no one's library or cover art appears. Regenerate them with
+`apps/web/tests/docs/screenshots.spec.ts` (see [Releasing](../RELEASING.md#screenshots)). They are not part of
+the test suites.

@@ -29,6 +29,7 @@ async def test_the_wizard_shows_once_on_an_existing_install(client, admin, datab
     fresh = (await client.get("/api/upgrade")).json()
     # Before setup is finished this is a new install: onboarding comes first, not the wizard.
     assert fresh["pending"] is False and fresh["release"] == upgrades.CURRENT
+    assert fresh["version"]
     # Setup put off for later still means the install is in use.
     await finish_onboarding(database, "deferred")
     shown = (await client.get("/api/upgrade")).json()

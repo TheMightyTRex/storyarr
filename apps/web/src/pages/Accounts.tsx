@@ -36,9 +36,9 @@ type PlexSettings = components["schemas"]["PlexSettingsView"];
 type PlexServer = components["schemas"]["PlexServerView"];
 
 const OIDC_SETUP_GUIDE =
-  "https://github.com/logabell/dewarr/blob/dev/docs/OIDC.md";
+  "https://github.com/TheMightyTRex/storyarr/blob/main/docs/OIDC.md";
 const PLEX_SETUP_GUIDE =
-  "https://github.com/logabell/dewarr/blob/dev/docs/PLEX.md";
+  "https://github.com/TheMightyTRex/storyarr/blob/main/docs/PLEX.md";
 
 const PLEX_ERRORS: Record<string, string> = {
   denied: "Plex did not sign you in.",
