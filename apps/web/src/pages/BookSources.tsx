@@ -33,13 +33,22 @@ type Search = components["schemas"]["BookSearchView"];
 export default function BookSources({
   work,
   canAcquire,
+  request: embeddedRequest,
 }: {
   work: Work;
   canAcquire: boolean;
+  /** Set inside a dialog: the request and medium come from here, not the address. */
+  request?: { id: string; slot: string };
 }) {
   const cache = useQueryClient();
   const canDownload = useCanDownloadRelease();
-  const [params] = useSearchParams();
+  const [addressParams] = useSearchParams();
+  const params = embeddedRequest
+    ? new URLSearchParams({
+        request: embeddedRequest.id,
+        slot: embeddedRequest.slot,
+      })
+    : addressParams;
   // Let the API choose the same short-title default used by Quick Add.
   const [q, setQ] = useState("");
   const requestedMedium =
@@ -215,6 +224,7 @@ export default function BookSources({
         <Results
           key={data.id}
           data={data}
+          embeddedSlot={embeddedRequest ? requestedMedium : undefined}
           canAcquire={canAcquire}
           canDownload={canDownload}
           refreshing={
@@ -243,26 +253,35 @@ export default function BookSources({
 
 function Results({
   data,
+  embeddedSlot,
   canAcquire,
   canDownload,
   refreshing,
   onRefresh,
 }: {
   data: Search;
+  /** Inside a dialog: filters stay on screen and leave the page address alone. */
+  embeddedSlot?: string | null;
   canAcquire: boolean;
   canDownload: (medium?: string | null) => boolean;
   refreshing: boolean;
   onRefresh: () => void;
 }) {
   const [now, setNow] = useState(Date.now);
-  const [params, setParams] = useSearchParams();
+  const [addressParams, setParams] = useSearchParams();
+  const embedded = embeddedSlot !== undefined;
+  const [ownParams] = useState(
+    () => new URLSearchParams(embeddedSlot ? { slot: embeddedSlot } : {}),
+  );
+  const params = embedded ? ownParams : addressParams;
   const location = useLocation();
   const currentParams = useRef(params);
   const [view, setView] = useState(params);
   useEffect(() => {
+    if (embedded) return;
     currentParams.current = params;
     setView(params);
-  }, [params]);
+  }, [params, embedded]);
   const updateView = (values: Record<string, string | null>) => {
     const next = new URLSearchParams(currentParams.current);
     for (const [key, value] of Object.entries(values)) {
@@ -271,6 +290,7 @@ function Results({
     }
     currentParams.current = next;
     setView(next);
+    if (embedded) return;
     setParams(next, {
       replace: true,
       preventScrollReset: true,

@@ -136,7 +136,17 @@ test("activity requests preserve independent reasons and route missing media to 
   await expect(card).toContainText("Effective request scope");
   await card.getByText("Request preferences", { exact: true }).click();
   expect(writes).toEqual([]);
-  await card.getByRole("link", { name: "Choose release", exact: true }).click();
+  // Review sources opens the request's sources in a dialog on this page.
+  await card
+    .getByRole("button", { name: "Review sources", exact: true })
+    .click();
+  const sources = page.getByRole("dialog", {
+    name: "Sources for Activity Journey Alpha",
+  });
+  await expect(
+    sources.getByRole("region", { name: "Book download sources" }),
+  ).toBeVisible();
+  await sources.getByRole("link", { name: "Open the book page" }).click();
   await expect(page).toHaveURL(
     new RegExp(`request=${saved.request.id}&slot=audio`),
   );
@@ -177,7 +187,7 @@ test("activity requests preserve independent reasons and route missing media to 
     card.getByText("Your request · Withdrawn", { exact: true }),
   ).toBeVisible();
   await expect(
-    card.getByRole("link", { name: "Choose release", exact: true }),
+    card.getByRole("button", { name: "Review sources", exact: true }),
   ).toBeVisible();
   await card
     .getByRole("button", {
@@ -204,7 +214,7 @@ test("activity requests preserve independent reasons and route missing media to 
   await expect(card).toContainText("Audiobook");
   await expect(card.getByText("Withdrawn", { exact: true })).toBeVisible();
   await expect(
-    card.getByRole("link", { name: "Choose release", exact: true }),
+    card.getByRole("button", { name: "Review sources", exact: true }),
   ).toHaveCount(0);
   await card
     .getByRole("link", { name: "Activity Journey Alpha", exact: true })

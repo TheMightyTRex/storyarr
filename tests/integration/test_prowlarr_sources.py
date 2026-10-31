@@ -126,6 +126,8 @@ async def test_private_search_resolution_and_shared_download_path(
         assert "secret" not in saved.encrypted_reference
         assert decrypt_secrets(saved.encrypted_reference)["link"] == "secret_proxy_link"
     selection_route["artifact_id"] = artifact_id
+    # The fixture release does not name the catalog book, so the admin confirms it.
+    selection_route["confirmed_checks"] = ["identity"]
     prepared = await prepare(client, selection_route)
     assert prepared.status_code == 201, prepared.text
     selected = prepared.json()

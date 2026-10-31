@@ -554,6 +554,8 @@ function GroupDetail({
             last_success_at: follow.subscription.last_success_at,
           }}
           selection="all"
+          // My library starts with the books you have.
+          initialStatus="in_library"
         />
       ) : (
         <LibraryGroupBooks

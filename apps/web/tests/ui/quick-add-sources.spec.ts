@@ -145,6 +145,7 @@ test("Quick add follows defaults and format overrides; sources provide compact r
   const inspectionWedges: Array<string | null> = [];
   let inspectFails = false;
   let role = "admin";
+  let permissions: string[] = [];
   const artifact = {
     id: "artifact-1",
     release,
@@ -172,6 +173,7 @@ test("Quick add follows defaults and format overrides; sources provide compact r
         user: {
           id: "reader",
           role,
+          permissions,
           username: "reader",
           display_name: "Reader",
         },
@@ -290,6 +292,8 @@ test("Quick add follows defaults and format overrides; sources provide compact r
       }
       data = artifact;
     } else if (path === "/api/source-artifacts/artifact-1") data = artifact;
+    else if (path === "/api/source-artifacts/artifact-1/checks")
+      data = { unconfirmed: ["identity", "language"], can_override: true };
     else if (path === "/api/acquisition/selections/options")
       data = { downloaders: [], destinations: [] };
     else if (path === "/api/acquisition/selections")
@@ -690,6 +694,13 @@ test("Quick add follows defaults and format overrides; sources provide compact r
     "book.m4b",
   );
   await expect(page.getByLabel("Wanted book")).toHaveValue("request-1:audio");
+  // Storyarr could not confirm this release, so each check needs a tick.
+  await expect(page.getByRole("note")).toContainText(
+    "Storyarr could not confirm this release.",
+  );
+  await expect(
+    page.getByLabel("I checked that it is in the language this request needs."),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Save release selection" }),
   ).toBeDisabled();
@@ -708,6 +719,16 @@ test("Quick add follows defaults and format overrides; sources provide compact r
       exact: true,
     }),
   ).toHaveCount(0);
+  // Members allowed to download unconfirmed releases can review it too.
+  permissions = ["request", "auto_approve", "override_releases"];
+  await page.reload();
+  await expect(
+    table.getByRole("button", {
+      name: "Review release Project Hail Mary",
+      exact: true,
+    }),
+  ).toBeVisible();
+  permissions = [];
   role = "admin";
   for (const [state, label] of [
     ["queued", "Download queued"],

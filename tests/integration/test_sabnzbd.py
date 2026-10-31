@@ -271,6 +271,8 @@ async def test_usenet_grab_is_sent_to_sabnzbd_once(
     grab = Grab()
     grab.visible = False
     monkeypatch.setattr(downloads, "SabClient", lambda *args, **kwargs: grab)
+    # The fixture release does not name the catalog book, so the admin confirms it.
+    selection_route["confirmed_checks"] = ["identity"]
     prepared = await prepare(client, selection_route)
     assert prepared.status_code == 201, prepared.text
     assert "private-sab-key" not in prepared.text
@@ -310,6 +312,8 @@ async def test_failed_sab_history_keeps_polling_then_queues_one_recovery(
     monkeypatch.setattr(get_settings(), "download_dispatch_enabled", True)
     grab = Grab()
     monkeypatch.setattr(downloads, "SabClient", lambda *args, **kwargs: grab)
+    # The fixture release does not name the catalog book, so the admin confirms it.
+    selection_route["confirmed_checks"] = ["identity"]
     prepared = await prepare(client, selection_route)
     assert prepared.status_code == 201, prepared.text
     saved = (await start(client, prepared.json())).json()

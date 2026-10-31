@@ -29,6 +29,7 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
   const [downloaderId, setDownloaderId] = useState("");
   const [destinationId, setDestinationId] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [languageConfirmed, setLanguageConfirmed] = useState(false);
   const [group, setGroup] = useState<Array<{ id: string; title: string }>>([]);
   const [packId, setPackId] = useState<string | null>(null);
   const [packReceipt, setPackReceipt] = useState<
@@ -173,6 +174,31 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
       ].map((name) => cache.invalidateQueries({ queryKey: [name] })),
     );
   };
+  // What Storyarr could not confirm about this release for the chosen request.
+  const checks = useQuery({
+    queryKey: [
+      "release-checks",
+      artifact.id,
+      selected?.intent.id,
+      selected?.target.slot,
+    ],
+    enabled: !!selected,
+    queryFn: async () =>
+      result(
+        await api.GET("/api/source-artifacts/{artifact_id}/checks", {
+          params: {
+            path: { artifact_id: artifact.id },
+            query: {
+              intent_id: selected!.intent.id,
+              slot: selected!.target.slot as "audio" | "ebook" | "either",
+            },
+          },
+        }),
+      ),
+  });
+  const unconfirmed = checks.data?.unconfirmed || [];
+  const blockedOverride =
+    unconfirmed.length > 0 && checks.data?.can_override === false;
   const save = useMutation({
     mutationFn: async () =>
       result(
@@ -190,6 +216,8 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
             destination_id: destination!.id,
             destination_revision: destination!.revision,
             confirmed_work_id: selected!.intent.work_id,
+            // The boxes below must be ticked before Save is enabled.
+            confirmed_checks: unconfirmed,
             ...(useSearchContext
               ? {
                   profile_id: params.get("profile") || undefined,
@@ -208,6 +236,7 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
     onSuccess: async () => {
       key.current = randomUUID();
       setConfirmed(false);
+      setLanguageConfirmed(false);
       await refresh();
     },
   });
@@ -358,7 +387,26 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
           download-to-library route before a release can be selected.
         </p>
       )}
-      {selected && (
+      {selected && unconfirmed.length > 0 && (
+        <div className="notice" role="note">
+          <p>
+            <strong>Storyarr could not confirm this release.</strong>{" "}
+            {unconfirmed.includes("identity") &&
+              "Its title and author do not clearly match the book. "}
+            {unconfirmed.includes("language") &&
+              "The source does not say which language it is in."}
+          </p>
+          {blockedOverride ? (
+            <p>
+              Ask an administrator to choose it, or for permission to download
+              unconfirmed releases.
+            </p>
+          ) : (
+            <p>Check the file list above before you confirm.</p>
+          )}
+        </div>
+      )}
+      {selected && !blockedOverride && (
         <label className="check-label">
           <input
             type="checkbox"
@@ -367,6 +415,16 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
           />
           I checked the release details and it contains{" "}
           {selected.intent.work_title}.
+        </label>
+      )}
+      {selected && !blockedOverride && unconfirmed.includes("language") && (
+        <label className="check-label">
+          <input
+            type="checkbox"
+            checked={languageConfirmed}
+            onChange={(event) => setLanguageConfirmed(event.target.checked)}
+          />
+          I checked that it is in the language this request needs.
         </label>
       )}
       <button
@@ -379,6 +437,9 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
           !downloader ||
           !destination ||
           !confirmed ||
+          !checks.isSuccess ||
+          blockedOverride ||
+          (unconfirmed.includes("language") && !languageConfirmed) ||
           save.isPending ||
           options.isFetching ||
           requests.isFetching

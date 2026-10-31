@@ -22,6 +22,7 @@ AUTO_APPROVE_AUDIO = 1 << 9
 REQUEST_ADVANCED = 1 << 10
 AUTOMATE = 1 << 11
 BYPASS_QUOTAS = 1 << 12
+OVERRIDE_RELEASES = 1 << 13
 
 # Set while an approver starts a download for someone else's request.
 approval_dispatch = ContextVar("approval_dispatch", default=False)
@@ -119,6 +120,13 @@ CATALOG = (
         "Automate lists",
         "Downloads",
         "Run unattended list and series acquisition.",
+    ),
+    (
+        "override_releases",
+        OVERRIDE_RELEASES,
+        "Download unconfirmed releases",
+        "Downloads",
+        "Choose a release Storyarr could not match to the book, after checking it.",
     ),
 )
 

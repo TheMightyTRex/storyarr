@@ -3,6 +3,23 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.4.4 (unreleased)
+
+### Added
+- **Sort by** on Series, Authors and Following: Newest, Number of books, Date published, Author (by surname)
+  or A to Z, with Reverse order.
+- **Download releases Storyarr could not confirm:** Review release lets an administrator confirm the title and
+  author, or an unstated language, before downloading. Recorded in the audit log as
+  `acquisition.release-override`.
+- **Download unconfirmed releases** permission, for people who are not administrators.
+- **Review sources on Requests:** the request's status and the book's sources in a dialog.
+
+### Changed
+- Release names crediting every co-author now match the book; "Series by" and "books 1 to 5" names are
+  collections.
+- Series group together when names differ only in punctuation, a leading "The" or a trailing "Series".
+- Followed series and authors in My library open on In library.
+
 ## v0.4.3 (31 October 2026)
 
 ### Changed

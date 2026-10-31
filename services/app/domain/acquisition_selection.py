@@ -24,7 +24,7 @@ from app.db.models import (
     SourceConnection,
     Version,
 )
-from app.domain import narrators
+from app.domain import narrators, release_override
 from app.domain.acquisition import (
     RequestSpec,
     evaluate,
@@ -73,6 +73,10 @@ class SelectionInput(BaseModel):
     profile_effective_revision: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$", exclude_if=lambda value: value is None
     )
+    # Checks the person confirmed for a release Storyarr could not confirm itself.
+    confirmed_checks: list[Literal["identity", "language"]] = Field(
+        default_factory=list, max_length=2, exclude_if=lambda value: not value
+    )
 
 
 async def owned_selection(db, user, identifier):
@@ -109,11 +113,12 @@ async def verified_probe(db, destination, configuration, mapping, *, require_ena
     return False
 
 
-def release_compatible(release, rule, version):
+def release_compatible(release, rule, version, confirmed=()):
     if release.medium != rule["medium"]:
         raise HTTPException(422, "The source does not confirm the requested medium")
     required_language = rule["language"] or (version.language if version else None)
-    if not language_accepts(required_language, release.language):
+    language_confirmed = "language" in confirmed and not release.language
+    if not language_confirmed and not language_accepts(required_language, release.language):
         raise HTTPException(422, "The source does not confirm the required language")
     if not narrators.accepts(rule.get("required_narrators", []), release.narrators):
         raise HTTPException(422, "The source does not confirm every required narrator")
@@ -126,7 +131,7 @@ def release_compatible(release, rule, version):
     # standalone coverage must be verified against downloaded bytes before import.
 
 
-async def reservation_for_release(db, intent, target, reservation, release):
+async def reservation_for_release(db, intent, target, reservation, release, confirmed=()):
     """Split a planned group when only another request rejects the chosen release.
 
     Call under the work acquisition lock. Shared reservations are an optimization,
@@ -144,13 +149,13 @@ async def reservation_for_release(db, intent, target, reservation, release):
         else None
     )
     try:
-        release_compatible(release, reservation.requirements, shared_version)
+        release_compatible(release, reservation.requirements, shared_version, confirmed)
     except HTTPException:
         own_version = (
             await db.get(Version, UUID(own_rule["version_id"])) if own_rule["version_id"] else None
         )
         try:
-            release_compatible(release, own_rule, own_version)
+            release_compatible(release, own_rule, own_version, confirmed)
         except HTTPException:
             return reservation
     else:
@@ -263,7 +268,9 @@ async def prepare(db, user, body, key, *, automatic_evidence=None, recovery_sele
         await db.flush()
         await release_unused(db, intent.work_id)
     if not automatic_evidence and not recovery_selection_id:
-        reservation = await reservation_for_release(db, intent, target, reservation, release)
+        reservation = await reservation_for_release(
+            db, intent, target, reservation, release, body.confirmed_checks
+        )
     rule = reservation.requirements
     if recovery_selection_id:
         from app.domain.download_recovery import frozen_context
@@ -283,7 +290,21 @@ async def prepare(db, user, body, key, *, automatic_evidence=None, recovery_sele
     )
     enforce_profile(release, descriptor, profile)
     version = await db.get(Version, UUID(rule["version_id"])) if rule["version_id"] else None
-    release_compatible(release, rule, version)
+    if not automatic_evidence and not recovery_selection_id:
+        missing = release_override.unconfirmed(
+            release, {"title": work.title, "authors": work.authors}, rule, version
+        )
+        release_override.require_confirmation(user, missing, body.confirmed_checks)
+        if missing:
+            db.add(
+                AuditEvent(
+                    actor_id=user.id,
+                    action="acquisition.release-override",
+                    entity_id=intent.id,
+                    detail={"checks": missing, "artifact_id": str(artifact.id)},
+                )
+            )
+    release_compatible(release, rule, version, body.confirmed_checks)
     await transaction_lock(db, SETTINGS_LOCK)
     route = await transfer_connection(db, body.downloader_id)
     if not route.enabled or route.credential_generation != body.downloader_generation:

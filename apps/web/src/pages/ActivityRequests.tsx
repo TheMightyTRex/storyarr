@@ -1,7 +1,7 @@
 import { ContextLink } from "../components/NavigationContinuity";
 import ContentSkeleton from "../components/ContentSkeleton";
-import { Fragment, useEffect, useRef, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Fragment, lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BookOpen,
   Check,
@@ -21,11 +21,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { api, result } from "../api/client";
+import { api, result, type Auth } from "../api/client";
 import type { components } from "../api/schema";
-import { Notice } from "../components";
+import { Loading, Notice } from "../components";
 import InfiniteScroll from "../components/InfiniteScroll";
 import BookDialog from "../components/BookDialog";
+const BookSources = lazy(() => import("./BookSources"));
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import { randomUUID } from "../randomUUID";
 import DownloadConstraints from "./DownloadConstraints";
@@ -456,6 +457,7 @@ function targetActions(
   canManage: boolean,
   onTransfer: (attemptId: string, cancel: boolean) => void,
   onClaim: (target: Target) => void,
+  onSources: (target: Target) => void,
 ) {
   if (target.state === "satisfied") return [];
   const qualify = (label: string) =>
@@ -463,12 +465,17 @@ function targetActions(
       ? `${label} · ${mediumLabel(target.slot)}`
       : label;
   const actions: RowAction[] = [];
-  if (target.next_action === "search" && request.can_open_book)
+  if (
+    request.can_open_book &&
+    target.slot !== "either" &&
+    (target.next_action === "search" ||
+      statusLabel(request, target) === "Source needs review")
+  )
     actions.push({
       key: `search-${target.slot}`,
-      label: "Choose release",
+      label: qualify("Review sources"),
       icon: Search,
-      href: `/books/${request.work_id}?tab=sources&request=${request.id}&slot=${target.slot}`,
+      onSelect: () => onSources(target),
     });
   if (
     target.needs_review &&
@@ -606,6 +613,7 @@ function RequestCard({
         icon: Undo2,
         onSelect: () => setWithdrawReason(reason.id),
       });
+  const [sourcesFor, setSourcesFor] = useState<Target | null>(null);
   const rows = request.targets.map((target) => {
     const actions = targetActions(
       request,
@@ -613,6 +621,7 @@ function RequestCard({
       canManage,
       onTransfer,
       onClaim,
+      setSourcesFor,
     );
     const primary = actions.find(
       (action) => !action.danger && !action.label.startsWith("Recheck"),
@@ -884,6 +893,17 @@ function RequestCard({
           </Fragment>
         );
       })}
+      {sourcesFor && (
+        <tr>
+          <td colSpan={7} className="request-dialog-cell">
+            <RequestSources
+              request={request}
+              target={sourcesFor}
+              close={() => setSourcesFor(null)}
+            />
+          </td>
+        </tr>
+      )}
       {withdrawReason && (
         <tr>
           <td colSpan={7} className="request-dialog-cell">
@@ -973,5 +993,70 @@ function RequestDetails({ request }: { request: Request }) {
         </div>
       )}
     </details>
+  );
+}
+
+/** A request's status and its book's sources, to choose a release without leaving Requests. */
+function RequestSources({
+  request,
+  target,
+  close,
+}: {
+  request: Request;
+  target: Target;
+  close: () => void;
+}) {
+  const { data: session } = useQuery<Auth | null>({
+    queryKey: ["session"],
+    enabled: false,
+  });
+  const work = useQuery({
+    queryKey: ["work", request.work_id],
+    queryFn: async () =>
+      result(
+        await api.GET("/api/catalog/works/{work_id}", {
+          params: { path: { work_id: request.work_id } },
+        }),
+      ),
+  });
+  const label = statusLabel(request, target);
+  const notes = targetNotes(label, target);
+  return (
+    <BookDialog
+      title={`Sources for ${request.work_title}`}
+      close={close}
+      className="request-sources-dialog"
+    >
+      <section className="request-sources-summary" aria-label="Request">
+        <p>
+          <strong>{label}</strong> · {mediumLabel(target.slot)} request
+          {request.authors?.length ? ` · ${request.authors.join(", ")}` : ""}
+        </p>
+        {[target.review_message || target.message, ...notes]
+          .filter((note, index, all) => note && all.indexOf(note) === index)
+          .map((note) => (
+            <p key={note} className="muted">
+              {note}
+            </p>
+          ))}
+        <ContextLink
+          to={`/books/${request.work_id}?tab=sources&request=${request.id}&slot=${target.slot}`}
+        >
+          Open the book page
+        </ContextLink>
+      </section>
+      <Notice error={work.error} />
+      {work.data ? (
+        <Suspense fallback={<Loading />}>
+          <BookSources
+            work={work.data}
+            canAcquire={!!session && session.user.role !== "viewer"}
+            request={{ id: request.id, slot: target.slot }}
+          />
+        </Suspense>
+      ) : (
+        !work.error && <Loading />
+      )}
+    </BookDialog>
   );
 }

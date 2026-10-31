@@ -1,17 +1,22 @@
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, HTTPException, Path, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
 
 from app.adapters.contracts import AdapterError
 from app.adapters.nzb_descriptor import NzbDescriptor
-from app.adapters.source_releases import SourceRelease
+from app.adapters.source_releases import SourceRelease, release_value
 from app.adapters.torrent_descriptor import TorrentDescriptor
 from app.api.dependencies import Database, Member
 from app.api.metadata import adapter_http_error
-from app.db.models import SourceArtifact, SourceConnection
+from app.db.models import AcquisitionIntent, SourceArtifact, SourceConnection, Version, Work
+from app.domain import release_override
+from app.domain.acquisition import RequestSpec
+from app.domain.permissions import OVERRIDE_RELEASES, has
+from app.domain.release_profiles import catalog_language_release
 from app.domain.source_artifacts import resolve_mam
 
 router = APIRouter(tags=["source-artifacts"])
@@ -64,6 +69,42 @@ async def resolve_artifact(
 @router.get("/source-artifacts/{artifact_id}", response_model=SourceArtifactView)
 async def get_artifact(artifact_id: UUID, user: Member, db: Database):
     return await artifact_view(db, artifact_id, user.id)
+
+
+class ReleaseChecks(BaseModel):
+    # Checks Storyarr could not make for this book, which a person must confirm.
+    unconfirmed: list[Literal["identity", "language"]]
+    can_override: bool
+
+
+@router.get("/source-artifacts/{artifact_id}/checks", response_model=ReleaseChecks)
+async def release_checks(
+    artifact_id: UUID,
+    user: Member,
+    db: Database,
+    intent_id: UUID,
+    slot: Literal["ebook", "audio", "either"] = Query(),
+):
+    artifact = await db.get(SourceArtifact, artifact_id)
+    intent = await db.get(AcquisitionIntent, intent_id)
+    if not artifact or artifact.owner_id != user.id:
+        raise HTTPException(404, "Source artifact not found")
+    if not intent or intent.owner_id != user.id:
+        raise HTTPException(404, "Request not found")
+    work = await db.get(Work, intent.work_id)
+    book = {"title": work.title, "authors": work.authors}
+    release = catalog_language_release(
+        release_value(artifact.source_key, artifact.release_snapshot), book
+    )
+    medium = slot if slot != "either" else release.medium
+    if medium not in {"ebook", "audio"}:
+        raise HTTPException(409, "The source does not confirm the requested medium")
+    rule = RequestSpec.model_validate(intent.specification).rule(medium)
+    version = await db.get(Version, UUID(rule["version_id"])) if rule["version_id"] else None
+    return ReleaseChecks(
+        unconfirmed=release_override.unconfirmed(release, book, rule, version),
+        can_override=has(user, OVERRIDE_RELEASES),
+    )
 
 
 @router.get("/source-artifacts/{artifact_id}/torrent", response_class=Response)

@@ -139,3 +139,30 @@ async def test_groups_sort_in_each_order_and_reverse(client, admin, database):
     assert (
         await client.get("/api/library/groups/authors", params={"sort": "rating"})
     ).status_code == 422
+
+
+async def test_series_names_differing_only_in_punctuation_the_or_series_share_one_shelf(
+    client, admin, database
+):
+    async with database() as db, db.begin():
+        for title, series in [
+            ("Dead Man Walking", "Dan Deadman Space Detective"),
+            ("Dead Man Talking", "Dan Deadman Space Detective Series"),
+            ("Raising Steam", "Discworld: Industrial Revolution"),
+            ("Going Postal", "Discworld - Industrial Revolution"),
+            ("Mutiny", "The Silver Ships"),
+            ("Liberation", "Silver Ships"),
+            ("Origin", "Dan Deadman"),
+        ]:
+            await add(db, title, metadata_snapshot={"series": [{"name": series}]})
+    shelves = (await browse(client, "series"))["items"]
+    assert [(s["name"], s["book_count"]) for s in shelves] == [
+        ("Dan Deadman", 1),
+        ("Dan Deadman Space Detective", 2),
+        ("Discworld - Industrial Revolution", 2),
+        ("Silver Ships", 2),
+    ]
+    assert (await browse(client, "series", q="detective series"))["total"] == 1
+    for name in ("Discworld: Industrial Revolution", "Discworld - Industrial Revolution"):
+        books = await client.get("/api/library/groups/series/books", params={"name": name})
+        assert books.json()["total"] == 2

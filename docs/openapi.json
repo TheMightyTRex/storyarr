@@ -17787,6 +17787,73 @@
         }
       }
     },
+    "/api/source-artifacts/{artifact_id}/checks": {
+      "get": {
+        "tags": [
+          "source-artifacts"
+        ],
+        "summary": "Release Checks",
+        "operationId": "release_checks_api_source_artifacts__artifact_id__checks_get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "intent_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Intent Id"
+            }
+          },
+          {
+            "name": "slot",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "ebook",
+                "audio",
+                "either"
+              ],
+              "type": "string",
+              "title": "Slot"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseChecks"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/source-artifacts/{artifact_id}/torrent": {
       "get": {
         "tags": [
@@ -37963,6 +38030,31 @@
         ],
         "title": "ReleaseAssessment"
       },
+      "ReleaseChecks": {
+        "properties": {
+          "unconfirmed": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "identity",
+                "language"
+              ]
+            },
+            "type": "array",
+            "title": "Unconfirmed"
+          },
+          "can_override": {
+            "type": "boolean",
+            "title": "Can Override"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unconfirmed",
+          "can_override"
+        ],
+        "title": "ReleaseChecks"
+      },
       "ReleaseDownloadStatus": {
         "properties": {
           "state": {
@@ -40354,6 +40446,18 @@
               }
             ],
             "title": "Profile Effective Revision"
+          },
+          "confirmed_checks": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "identity",
+                "language"
+              ]
+            },
+            "type": "array",
+            "maxItems": 2,
+            "title": "Confirmed Checks"
           }
         },
         "additionalProperties": false,

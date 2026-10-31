@@ -5449,6 +5449,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/source-artifacts/{artifact_id}/checks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Release Checks */
+    get: operations["release_checks_api_source_artifacts__artifact_id__checks_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/source-artifacts/{artifact_id}/torrent": {
     parameters: {
       query?: never;
@@ -13041,6 +13058,13 @@ export interface components {
       /** Source Origin */
       source_origin: string;
     };
+    /** ReleaseChecks */
+    ReleaseChecks: {
+      /** Unconfirmed */
+      unconfirmed: ("identity" | "language")[];
+      /** Can Override */
+      can_override: boolean;
+    };
     /** ReleaseDownloadStatus */
     ReleaseDownloadStatus: {
       /**
@@ -13941,6 +13965,8 @@ export interface components {
       profile_generation?: number | null;
       /** Profile Effective Revision */
       profile_effective_revision?: string | null;
+      /** Confirmed Checks */
+      confirmed_checks?: ("identity" | "language")[];
     };
     /** SelectionOptions */
     SelectionOptions: {
@@ -27099,6 +27125,40 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SourceArtifactView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  release_checks_api_source_artifacts__artifact_id__checks_get: {
+    parameters: {
+      query: {
+        intent_id: string;
+        slot: "ebook" | "audio" | "either";
+      };
+      header?: never;
+      path: {
+        artifact_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseChecks"];
         };
       };
       /** @description Validation Error */

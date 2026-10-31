@@ -390,7 +390,7 @@ test("automatic series requests confirm start and lead to clear progress with ca
     page.getByText("Searching sources for this format", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Choose release", exact: true }),
+    page.getByRole("button", { name: "Review sources", exact: true }),
   ).toHaveCount(0);
   await expect
     .poll(() =>

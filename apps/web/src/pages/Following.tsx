@@ -162,12 +162,15 @@ function BookPreview({
 export function FollowBooks({
   follow,
   selection,
+  initialStatus = null,
 }: {
   follow: Pick<Summary, "list_id" | "last_success_at">;
   selection: BookFilter;
+  /** The status shown first; null shows every book. */
+  initialStatus?: StatusKind | null;
 }) {
   const [offset, setOffset] = useState(0);
-  const [status, setStatus] = useState<StatusKind | null>(null);
+  const [status, setStatus] = useState<StatusKind | null>(initialStatus);
   const query = useQuery({
     queryKey: [
       "following",

@@ -159,9 +159,12 @@ export default function SourceReleaseDownload({
                     : "selected"
           : undefined);
   const failed = state === "failed" || state === "needs-review";
+  // Administrators, and people allowed to download unconfirmed releases, can
+  // check the file list and choose a release Storyarr held back.
   const canReview =
     state === "needs-review" &&
-    session?.user.role === "admin" &&
+    (session?.user.role === "admin" ||
+      !!session?.user.permissions?.includes("override_releases")) &&
     !!reviewContext;
   const tone =
     state === "needs-review"
