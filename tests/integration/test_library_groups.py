@@ -96,3 +96,46 @@ async def test_groups_and_book_details_respect_library_grants(client, admin, dat
 
 async def test_groups_require_login(client):
     assert (await client.get("/api/library/groups/authors")).status_code == 401
+
+
+async def test_groups_sort_in_each_order_and_reverse(client, admin, database):
+    async with database() as db, db.begin():
+        for title, author, series, year, days in [
+            ("A Wizard of Earthsea", "Ursula Le Guin", "Earthsea", 1968, 10),
+            ("Mistborn", "Brandon Sanderson", "Cosmere", 2006, 30),
+            ("Wind and Truth", "Brandon Sanderson", "Cosmere", 2024, 1),
+            ("The Republic", "Plato", None, None, 5),
+        ]:
+            work, _, _ = await add(
+                db,
+                title,
+                days=days,
+                metadata_snapshot={"series": [{"name": series}] if series else []},
+            )
+            work.authors = [author]
+            work.publication_year = year
+
+    async def order(kind="authors", **params):
+        return [group["name"] for group in (await browse(client, kind, **params))["items"]]
+
+    guin, sanderson, plato = "Ursula Le Guin", "Brandon Sanderson", "Plato"
+    assert await order() == [sanderson, plato, guin]
+    assert await order(reverse=True) == [guin, plato, sanderson]
+    assert await order(sort="author") == [guin, plato, sanderson]
+    assert await order(sort="new") == [sanderson, plato, guin]
+    assert await order(sort="new", reverse=True) == [guin, plato, sanderson]
+    # Ties run A to Z in both directions.
+    assert await order(sort="number") == [sanderson, plato, guin]
+    assert await order(sort="number", reverse=True) == [plato, guin, sanderson]
+    # Without a publication date, Plato stays at the end both ways.
+    assert await order(sort="published") == [sanderson, guin, plato]
+    assert await order(sort="published", reverse=True) == [guin, sanderson, plato]
+    assert await order("series") == ["Cosmere", "Earthsea"]
+    assert await order("series", sort="author") == ["Earthsea", "Cosmere"]
+    assert await order("series", sort="author", reverse=True) == ["Cosmere", "Earthsea"]
+    assert await order("series", sort="number") == ["Cosmere", "Earthsea"]
+    paged = await browse(client, sort="published", offset=1, limit=1)
+    assert [group["name"] for group in paged["items"]] == [guin] and paged["total"] == 3
+    assert (
+        await client.get("/api/library/groups/authors", params={"sort": "rating"})
+    ).status_code == 422

@@ -90,7 +90,11 @@ async def overview(
     kind: Literal["author", "series"] = "author",
     q: str = Query(default="", max_length=200),
     filter: Literal["all", "upcoming", "recent", "missing", "paused"] = "all",
-    sort: Literal["recent", "name", "release", "library"] = "recent",
+    # "recent", "release" and "library" are kept for older links.
+    sort: Literal[
+        "new", "number", "published", "author", "name", "recent", "release", "library"
+    ] = "new",
+    reverse: bool = False,
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=20, ge=1, le=50),
 ):
@@ -103,6 +107,7 @@ async def overview(
         q=q.strip(),
         filter=filter,
         sort=sort,
+        reverse=reverse,
         offset=offset,
         limit=limit,
     )

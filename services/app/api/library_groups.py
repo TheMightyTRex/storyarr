@@ -13,11 +13,15 @@ from app.api.dependencies import CurrentUser, Database
 from app.db.models import CatalogSeries, LibraryAsset, SeriesMembership, Work, WorkMetadataSource
 from app.domain.availability import availability_for, availability_rows, library_work_ids
 from app.domain.catalog_display import display_map
+from app.domain.name_order import surname_sql
 from app.domain.visibility import visible_origin_work
 
 router = APIRouter()
 Kind = Literal["authors", "series"]
 Medium = Literal["any", "ebook", "audio"]
+Sort = Literal["new", "number", "published", "author", "name"]
+# Newest, most and latest come first unless reversed; names run A to Z.
+DESCENDING = {"new", "number", "published"}
 
 
 class LibraryGroup(BaseModel):
@@ -51,7 +55,13 @@ def group_rows(user, kind, medium, library_id):
         holdings = holdings.where(LibraryAsset.medium == medium)
     if library_id:
         holdings = holdings.where(LibraryAsset.library_id == library_id)
-    owned = holdings.with_only_columns(mapping.c.work_id).distinct().subquery()
+    owned = (
+        holdings.with_only_columns(
+            mapping.c.work_id, func.max(LibraryAsset.created_at).label("added")
+        )
+        .group_by(mapping.c.work_id)
+        .subquery()
+    )
     if kind == "authors":
         names = func.jsonb_array_elements_text(Work.authors).table_valued("value")
         raw = (
@@ -122,7 +132,9 @@ def group_rows(user, kind, medium, library_id):
             func.trim(raw.c.name).label("name"),
             normalized(raw.c.name).label("key"),
             raw.c.external_id,
+            owned.c.added,
         )
+        .join(owned, owned.c.work_id == raw.c.work_id)
         .where(normalized(raw.c.name) != "")
         .distinct()
         .subquery()
@@ -137,25 +149,49 @@ async def groups(
     q: str = Query(default="", max_length=300),
     medium: Medium = "any",
     library_id: UUID | None = None,
+    sort: Sort = "name",
+    reverse: bool = False,
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=24, ge=1, le=100),
 ):
     rows = group_rows(user, kind, medium, library_id)
-    grouped = select(
-        rows.c.key,
-        func.min(rows.c.name).label("name"),
-        func.count(func.distinct(rows.c.work_id)).label("book_count"),
-        case(
-            (func.count(func.distinct(rows.c.external_id)) == 1, func.min(rows.c.external_id)),
-            else_=None,
-        ).label("external_id"),
-    ).group_by(rows.c.key)
+    grouped = (
+        select(
+            rows.c.key,
+            func.min(rows.c.name).label("name"),
+            func.count(func.distinct(rows.c.work_id)).label("book_count"),
+            case(
+                (func.count(func.distinct(rows.c.external_id)) == 1, func.min(rows.c.external_id)),
+                else_=None,
+            ).label("external_id"),
+            func.max(rows.c.added).label("added"),
+            func.max(Work.publication_year).label("published"),
+            (
+                surname_sql(func.min(rows.c.name))
+                if kind == "authors"
+                else func.min(surname_sql(Work.authors[0].astext))
+            ).label("author"),
+        )
+        .join(Work, Work.id == rows.c.work_id)
+        .group_by(rows.c.key)
+    )
     if q.strip():
         grouped = grouped.where(rows.c.key.contains(" ".join(q.lower().split()), autoescape=True))
     grouped = grouped.subquery()
     total = await db.scalar(select(func.count()).select_from(grouped))
+    column = {
+        "new": grouped.c.added,
+        "number": grouped.c.book_count,
+        "published": grouped.c.published,
+        "author": grouped.c.author,
+        "name": grouped.c.key,
+    }[sort]
+    # Groups without a date or author stay at the end in both directions.
+    order = column.desc() if (sort in DESCENDING) != reverse else column.asc()
     selected = (
-        await db.execute(select(grouped).order_by(grouped.c.key).offset(offset).limit(limit))
+        await db.execute(
+            select(grouped).order_by(order.nullslast(), grouped.c.key).offset(offset).limit(limit)
+        )
     ).all()
     pairs = (
         select(rows.c.key, rows.c.work_id)
@@ -216,7 +252,10 @@ async def groups(
     return LibraryGroupPage(
         items=[
             LibraryGroup(
-                **row._asdict(),
+                name=row.name,
+                key=row.key,
+                book_count=row.book_count,
+                external_id=row.external_id,
                 books=by_group.get(row.key, []),
                 hardcover_book_id=portrait_books.get(row.key),
             )

@@ -1,5 +1,7 @@
 import {
   CollectionViewSwitch,
+  readSort,
+  SortControl,
   useCollectionView,
 } from "../components/GroupShelf";
 import {
@@ -89,7 +91,6 @@ function BookStatusLine({ status }: { status: Status }) {
 }
 type BookFilter = "all" | "library" | "upcoming" | "recent" | "missing";
 type Filter = "all" | "upcoming" | "recent" | "missing" | "paused";
-type Sort = "recent" | "name" | "release" | "library";
 function choice<T extends string>(
   value: string | null,
   choices: readonly T[],
@@ -430,19 +431,23 @@ function Overview() {
     ["all", "upcoming", "recent", "missing", "paused"] as const,
     "all",
   ) as Filter;
-  const sort = choice(
-    params.get("sort"),
-    ["recent", "name", "release", "library"] as const,
-    "recent",
-  ) as Sort;
+  const { sort, reverse } = readSort(params, "new");
   const query = useInfiniteQuery({
-    queryKey: ["following", "overview", kind, q, filter, sort],
+    queryKey: ["following", "overview", kind, q, filter, sort, reverse],
     initialPageParam: 0,
     queryFn: async ({ pageParam }) =>
       result(
         await api.GET("/api/following/overview", {
           params: {
-            query: { kind, q, filter, sort, offset: pageParam, limit: 20 },
+            query: {
+              kind,
+              q,
+              filter,
+              sort,
+              reverse,
+              offset: pageParam,
+              limit: 20,
+            },
           },
         }),
       ),
@@ -468,7 +473,8 @@ function Overview() {
     </div>
   );
   const set = (key: string, value: string) => {
-    const next = new URLSearchParams(params);
+    // The address as it is now, so a quick change keeps an earlier one.
+    const next = new URLSearchParams(window.location.search);
     value ? next.set(key, value) : next.delete(key);
     setParams(next, { replace: true });
   };
@@ -550,18 +556,7 @@ function Overview() {
                   <option value="paused">Updates paused</option>
                 </select>
               </label>
-              <label>
-                Sort
-                <select
-                  value={sort}
-                  onChange={(event) => set("sort", event.target.value)}
-                >
-                  <option value="recent">Recently followed</option>
-                  <option value="name">Name A–Z</option>
-                  <option value="release">Next release</option>
-                  <option value="library">Most books in library</option>
-                </select>
-              </label>
+              <SortControl sort={sort} reverse={reverse} onChange={set} />
               <CollectionViewSwitch
                 view={layout.view}
                 onChange={layout.setView}

@@ -170,6 +170,26 @@ test("My library browses owned authors and series, filters, and opens books", as
     .getByRole("combobox", { name: "Media", exact: true })
     .selectOption("audio");
   await expect(page).toHaveURL(/medium=audio/);
+  // Sort by surname, then reverse it: the page asks the server for that order.
+  const asks = (sort: string, reverse: string) =>
+    page.waitForRequest((request) => {
+      const url = new URL(request.url());
+      return (
+        url.pathname === "/api/library/groups/series" &&
+        url.searchParams.get("sort") === sort &&
+        url.searchParams.get("reverse") === reverse
+      );
+    });
+  let asked = asks("author", "false");
+  await page.getByLabel("Sort by").selectOption({ label: "Author" });
+  await asked;
+  asked = asks("author", "true");
+  await page.getByRole("button", { name: "Reverse order" }).click();
+  await asked;
+  await expect(
+    page.getByRole("button", { name: "Reverse order" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(/sort=author&reverse=1/);
   await expect(row.locator(".group-covers .book-cover").first()).toHaveCSS(
     "aspect-ratio",
     "2 / 3",

@@ -326,3 +326,17 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Reverse order sits beside Sort by and shows when it is on. */
+.sort-reverse {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  white-space: nowrap;
+}
+.sort-reverse[aria-pressed="true"] {
+  background: var(--control-active);
+  box-shadow: inset 0 -3px 0 var(--accent);
+}

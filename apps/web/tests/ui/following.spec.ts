@@ -508,6 +508,26 @@ test("Following shows library coverage, releases, and useful filtered books", as
   await expect(row.getByText("1 of 2")).toBeVisible();
   await expect(row.getByText("1 missing")).toBeVisible();
   await expect(row.getByText("1 not released")).toBeVisible();
+  // Sort by surname, then reverse it: the page asks the server for that order.
+  const asks = (sort: string, reverse: string) =>
+    page.waitForRequest((request) => {
+      const url = new URL(request.url());
+      return (
+        url.pathname === "/api/following/overview" &&
+        url.searchParams.get("sort") === sort &&
+        url.searchParams.get("reverse") === reverse
+      );
+    });
+  let asked = asks("author", "false");
+  await page.getByLabel("Sort by").selectOption({ label: "Author" });
+  await asked;
+  asked = asks("author", "true");
+  await page.getByRole("button", { name: "Reverse order" }).click();
+  await asked;
+  await expect(
+    page.getByRole("button", { name: "Reverse order" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(/sort=author&reverse=1/);
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(
     row.getByRole("link", { name: "Manage Ursula K. Le Guin" }),

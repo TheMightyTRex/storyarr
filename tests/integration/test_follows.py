@@ -586,6 +586,13 @@ async def test_follow_overview_counts_library_and_dates_before_paging(
         f"/api/following/{follow['list_id']}/books", params={"filter": "library"}
     )
     assert owned.json()["items"][0]["ebook"] and not owned.json()["items"][0]["audio"]
+    for sort in ("new", "number", "published", "author", "name", "recent", "release", "library"):
+        for reverse in ("false", "true"):
+            sorted_page = await client.get(
+                "/api/following/overview", params={"sort": sort, "reverse": reverse}
+            )
+            assert sorted_page.status_code == 200, sorted_page.text
+            assert sorted_page.json()["items"][0]["list_id"] == follow["list_id"]
     assert (await client.get("/api/following/overview", params={"q": "not here"})).json()[
         "total"
     ] == 0

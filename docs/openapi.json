@@ -6805,14 +6805,28 @@
             "required": false,
             "schema": {
               "enum": [
-                "recent",
+                "new",
+                "number",
+                "published",
+                "author",
                 "name",
+                "recent",
                 "release",
                 "library"
               ],
               "type": "string",
-              "default": "recent",
+              "default": "new",
               "title": "Sort"
+            }
+          },
+          {
+            "name": "reverse",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Reverse"
             }
           },
           {
@@ -9777,6 +9791,33 @@
                 }
               ],
               "title": "Library Id"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "new",
+                "number",
+                "published",
+                "author",
+                "name"
+              ],
+              "type": "string",
+              "default": "name",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "reverse",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Reverse"
             }
           },
           {

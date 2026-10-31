@@ -9,6 +9,8 @@ import {
   CollectionViewSwitch,
   GroupDetailView,
   GroupListView,
+  readSort,
+  SortControl,
   useCollectionView,
 } from "./GroupShelf";
 
@@ -39,12 +41,13 @@ export default function LibraryGroups({
       : params.get("medium") === "audio"
         ? "audio"
         : "any";
+  const { sort, reverse } = readSort(params, "name");
   const rawOffset = Number(params.get("offset"));
   const offset =
     Number.isSafeInteger(rawOffset) && rawOffset > 0 ? rawOffset : 0;
   const title = kind === "authors" ? "Authors" : "Series";
   const query = usePagedQuery({
-    queryKey: ["library-groups", kind, q, medium, libraryId],
+    queryKey: ["library-groups", kind, q, medium, libraryId, sort, reverse],
     initial: 0,
     enabled: !group,
     queryFn: async (offset, signal) =>
@@ -53,7 +56,15 @@ export default function LibraryGroups({
           signal,
           params: {
             path: { kind },
-            query: { q, medium, library_id: libraryId, offset, limit: 24 },
+            query: {
+              q,
+              medium,
+              library_id: libraryId,
+              sort,
+              reverse,
+              offset,
+              limit: 24,
+            },
           },
         }),
       ),
@@ -194,6 +205,9 @@ export default function LibraryGroups({
               ))}
             </select>
           </label>
+          {!group && (
+            <SortControl sort={sort} reverse={reverse} onChange={change} />
+          )}
           {(q || medium !== "any" || libraryId) && (
             <button
               type="button"

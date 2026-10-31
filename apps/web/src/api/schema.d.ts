@@ -20193,7 +20193,16 @@ export interface operations {
         kind?: "author" | "series";
         q?: string;
         filter?: "all" | "upcoming" | "recent" | "missing" | "paused";
-        sort?: "recent" | "name" | "release" | "library";
+        sort?:
+          | "new"
+          | "number"
+          | "published"
+          | "author"
+          | "name"
+          | "recent"
+          | "release"
+          | "library";
+        reverse?: boolean;
         offset?: number;
         limit?: number;
       };
@@ -21935,6 +21944,8 @@ export interface operations {
         q?: string;
         medium?: "any" | "ebook" | "audio";
         library_id?: string | null;
+        sort?: "new" | "number" | "published" | "author" | "name";
+        reverse?: boolean;
         offset?: number;
         limit?: number;
       };

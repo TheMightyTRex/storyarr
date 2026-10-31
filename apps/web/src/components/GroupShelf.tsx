@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Columns2, List, UserRound } from "lucide-react";
+import {
+  ArrowDownUp,
+  ArrowUpRight,
+  Columns2,
+  List,
+  UserRound,
+} from "lucide-react";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { BookCard, Loading, Notice } from "../components";
@@ -57,6 +63,61 @@ export function CollectionViewSwitch({
         <List size={16} aria-hidden="true" /> List
       </button>
     </div>
+  );
+}
+
+export const collectionSorts = [
+  ["new", "Newest"],
+  ["number", "Number of books"],
+  ["published", "Date published"],
+  ["author", "Author"],
+  ["name", "A to Z"],
+] as const;
+export type CollectionSort = (typeof collectionSorts)[number][0];
+
+/** The sort and direction in the address, falling back to the page's default. */
+export function readSort(params: URLSearchParams, fallback: CollectionSort) {
+  const value = params.get("sort");
+  const sort = collectionSorts.some(([key]) => key === value)
+    ? (value as CollectionSort)
+    : fallback;
+  return { sort, reverse: params.get("reverse") === "1" };
+}
+
+/** Sort by, with a button that reverses the order. */
+export function SortControl({
+  sort,
+  reverse,
+  onChange,
+}: {
+  sort: CollectionSort;
+  reverse: boolean;
+  onChange: (key: "sort" | "reverse", value: string) => void;
+}) {
+  return (
+    <>
+      <label>
+        Sort by
+        <select
+          value={sort}
+          onChange={(event) => onChange("sort", event.target.value)}
+        >
+          {collectionSorts.map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button
+        type="button"
+        className="sort-reverse"
+        aria-pressed={reverse}
+        onClick={() => onChange("reverse", reverse ? "" : "1")}
+      >
+        <ArrowDownUp size={16} aria-hidden="true" /> Reverse order
+      </button>
+    </>
   );
 }
 

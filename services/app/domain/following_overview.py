@@ -16,6 +16,7 @@ from app.adapters.catalog_types import cover_url
 from app.db.models import BookList, ListAcquisitionPolicy, ListObservation, ListSubscription
 from app.domain.availability import availability_rows
 from app.domain.follow_status import STATUS_KINDS, BookStatus, StatusKind, statuses
+from app.domain.name_order import surname
 from app.domain.work_graph import canonical_families, canonical_map
 from app.security import decrypt_secrets
 
@@ -235,7 +236,37 @@ def book(row, names=()):
     )
 
 
-async def summaries(db, user, rows, *, kind, q, filter, sort, offset, limit):
+# Older links used these names for the same orders.
+SORT_ALIASES = {"recent": "new", "library": "number"}
+# Newest, most and latest come first unless reversed; names and next releases run upwards.
+DESCENDING = {"new", "number", "published"}
+
+
+def order(selected, counts, sort, reverse=False):
+    """Sort follows; ties run A to Z, and follows without a date or author stay at the end."""
+    sort = SORT_ALIASES.get(sort, sort)
+
+    def value(item):
+        count = counts.get(item.list_id)
+        if sort == "new":
+            return item.followed_at
+        if sort == "number":
+            return item.library_books
+        if sort == "published":
+            return count.last_day if count else None
+        if sort == "release":
+            return count.next_day if count else None
+        if sort == "author":
+            return surname(item.name if item.source_kind == "author" else count and count.author)
+        return item.name.casefold()
+
+    selected = sorted(selected, key=lambda s: (s.name.casefold(), str(s.list_id)))
+    known = [s for s in selected if value(s) is not None]
+    known.sort(key=value, reverse=(sort in DESCENDING) != reverse)
+    return known + [s for s in selected if value(s) is None]
+
+
+async def summaries(db, user, rows, *, kind, q, filter, sort, offset, limit, reverse=False):
     authors = sum(summary.source_kind == "author" for _, summary in rows)
     series = len(rows) - authors
     # Global status must survive filtering, pagination, and switching to Releases.
@@ -258,6 +289,8 @@ async def summaries(db, user, rows, *, kind, q, filter, sort, offset, limit):
                     func.count().filter(c.c.eligible & c.c.recent).label("recent"),
                     func.count().filter(c.c.eligible & c.c.released & ~c.c.owned).label("missing"),
                     func.min(c.c.day).filter(c.c.eligible & c.c.upcoming).label("next_day"),
+                    func.max(c.c.day).filter(c.c.eligible & c.c.released).label("last_day"),
+                    func.min(c.c.snapshot["authors"][0].astext).label("author"),
                 ).group_by(c.c.list_id)
             )
         ).all()
@@ -285,20 +318,7 @@ async def summaries(db, user, rows, *, kind, q, filter, sort, offset, limit):
         if filter in {"upcoming", "recent", "missing"} and not getattr(item, f"{filter}_books"):
             continue
         selected.append(item)
-    if sort == "name":
-        selected.sort(key=lambda s: (s.name.casefold(), s.list_id))
-    elif sort == "library":
-        selected.sort(key=lambda s: (-(s.library_books or 0), s.name.casefold(), s.list_id))
-    elif sort == "release":
-        selected.sort(
-            key=lambda s: (
-                (by_id[s.list_id].next_day or "9999") if s.list_id in by_id else "9999",
-                s.name.casefold(),
-                s.list_id,
-            )
-        )
-    else:
-        selected.sort(key=lambda s: (s.followed_at, s.list_id), reverse=True)
+    selected = order(selected, by_id, sort, reverse)
     total = len(selected)
     selected = selected[offset : offset + limit]
     if selected:
