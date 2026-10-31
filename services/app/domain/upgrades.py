@@ -114,6 +114,31 @@ RELEASES = [
             "The bookshelf drawer can start a search now, and exclude a book from the follow.",
         ],
     ),
+    UpgradeRelease(
+        id="2026.10.31.2",
+        title="Background work",
+        highlights=[
+            "Settings, System, Background work chooses how often scheduled jobs run: Normal, "
+            "Relaxed, Light or Minimal. A slower pace saves CPU and database work on a small "
+            "server.",
+            "Normal keeps the usual schedule, so nothing changes until you choose another pace.",
+        ],
+        review=[
+            UpgradeReviewItem(
+                id="background-work",
+                title="Background work",
+                description="How often downloads, imports, lists and connections are checked.",
+                link="/settings#background-work",
+            ),
+        ],
+        database_changes=[
+            "A new background_work_settings table holds the chosen pace.",
+        ],
+        rollback=(
+            "To remove the table, run python -m app.downgrade 0083_operation_lookups in the "
+            "Storyarr container before switching back to v0.4.1. Only this setting is removed."
+        ),
+    ),
 ]
 CURRENT = RELEASES[-1].id
 

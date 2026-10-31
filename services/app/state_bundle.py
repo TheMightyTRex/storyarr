@@ -24,7 +24,7 @@ from app.config import Settings, get_settings
 from app.db.models import Base
 from app.recovery import MAINTENANCE_LOCK
 
-SCHEMA = "0083_operation_lookups"
+SCHEMA = "storyarr_0084_background_work"
 CONFIG_FIELDS = {
     "public_url",
     "cookie_secure",

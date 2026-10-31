@@ -18,6 +18,7 @@ import {
   WantedSearchSettings,
 } from "./AutomationSettings";
 import { upgradeLaterKey } from "../upgradeLater";
+import { BackgroundWorkForm } from "./BackgroundWork";
 
 const steps = [
   ["whats-new", "New in this version"],
@@ -32,6 +33,7 @@ const settingsFor: Record<string, React.ReactNode> = {
   "wanted-search": <WantedSearchSettings />,
   "deleted-books": <DeletedRetention />,
   "audible-store": <AudibleStoreSetting />,
+  "background-work": <BackgroundWorkForm />,
 };
 
 export default function UpgradeWizard() {

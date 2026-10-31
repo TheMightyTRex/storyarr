@@ -3,6 +3,14 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.4.2 (31 October 2026)
+
+### Added
+- **Background work** (Settings → System): choose how often scheduled jobs run: Normal, Relaxed (×5), Light
+  (×20) or Minimal (×50). Normal keeps the usual schedule; a change applies within a minute. The upgrade wizard
+  offers it as a new setting. Migration `storyarr_0084_background_work`; undo with
+  `python -m app.downgrade 0083_operation_lookups`.
+
 ## v0.4.1 (31 October 2026)
 
 ### Fixed
