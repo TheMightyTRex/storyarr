@@ -56,7 +56,7 @@ const groups: {
     id: "system",
     title: "System",
     icon: ScrollText,
-    sections: ["logs", "upgrades"],
+    sections: ["logs", "background-work", "upgrades"],
   },
 ];
 

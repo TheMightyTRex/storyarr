@@ -114,6 +114,52 @@ RELEASES = [
             "The bookshelf drawer can start a search now, and exclude a book from the follow.",
         ],
     ),
+    UpgradeRelease(
+        id="2026.10.31.2",
+        title="Background work",
+        highlights=[
+            "Settings, System, Background work chooses how often scheduled jobs run: Normal, "
+            "Relaxed, Light or Minimal. A slower pace saves CPU and database work on a small "
+            "server.",
+            "Normal keeps the usual schedule, so nothing changes until you choose another pace.",
+        ],
+        review=[
+            UpgradeReviewItem(
+                id="background-work",
+                title="Background work",
+                description="How often downloads, imports, lists and connections are checked.",
+                link="/settings#background-work",
+            ),
+        ],
+        database_changes=[
+            "A new background_work_settings table holds the chosen pace.",
+        ],
+        rollback=(
+            "To remove the table, run python -m app.downgrade 0083_operation_lookups in the "
+            "Storyarr container before switching back to v0.4.1. Only this setting is removed."
+        ),
+    ),
+    UpgradeRelease(
+        id="2026.10.31.3",
+        title="Series, Authors and Following layouts",
+        highlights=[
+            "My library Series and Authors, and Following, have two layouts: List and detail "
+            "(the list beside the chosen series or author) and List (one aligned row each).",
+            "List and detail is the default. The layout switch is next to the search, and your "
+            "choice is saved with your account, so it follows you to every browser.",
+            "Each series or author shows its covers, the author's picture beside the name, "
+            "progress, statuses and actions in the same place every time.",
+        ],
+        database_changes=[
+            "A new preferences column on users holds each person's own choices, starting with "
+            "this layout.",
+        ],
+        rollback=(
+            "To remove the column, run python -m app.downgrade storyarr_0084_background_work in "
+            "the Storyarr container before switching back to v0.4.2. Only saved layout choices are "
+            "removed."
+        ),
+    ),
 ]
 CURRENT = RELEASES[-1].id
 

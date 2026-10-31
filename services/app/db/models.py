@@ -1245,6 +1245,19 @@ class OnboardingSettings(Base):
     )
 
 
+class BackgroundWorkSettings(Base):
+    __tablename__ = "background_work_settings"
+    __table_args__ = (
+        CheckConstraint("id = 1", name="background_work_settings_id_check"),
+        CheckConstraint(
+            "pace IN ('normal', 'relaxed', 'light', 'minimal')",
+            name="background_work_settings_pace_check",
+        ),
+    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    pace: Mapped[str] = mapped_column(String(20), default="normal", server_default="normal")
+
+
 class OrganizationSettings(Base):
     __tablename__ = "organization_settings"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

@@ -18,6 +18,8 @@ from app.container import configure_environment
 RELEASES = {
     "0080_member_setup": "Dewarr v0.3.9",
     "0082_installation_automation": "Storyarr before the operation lookup indexes",
+    "0083_operation_lookups": "Storyarr v0.4.1, before Background work",
+    "storyarr_0084_background_work": "Storyarr v0.4.2, before saved layouts",
 }
 
 

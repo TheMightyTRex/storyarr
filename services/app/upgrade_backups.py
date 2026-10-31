@@ -30,6 +30,7 @@ TABLES = [
     "import_destinations",
     "organization_settings",
     "onboarding_settings",
+    "background_work_settings",
     "notification_policy",
     "notification_channels",
     "request_quota_policies",

@@ -20,6 +20,7 @@ from app.api import (
     automatic_imports,
     automatic_selection,
     automation_settings,
+    background_work,
     book_sources,
     capacity,
     catalog,
@@ -116,6 +117,7 @@ def create_app() -> FastAPI:
     app = FastAPI(title="Storyarr", version="0.3.0", lifespan=lifespan)
     app.include_router(application_release.router, prefix="/api")
     app.include_router(notifications.router, prefix="/api")
+    app.include_router(background_work.router, prefix="/api")
     app.include_router(preferences.router, prefix="/api")
 
     @app.exception_handler(RequestValidationError)
