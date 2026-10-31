@@ -39,7 +39,12 @@ async def test_a_page_read_stops_when_the_browser_leaves():
 
 
 async def test_writes_and_non_api_requests_are_left_alone():
-    for method, path in (("POST", "/api/requests"), ("GET", "/assets/app.js")):
+    for method, path in (
+        ("POST", "/api/requests"),
+        ("GET", "/assets/app.js"),
+        ("GET", "/api/books/1/sources"),  # Searches outside services.
+        ("GET", "/api/requestsx"),
+    ):
         try:
             await asyncio.wait_for(run(method, path), 0.2)
         except TimeoutError:
