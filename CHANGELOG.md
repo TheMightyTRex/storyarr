@@ -3,6 +3,15 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.4.3 (31 October 2026)
+
+### Changed
+- **Series, Authors and Following layouts:** List and detail (the default) or List, with the switch next to the
+  search. The choice is saved with each person's account. Covers, the author's picture beside the name,
+  progress, statuses and actions sit in the same place on every row. Following shows the chosen follow's
+  bookshelf beside the list. Migration `storyarr_0085_user_preferences`; undo with
+  `python -m app.downgrade storyarr_0084_background_work`.
+
 ## v0.4.2 (31 October 2026)
 
 ### Added
