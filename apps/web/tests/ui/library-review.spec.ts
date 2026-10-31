@@ -21,7 +21,7 @@ const asset = (id: string, title: string, readIssues: string[]) => ({
   open_url: `https://abs.example.test/item/${id}`,
 });
 
-test("library review links unmatched items to Dewarr and Hardcover books", async ({
+test("library review links unmatched items to Storyarr and Hardcover books", async ({
   page,
 }) => {
   const errors: string[] = [];

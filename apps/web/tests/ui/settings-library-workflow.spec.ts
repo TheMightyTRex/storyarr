@@ -473,7 +473,7 @@ for (const mode of ["hardlink", "copy"]) {
       .getByRole("button", { name: "Browse folders", exact: true })
       .click();
     await expect(
-      dialog.getByRole("region", { name: "Folders visible to Dewarr" }),
+      dialog.getByRole("region", { name: "Folders visible to Storyarr" }),
     ).toBeVisible();
     await dialog
       .locator(".mounted-folder-list")
@@ -581,7 +581,7 @@ for (const mode of ["hardlink", "copy"]) {
       .getByRole("button", { name: "Browse folders", exact: true })
       .click();
     await expect(
-      dialog.getByRole("region", { name: "Folders visible to Dewarr" }),
+      dialog.getByRole("region", { name: "Folders visible to Storyarr" }),
     ).toBeVisible();
     await dialog.screenshot({
       path: testInfo.outputPath("library-folder-explorer-mobile.png"),
@@ -610,7 +610,7 @@ for (const mode of ["hardlink", "copy"]) {
   });
 }
 
-test("a Windows Audiobookshelf path asks for the Dewarr mount", async ({
+test("a Windows Audiobookshelf path asks for the Storyarr mount", async ({
   page,
 }) => {
   const writes: { path: string; body: any }[] = [];
@@ -764,7 +764,7 @@ test("a Windows Audiobookshelf path asks for the Dewarr mount", async ({
   await dialog.getByRole("button", { name: "Save & verify folder" }).click();
   await expect(
     dialog.getByText(
-      "Enter the absolute folder Dewarr has mounted, such as /data/audiobooks.",
+      "Enter the absolute folder Storyarr has mounted, such as /data/audiobooks.",
     ),
   ).toBeVisible();
   await mount.fill("/data/audiobooks");
@@ -776,7 +776,7 @@ test("a Windows Audiobookshelf path asks for the Dewarr mount", async ({
   });
 });
 
-test("a UNC Audiobookshelf path is not used as the Dewarr mount", async ({
+test("a UNC Audiobookshelf path is not used as the Storyarr mount", async ({
   page,
 }) => {
   const writes: { path: string; body: any }[] = [];
@@ -922,7 +922,7 @@ test("a UNC Audiobookshelf path is not used as the Dewarr mount", async ({
   await dialog.getByRole("button", { name: "Save & verify folder" }).click();
   await expect(
     dialog.getByText(
-      "Enter the absolute folder Dewarr has mounted, such as /data/audiobooks.",
+      "Enter the absolute folder Storyarr has mounted, such as /data/audiobooks.",
     ),
   ).toBeVisible();
   await mount.fill("/data/audiobooks");

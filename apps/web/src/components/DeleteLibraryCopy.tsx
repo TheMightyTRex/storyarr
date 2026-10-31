@@ -58,7 +58,7 @@ export default function DeleteLibraryCopy({
                 <li>Scan the library in Audiobookshelf.</li>
               </ol>
               <p className="muted">
-                Paths are as Dewarr sees them.{" "}
+                Paths are as Storyarr sees them.{" "}
                 {days
                   ? `The files are deleted permanently after ${days} days.`
                   : "The files are kept until you delete them."}
@@ -99,7 +99,7 @@ export default function DeleteLibraryCopy({
           <div className="delete-warning" role="note">
             <p>
               <strong>This removes the book from Audiobookshelf</strong> (
-              {asset.library_name}) and from your Dewarr library.
+              {asset.library_name}) and from your Storyarr library.
             </p>
           </div>
           <fieldset>

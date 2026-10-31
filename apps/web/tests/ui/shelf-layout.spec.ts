@@ -27,7 +27,7 @@ test("the Shelf layout groups library pages and can be switched back to Classic"
 
   await page.goto("/settings");
   const classic = page.getByRole("navigation", { name: "Main navigation" });
-  await expect(classic.getByRole("link", { name: "My Library" })).toBeVisible();
+  await expect(classic.getByRole("link", { name: "My library" })).toBeVisible();
 
   await page.getByText("Shelf", { exact: true }).click();
   await expect(page.getByRole("status").first()).toContainText(
@@ -72,7 +72,7 @@ test("the Shelf layout groups library pages and can be switched back to Classic"
   await expect(
     page
       .getByRole("navigation", { name: "Main navigation" })
-      .getByRole("link", { name: "My Library" }),
+      .getByRole("link", { name: "My library" }),
   ).toBeVisible();
 });
 
@@ -108,7 +108,7 @@ test("Settings has six groups in the header, each with its own section tabs", as
   await expect(groups.getByRole("link")).toHaveText([
     "General",
     "Accounts",
-    "Reading",
+    "Sources",
     "Library",
     "Downloads",
     "System",

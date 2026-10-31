@@ -241,7 +241,7 @@ function SubscriptionSettings({
         {provider === "storygraph" ? (
           <p className="muted">
             This list stays linked to the StoryGraph shelf or tag you followed.
-            Reconnect StoryGraph in Reading accounts if checks stop.
+            Reconnect StoryGraph in Settings, Sources, if checks stop.
           </p>
         ) : provider === "hardcover" ? (
           <HardcoverChoice data={data} />

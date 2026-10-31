@@ -504,7 +504,7 @@ def _private_directory(fd, path):
         raise PublicationError(
             f"Journal folder {path} must be private (0700); "
             f"current permissions are {stat.S_IMODE(info.st_mode):04o}. "
-            "Use Dewarr's protected app storage for new journals. "
+            "Use Storyarr's protected app storage for new journals. "
             "Existing legacy journals must keep their private permissions."
         )
 
@@ -521,7 +521,7 @@ def secure_managed_directory(fd, path):
         empty = next(entries, None) is None
     if info.st_uid != os.geteuid() or not empty:
         raise PublicationError(
-            f"Cannot secure folder {path}: it must be owned by Dewarr (uid {os.geteuid()}) "
+            f"Cannot secure folder {path}: it must be owned by Storyarr (uid {os.geteuid()}) "
             "and empty before automatic permission repair. Review its ownership, ACLs "
             "and any existing recovery files, then set private permissions (0700)."
         )
@@ -530,7 +530,7 @@ def secure_managed_directory(fd, path):
     except OSError as error:
         raise PublicationError(
             f"Cannot set private permissions (0700) on {path}. "
-            "Check the NAS ACL and mount permission settings for Dewarr's user."
+            "Check the NAS ACL and mount permission settings for Storyarr's user."
         ) from error
     _private_directory(fd, path)
     if stat.S_IMODE(os.fstat(fd).st_mode) != 0o700:
@@ -1616,7 +1616,7 @@ def probe_file(folder, path, kind):
     try:
         try:
             with probe_step("writing a temporary file", path, kind):
-                write_all(output, b"Dewarr folder access check\n")
+                write_all(output, b"Storyarr folder access check\n")
         finally:
             os.close(output)
         yield name
@@ -1666,7 +1666,7 @@ def probe_download_folder(
                 file = PublishFile(
                     source=sample,
                     name="probe",
-                    sha256=hashlib.sha256(b"Dewarr folder access check\n").hexdigest(),
+                    sha256=hashlib.sha256(b"Storyarr folder access check\n").hexdigest(),
                     identity=identity(os.fstat(fd)),
                 )
             report = probe_destination(

@@ -358,7 +358,7 @@ function BookdropReview({
         Review in Grimmory Bookdrop
       </a>
       <p className="muted">
-        After importing in Grimmory, sync its library in Dewarr and link the
+        After importing in Grimmory, sync its library in Storyarr and link the
         reviewed copy. Leaving the queue alone does not prove it was imported.
       </p>
       <button

@@ -120,7 +120,7 @@ export default function Recovery() {
                   {review.data.queue_fence.historical_jobs} saved jobs are
                   fenced. Restored commands, download attempts, import records
                   and books also retain their recovery boundary. Retrying an old
-                  job or giving it a new queue ID does not authorize it to run.
+                  job or giving it a new queue ID does not authorise it to run.
                 </p>
               ) : (
                 <p>
@@ -136,7 +136,7 @@ export default function Recovery() {
               </p>
               <p>
                 {review.data.queue_fence?.approvals_protected
-                  ? "Saved approvals are protected. Old download selections, import plans, CSV previews and list or series approvals cannot authorize new work. Completed receipts remain available."
+                  ? "Saved approvals are protected. Old download selections, import plans, CSV previews and list or series approvals cannot authorise new work. Completed receipts remain available."
                   : "Saved approval protection needs the supported offline upgrade before recovery can proceed."}
               </p>
             </section>
@@ -176,7 +176,7 @@ export default function Recovery() {
               external list changes with this saved state.
             </p>
             <p className="recovery-limit">
-              Observations do not authorize automatic reconciliation or resume.
+              Observations do not authorise automatic reconciliation or resume.
               Follow the repository’s recovery runbook; changing the recovery
               environment flag does not clear a restored database.
             </p>

@@ -24,7 +24,7 @@ test("Discover opens a full book page with safe reviews and explicit actions", a
     await page
       .getByRole("button", { name: "Finish later", exact: true })
       .click();
-    await page.getByRole("link", { name: "My Library", exact: true }).click();
+    await page.getByRole("link", { name: "My library", exact: true }).click();
   } else {
     await page.getByLabel("Username", { exact: true }).fill("reader");
     await page
@@ -36,7 +36,7 @@ test("Discover opens a full book page with safe reviews and explicit actions", a
     ).toBeVisible();
     await page.goto("/library?view=saved");
   }
-  await expect(page.getByRole("heading", { name: "My Library" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My library" })).toBeVisible();
   await page.goto("/metadata");
   await page.getByLabel("Hardcover API token").fill("browser-hardcover-token");
   await page

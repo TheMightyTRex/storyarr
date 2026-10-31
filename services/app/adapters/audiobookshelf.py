@@ -56,7 +56,7 @@ class ABSItem(BaseModel):
     ebook_supplementary: bool = False
     # One unreadable library row must not abort the rest of the sync.
     unreadable: bool = False
-    # Names of fields Dewarr dropped or could not read. Values are never kept here.
+    # Names of fields Storyarr dropped or could not read. Values are never kept here.
     read_issues: list[str] = Field(default_factory=list)
     # A short preview of unreadable scalar fields (year, language, identifiers) for the
     # admin review queue. Stored with the item, never logged.
@@ -423,7 +423,7 @@ class Audiobookshelf(JsonEndpoint):
                 except ValueError as error:
                     raise AdapterError(
                         FailureKind.UNSUPPORTED,
-                        f"Dewarr cannot use the Audiobookshelf folder path {str(path)[:200]!r}.",
+                        f"Storyarr cannot use the Audiobookshelf folder path {str(path)[:200]!r}.",
                     ) from error
             settings = response.get("settings") or {}
 

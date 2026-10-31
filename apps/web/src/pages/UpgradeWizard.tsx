@@ -81,8 +81,8 @@ export default function UpgradeWizard() {
             : "Welcome to the new version"}
         </h1>
         <p className="muted">
-          Dewarr has been upgraded. Take a moment to see what has changed, check
-          your settings backup and review the new settings. Every step is
+          Storyarr has been upgraded. Take a moment to see what has changed,
+          check your settings backup and review the new settings. Every step is
           optional.
         </p>
       </header>
@@ -160,7 +160,7 @@ export default function UpgradeWizard() {
           {id === "backup" && (
             <>
               <p>
-                Before upgrading, Dewarr saved a copy of your settings:
+                Before upgrading, Storyarr saved a copy of your settings:
                 connections, libraries, lists, download and automation settings.
                 Download it to keep a copy somewhere else.
               </p>

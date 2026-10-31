@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   Activity,
   Bookmark,
@@ -37,10 +37,11 @@ export function ShelfRail({
   return (
     <aside className="shelf-rail">
       <NavLink to="/library" className="shelf-brand" aria-label="Library home">
-        <img src="/assets/dewarr.png" width="40" height="40" alt="" />
+        <img src="/assets/storyarr.svg" width="40" height="40" alt="" />
       </NavLink>
       <nav aria-label="Main navigation" className="shelf-nav">
-        <NavLink
+        {/* A plain link: NavLink would drop aria-current on Following and Library review. */}
+        <Link
           to="/library"
           className={inLibrary ? "active" : undefined}
           aria-current={inLibrary ? "page" : undefined}
@@ -53,7 +54,7 @@ export function ShelfRail({
               <span className="sr-only"> library items to review</span>
             </span>
           )}
-        </NavLink>
+        </Link>
         <NavLink to="/discover">
           <Compass size={20} aria-hidden="true" />
           <span>Discover</span>

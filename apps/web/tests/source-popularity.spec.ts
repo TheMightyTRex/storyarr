@@ -22,7 +22,7 @@ test("source popularity persists as an ordered preference without rewriting save
     page.getByRole("button", { name: "Sign out", exact: true }),
   ).toBeVisible();
   await page.goto("/library?view=saved");
-  await expect(page.getByRole("heading", { name: "My Library" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My library" })).toBeVisible();
   const works = await (
     await page.request.get("/api/catalog/works?q=The%20Synthetic%20Archive")
   ).json();

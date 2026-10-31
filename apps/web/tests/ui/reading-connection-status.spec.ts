@@ -98,7 +98,7 @@ for (const explicitTest of [true, false]) {
       .click();
     await page
       .getByRole("navigation", { name: "Setup steps" })
-      .getByRole("button", { name: /Reading accounts/ })
+      .getByRole("button", { name: /Sources/ })
       .click();
     const hardcover = page.getByRole("region", {
       name: "Hardcover connection",

@@ -367,7 +367,7 @@ async def review_bookdrop(
     if body.action == "reject":
         entry.state = "rejected"
         entry.message = (
-            "Marked rejected in Dewarr. The delivery receipt is retained to prevent "
+            "Marked rejected in Storyarr. The delivery receipt is retained to prevent "
             "resending. Manage or discard the intake file in Grimmory."
         )
     elif body.action == "refresh":

@@ -22,7 +22,7 @@ test("individual indexer priorities load explicitly and retain saved choices thr
     page.getByRole("button", { name: "Sign out", exact: true }),
   ).toBeVisible();
   await page.goto("/library?view=saved");
-  await expect(page.getByRole("heading", { name: "My Library" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My library" })).toBeVisible();
   const works = await (
     await page.request.get("/api/catalog/works?q=The%20Synthetic%20Archive")
   ).json();
@@ -103,7 +103,7 @@ test("individual indexer priorities load explicitly and retain saved choices thr
   });
   await load.click();
   const picker = editor.getByRole("combobox", {
-    name: "Indexer to prioritize",
+    name: "Indexer to prioritise",
     exact: true,
   });
   await expect(picker).toBeEnabled();

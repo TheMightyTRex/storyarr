@@ -1,4 +1,4 @@
-# Implications for Dewarr's MAM control center
+# Implications for Storyarr's MAM control center
 
 Engineering notes based on the user-supplied September 24, 2026 documentation. These notes preserve the API review points. The current implementation is documented in [MAM account control center](../MAM-CONTROL-CENTER.md); live purchases have not been tested.
 

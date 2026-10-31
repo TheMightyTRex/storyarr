@@ -22,7 +22,7 @@ test("followed lists expose saved books and ownership without starting acquisiti
     page.getByRole("button", { name: "Sign out", exact: true }),
   ).toBeVisible();
   await page.goto("/library?view=saved");
-  await expect(page.getByRole("heading", { name: "My Library" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My library" })).toBeVisible();
   const auth = await (await page.request.get("/api/auth/me")).json();
   const headers = {
     "X-CSRF-Token": auth.csrf_token,

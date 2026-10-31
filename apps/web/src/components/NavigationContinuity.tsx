@@ -48,7 +48,7 @@ export function ReturnLink({
           : to.startsWith("/discover")
             ? "Discover"
             : to.startsWith("/library")
-              ? "My Library"
+              ? "My library"
               : to.startsWith("/books/")
                 ? "book"
                 : to.startsWith("/following")

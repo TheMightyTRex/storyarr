@@ -53,7 +53,7 @@ class DeleteInput(BaseModel):
 
 class DeleteResult(BaseModel):
     held_path: str | None = None
-    # Where the files were, in Dewarr's paths, so they can be moved back.
+    # Where the files were, in Storyarr's paths, so they can be moved back.
     original_path: str | None = None
     withdrawn_requests: int = 0
     excluded_from_lists: int = 0
@@ -72,7 +72,7 @@ def _confine(root, relative):
 
 
 async def _library_folder(db, asset, item_path):
-    """Dewarr's own path for an Audiobookshelf item folder, inside a configured library root."""
+    """Storyarr's own path for an Audiobookshelf item folder, inside a configured library root."""
     settings = await storage_settings(db)
     rows = await db.scalars(
         select(ImportDestination).where(
@@ -89,7 +89,7 @@ async def _library_folder(db, asset, item_path):
         return await asyncio.to_thread(_confine, root, relative)
     raise HTTPException(
         409,
-        "Dewarr can't reach this library's files. Add the library under Library folders, "
+        "Storyarr can't reach this library's files. Add the library under Library folders, "
         "or delete the files permanently instead.",
     )
 
@@ -258,7 +258,7 @@ def _expired_folders(roots, retention_days, today: date):
             try:
                 day = date.fromisoformat(folder.name)
             except ValueError:
-                continue  # never touch anything Dewarr didn't create
+                continue  # never touch anything Storyarr didn't create
             if folder.is_dir() and day < cutoff:
                 yield folder
 

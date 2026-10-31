@@ -365,7 +365,7 @@ function Home({ canEdit }: { canEdit: boolean }) {
               setCustomizing(true);
             }}
           >
-            <SlidersHorizontal size={15} /> Customize
+            <SlidersHorizontal size={15} /> Customise
           </button>
         </div>
       </DiscoverNavigation>
@@ -392,7 +392,7 @@ function Home({ canEdit }: { canEdit: boolean }) {
           ))}
       {rows.length > 0 && rows.every((r) => hidden.includes(r.id)) && (
         <p className="explore-empty">
-          Your home is clear. Choose shelves in Customize or add a collection.
+          Your home is clear. Choose shelves in Customise or add a collection.
         </p>
       )}
       <Link className="back-link" to="/discover?view=yours">
@@ -936,7 +936,7 @@ function CollectionPage({ id, canEdit }: { id: string; canEdit: boolean }) {
           <p className="explore-footnote">
             {c.kind === "listopia"
               ? "Books load from Goodreads as you scroll."
-              : `Verified ${new Date(c.updated_at).toLocaleDateString()} · ${c.refresh_mode === "app-update" ? "Official award facts are updated with Dewarr releases." : "Collections refresh daily while followed."}`}
+              : `Verified ${new Date(c.updated_at).toLocaleDateString()} · ${c.refresh_mode === "app-update" ? "Official award facts are updated with Storyarr releases." : "Collections refresh daily while followed."}`}
           </p>
         </>
       )}
@@ -957,8 +957,8 @@ function YourLists({ canEdit }: { canEdit: boolean }) {
         <Link
           className="list-settings-link"
           to="/settings#reading"
-          aria-label="Reading accounts"
-          title="Reading accounts settings"
+          aria-label="Sources"
+          title="Sources settings"
         >
           <Settings size={20} aria-hidden="true" />
         </Link>

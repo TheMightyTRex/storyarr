@@ -167,7 +167,7 @@ export default function Connections({
                 <DeleteConfiguration
                   name={connection.name}
                   disabled={command.isPending}
-                  description="Remove this library connection, its saved credentials, and its library folder settings from Dewarr. Books and files in your library app are kept."
+                  description="Remove this library connection, its saved credentials, and its library folder settings from Storyarr. Books and files in your library app are kept."
                   onDelete={async () =>
                     result(
                       await api.DELETE("/api/integrations/{integration_id}", {
@@ -202,7 +202,7 @@ export default function Connections({
             <div className="setting-subheading">
               <h3>Library folders</h3>
               <SettingHelp label="library folders">
-                Completed downloads are organized into these destinations.
+                Completed downloads are organised into these destinations.
                 Hardlinks keep the original download available for seeding. A
                 folder can rename the seeding copy in qBittorrent when you want
                 the library file and the seeding file to be the same copy.

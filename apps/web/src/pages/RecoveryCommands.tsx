@@ -127,7 +127,7 @@ export function CommandRecoveryReview({
                     : item.action === "pause-policy"
                       ? "Pause this list policy and stop scheduled book checks. Keep monitored books and their request history."
                       : item.action === "pause-controller"
-                        ? "Disable this series controller and invalidate its earlier authorization. Keep its accepted batch and acquisition progress."
+                        ? "Disable this series controller and invalidate its earlier authorisation. Keep its accepted batch and acquisition progress."
                         : "Retire this command. Its old preview and worker cannot run again; any existing wanted books stay intact."}
             </p>
           </li>

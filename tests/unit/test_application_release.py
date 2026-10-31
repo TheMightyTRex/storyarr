@@ -64,7 +64,7 @@ def test_release_history_notes_and_cache(monkeypatch):
     payload = [
         {
             "tag_name": "v1.10.0",
-            "name": "Dewarr v1.10.0",
+            "name": "Storyarr v1.10.0",
             "body": "## Features\n\n- Lists",
             "html_url": "https://github.com/owner/book-search/releases/tag/v1.10.0",
             "published_at": "2026-09-21T13:58:30Z",
@@ -90,7 +90,7 @@ def test_release_history_notes_and_cache(monkeypatch):
     data = release.application_releases()
     assert data.status == "checked"
     assert [item.version for item in data.releases] == ["v1.10.0", "v1.8.0", "v1.7.0"]
-    assert data.releases[0].name == "Dewarr v1.10.0"
+    assert data.releases[0].name == "Storyarr v1.10.0"
     assert data.releases[0].notes == "## Features\n\n- Lists"
     assert data.releases[0].published_at == "2026-09-21T13:58:30Z"
     assert data.releases[0].url.endswith("/releases/tag/v1.10.0")

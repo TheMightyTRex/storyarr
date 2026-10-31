@@ -1598,7 +1598,7 @@ a.auth-provider:hover {
 .request-progress-card details {
   margin: 16px 0;
 }
-/* Shared shelf controls across all My Library tabs. */
+/* Shared shelf controls across all My library tabs. */
 .library-search {
   display: flex;
   align-items: end;

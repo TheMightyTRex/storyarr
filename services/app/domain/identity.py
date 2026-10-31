@@ -134,7 +134,7 @@ async def _recording_candidates(db, item, key, label):
 
 
 def _library_copy(work):
-    """A book Dewarr created from a library item, not one from a catalog or an admin."""
+    """A book Storyarr created from a library item, not one from a catalog or an admin."""
     fields = work.metadata_fields or {}
     return (
         work.provisional
@@ -358,7 +358,7 @@ def version_changed(item: ABSItem, link: ProviderObject, medium: str) -> bool:
     fields = ["language", "year", "abridged", "identifiers"]
     if medium == "audio":
         fields.append("narrators")
-    # A field Dewarr could not read, now or at the last match, is missing evidence,
+    # A field Storyarr could not read, now or at the last match, is missing evidence,
     # not a different recording.
     unread = set(item.read_issues) | set(link.snapshot.get("read_issues") or [])
     if unread & {"isbn", "asin"}:

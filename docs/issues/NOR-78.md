@@ -19,7 +19,7 @@ in the [NFS manual](https://man7.org/linux/man-pages/man5/nfs.5.html).
 
 The report does not provide enough environment detail to distinguish these
 installation-level triggers. The architectural defect is making this separate
-remote-marker protocol a prerequisite for local import, when Dewarr already
+remote-marker protocol a prerequisite for local import, when Storyarr already
 validates local publication and confirms the actual book through the backend.
 
 [Radarr](https://github.com/Radarr/Radarr/blob/develop/src/NzbDrone.Core/RemotePathMappings/RemotePathMappingService.cs)

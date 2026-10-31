@@ -40,7 +40,7 @@ def authorization_url(client_id: str, code: str) -> str:
         [
             ("clientID", client_id),
             ("code", code),
-            ("context[device][product]", "Dewarr"),
+            ("context[device][product]", "Storyarr"),
             ("context[device][platform]", "Web"),
             ("forwardUrl", forward),
         ]
@@ -90,11 +90,11 @@ async def fetch(method: str, url: str, client_id: str, *, token: str | None = No
         raise PlexRejected("rejected")
     headers = {
         "Accept": "application/json",
-        "X-Plex-Product": "Dewarr",
+        "X-Plex-Product": "Storyarr",
         "X-Plex-Client-Identifier": client_id,
         "X-Plex-Version": "1",
         "X-Plex-Platform": "Web",
-        "X-Plex-Device": "Dewarr",
+        "X-Plex-Device": "Storyarr",
     }
     if token:
         headers["X-Plex-Token"] = token

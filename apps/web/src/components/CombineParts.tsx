@@ -127,7 +127,7 @@ export default function PartSets({ workId }: { workId: string }) {
     <section className="part-sets" aria-label="Books released in parts">
       <h3>Released in parts</h3>
       <p className="muted">
-        Once every part is in an Audiobookshelf library, Dewarr combines them
+        Once every part is in an Audiobookshelf library, Storyarr combines them
         into one book with a Disc folder per part. It skips any part your
         connected Audiobookshelf account has started listening to.
       </p>

@@ -93,7 +93,7 @@ test("Quick add follows defaults and format overrides; sources provide compact r
         state: "completed",
         count: 0,
         message:
-          "Indexers selected for search: 0 torrent, 1 Usenet. No torrent indexers are eligible. Enable a searchable torrent indexer with book or audiobook categories in Prowlarr and check Dewarr's source exclusions. Adding qBittorrent does not add torrent sources.",
+          "Indexers selected for search: 0 torrent, 1 Usenet. No torrent indexers are eligible. Enable a searchable torrent indexer with book or audiobook categories in Prowlarr and check Storyarr's source exclusions. Adding qBittorrent does not add torrent sources.",
       },
     ],
     items: [

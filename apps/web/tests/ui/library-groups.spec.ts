@@ -8,7 +8,7 @@ const works = ["A Wizard of Earthsea", "The Tombs of Atuan"].map(
     availability: { owned: true, ebook: true, audio: false, stale: false },
   }),
 );
-test("My Library browses owned authors and series, filters, and opens books", async ({
+test("My library browses owned authors and series, filters, and opens books", async ({
   page,
 }, testInfo) => {
   const errors: string[] = [];

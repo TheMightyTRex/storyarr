@@ -22,7 +22,7 @@ test("release view sorting and filters compare every loaded result without chang
     page.getByRole("button", { name: "Sign out", exact: true }),
   ).toBeVisible();
   await page.goto("/library?view=saved");
-  await expect(page.getByRole("heading", { name: "My Library" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My library" })).toBeVisible();
   const works = await (
     await page.request.get("/api/catalog/works?q=The%20Synthetic%20Archive")
   ).json();

@@ -75,5 +75,5 @@ def account_data(payload):
 
 
 def upload_wire_amount(amount):
-    # MAM requires the trailing space. The public Dewarr API uses a simpler enum.
+    # MAM requires the trailing space. The public Storyarr API uses a simpler enum.
     return "Max Affordable " if amount == "max" else amount

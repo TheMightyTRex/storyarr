@@ -1,4 +1,4 @@
-# Contributing to Dewarr
+# Contributing to Storyarr
 
 ## Project layout
 
@@ -159,7 +159,7 @@ Follow the build in GitHub Actions, or find the run with
 The summary reports a unique `dev-<commit>-<run>.<attempt>-<architecture>` image tag
 as well as `:dev`. The app displays the matching dev build identity.
 
-In your existing homelab Compose file, change only the Dewarr image:
+In your existing homelab Compose file, change only the Storyarr image:
 
 ```yaml
 services:
@@ -174,7 +174,7 @@ After a successful build, run this from that stack's Compose directory:
 docker compose up -d --no-deps --pull always --wait dewarr
 ```
 
-This pulls the image before recreating Dewarr and waits for its health check.
+This pulls the image before recreating Storyarr and waits for its health check.
 There is no need to stop the entire stack, and `docker compose restart` alone
 does not load a new image. If you use the repository's Compose files directly,
 `deploy/compose.dev.yaml` provides the image override.

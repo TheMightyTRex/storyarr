@@ -308,7 +308,7 @@ async def apply_item(db, library, item, generation, integration_id, seen, *, kin
             if asset:
                 asset.last_seen_at, asset.seen_generation = now, generation
         return observed_media
-    # Without a readable title or author, Dewarr cannot tell which book this is.
+    # Without a readable title or author, Storyarr cannot tell which book this is.
     held = bool(IDENTITY_ISSUES.intersection(item.read_issues))
     if kind is None:
         kind = await db.scalar(select(Integration.kind).where(Integration.id == integration_id))

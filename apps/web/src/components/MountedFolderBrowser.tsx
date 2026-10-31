@@ -77,7 +77,7 @@ export default function MountedFolderBrowser({
   return (
     <section
       className="mounted-folder-browser"
-      aria-label="Folders visible to Dewarr"
+      aria-label="Folders visible to Storyarr"
       onKeyDown={(event) => {
         if (
           (event.metaKey || event.ctrlKey) &&
@@ -317,7 +317,7 @@ export default function MountedFolderBrowser({
                     <p className="mounted-folder-empty muted">
                       {path
                         ? "This folder is empty. You can select it below."
-                        : "No readable volumes found. Mount your media in Dewarr, then refresh."}
+                        : "No readable volumes found. Mount your media in Storyarr, then refresh."}
                     </p>
                   )}
                   {folders.data.truncated && (
@@ -337,7 +337,8 @@ export default function MountedFolderBrowser({
         </div>
       </div>
       <p className="mounted-folder-hint">
-        Folders mounted in Dewarr · your computer’s local folders are not shown.
+        Folders mounted in Storyarr · your computer’s local folders are not
+        shown.
       </p>
       <footer className="mounted-folder-footer">
         <div className="mounted-folder-selection">

@@ -94,7 +94,7 @@ function Editor({
     base: Defaults;
     overrides: Defaults["overrides"];
   } | null>(null);
-  // A refresh must not replace the draft or authorize saving against a newer revision.
+  // A refresh must not replace the draft or authorise saving against a newer revision.
   const current = draft?.base ?? latest;
   const overrides = draft?.overrides ?? current.overrides;
   const setOverrides = (value: Defaults["overrides"]) =>

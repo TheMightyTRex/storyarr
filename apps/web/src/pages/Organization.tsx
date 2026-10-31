@@ -182,7 +182,7 @@ function Editor({
     : previewFolder;
   const filenameSegments = templateSegments(draft[filename]);
   return (
-    <section className="naming-builder" aria-label="Organization settings">
+    <section className="naming-builder" aria-label="Organisation settings">
       {!embedded && <h1>File naming</h1>}
       <div className="segmented-control" role="group" aria-label="Book format">
         <button

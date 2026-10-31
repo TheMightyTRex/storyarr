@@ -1,8 +1,18 @@
-<p align="center"><img src="apps/web/public/assets/dewarr.png" width="88" alt="Dewarr logo"></p>
-<h1 align="center">Dewarr</h1>
-<p align="center">Your reading lists, audiobook library, and downloads in one place.</p>
+<p align="center"><img src="apps/web/public/assets/storyarr-192.png" width="88" alt=""></p>
+<h1 align="center">Storyarr</h1>
+<p align="center">Follow authors and series, and keep your audiobook library complete.</p>
 
-![Dewarr For you page](docs/images/for-you.png)
+![Storyarr For you page](docs/images/for-you.png)
+
+## About this fork
+
+Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) by logabell, released under the same MIT
+licence. It adds bookshelf pages for followed authors and series, automatic re-searching for wanted books, an
+Audible store choice, a light theme with display and accessibility settings, an upgrade wizard with settings
+backups, and faster database queries. See [CHANGELOG.md](CHANGELOG.md) for the full list.
+
+Storyarr does not publish a container image yet. Build it from this repository with `docker build -t storyarr .`
+and use `image: storyarr` in the examples below.
 
 ## Features
 
@@ -25,7 +35,7 @@ Early release. Automatic downloads are off by default. Goodreads RSS imports can
 
 ## Quick start
 
-Run **Dewarr + PostgreSQL**. Dewarr handles migrations and background jobs automatically. No Git, Python, setup script, or `.env` file is required.
+Run **Storyarr + PostgreSQL**. Storyarr handles migrations and background jobs automatically. No Git, Python, setup script, or `.env` file is required.
 
 `latest` tracks stable releases; use a `vX.Y.Z` tag to pin a release. The optional `edge` tag follows checked builds of main.
 
@@ -145,7 +155,7 @@ docker run -d \
   ghcr.io/logabell/dewarr:latest
 ```
 
-Already have PostgreSQL? Skip its container and use your existing database host, name, user, and password in the Dewarr command.
+Already have PostgreSQL? Skip its container and use your existing database host, name, user, and password in the Storyarr command.
 
 </details>
 
@@ -153,13 +163,13 @@ Open [localhost:8000](http://localhost:8000), or your server's address, and crea
 
 Before creating a Hardcover token, enable `read:catalog`, `read:me:content`, `read:lists`, `read:library:public`, `read:users`, and `write:lists`. [Create a token with those scopes selected](https://hardcover.app/account/api/keys/new?scope=read:catalog+read:me:content+read:lists+read:library:public+read:users+write:lists). The Metadata setup screen lists what each scope is for. Details are in [reading accounts](docs/READING-ACCOUNTS.md). To let Authentik, Pocket ID, or Authelia manage later sign-ins, see [OpenID Connect](docs/OIDC.md). To let a household sign in with Plex, see [Plex sign-in](docs/PLEX.md).
 
-Dewarr creates its encryption key in `/config` on first start. Keep that folder and the PostgreSQL volume when updating.
+Storyarr creates its encryption key in `/config` on first start. Keep that folder and the PostgreSQL volume when updating.
 
 [Settings, folders, backups, and upgrades](docs/DOCKER.md) · [Metadata and discovery sources](docs/METADATA-SOURCES.md) · [Download clients](docs/DOWNLOAD-CLIENTS.md) · [MAM proxy setup](docs/MAM-PROXY.md) · [Request quotas](docs/REQUEST-QUOTAS.md) · [Contributing](docs/DEVELOPMENT.md)
 
 ## Screenshots
 
-Actual Dewarr UI captured with an isolated demo account. Connected services and library contents depend on your setup.
+Actual Storyarr UI captured with an isolated demo account. Connected services and library contents depend on your setup.
 
 ### Browse books
 ![Browse discovery shelves](docs/images/browse.png)
@@ -186,7 +196,7 @@ docker compose pull
 docker compose up -d
 ```
 
-Back up `config` and PostgreSQL first. Dewarr applies database migrations automatically. [Backup instructions](docs/DOCKER.md#backups).
+Back up `config` and PostgreSQL first. Storyarr applies database migrations automatically. [Backup instructions](docs/DOCKER.md#backups).
 
 ## Contributors
 

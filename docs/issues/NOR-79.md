@@ -71,12 +71,12 @@ require what it can usefully establish at that point.
 
 Actual import recovery remains in the import implementation. This change removes
 its duplicated setup rehearsal; it does not rewrite saved import journals or
-change the handling of an interrupted real import. Journals still use Dewarr's
+change the handling of an interrupted real import. Journals still use Storyarr's
 application storage for new routes, rather than private permissions on media.
 A connection check is no longer a promise that every later filesystem operation
 will succeed. A later import failure belongs to that import and is reported there.
 
-Dewarr still chooses hardlink/copy from the access check, unlike Sonarr's per-file
+Storyarr still chooses hardlink/copy from the access check, unlike Sonarr's per-file
 hardlink-or-copy transfer. This change does not claim to replace the full transfer
 engine or eliminate all historical recovery complexity.
 

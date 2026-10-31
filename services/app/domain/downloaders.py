@@ -71,7 +71,7 @@ class DownloadMapping(BaseModel):
     @model_validator(mode="after")
     def target(self):
         if self.source_key is None and self.worker_path is None:
-            raise ValueError("Choose the folder Dewarr can read")
+            raise ValueError("Choose the folder Storyarr can read")
         return self
 
 

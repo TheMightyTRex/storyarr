@@ -21,4 +21,4 @@ The source page index is [MAM API documentation](https://www.myanonamouse.net/ap
 - Website store information comes from an earlier user message and must not override the API's documented limits.
 - Source inconsistencies and implementation recommendations are called out separately in the integration notes.
 
-See also [Dewarr MAM integration](../MAM-INTEGRATION.md). Read this local reference before changing the MAM adapter, account automation, or control-center UI. Refresh the reference when new upstream documentation is supplied.
+See also [Storyarr MAM integration](../MAM-INTEGRATION.md). Read this local reference before changing the MAM adapter, account automation, or control-center UI. Refresh the reference when new upstream documentation is supplied.

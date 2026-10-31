@@ -86,7 +86,7 @@ async def send(kind: str, config: dict, payload: dict, *, private_allowed: bool)
     settings = ChannelSecrets.model_validate(config)
     validate_config(kind, settings)
     events = payload["events"]
-    title = events[0]["title"] if len(events) == 1 else f"Dewarr: {len(events)} updates"
+    title = events[0]["title"] if len(events) == 1 else f"Storyarr: {len(events)} updates"
     body = "\n\n".join(f"{event['message']}\n{event['url']}" for event in events)
     if kind == "apprise":
         import apprise
@@ -110,13 +110,13 @@ async def send(kind: str, config: dict, payload: dict, *, private_allowed: bool)
             embeds.append(embed)
         data = {"embeds": embeds, "allowed_mentions": {"parse": []}}
         if len(events) > 10:
-            data["content"] = f"{len(events)} updates. Open Dewarr to review all matches."
+            data["content"] = f"{len(events)} updates. Open Storyarr to review all matches."
     elif kind == "ntfy":
         # POST to the topic endpoint; body remains UTF-8 and headers stay ASCII.
         headers["Title"] = title.encode("ascii", "replace").decode()
         headers["Click"] = events[0]["url"]
         if len(body.encode()) > 3500:
-            body = body.encode()[:3400].decode(errors="ignore") + "\nMore updates in Dewarr."
+            body = body.encode()[:3400].decode(errors="ignore") + "\nMore updates in Storyarr."
         data = None
     else:
         data = payload

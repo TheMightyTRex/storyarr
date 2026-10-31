@@ -82,7 +82,7 @@ def prepare_user(config: Path) -> None:
         os.setgid(gid)
         os.setuid(uid)
     elif (os.geteuid(), os.getegid()) != (uid, gid):
-        raise RuntimeError("Match PUID/PGID to --user, or omit --user and let Dewarr set them")
+        raise RuntimeError("Match PUID/PGID to --user, or omit --user and let Storyarr set them")
     if not os.access(config, os.W_OK):
         raise RuntimeError("The configured PUID/PGID must be able to write /config")
 
@@ -90,7 +90,8 @@ def prepare_user(config: Path) -> None:
 DATABASE_HINTS = (
     (
         ("failed to resolve host", "could not translate host name"),
-        "DB_HOST {host} does not resolve; attach Dewarr and PostgreSQL to the same Docker network",
+        "DB_HOST {host} does not resolve; attach Storyarr and PostgreSQL to the same Docker "
+        "network",
     ),
     (
         ("connection refused",),
@@ -265,7 +266,7 @@ def run_migrations(connection, stop: threading.Event) -> None:
         if stop.wait(1):
             raise InterruptedError
         if time.monotonic() >= deadline:
-            raise RuntimeError("Stop other Dewarr API/worker containers before upgrading")
+            raise RuntimeError("Stop other Storyarr API/worker containers before upgrading")
     try:
         LOG.info("Preparing database")
         child = subprocess.Popen(["alembic", "upgrade", "head"], start_new_session=True)
@@ -332,7 +333,7 @@ def main() -> int:
             commands.append([sys.executable, "-m", "app.jobs.worker", "--recovery"])
         elif os.environ.get("BOOK_RECOVERY_MODE", "false").lower() not in {"true", "1", "yes"}:
             commands.append([sys.executable, "-m", "app.jobs.worker"])
-        LOG.info("Starting Dewarr")
+        LOG.info("Starting Storyarr")
         return supervise(commands, stop)
     except InterruptedError:
         return 0

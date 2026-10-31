@@ -36,7 +36,7 @@ const groups: {
   },
   {
     id: "reading",
-    title: "Reading",
+    title: "Sources",
     icon: BookMarked,
     sections: ["reading", "catalog"],
   },

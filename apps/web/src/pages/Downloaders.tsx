@@ -65,7 +65,7 @@ const CLIENTS: Record<
     placeholder: "http://deluge:8112",
     url: "Use the Deluge Web UI address, connected to its daemon. Enter the Web UI password; no username is needed.",
     category:
-      "Use an existing Label plugin label or leave blank. Dewarr uses unique folders inside the completed download location.",
+      "Use an existing Label plugin label or leave blank. Storyarr uses unique folders inside the completed download location.",
     saved:
       "Leave the password blank to keep it. Changing the address clears it.",
   },
@@ -148,7 +148,7 @@ export default function Downloaders({
             <p className="eyebrow">DOWNLOAD CONNECTIONS</p>
             <h1>Downloaders</h1>
             <p>
-              Connect a download client. Dewarr tests the connection when you
+              Connect a download client. Storyarr tests the connection when you
               save.
             </p>
             <Link to="/settings#libraries">Library connections</Link>
@@ -294,7 +294,7 @@ export default function Downloaders({
                     </p>
                     {localFolder && localFolder !== connection.save_path && (
                       <p className="downloader-local-folder">
-                        Dewarr folder: <code>{localFolder}</code>
+                        Storyarr folder: <code>{localFolder}</code>
                       </p>
                     )}
                   </div>
@@ -321,7 +321,7 @@ export default function Downloaders({
                         {shared
                           ? "No manual path mapping needed. Library setup verifies file access before importing."
                           : connection.mappings_current
-                            ? "Dewarr will translate the download path when importing. Library setup verifies file access."
+                            ? "Storyarr will translate the download path when importing. Library setup verifies file access."
                             : "The connection and folder setup are separate. If both apps share this path, check the volume mount and test again. If the paths differ, add a mapping below."}
                       </p>
                     </div>
@@ -404,7 +404,7 @@ function DownloaderLimitations({ connection }: { connection: Connection }) {
   const notes: string[] = [];
   if (torrentClient && capabilities?.in_client_rename === false)
     notes.push(
-      "Keep seeding files in their download folder. Dewarr can hardlink or copy them into the library.",
+      "Keep seeding files in their download folder. Storyarr can hardlink or copy them into the library.",
     );
   if (torrentClient && capabilities?.full_v2_hashes === false)
     notes.push(
@@ -493,13 +493,13 @@ function PathMap({
       </summary>
       <p className="muted">
         Only needed when the same files have different paths in your download
-        client and Dewarr. Sharing a Docker Compose stack works without a
+        client and Storyarr. Sharing a Docker Compose stack works without a
         mapping when both containers mount the downloads at the same path.
       </p>
       <p className="downloader-example">
         For example: <code>/downloads</code> in {CLIENTS[connection.kind].name}{" "}
-        → <code>/data/torrents</code> in Dewarr. A mapping translates the path;
-        it does not mount or move files.
+        → <code>/data/torrents</code> in Storyarr. A mapping translates the
+        path; it does not mount or move files.
       </p>
       <form
         aria-label="Download path mapping"
@@ -530,10 +530,10 @@ function PathMap({
                 aria-hidden="true"
               />
               <label>
-                Same folder in Dewarr
+                Same folder in Storyarr
                 <span className="downloader-path-input">
                   <input
-                    aria-label={`Same folder in Dewarr ${index + 1}`}
+                    aria-label={`Same folder in Storyarr ${index + 1}`}
                     value={row.worker_path}
                     placeholder="/data/torrents"
                     onChange={(event) =>
@@ -544,7 +544,7 @@ function PathMap({
                   />
                   <button
                     type="button"
-                    aria-label={`Browse Dewarr folder ${index + 1}`}
+                    aria-label={`Browse Storyarr folder ${index + 1}`}
                     onClick={() => setBrowsing(index)}
                   >
                     <FolderOpen size={17} aria-hidden="true" />
@@ -619,7 +619,7 @@ function DownloadFolderPicker({
 }) {
   return (
     <BookDialog
-      title="Choose Dewarr download folder"
+      title="Choose Storyarr download folder"
       close={close}
       className="download-folder-dialog"
     >
@@ -799,8 +799,8 @@ function DownloadDispatchNotice() {
       <strong>Downloads are disabled on this server</strong>
       <p>
         You can connect clients and verify folders now. To start downloads, set{" "}
-        <code>BOOK_DOWNLOAD_DISPATCH_ENABLED=true</code> in Dewarr’s environment
-        and restart the container.
+        <code>BOOK_DOWNLOAD_DISPATCH_ENABLED=true</code> in Storyarr’s
+        environment and restart the container.
       </p>
     </div>
   );

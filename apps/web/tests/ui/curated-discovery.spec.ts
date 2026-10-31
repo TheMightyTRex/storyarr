@@ -21,7 +21,7 @@ test("award filters, follow controls and recording selection preserve the distin
     medium: "audio",
     source_url: "https://www.audiopub.org/2025audies-1",
     refresh_mode: "app-update",
-    description: "The winning performance. Choose the recognized recording.",
+    description: "The winning performance. Choose the recognised recording.",
   };
   const entry = {
     external_id: "audie-barbra",
@@ -89,7 +89,7 @@ test("award filters, follow controls and recording selection preserve the distin
           candidates: [],
           book: null,
           reason:
-            "This selection recognizes a specific edition or performance. Choose its edition before requesting.",
+            "This selection recognises a specific edition or performance. Choose its edition before requesting.",
         },
       };
     await route.fulfill({ json: data });

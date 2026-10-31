@@ -286,7 +286,7 @@ export default function Destinations({
                             destination.backend_path && (
                             <div>
                               <dt>
-                                Custom access path <span>used by Dewarr</span>
+                                Custom access path <span>used by Storyarr</span>
                               </dt>
                               <dd>
                                 <code>{destination.local_path}</code>
@@ -298,7 +298,7 @@ export default function Destinations({
                         <details className="library-staging-details">
                           <summary>Temporary import storage</summary>
                           <p>
-                            Dewarr prepares complete books in{" "}
+                            Storyarr prepares complete books in{" "}
                             <code>{destination.staging_path}</code> before
                             adding them to your library. This folder is managed
                             automatically.
@@ -527,7 +527,7 @@ function FolderPicker({
       : !eligible
         ? "Choose an available library folder first."
         : !workerPath.trim()
-          ? "Choose the mounted folder Dewarr can access."
+          ? "Choose the mounted folder Storyarr can access."
           : seedingRename && !clientPath.trim()
             ? "Enter the library folder path in qBittorrent."
             : seedingRename && qbit.length !== 1
@@ -542,7 +542,7 @@ function FolderPicker({
         throw new Error("Choose an available library folder first.");
       if (mapping && !posixPath(workerPath))
         throw new Error(
-          "Enter the absolute folder Dewarr has mounted, such as /data/audiobooks.",
+          "Enter the absolute folder Storyarr has mounted, such as /data/audiobooks.",
         );
       setVerificationWarnings([]);
       setProgress("Saving folder…");
@@ -816,7 +816,7 @@ function FolderPicker({
                     >
                       <legend>Folder path</legend>
                       <p className="library-path-help">
-                        Where can Dewarr access this library?
+                        Where can Storyarr access this library?
                       </p>
                       <label className="library-path-option">
                         <input
@@ -855,7 +855,7 @@ function FolderPicker({
                           <strong>Use a custom path</strong>
                           <small>
                             The same library folder, mounted at a different path
-                            for Dewarr.
+                            for Storyarr.
                           </small>
                         </span>
                       </label>
@@ -884,7 +884,7 @@ function FolderPicker({
                             folders
                           </button>
                           <p className="library-mapping-help">
-                            Select the existing folder visible to Dewarr. This
+                            Select the existing folder visible to Storyarr. This
                             does not move your library or change its path in{" "}
                             {libraryApp(selectedFolder?.server_kind)}.
                           </p>
@@ -896,10 +896,10 @@ function FolderPicker({
                 {selectedFolder && (
                   <p className="notice">
                     {bookdrop
-                      ? "Review in Grimmory Bookdrop · Dewarr copies one EPUB without changing its filename or metadata. Grimmory chooses the final name and library when you approve it. Staging must be outside Bookdrop. Admin downloads only; other formats use direct import."
+                      ? "Review in Grimmory Bookdrop · Storyarr copies one EPUB without changing its filename or metadata. Grimmory chooses the final name and library when you approve it. Staging must be outside Bookdrop. Admin downloads only; other formats use direct import."
                       : selectedFolder.server_kind === "grimmory"
-                        ? "Direct library import · Dewarr names the files and supplies initial metadata. Grimmory’s global Move files to library pattern must be off. Use copies if Grimmory writes embedded metadata."
-                        : "Audiobookshelf scan · Dewarr organizes files and supplies initial OPF metadata. Keep Audiobookshelf metadata last in ABS precedence so your edits survive future scans."}
+                        ? "Direct library import · Storyarr names the files and supplies initial metadata. Grimmory’s global Move files to library pattern must be off. Use copies if Grimmory writes embedded metadata."
+                        : "Audiobookshelf scan · Storyarr organises files and supplies initial OPF metadata. Keep Audiobookshelf metadata last in ABS precedence so your edits survive future scans."}
                   </p>
                 )}
                 {!bookdrop && !seedingRename && (
@@ -929,10 +929,10 @@ function FolderPicker({
                       </h3>
                       <p>
                         {seedingRename
-                          ? "Dewarr will verify that qBittorrent can access the library folder."
+                          ? "Storyarr will verify that qBittorrent can access the library folder."
                           : bookdrop || copyOnly
-                            ? "Dewarr copies files independently and preserves the download."
-                            : "Dewarr uses hardlinks when supported and copies files otherwise."}
+                            ? "Storyarr copies files independently and preserves the download."
+                            : "Storyarr uses hardlinks when supported and copies files otherwise."}
                       </p>
                     </div>
                   </div>
@@ -962,7 +962,7 @@ function FolderPicker({
                   {bookdrop ? "review intake" : "final library destination"} for{" "}
                   {medium === "audio" ? "audiobooks" : "ebooks"} from all
                   sources. Download clients use their own download folders.
-                  Dewarr checks each connected client's file access here; this
+                  Storyarr checks each connected client's file access here; this
                   does not change your client defaults.
                 </p>
                 {!options.data.downloaders.length && (
@@ -1043,7 +1043,7 @@ function FolderPicker({
                     <div>
                       <strong>{progress}</strong>
                       <p>
-                        Keep this window open while Dewarr verifies access and
+                        Keep this window open while Storyarr verifies access and
                         safe imports.
                       </p>
                     </div>

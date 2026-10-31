@@ -206,13 +206,13 @@ test("proxy DNS error is short, detailed on demand, and fits a phone", async ({
 }, testInfo) => {
   const state = await setupMam(page);
   state.proxyError =
-    "Public IP lookup failed. The proxy hostname could not be resolved. For a Docker service name such as gluetun, connect Dewarr and the proxy to the same Docker network.";
+    "Public IP lookup failed. The proxy hostname could not be resolved. For a Docker service name such as gluetun, connect Storyarr and the proxy to the same Docker network.";
   const form = formFor(page);
   await form.getByRole("button", { name: "Test proxy", exact: true }).click();
   const network = form.getByRole("region", { name: "MAM network status" });
   await expect(
     network.getByText(
-      "Proxy not found. Connect Dewarr and Gluetun to the same Docker network.",
+      "Proxy not found. Connect Storyarr and Gluetun to the same Docker network.",
       { exact: true },
     ),
   ).toBeVisible();

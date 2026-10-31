@@ -378,9 +378,9 @@ function StoryGraphConnection({
       help={
         <SettingHelp label="StoryGraph">
           Paste the _storygraph_session and remember_user_token cookies from
-          app.thestorygraph.com. They are a full StoryGraph login. Dewarr stores
-          them encrypted and does not show them again. Shelves, tags, and lists
-          you paste stay in sync with that session.
+          app.thestorygraph.com. They are a full StoryGraph login. Storyarr
+          stores them encrypted and does not show them again. Shelves, tags, and
+          lists you paste stay in sync with that session.
         </SettingHelp>
       }
       status={

@@ -1,6 +1,6 @@
 # OpenID Connect
 
-Dewarr can sign people in with one OpenID Connect provider. Authentik, Pocket ID, and Authelia all use this same setup. Local usernames and passwords stay available, including the first administrator account.
+Storyarr can sign people in with one OpenID Connect provider. Authentik, Pocket ID, and Authelia all use this same setup. Local usernames and passwords stay available, including the first administrator account.
 
 Create that first account in the browser before enabling the provider. Then open **Settings → Users & access**.
 
@@ -8,20 +8,20 @@ Create that first account in the browser before enabling the provider. Then open
 
 `https://books.example.com/api/auth/oidc/callback`
 
-Copy it into the provider. Dewarr uses authorization code with PKCE (`S256`) and `client_secret_basic`. Keep the issuer exactly as published by the provider, including any trailing slash. Discovery and signed tokens must match that issuer exactly, as required by [OpenID Connect discovery validation](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationValidation).
+Copy it into the provider. Storyarr uses authorization code with PKCE (`S256`) and `client_secret_basic`. Keep the issuer exactly as published by the provider, including any trailing slash. Discovery and signed tokens must match that issuer exactly, as required by [OpenID Connect discovery validation](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationValidation).
 
-If an older Dewarr version removed the issuer's trailing slash, enter the exact issuer, discover endpoints, and save again. An explicit correction that adds or removes one trailing slash preserves existing account links; conflicting links reject the save. Saving the settings again keeps the issuer intact. Other issuer changes, including a different realm/path on the same host, remove the previous issuer's links. Re-link those accounts using their local passwords or your configured matching policy. A subject identifier from a different issuer is not the same identity.
+If an older Storyarr version removed the issuer's trailing slash, enter the exact issuer, discover endpoints, and save again. An explicit correction that adds or removes one trailing slash preserves existing account links; conflicting links reject the save. Saving the settings again keeps the issuer intact. Other issuer changes, including a different realm/path on the same host, remove the previous issuer's links. Re-link those accounts using their local passwords or your configured matching policy. A subject identifier from a different issuer is not the same identity.
 
 ## Link an existing account (including the first administrator)
 
 Username matching deliberately does not attach an identity to an administrator. A matching username alone does not prove ownership of that account. This follows [OpenID Connect’s stable identifier rules](https://openid.net/specs/openid-connect-core-1_0.html#ClaimStability); explicit linking requires authentication of both accounts, consistent with [account-linking guidance](https://auth0.com/docs/manage-users/user-accounts/user-account-linking/link-user-accounts).
 
-1. Sign in to Dewarr using your existing local username and password.
+1. Sign in to Storyarr using your existing local username and password.
 2. Enable and configure the provider in **Settings → Users & access** if needed.
 3. Open **Settings → Sign-in**, enter your current local password, and choose **Link identity provider**.
 4. Authenticate with the provider using the identity you want to attach.
 
-The verified issuer and subject are linked to the same Dewarr account. Your account ID, books, library access, permissions, and local password are retained. This also works when automatic account matching and registration are off. An identity already linked to another account cannot be reassigned here.
+The verified issuer and subject are linked to the same Storyarr account. Your account ID, books, library access, permissions, and local password are retained. This also works when automatic account matching and registration are off. An identity already linked to another account cannot be reassigned here.
 
 You can unlink from **Settings → Sign-in** after confirming your local password. Unlinking ends the account's other sessions and pending linking attempts; your browser receives a new session. If automatic matching is enabled, a later provider sign-in may link the identity again. Accounts without a local password cannot unlink their only sign-in method.
 
@@ -33,32 +33,32 @@ From another administrator account, **Account details → Sign-in and account re
 
 1. Create an application and choose the **OAuth2/OpenID Connect** provider. This is not the proxy provider.
 2. Note the client ID and client secret.
-3. Add the Dewarr redirect URL as a strict authorization redirect URI.
-4. In Dewarr, paste the issuer URL (`https://authentik.example/application/o/<slug>/`), choose **Discover endpoints**, enter the client ID and secret, and save.
-5. Leave **Match existing accounts** on username or verified email if these people already have Dewarr accounts. Verified email matches only when the provider sets `email_verified` to true. Username matching does not attach an administrator account. Turn on **Create accounts on first sign-in** only when the provider should add new readers.
-6. Optional: set the group claim to `groups` and enter the Authentik group names for Administrator, Approver, Member, Requester, or Viewer access. Leave **Group scope** empty unless Authentik releases that claim only when Dewarr requests a scope. A scope the provider does not offer rejects every provider sign-in.
+3. Add the Storyarr redirect URL as a strict authorization redirect URI.
+4. In Storyarr, paste the issuer URL (`https://authentik.example/application/o/<slug>/`), choose **Discover endpoints**, enter the client ID and secret, and save.
+5. Leave **Match existing accounts** on username or verified email if these people already have Storyarr accounts. Verified email matches only when the provider sets `email_verified` to true. Username matching does not attach an administrator account. Turn on **Create accounts on first sign-in** only when the provider should add new readers.
+6. Optional: set the group claim to `groups` and enter the Authentik group names for Administrator, Approver, Member, Requester, or Viewer access. Leave **Group scope** empty unless Authentik releases that claim only when Storyarr requests a scope. A scope the provider does not offer rejects every provider sign-in.
 
 A user's email must not be marked unverified. Authentik does that until the address is confirmed.
 
 ## Pocket ID
 
-1. Create an OIDC client named Dewarr.
-2. Set the callback URL to the Dewarr redirect URL.
+1. Create an OIDC client named Storyarr.
+2. Set the callback URL to the Storyarr redirect URL.
 3. Copy the client ID and client secret.
-4. In Dewarr, paste the Pocket ID address (`https://id.example.com`) as the issuer, choose **Discover endpoints**, and save the client ID and secret.
+4. In Storyarr, paste the Pocket ID address (`https://id.example.com`) as the issuer, choose **Discover endpoints**, and save the client ID and secret.
 
 Pocket ID puts group names in the `groups` claim. Set the group claim and the group scope to `groups`, and enter the Pocket ID group names in the role fields.
 
 ## Authelia
 
-Add a confidential client that requires PKCE. Replace the secret with a hashed Authelia secret and the redirect with your Dewarr address:
+Add a confidential client that requires PKCE. Replace the secret with a hashed Authelia secret and the redirect with your Storyarr address:
 
 ```yaml
 identity_providers:
   oidc:
     clients:
       - client_id: "dewarr"
-        client_name: "Dewarr"
+        client_name: "Storyarr"
         client_secret: "$pbkdf2-sha512$..."
         public: false
         require_pkce: true
@@ -77,7 +77,7 @@ identity_providers:
         token_endpoint_auth_method: "client_secret_basic"
 ```
 
-In Dewarr, the issuer is the Authelia address (`https://auth.example.com`). Discover fills the authorize, token, userinfo, and JWKS URLs. Set the group claim and the group scope to `groups`.
+In Storyarr, the issuer is the Authelia address (`https://auth.example.com`). Discover fills the authorize, token, userinfo, and JWKS URLs. Set the group claim and the group scope to `groups`.
 
 ## Roles
 
@@ -93,9 +93,9 @@ When several configured groups match, the first match in this order wins:
 
 When no group matches, the default applies. With a group claim configured, each sign-in synchronizes provider-only accounts to that preset, including its permissions; manual role changes are replaced at the next sign-in. A separate automation grant on a legacy Member account is retained while its mapping stays Member. Accounts with a local password retain their manual access, and a group change cannot demote the last active administrator. Without a group claim, the default applies only when creating an account; returning accounts retain their access.
 
-Requester accounts can ask for books but cannot bypass approval. Approvers can download and decide other people's requests. Neither preset grants library access or personal integration credentials. Non-administrator provider accounts start without list automation. Signing out of Dewarr ends the Dewarr session only; the identity provider session can remain.
+Requester accounts can ask for books but cannot bypass approval. Approvers can download and decide other people's requests. Neither preset grants library access or personal integration credentials. Non-administrator provider accounts start without list automation. Signing out of Storyarr ends the Storyarr session only; the identity provider session can remain.
 
-People created by the provider have no Dewarr password. Disabling the provider blocks their sign-in until you turn it back on or give them a local account.
+People created by the provider have no Storyarr password. Disabling the provider blocks their sign-in until you turn it back on or give them a local account.
 
 ## Optional member onboarding
 

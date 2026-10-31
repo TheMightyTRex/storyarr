@@ -47,8 +47,8 @@ test("customizer aligns controls, reorders, adds shelves and saves only on reque
     route.fulfill({ json: {} }),
   );
   await page.goto("/discover");
-  await page.getByRole("button", { name: "Customize", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Customize Discover" });
+  await page.getByRole("button", { name: "Customise", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Customise Discover" });
   const rows = dialog.locator(".sortable > li");
   const firstName = await rows.first().locator("strong").innerText();
   const secondName = await rows.nth(1).locator("strong").innerText();
@@ -150,7 +150,7 @@ test("customizer aligns controls, reorders, adds shelves and saves only on reque
   await expect(dialog).toHaveCount(0);
   expect(saved!.order.length).toBeGreaterThan(2);
   await page.reload();
-  await page.getByRole("button", { name: "Customize", exact: true }).click();
+  await page.getByRole("button", { name: "Customise", exact: true }).click();
   await expect(
     dialog.locator(".sortable > li").last().locator("strong"),
   ).toHaveText(addedName);
@@ -158,7 +158,7 @@ test("customizer aligns controls, reorders, adds shelves and saves only on reque
     .getByRole("checkbox", { name: firstName, exact: true })
     .uncheck();
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
-  await page.getByRole("button", { name: "Customize", exact: true }).click();
+  await page.getByRole("button", { name: "Customise", exact: true }).click();
   await expect(
     dialog.getByRole("checkbox", { name: firstName, exact: true }),
   ).toBeChecked();

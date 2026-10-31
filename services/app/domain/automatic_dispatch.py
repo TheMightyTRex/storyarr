@@ -87,7 +87,7 @@ async def approve_route(
         raise HTTPException(
             409,
             "Downloads are disabled on this server. Ask an administrator to set "
-            "BOOK_DOWNLOAD_DISPATCH_ENABLED=true and restart Dewarr.",
+            "BOOK_DOWNLOAD_DISPATCH_ENABLED=true and restart Storyarr.",
         )
     user = await db.get(User, owner_id, populate_existing=True)
     if not user or not user.active or user.role == "viewer":

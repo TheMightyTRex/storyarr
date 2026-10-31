@@ -71,8 +71,8 @@ export function SlskdConnectionForm({
       <p>
         <SettingHelp label="Soulseek connection">
           slskd is both the search source and the downloader. Soulseek login
-          stays in slskd. Dewarr uses a read-write API key, reads the download
-          folder, and checks whether Dewarr can access the same path. If the
+          stays in slskd. Storyarr uses a read-write API key, reads the download
+          folder, and checks whether Storyarr can access the same path. If the
           paths differ, configure the folder mapping under Download clients.
         </SettingHelp>
       </p>
@@ -162,7 +162,7 @@ export function SlskdConnectionForm({
           <p>
             {value.mapped
               ? "Folder mapping configured. Library setup verifies file access before importing."
-              : "Folder setup is still needed. Mount this folder at the same path in Dewarr, or choose its corresponding local folder in Download clients."}
+              : "Folder setup is still needed. Mount this folder at the same path in Storyarr, or choose its corresponding local folder in Download clients."}
           </p>
           <Link to="/settings#downloaders" onClick={onConfigureFolder}>
             Configure download folder

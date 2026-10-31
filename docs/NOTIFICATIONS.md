@@ -16,7 +16,7 @@ Supported destinations:
   [Apprise URL documentation](https://github.com/caronc/apprise/wiki).
 - **JSON webhook:** an HTTP(S) POST destination and optional bearer token.
 
-Destinations, URL lists and tokens use Dewarr's existing encryption key and are
+Destinations, URL lists and tokens use Storyarr's existing encryption key and are
 never returned by the API. Keep the configuration directory with that key when
 backing up. Members' destinations must resolve exclusively to public IP addresses.
 HTTP delivery connects directly to a checked address while preserving the original
@@ -57,7 +57,7 @@ revoked route becomes `cancelled`. Restored pending notifications are cancelled.
 
 There is no universal exactly-once network protocol across these services: a
 process can stop after the destination accepted a message but before recording
-success. Dewarr favors avoiding duplicates in this ambiguity; an uncertain alert
+success. Storyarr favors avoiding duplicates in this ambiguity; an uncertain alert
 may not have arrived. Investigate the destination and use a fresh test after
 repairing it. Apprise can partially deliver a multi-URL channel before reporting
 failure; it is not automatically retried. No automatic retry of uncertain or

@@ -2,7 +2,7 @@
 
 ## Findings
 
-The workstation had a substantial resource problem independent of Dewarr: 363
+The workstation had a substantial resource problem independent of Storyarr: 363
 orphaned Paperclip process-session launchers and 11 children were still running
 from temporary test workspaces roughly 44 days old. Their summed resident memory
 was about 3.1 GiB. A second pass inspected working directories and found another
@@ -13,7 +13,7 @@ retirement policy is now recorded in global and workspace agent instructions.
 Active unrelated services were preserved. Summed RSS is not a measurement of
 unique physical memory, and this snapshot cannot prove the cause of past crashes.
 
-Dewarr also had avoidable test overhead and lifecycle risks:
+Storyarr also had avoidable test overhead and lifecycle risks:
 
 | Finding | Change |
 | --- | --- |

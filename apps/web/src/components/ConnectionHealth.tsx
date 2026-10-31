@@ -41,7 +41,7 @@ export default function ConnectionHealth() {
         {health.isError && (
           <p role="status">
             Unable to refresh connection health. Check your connection to
-            Dewarr.
+            Storyarr.
           </p>
         )}
         <ul>
@@ -73,7 +73,7 @@ export default function ConnectionHealth() {
         </ul>
         <small>
           Connection issues are automatically rechecked before this alert
-          appears and retried about once a minute while you’re using Dewarr.
+          appears and retried about once a minute while you’re using Storyarr.
           Routine checks run every 5 minutes. Service cooldowns may delay a
           retry.
         </small>

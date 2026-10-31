@@ -1,6 +1,6 @@
 # Connection health
 
-Dewarr's background worker checks enabled MAM, Prowlarr, AudiobookBay, Soulseek,
+Storyarr's background worker checks enabled MAM, Prowlarr, AudiobookBay, Soulseek,
 and download client connections every five minutes, even with no browser open.
 Disabled and deleted connections are excluded. A recent successful source request
 or connection test can satisfy the next scheduled check. MAM proxy checks use a
@@ -34,7 +34,7 @@ In `app.py`, `mam_status` calls `fetch_mam_api_data`, which makes an authenticat
 `jsonLoad.php` request. `build_mam_proxy_status_payload` distinguishes a proxy
 route, direct fallback, and routing failure. `client_status` checks the client and
 retries login after an initial failure. Its frontend loads account and client
-status, and its transfer monitor broadcasts client status. Dewarr follows this
+status, and its transfer monitor broadcasts client status. Storyarr follows this
 separation of account, proxy, and client health with its own persistent scheduled
 checks and timestamped UI summary; no upstream code was copied for this change.
 

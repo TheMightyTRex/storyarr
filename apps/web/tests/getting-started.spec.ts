@@ -84,7 +84,7 @@ test("onboarding defers, resumes and completes once; settings show one focused s
   for (const label of [
     "Metadata",
     "Connections",
-    "Organization",
+    "Organisation",
     "Accounts",
     "Getting started",
   ])

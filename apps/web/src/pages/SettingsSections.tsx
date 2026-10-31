@@ -33,7 +33,7 @@ export function settingsSections(role: string, permissions: string[] = []) {
       ? [
           {
             id: "reading",
-            title: "Reading accounts",
+            title: "Sources",
             content: <ReadingAccounts />,
           },
         ]

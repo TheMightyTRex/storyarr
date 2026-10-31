@@ -510,7 +510,7 @@ class EbookCompanion(Identity, Base):
 
 
 class LibraryReadIssue(Identity, Base):
-    """A backend item Dewarr could not read well enough to record as a library asset."""
+    """A backend item Storyarr could not read well enough to record as a library asset."""
 
     __tablename__ = "library_read_issues"
     __table_args__ = (UniqueConstraint("library_id", "external_id"),)

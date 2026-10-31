@@ -162,7 +162,7 @@ export default function RouteFields({
 
       <p className="muted">
         Finished books use the folders configured in Libraries. Each download
-        client keeps its own download folder; Dewarr imports from there into
+        client keeps its own download folder; Storyarr imports from there into
         your ebook or audiobook library.
       </p>
       <Notice error={options.error} />

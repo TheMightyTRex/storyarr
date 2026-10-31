@@ -658,7 +658,7 @@ function ReadIssueReview({ issue }: { issue: ReadIssue }) {
       <div className="review-next-step">
         <h3>How to fix it</h3>
         <p>
-          {`Dewarr couldn't read this item's files, so it can't count it as owned or link it to a book yet. Check the item in ${appName(issue.server_kind)}, then run a library sync. Once its files can be read, it moves to Needs matching.`}
+          {`Storyarr couldn't read this item's files, so it can't count it as owned or link it to a book yet. Check the item in ${appName(issue.server_kind)}, then run a library sync. Once its files can be read, it moves to Needs matching.`}
         </p>
       </div>
     </>

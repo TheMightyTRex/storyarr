@@ -20,7 +20,7 @@ def read_only_downloads(monkeypatch):
             if parent is not None and flags & (os.O_CREAT | os.O_WRONLY | os.O_RDWR):
                 info = os.fstat(parent)
                 if (info.st_dev, info.st_ino) == (identity.st_dev, identity.st_ino):
-                    raise OSError(code, "Download mount is read-only to Dewarr")
+                    raise OSError(code, "Download mount is read-only to Storyarr")
             return original(name, flags, *args, **kwargs)
 
         monkeypatch.setattr(os, "open", opening)

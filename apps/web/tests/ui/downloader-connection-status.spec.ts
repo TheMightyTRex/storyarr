@@ -209,9 +209,9 @@ test("advanced mappings browse local volumes, save translations, and fit mobile"
   await expect(
     card.getByLabel("Folder in qBittorrent 1", { exact: true }),
   ).toHaveValue(saved.save_path);
-  await card.getByRole("button", { name: "Browse Dewarr folder 1" }).click();
+  await card.getByRole("button", { name: "Browse Storyarr folder 1" }).click();
   const dialog = page.getByRole("dialog", {
-    name: "Choose Dewarr download folder",
+    name: "Choose Storyarr download folder",
   });
   await dialog
     .locator(".mounted-folder-list")
@@ -226,7 +226,7 @@ test("advanced mappings browse local volumes, save translations, and fit mobile"
   });
   await dialog.getByRole("button", { name: "Select folder" }).click();
   await expect(
-    card.getByLabel("Same folder in Dewarr 1", { exact: true }),
+    card.getByLabel("Same folder in Storyarr 1", { exact: true }),
   ).toHaveValue("/data/torrents/ebooks");
   await card.getByRole("button", { name: "Add mapping", exact: true }).click();
   await card.getByRole("button", { name: "Remove mapping 2" }).click();
@@ -243,7 +243,7 @@ test("advanced mappings browse local volumes, save translations, and fit mobile"
   await expect(
     card.getByText("Folder mapping configured", { exact: true }),
   ).toBeVisible();
-  await expect(card.getByText("Dewarr folder:")).toContainText(
+  await expect(card.getByText("Storyarr folder:")).toContainText(
     "/data/torrents/ebooks",
   );
   expect(tests).toBe(1);

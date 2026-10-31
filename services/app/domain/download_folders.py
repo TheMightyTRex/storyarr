@@ -1,4 +1,4 @@
-"""Read-only browsing of download volumes visible to this Dewarr instance."""
+"""Read-only browsing of download volumes visible to this Storyarr instance."""
 
 import os
 import re
@@ -106,7 +106,7 @@ def browse_folders(settings, path=None, *, include_libraries=False):
                         break
     except OSError as error:
         raise HTTPException(
-            422, "Dewarr cannot read this folder. Check its mount and permissions."
+            422, "Storyarr cannot read this folder. Check its mount and permissions."
         ) from error
     parent = (
         str(current.parent) if any(current.parent.is_relative_to(root) for root in roots) else None

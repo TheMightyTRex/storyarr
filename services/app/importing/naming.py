@@ -438,17 +438,17 @@ def plan_import(
                 )
             if values["part"] and "part" not in template_tokens(template):
                 # Audiobookshelf and Grimmory keep each folder as its own item. The label
-                # keeps a lone part distinct, and Dewarr groups the parts under one book.
+                # keeps a lone part distinct, and Storyarr groups the parts under one book.
                 parents, _, leaf = folder.rpartition("/")
                 leaf = component(f"{leaf} ({values['part']})")
                 folder = "/".join(part for part in (parents, leaf) if part)
                 item.warnings.append(
                     f"{group.metadata.part_label}: kept as its own library item until every "
-                    "part is in the library; in Audiobookshelf, Dewarr then combines them "
+                    "part is in the library; in Audiobookshelf, Storyarr then combines them "
                     "into one book with disc folders"
                     if combine_parts and group.medium == "audio"
                     else f"{group.metadata.part_label}: kept as its own library item, "
-                    "grouped with the other parts in Dewarr"
+                    "grouped with the other parts in Storyarr"
                 )
             if profile.layout == "nested":
                 parents, _, leaf = folder.rpartition("/")

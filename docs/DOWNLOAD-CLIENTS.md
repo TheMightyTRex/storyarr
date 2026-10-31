@@ -7,11 +7,11 @@ client; Soulseek uses slskd. A sole enabled client of a type is the automatic de
 With multiple clients of the same type, choose the default in Settings → Download clients.
 
 To disable any client, choose **Edit downloader**, clear **Enabled**, and save.
-Dewarr retains its address, credentials, category, and folder mappings, but excludes
+Storyarr retains its address, credentials, category, and folder mappings, but excludes
 it from new download choices and stops queued transfers from being submitted.
 Transfers already submitted continue to be monitored and imported using their existing
 approvals, including approved qBittorrent seeding renames. Disabling Soulseek also stops
-new Soulseek searches. Check **Enabled** and save to use the client again; Dewarr tests
+new Soulseek searches. Check **Enabled** and save to use the client again; Storyarr tests
 the saved connection. Changes to credentials, paths, or import approvals still require
 the usual verification before existing transfers can continue.
 
@@ -21,7 +21,7 @@ SABnzbd with qBittorrent leaves Prowlarr's indexers unchanged, and NZB releases
 still require a Usenet client. The book's Sources page reports how many torrent
 and Usenet indexers were selected. If no torrent indexers qualify, check that they
 are enabled, support search and book/audiobook categories, and are not excluded
-in Dewarr's Prowlarr settings. Native MAM handles its own indexer when enabled.
+in Storyarr's Prowlarr settings. Native MAM handles its own indexer when enabled.
 
 Settings → Libraries selects the final ebook and audiobook folders. These folders are
 shared destinations, independent of which client downloaded the content. Saving and
@@ -42,13 +42,13 @@ the client's download folder remains separate.
 | Credentials | Web UI username/password | RPC username/password | Web UI password |
 | Categories | Native categories | Labels | Existing Label plugin label |
 | Attempt identity | Tag + full hashes + path | Label + v1 hash + path | Unique artifact folder + v1 hash + path |
-| In-client seeding rename | Supported when enabled | Unavailable in Dewarr | Unavailable in Dewarr |
-| Sequential/first-last controls | Not exposed by Dewarr | Unavailable | Unavailable |
+| In-client seeding rename | Supported when enabled | Unavailable in Storyarr | Unavailable in Storyarr |
+| Sequential/first-last controls | Not exposed by Storyarr | Unavailable | Unavailable |
 | Magnet metadata inspection | 5.2+ | Separate resolver required | Separate resolver required |
 
 Transmission performs the session-id handshake without retrying uncertain submissions.
 Deluge must already be connected to its daemon through its Web UI. If a category is
-selected, enable Label and create that label in Deluge first. Dewarr reads the label's
+selected, enable Label and create that label in Deluge first. Storyarr reads the label's
 completed folder (or daemon defaults) and submits into an isolated `dewarr-<artifact ID>`
 subfolder there. Move-completed and automatic management are disabled only for these
 new transfers. Existing transfers and global client settings are never rewritten.

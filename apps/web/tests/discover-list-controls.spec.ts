@@ -182,9 +182,7 @@ test("Discover owns list browsing, refresh, format downloads and settings", asyn
   await expect(
     shelf.getByRole("link", { name: "Settings for Want to read" }),
   ).toHaveCount(0);
-  await page
-    .getByRole("link", { name: "Reading accounts", exact: true })
-    .click();
+  await page.getByRole("link", { name: "Sources", exact: true }).click();
   await expect(page).toHaveURL(/settings#reading/);
   await expect(
     page

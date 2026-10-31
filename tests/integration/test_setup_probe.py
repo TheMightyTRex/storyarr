@@ -183,7 +183,7 @@ async def test_empty_folder_can_qualify_before_any_plan_or_download(
     if filesystem == "read-only":
         assert checked["mode"] == "copy" and checked["probe"]["copy"]
         assert checked["probe"]["source_readable"] and not checked["probe"]["source_writable"]
-        assert "read-only to Dewarr" in checked["probe"]["message"]
+        assert "read-only to Storyarr" in checked["probe"]["message"]
     assert checked["probe"]["setup_downloader"]["mapping"]["relative_path"] == "books"
     assert not list((empty_route["source"] / "books").iterdir())
     assert not list(empty_route["staging"].iterdir()) and not list(empty_route["target"].iterdir())

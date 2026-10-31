@@ -244,7 +244,7 @@ def tree_names(folder) -> list[str]:
             continue
         except OSError as error:
             raise PublicationError(
-                "The library folder contains a link Dewarr will not follow"
+                "The library folder contains a link Storyarr will not follow"
             ) from error
         else:
             try:
@@ -430,7 +430,7 @@ async def confirm_library_bytes(spec, checks: int):
 
 
 async def confirm_client_library(client, client_path: str, worker_root):
-    """Prove qBittorrent's library path and Dewarr's folder are the same directory."""
+    """Prove qBittorrent's library path and Storyarr's folder are the same directory."""
     client_path = absolute_path(client_path)
     name = ".dewarr-route-" + uuid4().hex
 

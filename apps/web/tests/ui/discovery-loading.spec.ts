@@ -131,7 +131,7 @@ test("Discover starts six shelves independently and keeps pending requests when 
   ).toBeVisible();
 });
 
-test("Discover defers full shelf enumeration until Customize and retains a selected shelf", async ({
+test("Discover defers full shelf enumeration until Customise and retains a selected shelf", async ({
   page,
 }) => {
   const fullPages: number[] = [];
@@ -206,8 +206,8 @@ test("Discover defers full shelf enumeration until Customize and retains a selec
   ).toBeVisible();
   expect(selectedQueries).toEqual([]);
   expect(fullPages).toEqual([]);
-  await page.getByRole("button", { name: "Customize", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Customize Discover" });
+  await page.getByRole("button", { name: "Customise", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Customise Discover" });
   await expect(dialog).toBeVisible();
   expect(fullPages).toEqual([1, 2, 3]);
   await dialog

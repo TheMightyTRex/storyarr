@@ -1,6 +1,6 @@
 # Release matching and review investigation
 
-Scope: [Dewarr: Release matching and review](https://linear.app/northernlogic/project/dewarr-release-matching-and-review-7dee1b88da14), based on `371ed7c` (2026-10-15). The earlier NOR-87 fix is already merged in #69. This work extends its shared series-label contract and checks its review/import safeguards.
+Scope: [Storyarr: Release matching and review](https://linear.app/northernlogic/project/dewarr-release-matching-and-review-7dee1b88da14), based on `371ed7c` (2026-10-15). The earlier NOR-87 fix is already merged in #69. This work extends its shared series-label contract and checks its review/import safeguards.
 
 ## Confirmed defects and fixes
 
@@ -11,7 +11,7 @@ Scope: [Dewarr: Release matching and review](https://linear.app/northernlogic/pr
 | [NOR-99 / #66](https://github.com/logabell/dewarr/issues/66) | Trailing-label parsing omitted `ebook` and supported only uppercase release groups after audio extensions. | The exact reported dotted retail EPUB release identifies its author/title. Content warnings and actual-file format checks remain separate. |
 | [NOR-89 / #56](https://github.com/logabell/dewarr/issues/56), supported EPUB case | Inspection rejected any `META-INF/encryption.xml` before inspecting its algorithm or resources. | Only IDPF font obfuscation of local, declared, non-spine font resources is permitted. Unknown encryption, encrypted chapters, path escapes and ambiguous declarations remain held. |
 
-The reported release names failed a regression check before the parser changes. A synthetic EPUB with standard font-obfuscation metadata likewise failed inspection before the EPUB fix. The synthetic font bytes are a parser fixture, not a test of font rendering or deobfuscation; Dewarr neither renders nor rewrites them.
+The reported release names failed a regression check before the parser changes. A synthetic EPUB with standard font-obfuscation metadata likewise failed inspection before the EPUB fix. The synthetic font bytes are a parser fixture, not a test of font rendering or deobfuscation; Storyarr neither renders nor rewrites them.
 
 ## Unresolved report details
 

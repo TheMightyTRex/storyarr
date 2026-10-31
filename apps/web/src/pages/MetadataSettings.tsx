@@ -21,7 +21,7 @@ export const fieldLabel = (field: string) =>
   ({ publication_year: "Publication year", cover_url: "Cover" })[field] ||
   field.charAt(0).toUpperCase() + field.slice(1);
 
-/** Minimum Hardcover personal-access-token scopes for full Dewarr use. */
+/** Minimum Hardcover personal-access-token scopes for full Storyarr use. */
 const hardcoverScopes = [
   [
     "read:catalog",
@@ -86,7 +86,7 @@ export default function MetadataSettings({
       void client.invalidateQueries({ queryKey: ["series-gaps"] });
       setMessage(
         value.suggest_series_gaps
-          ? "Dewarr will look for missing books in series linked to your library."
+          ? "Storyarr will look for missing books in series linked to your library."
           : "Series suggestions are off.",
       );
     },
@@ -224,7 +224,7 @@ export default function MetadataSettings({
                   Suggest missing books in series I own
                 </label>
                 <p className="muted">
-                  Uses Hardcover links on books you already matched. Dewarr
+                  Uses Hardcover links on books you already matched. Storyarr
                   loads those series catalogs and lists published books that are
                   not in your library. Nothing is downloaded.
                 </p>
@@ -405,7 +405,7 @@ function PreferenceForm({ value }: { value: Preferences }) {
             />
             Match library books automatically
             <SettingHelp label="automatic library matching">
-              After each library sync, Dewarr asks Hardcover about up to 25
+              After each library sync, Storyarr asks Hardcover about up to 25
               unmatched library books using your Hardcover connection. Only a
               single verified match is saved; anything else stays in library
               review with its candidates.
@@ -425,7 +425,7 @@ function PreferenceForm({ value }: { value: Preferences }) {
             />
             Add the series to matched Audiobookshelf books
             <SettingHelp label="series write-back">
-              When automatic matching links a book, Dewarr sets its Hardcover
+              When automatic matching links a book, Storyarr sets its Hardcover
               series and position on Audiobookshelf items that have no series.
               Items that already have a series, and every other field, are left
               alone. Audio files are never changed.
@@ -445,7 +445,7 @@ function PreferenceForm({ value }: { value: Preferences }) {
             Combine complete multi-part books into one Audiobookshelf book
             <SettingHelp label="combining parts">
               When every part of a book released in parts is in an
-              Audiobookshelf library, Dewarr moves them into one book folder
+              Audiobookshelf library, Storyarr moves them into one book folder
               with a Disc folder per part, keeping each part's files. The old
               part folders are removed only after Audiobookshelf shows the
               combined book, and you can separate them again from the book page.

@@ -75,7 +75,7 @@ export default function MyLibrary({
   });
   return (
     <>
-      <h1 className="sr-only">My Library</h1>
+      <h1 className="sr-only">My library</h1>
       <div className="page-tabs-bar">
         <nav className="page-tabs" aria-label="Library shelves">
           <Link

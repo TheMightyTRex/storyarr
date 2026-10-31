@@ -260,7 +260,7 @@ function OidcSettingsPanel() {
                   Administrator default grants full control to every new account
                   or synchronized account with no matching group. Choose it only
                   when everyone admitted by this provider should administer
-                  Dewarr.
+                  Storyarr.
                 </p>
               )}
             {mapsGroups && (
@@ -288,7 +288,7 @@ function OidcSettingsPanel() {
               </summary>
               <div className="form-row">
                 <label>
-                  Authorize URL
+                  Authorise URL
                   <input
                     value={draft.authorization_endpoint}
                     onChange={(event) =>
@@ -1333,7 +1333,7 @@ function EditUserDialog({
           )}
           <details className="access-advanced">
             <summary>
-              Customize permissions{" "}
+              Customise permissions{" "}
               <span className="access-meta">
                 {key === "" ? "Custom selection" : "Optional"}
               </span>

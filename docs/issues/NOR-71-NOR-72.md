@@ -8,7 +8,7 @@ protocol sources.
 
 `DelugeClient.capabilities()` called `daemon.info`. Deluge 2.1.1 exports
 [`daemon.get_version`](https://github.com/deluge-torrent/deluge/blob/deluge-2.1.1/deluge/core/daemon.py),
-so a real daemon rejects the old method before Dewarr can mark the connection
+so a real daemon rejects the old method before Storyarr can mark the connection
 ready. The existing mocks accepted the nonexistent method and concealed the bug.
 
 The adapter now calls `daemon.get_version`. RPC fixtures use the actual method,

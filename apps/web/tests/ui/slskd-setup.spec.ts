@@ -135,9 +135,9 @@ test("Soulseek saves and tests, appears as a client, and maps through the native
   ).toBeVisible();
   await card.getByText("Advanced · path mappings").click();
   await card.getByRole("button", { name: "Add mapping", exact: true }).click();
-  await card.getByRole("button", { name: "Browse Dewarr folder 1" }).click();
+  await card.getByRole("button", { name: "Browse Storyarr folder 1" }).click();
   const browser = page.getByRole("dialog", {
-    name: "Choose Dewarr download folder",
+    name: "Choose Storyarr download folder",
   });
   const rows = browser.locator(".mounted-folder-list");
   await rows.getByRole("button", { name: "/data", exact: true }).click();
@@ -189,7 +189,7 @@ test("Soulseek saves and tests, appears as a client, and maps through the native
     .getByRole("button", { name: "Select folder", exact: true })
     .click();
   await expect(
-    card.getByLabel("Same folder in Dewarr 1", { exact: true }),
+    card.getByLabel("Same folder in Storyarr 1", { exact: true }),
   ).toHaveValue("/data/downloads");
   await card.getByRole("button", { name: "Save & test mappings" }).click();
   await expect(

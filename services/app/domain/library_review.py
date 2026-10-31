@@ -1,4 +1,4 @@
-"""Library items for an admin to review: unmatched books and records Dewarr could not read."""
+"""Library items for an admin to review: unmatched books and records Storyarr could not read."""
 
 from sqlalchemy import and_, func, not_, or_, select, union_all
 from sqlalchemy.dialects.postgresql import array

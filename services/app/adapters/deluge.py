@@ -93,12 +93,12 @@ class DelugeClient(RpcTransport):
                 protocols={"torrent"},
                 operations=operations,
                 limitations=[
-                    "No independent attempt tags: Dewarr uses unique download folders and v1 "
+                    "No independent attempt tags: Storyarr uses unique download folders and v1 "
                     "hashes.",
                     "In-client seeding rename and sequential/first-last piece preferences are "
                     "unavailable.",
                     "Categories require an existing Label plugin label.",
-                    "Dewarr downloads directly into the completed folder; automatic moves are "
+                    "Storyarr downloads directly into the completed folder; automatic moves are "
                     "disabled for these transfers.",
                     "Magnet metadata inspection requires a separate capable resolver.",
                 ],

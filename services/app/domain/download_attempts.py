@@ -263,7 +263,7 @@ async def start(
         raise HTTPException(
             409,
             "Downloads are disabled on this server. Ask an administrator to set "
-            "BOOK_DOWNLOAD_DISPATCH_ENABLED=true and restart Dewarr.",
+            "BOOK_DOWNLOAD_DISPATCH_ENABLED=true and restart Storyarr.",
         )
     selection = await owned_selection(db, user, selection_id)
     members = [selection] + [
@@ -556,7 +556,7 @@ async def finish_observation(db, attempt, selection, state):
     if failure:
         attempt.observation = state.model_dump(mode="json")
         await download_recovery.failed(db, attempt, failure)
-        # A dead/error transfer is no longer an active Dewarr acquisition. Keep
+        # A dead/error transfer is no longer an active Storyarr acquisition. Keep
         # storage reservations when a stalled transfer is left running.
         if stopped_failure:
             await capacity.release_slot(db, attempt)

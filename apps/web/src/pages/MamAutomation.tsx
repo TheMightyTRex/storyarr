@@ -310,7 +310,7 @@ export function AccountAutomation({
           title="Auto-authorize seedbox IP"
           checked={value.seedbox_ip}
           onChange={(next) => set("seedbox_ip", next)}
-          description="Requires a dedicated API session with dynamic seedbox permission. Updates when the route changes or authorization is a day old, no more than once per hour."
+          description="Requires a dedicated API session with dynamic seedbox permission. Updates when the route changes or authorisation is a day old, no more than once per hour."
         >
           <label>
             Seedbox check interval

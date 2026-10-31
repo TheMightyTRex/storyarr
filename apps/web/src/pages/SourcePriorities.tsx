@@ -144,7 +144,7 @@ export default function SourcePriorities({
             </p>
             <div className="indexer-add-row">
               <label>
-                Indexer to prioritize
+                Indexer to prioritise
                 <select
                   value={selected}
                   onChange={(event) => setSelected(event.target.value)}
@@ -154,7 +154,7 @@ export default function SourcePriorities({
                   {indexers.data.map((indexer) => {
                     const key = `prowlarr:${indexer.id}`;
                     const reason = values.includes(key)
-                      ? "Already prioritized"
+                      ? "Already prioritised"
                       : unavailable(indexer);
                     return (
                       <option key={key} value={key} disabled={!!reason}>

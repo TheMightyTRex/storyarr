@@ -171,7 +171,7 @@ export default function Catalog({ canEdit }: { canEdit: boolean }) {
             >
               {q
                 ? "Try another title or author."
-                : "Add a title to start organizing your reading lists."}
+                : "Add a title to start organising your reading lists."}
             </Empty>
           )}
           <InfiniteScroll query={books} />

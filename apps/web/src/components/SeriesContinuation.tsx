@@ -44,7 +44,7 @@ function emptyCopy(shelf: SeriesGapShelf, medium: Medium) {
   return {
     title: `No missing ${mediumLabel[medium]} yet.`,
     detail:
-      "Dewarr is checking series linked to books you own. Missing books appear here after each catalog loads.",
+      "Storyarr is checking series linked to books you own. Missing books appear here after each catalog loads.",
     to: "/settings#catalog",
     label: "Manage series suggestions →",
   };

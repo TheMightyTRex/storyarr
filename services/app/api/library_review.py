@@ -43,7 +43,7 @@ class PartSet(BaseModel):
     present: list[int]
     library_id: UUID | None = None
     version_id: UUID | None = None
-    # Whether Dewarr combines these parts into one book, and why not when it can't.
+    # Whether Storyarr combines these parts into one book, and why not when it can't.
     combine_state: str | None = None
     combine_reason: str | None = None
     can_combine: bool = False

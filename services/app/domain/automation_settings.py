@@ -47,7 +47,7 @@ async def current(db, owner_id, *, lock=False):
 
 class InstallationDefaults(BaseModel):
     model_config = ConfigDict(extra="ignore")
-    # Days a deleted book's files stay in the holding folder before Dewarr removes them.
+    # Days a deleted book's files stay in the holding folder before Storyarr removes them.
     # 0 keeps them until someone deletes them by hand.
     deleted_retention_days: int = Field(default=30, ge=0, le=3650)
 

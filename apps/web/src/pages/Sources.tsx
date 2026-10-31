@@ -382,7 +382,7 @@ function MamCheckError({ message }: { message?: string | null }) {
       : /proxy.*authentication|HTTPS tunnel/i.test(message)
         ? "Proxy rejected the connection. Check its credentials and settings."
         : /hostname.*resolved|DNS/i.test(message)
-          ? "Proxy not found. Connect Dewarr and Gluetun to the same Docker network."
+          ? "Proxy not found. Connect Storyarr and Gluetun to the same Docker network."
           : /refused/i.test(message)
             ? "Proxy connection refused. Check its address and port."
             : /timed? out|timeout/i.test(message)
@@ -608,7 +608,7 @@ export function MamConnectionForm({ value }: { value: Connection }) {
               Enable this if your MAM account cannot download VIP releases.
               Applies to direct MAM searches and selection; configure Prowlarr
               separately. Leave off for VIP/Elite access or if unsure. MAM still
-              authorizes each download; missing VIP expiry does not establish
+              authorises each download; missing VIP expiry does not establish
               access. This setting does not spend points or Freeleech wedges.
               Refresh existing searches after saving.
             </p>

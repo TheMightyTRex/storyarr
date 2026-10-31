@@ -81,7 +81,7 @@ export default function UpgradeBackups({
       )}
       {upgrade.isSuccess && !backups.length && (
         <p>
-          There are no settings backups yet. Dewarr takes one automatically
+          There are no settings backups yet. Storyarr takes one automatically
           before each upgrade, or you can take one now.
         </p>
       )}

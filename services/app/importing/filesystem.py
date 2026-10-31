@@ -81,28 +81,28 @@ def describe_os_error(error: OSError, path: Path | None = None) -> str:
     """Explain a mount or permission failure in terms a Docker user can act on."""
     subject = str(path) if path else "a folder"
     denied = (
-        f"Dewarr (uid {os.geteuid()}) was denied access to {subject}. "
+        f"Storyarr (uid {os.geteuid()}) was denied access to {subject}. "
         f"Check PUID/PGID (gid {os.getegid()}) and the share ACLs: imports need read access "
         "to downloads and write access to the library and staging folders."
     )
     messages = {
         errno.EACCES: denied,
         errno.EPERM: denied,
-        errno.ENOENT: f"Dewarr cannot find {subject} inside its container. "
+        errno.ENOENT: f"Storyarr cannot find {subject} inside its container. "
         "Check the volume mounts.",
-        errno.ENOTDIR: f"Dewarr expected {subject} to be a folder, "
+        errno.ENOTDIR: f"Storyarr expected {subject} to be a folder, "
         "but part of that path is a file.",
-        errno.ELOOP: f"The path to {subject} contains a symbolic link, which Dewarr does not "
+        errno.ELOOP: f"The path to {subject} contains a symbolic link, which Storyarr does not "
         "follow. Enter the real folder path.",
         errno.EXDEV: "The staging folder and library folder are on different filesystems. "
-        "Mount the folder that contains both into Dewarr.",
-        errno.EROFS: f"Dewarr cannot write to {subject} because it is mounted read-only. "
+        "Mount the folder that contains both into Storyarr.",
+        errno.EROFS: f"Storyarr cannot write to {subject} because it is mounted read-only. "
         "Remove :ro from that volume.",
         errno.ENOSPC: f"The filesystem holding {subject} is full.",
         errno.EDQUOT: f"The filesystem holding {subject} is over its quota.",
     }
     message = messages.get(error.errno) or (
-        f"{f'Dewarr could not use {path}' if path else 'Destination probe failed'}; "
+        f"{f'Storyarr could not use {path}' if path else 'Destination probe failed'}; "
         "check paths, permissions and filesystem support"
     )
     code = errno.errorcode.get(error.errno)

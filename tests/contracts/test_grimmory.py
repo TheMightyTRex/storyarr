@@ -552,7 +552,7 @@ async def test_grimmory_books_with_bad_metadata_are_kept_for_review(
         "details": 0,
     }
     assets = by_book((await client.get("/api/library/assets")).json())
-    # The earlier match survives an author list Dewarr can no longer read.
+    # The earlier match survives an author list Storyarr can no longer read.
     assert assets["3"]["work_ids"] == before["3"]["work_ids"]
     assert assets["3"]["read_issues"] == ["authors"]
     assert assets["5"]["title"] == "Salt Roads"

@@ -91,7 +91,7 @@ async def observe(adapter, entry):
         entry.message = (
             "No matching EPUB is visible in Bookdrop. Check the configured intake "
             "path or whether it was imported or discarded. Link the actual library "
-            "copy or mark it rejected; Dewarr will not resend it."
+            "copy or mark it rejected; Storyarr will not resend it."
         )
     entry.receipt = receipt
 

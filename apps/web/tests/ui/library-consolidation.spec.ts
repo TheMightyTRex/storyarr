@@ -41,7 +41,7 @@ test("one bookshelf preserves filters and keeps library review for admins", asyn
   await page.goto("/");
   await expect(page).toHaveURL(/\/library$/);
   await expect(
-    page.getByRole("heading", { name: "My Library", exact: true }),
+    page.getByRole("heading", { name: "My library", exact: true }),
   ).toBeVisible();
   await expect(
     page
@@ -90,7 +90,7 @@ test("one bookshelf preserves filters and keeps library review for admins", asyn
   expect(requests.some((url) => url.pathname === "/api/library/books")).toBe(
     true,
   );
-  await page.getByRole("link", { name: "My Library", exact: true }).click();
+  await page.getByRole("link", { name: "My library", exact: true }).click();
   await page
     .getByRole("link", { name: "All saved titles", exact: true })
     .click();
@@ -99,7 +99,7 @@ test("one bookshelf preserves filters and keeps library review for admins", asyn
   ).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/library");
-  await expect(page.getByRole("heading", { name: "My Library" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My library" })).toBeVisible();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

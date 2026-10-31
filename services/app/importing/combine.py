@@ -828,7 +828,7 @@ async def statuses(db, version_ids):
             state, reason = "waiting", waiting
         elif state == "ready":
             reason = (
-                "Dewarr combines these into one book after the next library sync"
+                "Storyarr combines these into one book after the next library sync"
                 if automatic
                 else "Automatic combining is off; combine them when you're ready"
             )
@@ -911,7 +911,7 @@ async def evaluate(db, library_id, version_id, rows):
     ).all()
     if not destinations:
         raise CombineSkipped(
-            "Set this library up as an audio import destination so Dewarr can reorganize "
+            "Set this library up as an audio import destination so Storyarr can reorganize "
             "its folders"
         )
     chosen = outside = None
@@ -941,7 +941,7 @@ async def evaluate(db, library_id, version_id, rows):
                 f"Part {outside[0]} is outside the mapped library folder {outside[1]}"
             )
         raise CombineSkipped(
-            "Verify this library's audio import destination so Dewarr can reorganize its folders"
+            "Verify this library's audio import destination so Storyarr can reorganize its folders"
         )
     destination, configuration = chosen
     profile = await current_profile(db)
@@ -1237,7 +1237,7 @@ async def combine_one(owner_id, library_id, version_id, operation_id=None):
                     library_id,
                     version_id,
                     "needs-attention",
-                    "Waiting for Audiobookshelf to show the combined book; Dewarr checks again "
+                    "Waiting for Audiobookshelf to show the combined book; Storyarr checks again "
                     "after the next sync",
                 )
             item = found[spec.backend(spec.folder)]

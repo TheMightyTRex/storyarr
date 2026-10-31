@@ -135,7 +135,7 @@ def check_grimmory_persistence(persistence, medium, mode):
         raise PublicationError(
             "Grimmory's Move files to library pattern is enabled globally. Use "
             "Bookdrop for Grimmory-managed naming, or disable that setting in "
-            "Grimmory before using Dewarr's direct library import."
+            "Grimmory before using Storyarr's direct library import."
         )
     relevant = {"audiobook"} if medium == "audio" else {"epub", "pdf", "cbx"}
     if relevant.intersection(persistence["write_formats"]) and mode != "copy":

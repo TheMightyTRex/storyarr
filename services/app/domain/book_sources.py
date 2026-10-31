@@ -54,7 +54,7 @@ def indexer_discovery_message(eligible):
     elif not torrents:
         message += (
             " No torrent indexers are eligible. Enable a searchable torrent indexer "
-            "with book or audiobook categories in Prowlarr and check Dewarr's source exclusions. "
+            "with book or audiobook categories in Prowlarr and check Storyarr's source exclusions. "
             "Adding qBittorrent does not add torrent sources."
         )
     if not selected:

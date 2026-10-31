@@ -9,7 +9,7 @@ indexer override such as `prowlarr:12` takes precedence over `prowlarr`.
 Only verified client observations advance these timers. Paused, queued and
 checking transfers do not count as stalled. An uncertain submission or failed
 client connection must reconcile before it can cause a replacement. SABnzbd history
-states `Failed` and `Aborted` use the same error grace period. Dewarr keeps polling
+states `Failed` and `Aborted` use the same error grace period. Storyarr keeps polling
 those verified failures until the grace expires, then blocklists the release and
 queues one replacement search. Completed jobs and disabled recovery policies do
 not trigger this path.

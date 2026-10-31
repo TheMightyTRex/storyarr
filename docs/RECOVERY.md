@@ -4,7 +4,7 @@ Keep the database, `config/app_key`, and library media together in your backup p
 
 The [Docker guide](DOCKER.md#backups) describes a stopped-writer PostgreSQL backup. Keep backups private and outside the repository.
 
-Dewarr also includes an offline state-bundle tool:
+Storyarr also includes an offline state-bundle tool:
 
 ```sh
 uv run python -m app.state_bundle --help
@@ -12,7 +12,7 @@ uv run python -m app.state_bundle backup --help
 uv run python -m app.state_bundle restore --help
 ```
 
-Stop the Dewarr container (or both native API and worker processes) before backup or restore. Use the same Dewarr version that created the bundle and restore into a new database. Keep the source database and backup until you have verified the restored installation.
+Stop the Storyarr container (or both native API and worker processes) before backup or restore. Use the same Storyarr version that created the bundle and restore into a new database. Keep the source database and backup until you have verified the restored installation.
 
 A restored bundle enters recovery review. Ordinary jobs and historical download approvals remain blocked, and only the designated administrator can sign in. The recovery worker performs supported reconciliation tasks:
 

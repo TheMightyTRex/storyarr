@@ -910,7 +910,7 @@ class Grimmory(JsonEndpoint):
     async def apply_catalog_metadata(
         self, book_id: str, facts: dict, *, observed_year: int | None = None
     ) -> None:
-        """Write Dewarr's catalog fields onto a book Grimmory has already detected.
+        """Write Storyarr's catalog fields onto a book Grimmory has already detected.
 
         Refresh and folder watch index embedded file metadata. The sidecar file is
         not applied until this explicit update, so confirmation would otherwise

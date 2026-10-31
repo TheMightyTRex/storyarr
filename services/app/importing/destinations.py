@@ -293,7 +293,7 @@ async def probe_route(operation_id: UUID, *, client_factory=None):
                 binding = payload.get("setup_downloader")
                 if not binding:
                     raise InspectionError(
-                        "Check this folder from the library picker so Dewarr can "
+                        "Check this folder from the library picker so Storyarr can "
                         "confirm qBittorrent sees it."
                     )
                 await confirm_library_mapping(
@@ -331,7 +331,7 @@ async def probe_route(operation_id: UUID, *, client_factory=None):
             "qBittorrent will rename completed downloads into this folder. "
             "The seeding file and the library file are the same copy."
             if ok and seeding_rename
-            else "The download folder is read-only to Dewarr. "
+            else "The download folder is read-only to Storyarr. "
             "Downloads will be copied into the library."
             if ok and report.get("source_writable") is False
             else "Hardlinks are unavailable for these folders. "
@@ -525,7 +525,7 @@ def check_library_route(
     if staged != library:
         raise InspectionError(
             f"The staging folder {staging} is on a different filesystem from {local}. "
-            "Mount a folder that contains both into Dewarr."
+            "Mount a folder that contains both into Storyarr."
         )
 
 

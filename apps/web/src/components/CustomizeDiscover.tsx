@@ -42,7 +42,7 @@ export default function CustomizeDiscover({
   }
   return (
     <BookDialog
-      title="Customize Discover"
+      title="Customise Discover"
       className="discover-customizer"
       close={() => {
         if (!busy) close();

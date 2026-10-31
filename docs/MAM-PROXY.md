@@ -6,7 +6,7 @@ contains the MAM URL, proxy credentials, and direct-fallback preference;
 **Account automation** follows below.
 
 Enter a proxy origin such as `http://gluetun:8888` and select **Test proxy**.
-Dewarr's backend container must be able to resolve and connect to that address.
+Storyarr's backend container must be able to resolve and connect to that address.
 This checks the proxy public IP and direct server public IP without contacting
 MAM or testing its cookie, even when `mam_id` is already saved. With no proxy
 configured, the button reads **Test network** and checks the direct IP only.
@@ -32,7 +32,7 @@ proxy credentials are not returned to the browser.
 ## Accounts without VIP access
 
 Enable **Exclude VIP releases** in MAM connection settings, save, then refresh
-existing source searches. Dewarr sends the documented `nVIP` search filter and
+existing source searches. Storyarr sends the documented `nVIP` search filter and
 skips known VIP releases before automatic inspection, leaving eligible results
 from MAM and other sources available. Fresh release detail is checked again
 before fetching torrent metadata. If every candidate is excluded, the selection
@@ -45,15 +45,15 @@ releases does not purchase VIP or spend Freeleech wedges; those remain separate
 explicit settings. The API stores this policy as `automation.exclude_vip` on the
 MAM connection.
 
-## Gluetun works in MouseSearch but Dewarr cannot resolve it
+## Gluetun works in MouseSearch but Storyarr cannot resolve it
 
-If Dewarr reports **The proxy hostname could not be resolved**, check the
+If Storyarr reports **The proxy hostname could not be resolved**, check the
 services' network membership first. A service with `networks: [dewarr-net]`
 does not also join the Compose default network. Gluetun and MouseSearch join
 that default network when they have no explicit `networks` setting, so
-MouseSearch can reach `gluetun:8888` while Dewarr cannot.
+MouseSearch can reach `gluetun:8888` while Storyarr cannot.
 
-For services in the same Compose stack, add `default` to Dewarr's existing
+For services in the same Compose stack, add `default` to Storyarr's existing
 network list. Merge these entries into your stack, keeping its other settings:
 
 ```yaml
@@ -75,11 +75,11 @@ Apply the change from the stack directory:
 docker compose up -d --no-deps dewarr
 ```
 
-This recreates Dewarr with access to both its database network and the network
+This recreates Storyarr with access to both its database network and the network
 where Gluetun is already running. Gluetun, MouseSearch, and qBittorrent can keep
 their existing settings, including qBittorrent's `network_mode: service:gluetun`.
 Port 8888 does not need a host port mapping for communication on a shared
-Docker network. For separate Compose projects, attach Dewarr and Gluetun to
+Docker network. For separate Compose projects, attach Storyarr and Gluetun to
 the same external network instead; each project's `default` network is distinct.
 See [Docker's Compose networking documentation](https://docs.docker.com/compose/how-tos/networking/).
 
@@ -105,7 +105,7 @@ of MAM authentication, tries three IP services, and accepts plain text or JSON
 IP responses. It disables direct fallback when explicitly checking the MAM
 proxy route.
 
-Dewarr previously required a cookie when saving a new connection and disabled
+Storyarr previously required a cookie when saving a new connection and disabled
 the test button until one was supplied. It also hid IP lookup exceptions behind
 a generic failure message. The updated flow removes that setup dependency,
 adds the third IP service and JSON response support, and provides safe error

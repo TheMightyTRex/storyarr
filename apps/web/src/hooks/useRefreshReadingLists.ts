@@ -118,7 +118,7 @@ export function useRefreshReadingLists() {
         setMessage(
           failures.length
             ? `${named(next)} refresh failed. ${failures.join(" ")}`
-            : `No enabled ${next === "reading" ? "reading lists" : named(next)}. Track lists in Settings → Reading accounts.`,
+            : `No enabled ${next === "reading" ? "reading lists" : named(next)}. Track lists in Settings, Sources.`,
         );
       void cache.invalidateQueries({ queryKey: ["list-subscription"] });
     },

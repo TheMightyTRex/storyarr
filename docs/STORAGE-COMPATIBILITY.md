@@ -29,7 +29,7 @@ uid `1000` is consistent with this behavior. Ownership alone does not establish
 whether access works, or prove a particular export option is enabled.
 Source: [NFS export identity mapping](https://man7.org/linux/man-pages/man5/exports.5.html).
 
-## Dewarr findings
+## Storyarr findings
 
 | Area | Current behavior | Assessment |
 | --- | --- | --- |
@@ -106,7 +106,7 @@ The [updated report](https://github.com/logabell/dewarr/issues/22#issuecomment-5
 fails earlier, opening `source_root` in `probe_download_folder`, with `ENOENT`
 for the `downloads` component. It does not reach library publication or the
 previous cleanup failure. The screenshot maps slskd's `/media/downloads` to
-Dewarr's `/soulseek/downloads`; the full configured path and container mounts
+Storyarr's `/soulseek/downloads`; the full configured path and container mounts
 still need confirmation on that installation. A successful connection test checks
 the client API; a saved mapping does not establish local filesystem access.
 
@@ -141,7 +141,7 @@ missing source roots/save subfolders, and readable feedback at 1236px and 390px.
 
 ## Storage design and remaining compatibility work
 
-1. Keep authoritative recovery journals in Dewarr's protected application data
+1. Keep authoritative recovery journals in Storyarr's protected application data
    or database. Media-share directory modes should not determine journal trust.
 2. Resolve media staging per destination filesystem. Persist that location in
    each frozen import specification so retries and recovery use the original
@@ -228,7 +228,7 @@ paths. Keep every referenced journal store and media mount when restoring.
 This aligns with the arr-stack distinction between container paths, root folders, remote
 path mappings, and underlying filesystem capabilities. A downloader API connection or a
 path mapping does not mount NAS data. A common parent mount enables hardlinks where
-supported; separate mounts work through copy fallback. Dewarr retains its stronger
+supported; separate mounts work through copy fallback. Storyarr retains its stronger
 publication ownership, no-overwrite, source preservation, and backend confirmation checks.
 
 Automated checks use real local files with injected mount boundaries and network-style

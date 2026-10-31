@@ -187,8 +187,8 @@ function SignIn({ onSuccess }: { onSuccess: (auth: Auth) => void }) {
     <main className="auth-page">
       <div className="auth-intro">
         <div className="brand">
-          <img src="/assets/dewarr.png" width="32" height="32" alt="" />
-          <span>Dewarr</span>
+          <img src="/assets/storyarr.svg" width="32" height="32" alt="" />
+          <span>Storyarr</span>
         </div>
         <h1>
           Your next chapter
@@ -471,8 +471,8 @@ function Shell({ auth }: { auth: Auth }) {
             {mobileMenu ? "Close menu" : "Menu"}
           </button>
           <NavLink to="/" className="brand">
-            <img src="/assets/dewarr.png" width="32" height="32" alt="" />
-            <span>Dewarr</span>
+            <img src="/assets/storyarr.svg" width="32" height="32" alt="" />
+            <span>Storyarr</span>
           </NavLink>
           <button
             className="icon-button mobile-signout"
@@ -503,7 +503,7 @@ function Shell({ auth }: { auth: Auth }) {
             )}
             <NavLink to="/library" end>
               <BookOpen size={19} />
-              My Library
+              My library
             </NavLink>
             {admin && (
               <NavLink to="/review">

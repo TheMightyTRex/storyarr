@@ -124,7 +124,7 @@ test("naming lanes stay on one line and preserve independent format settings", a
       .evaluate((node) => node.getBoundingClientRect().height),
   ).toBeLessThanOrEqual(34);
   await expect(
-    page.getByText("Customize filename template", { exact: true }),
+    page.getByText("Customise filename template", { exact: true }),
   ).toHaveCount(0);
   await page.getByRole("button", { name: "Audiobook", exact: true }).click();
   await expect(

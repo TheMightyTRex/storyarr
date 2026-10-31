@@ -213,7 +213,7 @@ function BookDetailContent({
       className={`reader-page catalog-reader catalog-workspace ${["sources", "downloads", "manage"].includes(tab) ? "reader-operational" : ""}`}
     >
       <div className="book-topbar">
-        <ReturnLink fallback="/library" label="My Library" />
+        <ReturnLink fallback="/library" label="My library" />
         <Link
           className={`book-manage-link ${tab === "manage" ? "active" : ""}`}
           to={href("manage")}

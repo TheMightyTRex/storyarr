@@ -116,7 +116,7 @@ test("connect Goodreads in onboarding, choose shelves, pause and refresh from se
   await page.reload();
   await expect(page).toHaveURL(/\/onboarding$/);
   await expect(
-    page.getByRole("heading", { name: "Reading accounts", exact: true }),
+    page.getByRole("heading", { name: "Sources", exact: true }),
   ).toBeVisible();
   const goodreads = page.getByRole("region", { name: "Goodreads connection" });
 
@@ -168,7 +168,7 @@ test("connect Goodreads in onboarding, choose shelves, pause and refresh from se
   await expect(
     page
       .getByRole("navigation", { name: "Settings categories" })
-      .getByRole("link", { name: "Reading accounts", exact: true }),
+      .getByRole("link", { name: "Sources", exact: true }),
   ).toHaveAttribute("aria-current", "page");
   await expect(
     lists.getByRole("link", { name: "Want to read", exact: true }),

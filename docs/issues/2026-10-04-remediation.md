@@ -2,7 +2,7 @@
 
 Scope: the 11 open GitHub issues in `logabell/dewarr` that are mirrored in
 Linear. Unrelated Linear roadmap work is excluded by Logan's clarification.
-Baseline: `449b220`, Dewarr v0.3.7. Three existing modified files covering linked
+Baseline: `449b220`, Storyarr v0.3.7. Three existing modified files covering linked
 download identifiers are preserved; they are not attributed to this task.
 
 ## Investigation and implementation plan
@@ -165,7 +165,7 @@ used.
   Origin/Host/forwarded headers with its rejection diagnostic. Reproduce the
   mismatch against that configuration before further code changes.
 - **#32:** Compare the same query, categories, enabled indexers, and result/error
-  counts directly in Prowlarr and Dewarr; inspect any failing download's request
+  counts directly in Prowlarr and Storyarr; inspect any failing download's request
   and SAB event. Current evidence does not justify a speculative search rewrite.
 - **#34:** Inventory configured torrent-capable book indexers and compare the
   same query/protocol filters directly. qBittorrent configuration alone cannot

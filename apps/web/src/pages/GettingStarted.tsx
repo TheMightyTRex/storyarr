@@ -148,8 +148,8 @@ export default function GettingStarted({ role }: { role: string }) {
     <div className="onboarding-page">
       <header className="onboarding-header">
         <span className="brand">
-          <img src="/assets/dewarr.png" width="32" height="32" alt="" />
-          <span>Dewarr</span>
+          <img src="/assets/storyarr.svg" width="32" height="32" alt="" />
+          <span>Storyarr</span>
         </span>
         <button disabled={update.isPending} onClick={() => leave("deferred")}>
           Finish later
@@ -272,7 +272,7 @@ export default function GettingStarted({ role }: { role: string }) {
                           Downloads are disabled on this server. Browsing and
                           lists are ready. To enable downloads, set{" "}
                           <code>BOOK_DOWNLOAD_DISPATCH_ENABLED=true</code> and
-                          restart Dewarr.
+                          restart Storyarr.
                         </p>
                       )}
                   </>

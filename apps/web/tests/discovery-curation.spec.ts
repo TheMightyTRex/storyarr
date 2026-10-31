@@ -94,7 +94,7 @@ test("awards, filtering, pinning and persisted layout form one discovery flow", 
     page.getByRole("button", { name: "Follow updates", exact: true }),
   ).toBeVisible();
   await page.getByRole("link", { name: "For you", exact: true }).click();
-  await page.getByRole("button", { name: "Customize", exact: true }).click();
+  await page.getByRole("button", { name: "Customise", exact: true }).click();
   await page.getByLabel("2025 Fiction nominees", { exact: true }).uncheck();
   await page.getByRole("button", { name: "Save layout", exact: true }).click();
   await page.reload();

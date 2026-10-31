@@ -89,7 +89,7 @@ test("first account, saved books, library connection and worker", async ({
     .toBeGreaterThan(0);
   await page.goto("/library");
   await expect(
-    page.getByRole("heading", { name: "My Library", exact: true }),
+    page.getByRole("heading", { name: "My library", exact: true }),
   ).toBeAttached();
   await expect(page.locator(".book-card").first()).toBeVisible();
   await page.goto("/settings#logs");

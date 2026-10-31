@@ -627,7 +627,7 @@ async def storygraph_personal(body, user, db):
     account = await db.get(StorygraphAccount, user.id)
     if not account:
         raise HTTPException(
-            409, "Connect StoryGraph in Reading accounts before following this list"
+            409, "Connect StoryGraph in Settings, Sources, before following this list"
         )
     uid = user.id
     await db.rollback()
@@ -641,7 +641,7 @@ async def storygraph_personal(body, user, db):
         account = await db.get(StorygraphAccount, uid)
         if not account:
             raise HTTPException(
-                409, "Connect StoryGraph in Reading accounts before following this list"
+                409, "Connect StoryGraph in Settings, Sources, before following this list"
             )
         saved = decrypt_secrets(account.encrypted_config)
         sent_cookie = saved.get("session_cookie") if isinstance(saved, dict) else None
@@ -659,7 +659,7 @@ async def storygraph_personal(body, user, db):
         account = await db.get(StorygraphAccount, user.id, populate_existing=True)
         if not account:
             raise HTTPException(
-                409, "Connect StoryGraph in Reading accounts before following this list"
+                409, "Connect StoryGraph in Settings, Sources, before following this list"
             )
         await save_rotation(db, uid, saved["session_cookie"], page.session_cookie)
         current = decrypt_secrets(account.encrypted_config)

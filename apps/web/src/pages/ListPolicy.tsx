@@ -567,7 +567,7 @@ function PolicyEditor({
             selected for acquisition.
           </p>
           <p>
-            Current books not selected remain in your list. Existing authorized
+            Current books not selected remain in your list. Existing authorised
             work continues when you resume an unchanged policy. Removing a book
             withdraws only this list’s request.
           </p>

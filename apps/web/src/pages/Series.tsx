@@ -531,7 +531,7 @@ function SeriesContent({
                 Main books show one English catalog representative per
                 whole-number position. Supplements, editions and collections
                 remain available under All catalog entries. These suggestions do
-                not merge records or authorize downloads.
+                not merge records or authorise downloads.
               </p>
             </details>
           </section>

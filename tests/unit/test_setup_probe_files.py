@@ -257,7 +257,7 @@ def test_staging_with_receipts_is_recognized(media):
 @pytest.mark.parametrize(
     ("code", "expected"),
     [
-        (errno.EACCES, f"Dewarr (uid {os.geteuid()}) was denied access to a folder"),
+        (errno.EACCES, f"Storyarr (uid {os.geteuid()}) was denied access to a folder"),
         (errno.ENOENT, "cannot find a folder inside its container"),
         (errno.EXDEV, "different filesystems"),
         (errno.EROFS, "Remove :ro"),
@@ -308,7 +308,7 @@ def test_existing_child_staging_is_never_replaced_or_chmodded(media, obstacle):
         staging.write_text("keep")
     else:
         staging.mkdir(mode=0o755)
-        # Empty, Dewarr-owned managed folders may now be secured automatically.
+        # Empty, Storyarr-owned managed folders may now be secured automatically.
         # Existing public receipts must never become trusted through chmod alone.
         (staging / "receipt.json").write_text("keep")
     before = staging.lstat()

@@ -17,7 +17,7 @@ def route_error(error, *, proxy=False):
     if any(isinstance(cause, socket.gaierror) for cause in causes):
         return (
             "The proxy hostname could not be resolved. For a Docker service name such as "
-            "gluetun, connect Dewarr and the proxy to the same Docker network."
+            "gluetun, connect Storyarr and the proxy to the same Docker network."
             if proxy
             else "The destination hostname could not be resolved. Check the server's DNS."
         )

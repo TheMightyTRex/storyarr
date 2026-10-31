@@ -154,7 +154,7 @@ class Hardcover:
             elif codes & {"validation-failed", "validation-error"}:
                 message = (
                     "Hardcover's API schema does not support this query. "
-                    "Check for a Dewarr update with compatible Hardcover queries."
+                    "Check for a Storyarr update with compatible Hardcover queries."
                 )
             else:
                 message = "Hardcover returned an unsuccessful query response. Try again later."

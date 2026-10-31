@@ -51,7 +51,9 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
                   {
                     version: state === "update" ? "v1.10.0" : "v1.9.0",
                     name:
-                      state === "update" ? "Dewarr v1.10.0" : "Dewarr v1.9.0",
+                      state === "update"
+                        ? "Storyarr v1.10.0"
+                        : "Storyarr v1.9.0",
                     notes:
                       state === "update"
                         ? "## Features\n\n- Reading lists\n"
@@ -62,7 +64,7 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
                   },
                   {
                     version: "v1.8.0",
-                    name: "Dewarr v1.8.0",
+                    name: "Storyarr v1.8.0",
                     notes: "Earlier fixes.",
                     url: "https://github.com/example/books/releases/tag/v1.8.0",
                     published_at: "2026-08-01T00:00:00Z",
@@ -89,7 +91,7 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
       const notes = page.getByRole("dialog", { name: "Release notes" });
       await expect(notes.getByText("v1.10.0 is available.")).toBeVisible();
       await expect(
-        notes.getByRole("heading", { name: "Dewarr v1.10.0" }),
+        notes.getByRole("heading", { name: "Storyarr v1.10.0" }),
       ).toBeVisible();
       await expect(
         notes.getByRole("heading", { name: "Features" }),
@@ -118,7 +120,7 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
         notes.getByText("This installation is up to date."),
       ).toBeVisible();
       await expect(
-        notes.getByRole("heading", { name: "Dewarr v1.9.0" }),
+        notes.getByRole("heading", { name: "Storyarr v1.9.0" }),
       ).toBeVisible();
       await expect(notes.getByText("Current release notes.")).toBeVisible();
       await notes.getByRole("button", { name: "Close release notes" }).click();

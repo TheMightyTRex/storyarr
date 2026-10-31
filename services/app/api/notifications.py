@@ -248,7 +248,7 @@ async def test(channel_id: UUID, user: CurrentUser, db: Database):
         event_type="test",
         owner_id=user.id,
         payload={
-            "title": "Dewarr test notification",
+            "title": "Storyarr test notification",
             "message": "Your notification channel is working.",
             "path": "/settings#notifications",
         },

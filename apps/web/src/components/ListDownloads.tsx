@@ -54,7 +54,7 @@ export default function ListDownloads({
             books.set(book.external_id, async () => {
               if (book.subject && book.subject !== "work")
                 throw new Error(
-                  `Choose the recognized edition for ${book.title} before requesting.`,
+                  `Choose the recognised edition for ${book.title} before requesting.`,
                 );
               if (book.work) return book.work.id;
               const resolved = result(

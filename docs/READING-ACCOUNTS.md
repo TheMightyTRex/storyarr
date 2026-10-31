@@ -18,7 +18,7 @@ Paste `_storygraph_session` and `remember_user_token` from the browser cookie li
 
 Create the API token before pasting it into onboarding or **Settings → Metadata**. [Open Hardcover’s new-key form with these scopes selected](https://hardcover.app/account/api/keys/new?scope=read:catalog+read:me:content+read:lists+read:library:public+read:users+write:lists):
 
-| Scope | Dewarr uses it for |
+| Scope | Storyarr uses it for |
 | --- | --- |
 | `read:catalog` | Search, book, author, series, and edition details. Test connection runs a catalog search. |
 | `read:me:content` | Your user id, so your lists stay separate from lists you follow. Email and role access are not required. |
@@ -33,7 +33,7 @@ Use the saved Hardcover API token, or add it in the reading-accounts step. Brows
 
 ## Following authors and series
 
-Choose **Follow author** on a Hardcover author page or **Follow future additions** on a series page. **Following** manages these sources separately from reading-account lists. Catalogs refresh daily, with a manual refresh button. Dewarr reads the complete catalog twice and publishes only matching observations; errors and partial reads preserve the last successful catalog. Catalogs larger than 5,000 books need a narrower source.
+Choose **Follow author** on a Hardcover author page or **Follow future additions** on a series page. **Following** manages these sources separately from reading-account lists. Catalogs refresh daily, with a manual refresh button. Storyarr reads the complete catalog twice and publishes only matching observations; errors and partial reads preserve the last successful catalog. Catalogs larger than 5,000 books need a narrower source.
 
 After the first verified catalog, preview a Browse, Manual, or Automatic policy. Choose ebook, audiobook, both, or either, plus a download profile. Future books only is the default. In Automatic mode, expand **Include current books** and select at most 25 back-catalog books per reviewed activation. The preview shows owned, missing, and excluded counts. Manual mode uses the existing reviewed list requests. No requests or downloads start merely from pressing Follow.
 
