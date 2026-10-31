@@ -156,6 +156,9 @@ test("connect Goodreads in onboarding, choose shelves, pause and refresh from se
     .click();
   await expect.poll(() => updates).toBe(1);
   await page.getByRole("button", { name: "Next step" }).click();
+  // Automation and Layout and display come after Sources; both keep their defaults.
+  await page.getByRole("button", { name: "Skip this step" }).click();
+  await page.getByRole("button", { name: "Skip this step" }).click();
   await page.getByRole("button", { name: "Start browsing" }).click();
   await page.goto("/settings#reading");
   await goodreads.locator(".reading-connection > summary").click();

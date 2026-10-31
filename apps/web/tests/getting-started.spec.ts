@@ -116,18 +116,17 @@ test("onboarding defers, resumes and completes once; settings show one focused s
   await expect(catalog.getByText("Metadata defaults saved.")).toBeVisible();
   await page.goto("/settings#sources");
   const mam = page.getByRole("form", { name: "MAM connection settings" });
-  if (!(await mam.isVisible()))
-    await page
-      .getByRole("region", { name: "MAM settings", exact: true })
-      .locator("summary")
-      .first()
-      .click();
-  if (!(await mam.isVisible()))
-    await page
-      .getByRole("region", { name: "MAM settings", exact: true })
-      .locator("summary")
-      .first()
-      .click();
+  // Open the MAM row, waiting for it to render before checking again, so a second click does not
+  // close it.
+  await expect(async () => {
+    if (!(await mam.isVisible()))
+      await page
+        .getByRole("region", { name: "MAM settings", exact: true })
+        .locator("summary")
+        .first()
+        .click();
+    await expect(mam).toBeVisible({ timeout: 1500 });
+  }).toPass();
   await mam.getByText("Advanced settings", { exact: true }).click();
   await mam
     .getByLabel("MAM URL", { exact: true })
@@ -213,7 +212,7 @@ test("onboarding defers, resumes and completes once; settings show one focused s
   await expect(page).toHaveURL(/\/onboarding$/);
   await expect(
     page.getByRole("navigation", { name: "Setup steps" }).getByRole("button"),
-  ).toHaveCount(2);
+  ).toHaveCount(3);
   await page.getByRole("button", { name: "Finish later", exact: true }).click();
   await page.getByRole("link", { name: "Settings", exact: true }).click();
   await expect(page.locator(".settings-section")).toHaveCount(1);
@@ -223,9 +222,10 @@ test("onboarding defers, resumes and completes once; settings show one focused s
   await expect(
     page.getByRole("region", { name: "Metadata", exact: true }),
   ).toHaveCount(0);
+  // Metadata is in the Sources group, which holds only Metadata for a viewer.
   await page
-    .getByRole("navigation", { name: "Settings categories" })
-    .getByRole("link", { name: "Metadata", exact: true })
+    .getByRole("navigation", { name: "Settings groups" })
+    .getByRole("link", { name: "Sources", exact: true })
     .click();
   await expect(
     page.getByRole("region", { name: "Metadata", exact: true }),

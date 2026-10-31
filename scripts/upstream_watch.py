@@ -1,9 +1,10 @@
 """
 Weekly check for new Dewarr changes since the release Storyarr is based on.
 
-Reads the base commit from .github/upstream-base, compares it with logabell/dewarr main, and opens or
-updates one issue labelled "upstream" listing the new commits, releases and database migrations. With
---dry-run it prints the issue instead. Needs the gh CLI; in Actions it uses GITHUB_TOKEN.
+Reads the base commit from .github/upstream-base, compares it with logabell/dewarr main, and
+opens or updates one issue labelled "upstream" listing the new commits, releases and database
+migrations. With --dry-run it prints the issue instead. Needs the gh CLI; in Actions it uses
+GITHUB_TOKEN.
 """
 
 import json

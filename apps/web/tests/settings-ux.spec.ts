@@ -42,6 +42,11 @@ test("settings use compact controls and naming presets persist with planner prev
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.getByRole("link", { name: "Settings", exact: true }).click();
+  // Metadata is a section of the Sources group.
+  await page
+    .getByRole("navigation", { name: "Settings groups" })
+    .getByRole("link", { name: "Sources", exact: true })
+    .click();
   await page
     .getByRole("navigation", { name: "Settings categories" })
     .getByRole("link", { name: "Metadata", exact: true })

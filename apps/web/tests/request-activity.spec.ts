@@ -190,10 +190,16 @@ test("activity requests preserve independent reasons and route missing media to 
     .getByRole("button", { name: "Withdraw request", exact: true })
     .click();
   await expect(card).toHaveCount(0);
-  await page.getByRole("link", { name: "Withdrawn", exact: true }).click();
-  await expect(
-    page.getByRole("link", { name: "Withdrawn", exact: true }),
-  ).toHaveAttribute("aria-current", "page");
+  // Withdrawn is a filter on the History tab.
+  await page
+    .getByRole("navigation", { name: "Activity" })
+    .getByRole("link", { name: /^History/ })
+    .click();
+  const withdrawn = page
+    .getByRole("navigation", { name: "History filters" })
+    .getByRole("link", { name: /^Withdrawn/ });
+  await withdrawn.click();
+  await expect(withdrawn).toHaveAttribute("aria-current", "page");
   await requests.locator("tbody").last().scrollIntoViewIfNeeded();
   await expect(card).toContainText("Audiobook");
   await expect(card.getByText("Withdrawn", { exact: true })).toBeVisible();
@@ -211,7 +217,14 @@ test("activity requests preserve independent reasons and route missing media to 
   ).toHaveCount(0);
   await page.getByRole("button", { name: "Menu", exact: true }).click();
   await page.getByRole("link", { name: "Requests", exact: true }).click();
-  await page.getByRole("link", { name: "Withdrawn", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "Activity" })
+    .getByRole("link", { name: /^History/ })
+    .click();
+  await page
+    .getByRole("navigation", { name: "History filters" })
+    .getByRole("link", { name: /^Withdrawn/ })
+    .click();
   await expect(card).toBeVisible();
   await page.route("**/api/requests?*", (route) =>
     route.fulfill({
@@ -240,22 +253,25 @@ test("activity requests preserve independent reasons and route missing media to 
     (await (await page.request.get("/api/library/assets")).json()).total,
   ).toBe(inventory.total);
   await page.setViewportSize({ width: 1440, height: 1000 });
-  const filters = page.getByRole("navigation", { name: "Request filters" });
+  // Downloading and Needs review (the old Download review tab) are filters on the Queue tab.
+  await page
+    .getByRole("navigation", { name: "Activity" })
+    .getByRole("link", { name: /^Queue/ })
+    .click();
+  const filters = page.getByRole("navigation", { name: "Queue filters" });
   const filterPositions = await filters
     .getByRole("link")
     .evaluateAll((links) =>
       links.map((link) => link.getBoundingClientRect().top),
     );
   expect(new Set(filterPositions).size).toBe(1);
-  await filters.getByRole("link", { name: "Downloading", exact: true }).click();
+  await filters.getByRole("link", { name: /^Downloading/ }).click();
   await expect(
-    filters.getByRole("link", { name: "Downloading", exact: true }),
+    filters.getByRole("link", { name: /^Downloading/ }),
   ).toHaveAttribute("aria-current", "page");
-  await filters
-    .getByRole("link", { name: "Download review", exact: true })
-    .click();
+  await filters.getByRole("link", { name: /^Needs review/ }).click();
   await expect(
-    filters.getByRole("link", { name: "Download review", exact: true }),
+    filters.getByRole("link", { name: /^Needs review/ }),
   ).toHaveAttribute("aria-current", "page");
   await expect(
     page.getByRole("region", { name: "Requests", exact: true }),

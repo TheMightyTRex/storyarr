@@ -4,11 +4,11 @@ Re-apply the Storyarr name after merging a Dewarr release.
     python3 scripts/storyarr_rename.py          # list "Dewarr" text that should say Storyarr
     python3 scripts/storyarr_rename.py --apply  # rewrite it in code and tests, then list the rest
 
-Code and tests are rewritten. Documentation is only listed, because it often credits Dewarr on purpose.
-Internal names that existing installs depend on are never changed: the Python package, the
-`x-dewarr-proxy-token` header, `dewarr-` download folders and database defaults are all lowercase, and
-only the capitalised name is touched. Migrations and Dewarr's own release notes are history, so they are
-left alone.
+Code and tests are rewritten. Documentation is only listed, because it often credits Dewarr on
+purpose. Internal names that existing installs depend on are never changed: the Python package,
+the `x-dewarr-proxy-token` header, `dewarr-` download folders and database defaults are all
+lowercase, and only the capitalised name is touched. Migrations and Dewarr's own release notes
+are history, so they are left alone.
 """
 
 import re
