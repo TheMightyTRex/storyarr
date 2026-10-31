@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, X } from "lucide-react";
 import { api, result } from "../api/client";
@@ -7,6 +12,7 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookCover from "../components/BookCover";
 import AddMissingBooks from "../components/AddMissingBooks";
+import QuickAdd from "../components/QuickAdd";
 import {
   publication,
   statusChip,
@@ -17,6 +23,13 @@ import {
 import type { StatusKind } from "./Following";
 
 type Book = components["schemas"]["FollowBook"];
+type Auth = components["schemas"]["AuthView"];
+// Books that are not on their way yet, so a search can start now.
+const SEARCHABLE = new Set<StatusKind>([
+  "not_requested",
+  "wanted",
+  "attention",
+]);
 const PAGE = 48;
 
 // One followed series or author as a bookshelf: progress, status chips, a cover wall and a book drawer.
@@ -259,12 +272,64 @@ export default function FollowShelf() {
           </button>
         )}
       </div>
-      {open && <BookDrawer book={open} close={close} />}
+      {open && (
+        <BookDrawer
+          book={open}
+          listId={listId}
+          close={close}
+          changed={(next) => setOpen(next)}
+        />
+      )}
     </div>
   );
 }
 
-function BookDrawer({ book, close }: { book: Book; close: () => void }) {
+function BookDrawer({
+  book,
+  listId,
+  close,
+  changed,
+}: {
+  book: Book;
+  listId: string;
+  close: () => void;
+  changed: (book: Book) => void;
+}) {
+  const cache = useQueryClient();
+  const { data: session } = useQuery<Auth | null>({
+    queryKey: ["session"],
+    enabled: false,
+  });
+  const canEdit = !!session && session.user.role !== "viewer";
+  const excluded = book.status?.kind === "excluded";
+  const exclude = useMutation({
+    mutationFn: async () =>
+      result(
+        await api.PATCH(
+          "/api/lists/{list_id}/subscription/observations/{observation_id}",
+          {
+            params: {
+              path: { list_id: listId, observation_id: book.observation_id! },
+            },
+            body: { excluded: !excluded },
+          },
+        ),
+      ),
+    onSuccess: async () => {
+      await cache.invalidateQueries({ queryKey: ["following"] });
+      changed({
+        ...book,
+        status: excluded
+          ? null
+          : {
+              ...(book.status ?? { detail: null, at: null }),
+              kind: "excluded",
+              label: "Excluded",
+              detail: "You excluded this book.",
+            },
+      } as Book);
+    },
+  });
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus(), [book.work_id]);
   useEffect(() => {
@@ -321,7 +386,21 @@ function BookDrawer({ book, close }: { book: Book; close: () => void }) {
             Open in Activity
           </Link>
         )}
+        {canEdit && status && SEARCHABLE.has(status.kind) && (
+          <QuickAdd workId={book.work_id} actionLabel="Search now" />
+        )}
+        {canEdit && book.observation_id && (
+          <button
+            type="button"
+            className="drawer-action"
+            disabled={exclude.isPending}
+            onClick={() => exclude.mutate()}
+          >
+            {excluded ? "Include in this follow" : "Exclude from this follow"}
+          </button>
+        )}
       </div>
+      <Notice error={exclude.error} />
     </aside>
   );
 }

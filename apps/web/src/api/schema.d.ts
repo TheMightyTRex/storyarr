@@ -9026,6 +9026,8 @@ export interface components {
        * Format: uuid
        */
       work_id: string;
+      /** Observation Id */
+      observation_id?: string | null;
       /** External Id */
       external_id: string;
       /** Title */

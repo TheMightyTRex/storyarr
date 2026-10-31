@@ -217,8 +217,11 @@
   padding: 0 18px;
   border: 1px solid var(--line);
   border-radius: 0;
+  background: transparent;
+  font: inherit;
   font-weight: 600;
   color: inherit;
+  cursor: pointer;
 }
 .drawer-action.primary {
   border-color: var(--c-text-grey-97);

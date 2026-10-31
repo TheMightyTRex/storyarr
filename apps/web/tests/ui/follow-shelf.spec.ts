@@ -3,6 +3,7 @@ import { expect, test } from "../fixtures";
 const list = "00000000-0000-0000-0000-0000000000a1";
 const book = (n: number, title: string, kind: string, label: string) => ({
   work_id: `00000000-0000-0000-0000-00000000010${n}`,
+  observation_id: `00000000-0000-0000-0000-00000000020${n}`,
   external_id: String(n),
   title,
   authors: ["Barry J. Hutchison"],
@@ -36,6 +37,8 @@ test("a followed series opens as a bookshelf with progress, status chips and a b
         csrf_token: "test",
       };
     else if (path === "/api/setup/onboarding") data = { status: "completed" };
+    else if (path === "/api/acquisition/preferences/personal")
+      data = { effective: { desired_media: "audio" } };
     else if (path === `/api/following/${list}/summary`)
       data = {
         list_id: list,
@@ -117,4 +120,87 @@ test("a followed series opens as a bookshelf with progress, status chips and a b
     .click();
   await expect(wall.getByRole("listitem")).toHaveCount(1);
   expect(statusQueries).toContain("excluded");
+});
+
+test("the book drawer can search now and exclude a book from the follow", async ({
+  page,
+}) => {
+  const patches: unknown[] = [];
+  await page.route("**/api/**", (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    let data: unknown = { items: [], total: 0, offset: 0, limit: 40 };
+    if (route.request().method() === "PATCH") {
+      patches.push({ path, body: route.request().postDataJSON() });
+      return route.fulfill({ status: 204 });
+    }
+    if (path === "/api/auth/me")
+      data = {
+        user: {
+          id: "reader",
+          role: "admin",
+          username: "reader",
+          display_name: "Reader",
+        },
+        csrf_token: "test",
+      };
+    else if (path === "/api/setup/onboarding") data = { status: "completed" };
+    else if (path === "/api/acquisition/preferences/personal")
+      data = { effective: { desired_media: "audio" } };
+    else if (path === `/api/following/${list}/summary`)
+      data = {
+        list_id: list,
+        source_kind: "series",
+        external_id: "77",
+        name: "Space Team",
+        image_url: null,
+        followed_at: "2026-10-01T00:00:00Z",
+        enabled: true,
+        state: "succeeded",
+        complete: true,
+        last_success_at: "2026-10-30T00:00:00Z",
+        mode: "automatic",
+        active: true,
+        latest_books: [],
+      };
+    else if (path === `/api/following/${list}/books`)
+      data = {
+        items: [
+          book(1, "Space Team", "in_library", "In library"),
+          book(3, "The Hunt for Reduk Topa", "wanted", "Wanted"),
+        ],
+        total: 2,
+        offset: 0,
+        limit: 48,
+        status_counts: { in_library: 1, wanted: 1 },
+      };
+    return route.fulfill({ json: data });
+  });
+
+  await page.goto(`/following/${list}`);
+  const wall = page.getByRole("list", { name: "Space Team books" });
+  await wall.getByRole("button", { name: "Space Team, In library" }).click();
+  let drawer = page.getByRole("complementary", { name: "Space Team" });
+  await expect(drawer.getByText("Search now")).toHaveCount(0);
+
+  await wall
+    .getByRole("button", { name: "The Hunt for Reduk Topa, Wanted" })
+    .click();
+  drawer = page.getByRole("complementary", {
+    name: "The Hunt for Reduk Topa",
+  });
+  await expect(drawer.getByText("Search now").first()).toBeVisible();
+  await drawer
+    .getByRole("button", { name: "Exclude from this follow" })
+    .click();
+  await expect(
+    drawer.getByRole("button", { name: "Include in this follow" }),
+  ).toBeVisible();
+  await expect(drawer.getByText("You excluded this book.")).toBeVisible();
+  expect(patches).toEqual([
+    {
+      path: `/api/lists/${list}/subscription/observations/00000000-0000-0000-0000-000000000203`,
+      body: { excluded: true },
+    },
+  ]);
 });

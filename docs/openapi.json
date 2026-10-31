@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Dewarr",
+    "title": "Storyarr",
     "version": "0.3.0"
   },
   "paths": {
@@ -27332,6 +27332,18 @@
             "type": "string",
             "format": "uuid",
             "title": "Work Id"
+          },
+          "observation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observation Id"
           },
           "external_id": {
             "type": "string",

@@ -24,6 +24,8 @@ BookFilter = Literal["all", "library", "upcoming", "recent", "missing"]
 
 class FollowBook(BaseModel):
     work_id: UUID
+    # The follow's own record of this book, used to exclude or include it from the bookshelf.
+    observation_id: UUID | None = None
     external_id: str
     title: str
     authors: list[str]
@@ -149,6 +151,7 @@ def catalog(user, source_rows):
         select(
             ListSubscription.list_id,
             mapping.c.work_id,
+            ListObservation.id.label("observation_id"),
             ListObservation.external_id,
             ListObservation.snapshot,
             ListObservation.excluded,
@@ -217,6 +220,7 @@ def book_filter(c, selection):
 def book(row, names=()):
     return FollowBook(
         work_id=row.work_id,
+        observation_id=row.observation_id,
         external_id=row.external_id,
         title=row.snapshot["title"],
         authors=row.snapshot.get("authors", []),
