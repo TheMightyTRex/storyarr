@@ -112,8 +112,8 @@ test("admins delete a library copy into the holding folder or permanently", asyn
     .getByRole("button", { name: "Delete", exact: true })
     .click();
   dialog = page.getByRole("dialog", { name: "Delete · Mort" });
-  await expect(dialog.getByText("can’t be undone")).toHaveCount(0);
+  await expect(dialog.getByText("cannot be undone")).toHaveCount(0);
   await dialog.getByRole("radio", { name: "Delete permanently" }).check();
-  await expect(dialog.getByText("This can’t be undone.")).toBeVisible();
+  await expect(dialog.getByText("This cannot be undone.")).toBeVisible();
   await dialog.getByRole("button", { name: "Cancel" }).click();
 });

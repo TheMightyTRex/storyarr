@@ -112,7 +112,7 @@ export default function LibraryGroups({
               ? `Books ${kind === "authors" ? "by this author" : "in this series"} in your libraries.`
               : kind === "authors"
                 ? "Explore the writers on your shelves."
-                : "See the stories you’re collecting, one series at a time."}
+                : "See the stories you are collecting, one series at a time."}
           </p>
         </div>
         {active.data && !active.error && (

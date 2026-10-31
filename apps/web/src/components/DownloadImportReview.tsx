@@ -143,7 +143,7 @@ export default function DownloadImportReview({
         <div className="download-attention" role="status">
           <h3>
             {inspection.state === "failed"
-              ? "We couldn’t read this download"
+              ? "We could not read this download"
               : "Adding your book to the library"}
           </h3>
           <p>

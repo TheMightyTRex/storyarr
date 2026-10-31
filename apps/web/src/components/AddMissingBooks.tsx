@@ -220,7 +220,7 @@ function AddMissingForm({
         <p>
           Searching for {preview?.plan.selected} missing{" "}
           {preview?.plan.selected === 1 ? "book" : "books"}. Each book’s status
-          shows its progress, and books that aren’t found are searched again
+          shows its progress, and books that are not found are searched again
           later.
         </p>
         <button type="button" className="primary" onClick={close}>

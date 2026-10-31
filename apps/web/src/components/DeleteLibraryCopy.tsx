@@ -66,7 +66,7 @@ export default function DeleteLibraryCopy({
             </div>
           ) : (
             <p className="muted">
-              The files were deleted and can’t be recovered.
+              The files were deleted and cannot be recovered.
             </p>
           )}
           {forget ? (
@@ -131,7 +131,7 @@ export default function DeleteLibraryCopy({
                     ? ` and are deleted permanently after ${days} days`
                     : " and are kept until you delete them"
                 }. Until then you can recover the book by moving the folder back; the steps are shown after deleting.`
-              : "Audiobookshelf deletes the files from disk. This can’t be undone."}
+              : "Audiobookshelf deletes the files from disk. This cannot be undone."}
           </p>
           {files === "delete" && (
             <label>
@@ -153,7 +153,7 @@ export default function DeleteLibraryCopy({
           </label>
           <p className="muted">
             {forget
-              ? "Withdraws your requests for it, excludes it from your follows and Hardcover lists, and removes it from your lists that download automatically, so automatic searches won’t download it again. You can allow it again later from the follow or the book page."
+              ? "Withdraws your requests for it and excludes it from your follows and Hardcover lists. It also leaves your lists that download automatically, so it is not downloaded again. You can allow it again later from the follow or the book page."
               : "Your follows, lists and requests may find and download it again."}
           </p>
           <div className="button-row">

@@ -73,7 +73,7 @@ export default function ConnectionHealth() {
         </ul>
         <small>
           Connection issues are automatically rechecked before this alert
-          appears and retried about once a minute while you’re using Storyarr.
+          appears and retried about once a minute while you are using Storyarr.
           Routine checks run every 5 minutes. Service cooldowns may delay a
           retry.
         </small>

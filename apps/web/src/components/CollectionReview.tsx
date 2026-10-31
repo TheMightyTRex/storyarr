@@ -444,7 +444,7 @@ export default function CollectionReview({
             <p className="eyebrow">ADD TO YOUR LIBRARY</p>
             <h2>{data.title}</h2>
             <p className="muted">
-              {matched.length} books matched to files. Uncheck any you don’t
+              {matched.length} books matched to files. Clear any you do not
               want.
             </p>
           </div>

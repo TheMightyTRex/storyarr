@@ -587,7 +587,7 @@ function AssetReview({
         {item.auto_match && item.auto_match.status !== "matched" && (
           <div className="review-auto-match" role="note">
             <p>
-              {`Automatic Hardcover matching didn't choose a book: ${item.auto_match.reason || "no confident match"}`}
+              {`Automatic Hardcover matching did not choose a book: ${item.auto_match.reason || "no confident match"}`}
             </p>
             {(item.auto_match.candidates ?? []).length > 0 && (
               <p className="muted">
@@ -658,7 +658,7 @@ function ReadIssueReview({ issue }: { issue: ReadIssue }) {
       <div className="review-next-step">
         <h3>How to fix it</h3>
         <p>
-          {`Storyarr couldn't read this item's files, so it can't count it as owned or link it to a book yet. Check the item in ${appName(issue.server_kind)}, then run a library sync. Once its files can be read, it moves to Needs matching.`}
+          {`Storyarr could not read this item's files, so it cannot count it as owned or link it to a book yet. Check the item in ${appName(issue.server_kind)}, then run a library sync. Once its files can be read, it moves to Needs matching.`}
         </p>
       </div>
     </>

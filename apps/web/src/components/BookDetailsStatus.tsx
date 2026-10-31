@@ -27,12 +27,12 @@ export default function BookDetailsStatus({
     ? "Choose a Hardcover match"
     : connection
       ? "Check your Hardcover connection"
-      : "Book details couldn’t load";
+      : "Book details could not load";
   const description = unmatched
     ? reason ||
-      "We couldn’t verify a unique match using this book’s identifiers, title, and author. Choose the correct book to show its synopsis, ratings and reviews."
+      "We could not find a single match from this book’s identifiers, title and author. Choose the correct book to show its synopsis, ratings and reviews."
     : missingEndpoint
-      ? "The server doesn’t have the book-details lookup available. Restart or update the app server, then retry."
+      ? "The server does not have the book details lookup. Restart or update the app server, then try again."
       : connection
         ? "Your Hardcover connection needs attention before we can load its synopsis, ratings and reviews."
         : status === 429
