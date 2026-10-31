@@ -25,6 +25,7 @@ backups/
 /research/
 /*.md
 !/README.md
+!/CHANGELOG.md
 !/AGENTS.md
 /*.csv
 /docs/*.md
