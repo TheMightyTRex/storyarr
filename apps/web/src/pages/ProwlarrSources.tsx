@@ -6,6 +6,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Notice } from "../components";
+import { useLoadingBar } from "../components/LoadingBar";
 import ConnectionTestStatus, {
   SavedSecretIndicator,
 } from "../components/ConnectionTestStatus";
@@ -125,6 +126,7 @@ export default function ProwlarrSources({
       ),
   });
   const busy = search.isPending || inspect.isPending;
+  useLoadingBar(search.isPending);
   return (
     <>
       <header className="page-heading">

@@ -12,6 +12,7 @@ import { api, result, type Auth } from "../api/client";
 import { canStartDownload } from "../permissions";
 import type { components } from "../api/schema";
 import { Notice } from "../components";
+import { useLoadingBar } from "../components/LoadingBar";
 import { randomUUID } from "../randomUUID";
 
 function useCanDownloadRelease() {
@@ -172,6 +173,11 @@ export default function BookSources({
   ]);
   const busy =
     begin.isPending || (search.data && search.data.status !== "completed");
+  // Only while the search is really running, so a failed search cannot leave the bar on.
+  useLoadingBar(
+    begin.isPending ||
+      ["queued", "running"].includes(search.data?.status || ""),
+  );
   const data =
     !requestId || search.data?.request_id === requestId ? search.data : null;
   return (

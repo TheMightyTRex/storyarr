@@ -3,6 +3,16 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.4.5 (unreleased)
+
+### Changed
+- Source searches keep the loading bar under the header on while they run (book Sources, Quick add,
+  Settings, Sources).
+
+### Fixed
+- Connection repair accepts a library that switched from hardlink to copy after the download was chosen, so
+  held downloads no longer stop at "The library destination changed".
+
 ## v0.4.4 (31 October 2026)
 
 ### Added

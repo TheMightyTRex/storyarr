@@ -1,6 +1,7 @@
 import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { components } from "../api/schema";
+import { useLoadingBar } from "./LoadingBar";
 
 export default function QuickAddStatus({
   receipt,
@@ -13,6 +14,7 @@ export default function QuickAddStatus({
 }) {
   const active =
     !!starting || ["queued", "running"].includes(receipt?.status || "");
+  useLoadingBar(active);
   const held =
     !starting &&
     ["held", "failed", "cancelled"].includes(receipt?.status || "");
