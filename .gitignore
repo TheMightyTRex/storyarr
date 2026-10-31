@@ -36,6 +36,7 @@ backups/
 !/docs/UPDATING.md
 !/docs/MIGRATING.md
 !/docs/RELEASING.md
+!/docs/UPSTREAM.md
 !/docs/TEST-AUDIT.md
 !/docs/OIDC.md
 !/docs/PLEX.md

@@ -66,7 +66,8 @@ arm64 at `ghcr.io/themightytrex/storyarr`.
 More: [Docker settings and backups](docs/DOCKER.md) · [Metadata sources](docs/METADATA-SOURCES.md) ·
 [Download clients](docs/DOWNLOAD-CLIENTS.md) · [MAM proxy](docs/MAM-PROXY.md) ·
 [Request quotas](docs/REQUEST-QUOTAS.md) · [Notifications](docs/NOTIFICATIONS.md) ·
-[Contributing](docs/DEVELOPMENT.md) · [Releasing](docs/RELEASING.md)
+[Contributing](docs/DEVELOPMENT.md) · [Releasing](docs/RELEASING.md) ·
+[Working with Dewarr](docs/UPSTREAM.md)
 
 ## Screenshots
 

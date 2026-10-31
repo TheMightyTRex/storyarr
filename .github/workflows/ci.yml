@@ -56,6 +56,8 @@ jobs:
       - run: pg_dump --version && pg_restore --version
       - run: uv run ruff check services tests scripts
       - run: uv run ruff format --check services tests scripts
+      - name: Storyarr name
+        run: python3 scripts/storyarr_rename.py
       - name: Check migrations on a fresh database
         run: |
           uv run alembic upgrade head

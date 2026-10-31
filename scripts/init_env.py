@@ -38,5 +38,5 @@ with env.open("x") as file:
         f"BOOK_SECRET_KEY_FILE={prefix}app_key\n"
         "BOOK_COOKIE_SECURE=false\n"
     )
-print(f"Created .env for {args.mode}. Open Dewarr to create your first administrator account.")
+print(f"Created .env for {args.mode}. Open Storyarr to create your first administrator account.")
 print("Keep .local/secrets/app_key with your database backups. No secrets were printed.")

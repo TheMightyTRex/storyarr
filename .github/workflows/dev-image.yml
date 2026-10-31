@@ -109,6 +109,6 @@ jobs:
 
           Specific build: \`$IMAGE:$TAG\`
 
-          Update only Dewarr in your existing stack:
+          Update only Storyarr in your existing stack:
           \`docker compose up -d --no-deps --pull always --wait dewarr\`
           EOF
