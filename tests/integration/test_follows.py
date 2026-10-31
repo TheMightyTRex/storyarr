@@ -813,3 +813,15 @@ async def test_follow_books_carry_one_status_each_with_counts_and_a_status_filte
     assert waiting["total"] == 2 and len(waiting["items"]) == 1
     assert waiting["status_counts"] == counts
     assert (await client.get(path, params={"status": "unknown"})).status_code == 422
+
+    # The bookshelf drawer excludes a book through its observation id.
+    missing = next(b for b in books["items"] if b["title"] == "Missing book")
+    assert missing["observation_id"]
+    response = await client.patch(
+        f"/api/lists/{follow['list_id']}/subscription/observations/{missing['observation_id']}",
+        json={"excluded": True},
+    )
+    assert response.status_code == 204, response.text
+    books = (await client.get(path, params={"limit": 50})).json()
+    status = {b["title"]: b["status"]["kind"] for b in books["items"]}
+    assert status["Missing book"] == "excluded"
