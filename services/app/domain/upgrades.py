@@ -103,6 +103,17 @@ RELEASES = [
             "no settings or data change."
         ),
     ),
+    UpgradeRelease(
+        id="2026.10.31",
+        title="Storyarr",
+        highlights=[
+            "The app is now called Storyarr, with a new icon. It is a fork of Dewarr by logabell.",
+            "Settings, Reading is now Settings, Sources.",
+            "The calendar has a Show menu: covers on the calendar, and which sources and authors "
+            "appear.",
+            "The bookshelf drawer can start a search now, and exclude a book from the follow.",
+        ],
+    ),
 ]
 CURRENT = RELEASES[-1].id
 
