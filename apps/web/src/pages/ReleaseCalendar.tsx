@@ -612,17 +612,19 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
           </p>
         </div>
         <div className="release-toolbar">
-          <GenreMenu
-            choices={genreSource?.choices ?? []}
-            selected={selectedGenres}
-            disabled={!canEdit}
-            onToggle={toggleGenre}
-          />
-          <CalendarSettings
-            preferences={preferences}
-            authors={monthAuthors}
-            onChange={setPreferences}
-          />
+          <div className="release-filters">
+            <GenreMenu
+              choices={genreSource?.choices ?? []}
+              selected={selectedGenres}
+              disabled={!canEdit}
+              onToggle={toggleGenre}
+            />
+            <CalendarSettings
+              preferences={preferences}
+              authors={monthAuthors}
+              onChange={setPreferences}
+            />
+          </div>
           <div
             className="button-row release-month-nav"
             role="group"

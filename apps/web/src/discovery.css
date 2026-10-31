@@ -1056,6 +1056,11 @@
 .release-month-nav {
   flex-wrap: nowrap;
 }
+.release-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 .release-month-nav strong {
   min-width: 9.5rem;
   text-align: center;
@@ -1455,6 +1460,8 @@ button.release-day[aria-expanded="true"] {
 
 /* Calendar Show settings: covers, sources and authors. */
 .calendar-settings-panel {
+  right: auto;
+  left: 0;
   width: min(300px, calc(100vw - 48px));
 }
 .calendar-settings-panel fieldset {
@@ -1468,7 +1475,15 @@ button.release-day[aria-expanded="true"] {
   font-weight: 650;
 }
 .calendar-settings-panel .button-row {
+  gap: 16px;
   padding: 0 10px 4px;
+}
+.calendar-settings-panel .text-button {
+  min-height: 32px;
+  font-size: 0.8125rem;
+}
+.calendar-settings-panel .text-button + .text-button {
+  margin-left: 12px;
 }
 .calendar-settings-panel > p {
   margin: 8px 10px 4px;
