@@ -93,7 +93,6 @@ RELEASES = [
             "Leaving a page now stops the database work it started.",
             "A loading bar under the header shows when a page is fetching data.",
             "The request count badge is no longer in the main menu.",
-            "Book lookups across the app use a quicker query.",
         ],
         database_changes=[
             "Two new indexes on the operations table: by kind and status, and by request.",
