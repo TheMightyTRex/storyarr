@@ -10,6 +10,10 @@ import { genreLabel } from "../components/DiscoveryCollections";
 import FollowRelease, { basisLabel } from "../components/FollowRelease";
 import QuickAdd from "../components/QuickAdd";
 import BookLink from "../components/BookLink";
+import CalendarSettings, {
+  shownOnCalendar,
+  useCalendarPreferences,
+} from "../components/CalendarSettings";
 
 type Entry = components["schemas"]["ReleaseEntry"];
 type Month = components["schemas"]["ReleaseMonth"];
@@ -460,6 +464,7 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [draftGenres, setDraftGenres] = useState<string[] | null>(null);
   const remembered = useRef<Month | undefined>(undefined);
+  const [preferences, setPreferences] = useCalendarPreferences();
   const query = useQuery({
     queryKey: ["release-calendar", month],
     queryFn: async ({ signal }) =>
@@ -483,8 +488,22 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
   if (data) remembered.current = data;
   const settled = data?.month === month;
   const genreSource = settled ? data : remembered.current;
-  const items = settled ? data?.items || [] : [];
-  const undated = settled ? data?.undated || [] : [];
+  const allItems = settled ? data?.items || [] : [];
+  const allUndated = settled ? data?.undated || [] : [];
+  const monthAuthors = useMemo(
+    () => [
+      ...new Set(
+        [...allItems, ...allUndated].flatMap((entry) => entry.authors),
+      ),
+    ],
+    [allItems, allUndated],
+  );
+  const items = allItems.filter((entry) => shownOnCalendar(entry, preferences));
+  const undated = allUndated.filter((entry) =>
+    shownOnCalendar(entry, preferences),
+  );
+  const hiddenCount =
+    allItems.length + allUndated.length - items.length - undated.length;
   const byDay = useMemo(() => {
     const grouped = new Map<string, Entry[]>();
     for (const item of items) {
@@ -599,6 +618,11 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
             disabled={!canEdit}
             onToggle={toggleGenre}
           />
+          <CalendarSettings
+            preferences={preferences}
+            authors={monthAuthors}
+            onChange={setPreferences}
+          />
           <div
             className="button-row release-month-nav"
             role="group"
@@ -638,8 +662,21 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
         </p>
       )}
       {settled && !items.length && !undated.length && (
-        <p className="muted">Nothing is scheduled this month.</p>
+        <p className="muted">
+          {hiddenCount
+            ? "Nothing you have chosen to show is scheduled this month."
+            : "Nothing is scheduled this month."}
+        </p>
       )}
+      {settled &&
+        hiddenCount > 0 &&
+        (items.length > 0 || undated.length > 0) && (
+          <p className="muted">
+            {hiddenCount === 1
+              ? "1 release is hidden by your Show choices."
+              : `${hiddenCount} releases are hidden by your Show choices.`}
+          </p>
+        )}
       <div className="release-weekdays" aria-hidden="true">
         {WEEKDAYS.map((day) => (
           <span key={day}>{day}</span>
@@ -680,9 +717,27 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
             >
               <span className="release-day-number">{cell.day}</span>
               <span className="release-count">{entries.length}</span>
-              <span className="release-marks">
+              <span
+                className={
+                  preferences.covers
+                    ? "release-marks has-covers"
+                    : "release-marks"
+                }
+              >
                 {shown.map((entry) => (
-                  <span key={entryKey(entry)}>{entry.title}</span>
+                  <span key={entryKey(entry)}>
+                    {preferences.covers && entry.cover_url && (
+                      <img
+                        className="release-mark-cover"
+                        src={entry.cover_url}
+                        alt=""
+                        loading="lazy"
+                        width="20"
+                        height="30"
+                      />
+                    )}
+                    <span className="release-mark-title">{entry.title}</span>
+                  </span>
                 ))}
                 {extra > 0 && (
                   <span className="release-more">+{extra} more</span>

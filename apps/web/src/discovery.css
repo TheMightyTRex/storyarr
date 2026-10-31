@@ -1452,3 +1452,51 @@ button.release-day[aria-expanded="true"] {
 .discovery-shelf .curation-note {
   max-width: 25ch;
 }
+
+/* Calendar Show settings: covers, sources and authors. */
+.calendar-settings-panel {
+  width: min(300px, calc(100vw - 48px));
+}
+.calendar-settings-panel fieldset {
+  margin: 8px 0 0;
+  padding: 0;
+  border: 0;
+}
+.calendar-settings-panel legend {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+.calendar-settings-panel .button-row {
+  padding: 0 10px 4px;
+}
+.calendar-settings-panel > p {
+  margin: 8px 10px 4px;
+  font-size: 0.75rem;
+}
+.release-marks.has-covers {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 3px;
+}
+.release-marks.has-covers > span:has(.release-mark-cover) {
+  flex: 0 0 auto;
+}
+.release-marks.has-covers > span:not(:has(.release-mark-cover)) {
+  flex: 1 0 100%;
+}
+.release-marks.has-covers > span:has(.release-mark-cover) .release-mark-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.release-mark-cover {
+  display: block;
+  width: 24px;
+  height: 36px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
