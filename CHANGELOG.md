@@ -8,9 +8,11 @@ at github.com/TheMightyTRex/storyarr (private). `CHANGELOG-DETAILED.md` has the 
 ### Changed
 - **Renamed to Storyarr,** with a new icon and favicon. The README credits Dewarr by logabell.
 - **Settings, Sources:** the Reading group and Reading accounts are now called Sources.
-- **Headings and wording:** "My library" in sentence case, and British spellings in the interface.
+- **Headings and wording:** "My library" in sentence case, one main heading per page, British spellings, and no
+  contractions.
 
 ### Added
+- **Browser tabs:** each tab is named after its page.
 - **Calendar Show menu:** covers on the calendar, and which sources and authors appear. Saved in each browser.
 - **Bookshelf drawer:** Search now, and Exclude from this follow (or Include again).
 
