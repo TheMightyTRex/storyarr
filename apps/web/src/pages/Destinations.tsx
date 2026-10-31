@@ -268,7 +268,7 @@ export default function Destinations({
                       {destination.shared_root && (
                         <p className="muted">
                           One library folder for both formats. New imports use
-                          separate book folders labeled Ebook or Audiobook;
+                          separate book folders labelled Ebook or Audiobook;
                           existing books stay where they are.
                         </p>
                       )}
@@ -713,7 +713,7 @@ function FolderPicker({
                   {sharesFolder && (
                     <p className="notice" role="status">
                       Shared library · Ebooks + Audiobooks. New imports use
-                      separate book folders labeled Ebook or Audiobook.
+                      separate book folders labelled Ebook or Audiobook.
                     </p>
                   )}
                   {(folders.length > 1 ||

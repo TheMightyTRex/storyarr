@@ -131,7 +131,7 @@ export default function ListSubscription({
         Removing an imported book excludes it from future refreshes.
       </p>
       <p className="muted">
-        Shelf sync updates list membership. Download behavior is controlled by
+        Shelf sync updates list membership. Download behaviour is controlled by
         this list’s acquisition policy; reading status stays unchanged.
       </p>
       <Notice
