@@ -38,7 +38,9 @@ async def test_the_wizard_shows_once_on_an_existing_install(client, admin, datab
         release.id for release in upgrades.RELEASES
     ]
     assert shown["releases"][-1]["id"] == upgrades.CURRENT
-    assert shown["releases"][-1]["database_changes"] and shown["releases"][-1]["rollback"]
+    # Every release that changes the database says how to undo it.
+    assert any(release["database_changes"] for release in shown["releases"])
+    assert all(release["rollback"] for release in shown["releases"] if release["database_changes"])
     assert {item["id"] for item in shown["releases"][0]["review"]} >= {"layout", "audible-store"}
     done = await client.post("/api/upgrade/acknowledge")
     assert done.status_code == 200, done.text
