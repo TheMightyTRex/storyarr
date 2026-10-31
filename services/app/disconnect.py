@@ -10,12 +10,13 @@ DATABASE_READS = ("/api/requests", "/api/following", "/api/library")
 
 class CancelOnDisconnect:
     """
-    For reads (GET and HEAD) on the pages in DATABASE_READS, cancel the request when the browser disconnects, for example after
-    moving to another page. Cancelling the task makes the database driver cancel its running query,
-    so an abandoned page no longer keeps a database connection busy. Writes always run to the end,
-    so a change is never left half done. Once the answer has started, the request also runs to the
-    end: servers report a disconnect as soon as a response is complete, and the clean-up after it
-    (closing the database session, background tasks) must still happen.
+    For reads (GET and HEAD) on the pages in DATABASE_READS, cancel the request when the browser
+    disconnects, for example after moving to another page. Cancelling the task makes the
+    database driver cancel its running query, so an abandoned page no longer keeps a database
+    connection busy. Writes always run to the end, so a change is never left half done. Once the
+    answer has started, the request also runs to the end: servers report a disconnect as soon as
+    a response is complete, and the clean-up after it (closing the database session, background
+    tasks) must still happen.
     """
 
     def __init__(self, app):
