@@ -196,7 +196,7 @@ def test_parts_with_their_own_discs_or_other_files_are_skipped(tmp_path):
     root, staging = library(tmp_path / "other")
     mismatch = context(root, staging)
     mismatch["parts"][1]["audio"] = {"/books/Writer/Dark Age (Part 2 of 3)/elsewhere.mp3": 3}
-    with pytest.raises(CombineSkipped, match="don't match what Audiobookshelf reports"):
+    with pytest.raises(CombineSkipped, match="do not match what Audiobookshelf reports"):
         build_spec(mismatch)
 
 

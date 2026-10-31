@@ -89,7 +89,7 @@ async def _library_folder(db, asset, item_path):
         return await asyncio.to_thread(_confine, root, relative)
     raise HTTPException(
         409,
-        "Storyarr can't reach this library's files. Add the library under Library folders, "
+        "Storyarr cannot reach this library's files. Add the library under Library folders, "
         "or delete the files permanently instead.",
     )
 

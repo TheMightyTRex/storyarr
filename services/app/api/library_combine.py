@@ -85,7 +85,7 @@ async def queue(db, admin, version_id, body, action):
             409,
             current["reason"]
             or (
-                "These parts can't be combined right now"
+                "These parts cannot be combined right now"
                 if action == "combine"
                 else "Only a combined book can be separated"
             ),

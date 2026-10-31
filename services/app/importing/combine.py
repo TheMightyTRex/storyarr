@@ -374,7 +374,7 @@ def build_spec(context):
             )
             if sizes.get(name) != size:
                 raise CombineSkipped(
-                    f"The files on disk for part {index} don't match what Audiobookshelf "
+                    f"The files on disk for part {index} do not match what Audiobookshelf "
                     "reports; check the library folder mapping"
                 )
             audio[path] = size
@@ -561,7 +561,7 @@ def cleanup_parts(spec):
     left = []
     with journal(spec) as (staging, destination, receipt):
         if receipt is None or receipt["state"] not in {"handed-over", "cleaned"}:
-            raise CombineError("The combined book isn't confirmed yet")
+            raise CombineError("The combined book is not confirmed yet")
         verify_combined(destination, spec)
         try:
             os.mkdir(archive_name(spec), mode=0o700, dir_fd=staging)
@@ -683,12 +683,12 @@ def remove_combined(spec):
     """Remove the combined book once every part is back. Returns False if anything was left."""
     with journal(spec) as (staging, destination, receipt):
         if receipt is None or receipt["state"] not in {"separated", "removed"}:
-            raise CombineError("The parts aren't confirmed back in the library yet")
+            raise CombineError("The parts are not confirmed back in the library yet")
         for file in [*spec.files, *spec.archived]:
             with opened_parent(destination, file.source) as (parent, name):
                 info = lstat(parent, name)
             if info is None or not same_inode(info, file.identity):
-                raise CombineError(f"{file.source} isn't back in place")
+                raise CombineError(f"{file.source} is not back in place")
         clean = True
         try:
             with beneath(destination, spec.folder, folder=True) as leaf:
@@ -830,7 +830,7 @@ async def statuses(db, version_ids):
             reason = (
                 "Storyarr combines these into one book after the next library sync"
                 if automatic
-                else "Automatic combining is off; combine them when you're ready"
+                else "Automatic combining is off. Combine them when you are ready"
             )
         separating = stage in SEPARATION_STAGES or state == "separating"
         result[key] = {
@@ -894,7 +894,7 @@ async def evaluate(db, library_id, version_id, rows):
         path = (row.metadata_snapshot or {}).get("path")
         if not isinstance(path, str) or not path.startswith("/"):
             raise CombineSkipped(
-                f"Audiobookshelf hasn't reported the folder for part {row.part_index}; "
+                f"Audiobookshelf has not reported the folder for part {row.part_index}; "
                 "sync the library again"
             )
         paths[row.part_index] = PurePosixPath(path)
@@ -970,7 +970,7 @@ async def evaluate(db, library_id, version_id, rows):
             ExportMetadata(medium="audio", naming=metadata, description=work.description)
         )
     except ValueError as error:
-        raise CombineSkipped(f"The book folder can't be named: {error}") from error
+        raise CombineSkipped(f"The book folder cannot be named: {error}") from error
     base = PurePosixPath(destination.backend_path)
     return {
         "destination_id": destination.id,
@@ -1221,7 +1221,7 @@ async def combine_one(owner_id, library_id, version_id, operation_id=None):
                     library_id,
                     version_id,
                     "needs-attention",
-                    f"The combined folder was published but couldn't be verified: {error}",
+                    f"The combined folder was published but could not be verified: {error}",
                     stage="published",
                 )
             return await settle(library_id, version_id, "skipped", str(error), stage=None)
