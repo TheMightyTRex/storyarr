@@ -182,6 +182,19 @@ RELEASES = [
             ),
         ],
     ),
+    UpgradeRelease(
+        id="2026.11.01",
+        title="A new My library bookshelf",
+        highlights=[
+            "My library shows smaller covers, so more books fit. Click a book and a summary "
+            "slides out from the right with its series, formats, rating and description.",
+            "Covers in My library no longer show Quick add. Getting a missing format is in the "
+            "summary.",
+            "Searching sources shows the loading bar under the header until the search finishes.",
+            "Downloads held after a library switched from hardlink to copy can be repaired and "
+            "carry on.",
+        ],
+    ),
 ]
 CURRENT = RELEASES[-1].id
 
