@@ -43,6 +43,7 @@ SKIP = (
     "scripts/upstream_watch.py",
     "tests/unit/test_migration_names.py",
     "scripts/storyarr_rename.py",
+    "tests/unit/test_storyarr_rename.py",  # holds Dewarr names as test cases
 )
 # Lowercase names Storyarr renamed: (files they apply to, pattern, replacement). A Dewarr merge that
 # touches these lines brings `dewarr` back, so --apply restores them and the check reports them.
