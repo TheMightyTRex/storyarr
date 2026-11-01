@@ -1,8 +1,24 @@
 /* My library: a compact cover wall, with a summary that slides out from the right. */
 .shelf-wall {
+  /* Cover size from Settings, General: Small, Medium (the default) or Large. */
+  --shelf-cover: 148px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--shelf-cover), 45%), 1fr)
+  );
+  gap: 24px 18px;
+}
+.shelf-wall[data-size="small"] {
+  --shelf-cover: 108px;
   gap: 22px 16px;
+}
+.shelf-wall[data-size="large"] {
+  --shelf-cover: 196px;
+  gap: 28px 22px;
+}
+.shelf-wall[data-size="large"] .shelf-book h3 {
+  font-size: 0.9375rem;
 }
 .shelf-book {
   all: unset;
@@ -140,4 +156,62 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
+}
+
+/* Settings: the three cover sizes, each with a small swatch of its size. */
+.cover-size-setting {
+  border: 0;
+  padding: 0;
+  margin: 0 0 28px;
+}
+.cover-size-setting legend {
+  font-size: 1.125rem;
+  font-weight: 650;
+  margin-bottom: 4px;
+}
+.cover-size-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+.cover-size-options label {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  cursor: pointer;
+}
+.cover-size-options label:has(input:checked) {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.cover-size-options input {
+  align-self: center;
+}
+.cover-size-options small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+}
+.cover-size-swatch {
+  display: block;
+  background: var(--accent);
+  opacity: 0.75;
+}
+[data-size="small"] .cover-size-swatch {
+  width: 18px;
+  height: 27px;
+}
+[data-size="medium"] .cover-size-swatch {
+  width: 24px;
+  height: 36px;
+}
+[data-size="large"] .cover-size-swatch {
+  width: 32px;
+  height: 48px;
 }

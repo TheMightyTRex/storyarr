@@ -35677,6 +35677,22 @@
               }
             ],
             "title": "Library Views"
+          },
+          "cover_size": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "small",
+                  "medium",
+                  "large"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Size"
           }
         },
         "additionalProperties": false,
@@ -43947,6 +43963,16 @@
             "type": "object",
             "title": "Library Views",
             "default": {}
+          },
+          "cover_size": {
+            "type": "string",
+            "enum": [
+              "small",
+              "medium",
+              "large"
+            ],
+            "title": "Cover Size",
+            "default": "medium"
           }
         },
         "type": "object",

@@ -31,6 +31,8 @@ class UserPreferences(BaseModel):
     collection_view: Literal["detail", "list"] = "detail"
     # Default views saved from the Library tabs' toolbar; an empty object means none saved.
     library_views: dict[LibrarySection, SavedView] = {}
+    # How big covers are on My library's cover wall.
+    cover_size: Literal["small", "medium", "large"] = "medium"
 
 
 class PreferencesInput(BaseModel):
@@ -38,6 +40,7 @@ class PreferencesInput(BaseModel):
     collection_view: Literal["detail", "list"] | None = None
     # Replaces every saved view: send all the ones to keep, or {} to reset them all.
     library_views: dict[LibrarySection, SavedView] | None = None
+    cover_size: Literal["small", "medium", "large"] | None = None
 
 
 def view(saved: dict | None) -> UserPreferences:

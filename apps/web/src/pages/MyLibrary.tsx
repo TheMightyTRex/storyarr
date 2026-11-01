@@ -16,6 +16,7 @@ import AssetMatchForm from "../components/AssetMatchForm";
 import CollectionContents from "./CollectionContents";
 import SectionToolbar, { SaveViewButton } from "../components/SectionToolbar";
 import { useSavedView } from "../hooks/useSavedView";
+import { usePreferences } from "../hooks/usePreferences";
 import { currentParams } from "../currentParams";
 
 const count = (total?: number) =>
@@ -168,6 +169,7 @@ function LibraryBooks({
   clear: () => void;
 }) {
   const view = useSavedView("books");
+  const coverSize = usePreferences().preferences?.cover_size ?? "medium";
   // The book whose summary slides out from the right.
   const [summary, setSummary] = useState<
     components["schemas"]["WorkView"] | null
@@ -297,7 +299,7 @@ function LibraryBooks({
       {books.data && (
         <>
           {books.data.items.length ? (
-            <div className="shelf-wall">
+            <div className="shelf-wall" data-size={coverSize}>
               {books.data.items.map((work) => (
                 <button
                   key={work.id}

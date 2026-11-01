@@ -32,18 +32,21 @@ async def test_preferences_follow_the_account(client, admin):
     assert (await client.get("/api/preferences")).json() == {
         "collection_view": "detail",
         "library_views": {},
+        "cover_size": "medium",
     }
     saved = await client.patch("/api/preferences", json={"collection_view": "list"})
     assert saved.status_code == 200, saved.text
-    assert saved.json() == {"collection_view": "list", "library_views": {}}
+    assert saved.json() == {"collection_view": "list", "library_views": {}, "cover_size": "medium"}
     assert (await client.get("/api/preferences")).json() == {
         "collection_view": "list",
         "library_views": {},
+        "cover_size": "medium",
     }
     # A partial change keeps what is already saved.
     assert (await client.patch("/api/preferences", json={})).json() == {
         "collection_view": "list",
         "library_views": {},
+        "cover_size": "medium",
     }
     for bad in ({"collection_view": "grid"}, {"theme": "dark"}):
         assert (await client.patch("/api/preferences", json=bad)).status_code == 422
@@ -79,6 +82,14 @@ async def test_default_library_views_can_be_saved_and_reset(client, admin):
         assert (await client.patch("/api/preferences", json=bad)).status_code == 422
 
 
+async def test_cover_size_is_saved_with_the_account(client, admin):
+    assert (await client.get("/api/preferences")).json()["cover_size"] == "medium"
+    saved = await client.patch("/api/preferences", json={"cover_size": "large"})
+    assert saved.status_code == 200, saved.text
+    assert (await client.get("/api/preferences")).json()["cover_size"] == "large"
+    assert (await client.patch("/api/preferences", json={"cover_size": "huge"})).status_code == 422
+
+
 async def test_each_person_has_their_own_preferences(client, admin):
     await client.patch("/api/preferences", json={"collection_view": "list"})
     # Viewers can save their own choices too.
@@ -86,6 +97,7 @@ async def test_each_person_has_their_own_preferences(client, admin):
     assert (await client.get("/api/preferences")).json() == {
         "collection_view": "detail",
         "library_views": {},
+        "cover_size": "medium",
     }
     assert (
         await client.patch("/api/preferences", json={"collection_view": "list"})

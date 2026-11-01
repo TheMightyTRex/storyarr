@@ -12155,6 +12155,8 @@ export interface components {
       library_views?: {
         [key: string]: components["schemas"]["SavedView"];
       } | null;
+      /** Cover Size */
+      cover_size?: ("small" | "medium" | "large") | null;
     };
     /** PresetInfo */
     PresetInfo: {
@@ -15272,6 +15274,12 @@ export interface components {
       library_views: {
         [key: string]: components["schemas"]["SavedView"];
       };
+      /**
+       * Cover Size
+       * @default medium
+       * @enum {string}
+       */
+      cover_size: "small" | "medium" | "large";
     };
     /** UserView */
     UserView: {

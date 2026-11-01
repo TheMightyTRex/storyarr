@@ -13,6 +13,9 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Releases in Settings:** System, Upgrades and backups, Releases lists every release in a fold, newest first,
   marking the current version (open) and any newer one.
 
+- **Bigger covers on My library,** with a cover size setting in Settings, General: Small, Medium (the new,
+  larger default) or Large, saved with your account.
+
 ### Fixed
 - Release dates show in British style (1 Nov 2026) whatever the browser's language.
 

@@ -4,6 +4,7 @@ import { BookOpen, Headphones, Library, Check, Star } from "lucide-react";
 import LayoutChoice from "../components/LayoutChoice";
 import DisplayPanel from "../components/DisplayPanel";
 import SavedViewsSettings from "../components/SavedViewsSettings";
+import CoverSizeSetting from "../components/CoverSizeSetting";
 import {
   displayDefaults,
   saveDisplayPreferences,
@@ -27,6 +28,7 @@ export default function DisplaySettings() {
     <div className="display-settings">
       <LayoutChoice />
       <DisplayPanel />
+      <CoverSizeSetting />
       <h3>Appearance</h3>
       <p className="muted">
         Choose how covers look on your shelves. Changes save automatically in
