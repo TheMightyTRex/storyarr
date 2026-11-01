@@ -121,7 +121,7 @@ def test_unreachable_database_logs_and_reports_the_driver_reason(environment, mo
     monkeypatch.setattr(psycopg, "connect", unresolvable)
     stop = MagicMock(spec=threading.Event)
     stop.is_set.return_value = False
-    with caplog.at_level("WARNING", logger="dewarr"):
+    with caplog.at_level("WARNING", logger="storyarr"):
         with pytest.raises(RuntimeError, match="DB_HOST postgres does not resolve"):
             connect_database(stop, timeout=0.05)
     assert len(attempts) > 1
@@ -135,7 +135,7 @@ def test_lost_connection_during_startup_is_described(environment, monkeypatch, c
     monkeypatch.setattr(container, "prepare_user", lambda config: None)
     monkeypatch.setattr(container, "connect_database", lambda stop: MagicMock())
     monkeypatch.setattr(container, "ensure_key", disconnect)
-    with caplog.at_level("ERROR", logger="dewarr"):
+    with caplog.at_level("ERROR", logger="storyarr"):
         assert container.main() == 1
     assert "server closed the connection unexpectedly" in caplog.text
     assert "test/password" not in caplog.text

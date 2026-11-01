@@ -14,11 +14,11 @@ assert Path("/app/apps/web/dist/index.html").is_file(), "Frontend assets missing
 '
 
 cleanup() {
-  docker logs dewarr-smoke || true
-  docker rm -f dewarr-smoke >/dev/null 2>&1 || true
+  docker logs storyarr-smoke || true
+  docker rm -f storyarr-smoke >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
-docker run --detach --name dewarr-smoke --network host \
+docker run --detach --name storyarr-smoke --network host \
   -e BOOK_DATABASE_URL=postgresql+psycopg://book:book-test-only@127.0.0.1:5432/container_test \
   -e PUBLIC_URL=https://books.example.com \
   "$IMAGE"

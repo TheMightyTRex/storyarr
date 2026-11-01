@@ -62,7 +62,7 @@ async def _existing_install(db) -> bool:
 
 def installed_version() -> str:
     built = get_settings().build_version
-    return built.removeprefix("v") if built else f"{version('dewarr')}-dev"
+    return built.removeprefix("v") if built else f"{version('storyarr')}-dev"
 
 
 async def view(db) -> UpgradeView:

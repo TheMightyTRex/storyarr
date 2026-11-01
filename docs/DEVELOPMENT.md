@@ -163,7 +163,7 @@ In your existing homelab Compose file, change only the Storyarr image:
 
 ```yaml
 services:
-  dewarr:
+  storyarr:
     image: ghcr.io/themightytrex/storyarr:dev
 ```
 
@@ -171,7 +171,7 @@ Keep your existing environment, volumes, network, ports, and PostgreSQL service.
 After a successful build, run this from that stack's Compose directory:
 
 ```sh
-docker compose up -d --no-deps --pull always --wait dewarr
+docker compose up -d --no-deps --pull always --wait storyarr
 ```
 
 This pulls the image before recreating Storyarr and waits for its health check.
@@ -220,7 +220,7 @@ parallel full suites or retry an unchanged failure with more workers/time.
 API/worker journeys require a separate PostgreSQL database whose name ends in `_test`:
 
 ```sh
-export BOOK_TEST_DATABASE_URL=postgresql+psycopg://book:example-password@localhost:5432/dewarr_test
+export BOOK_TEST_DATABASE_URL=postgresql+psycopg://book:example-password@localhost:5432/storyarr_test
 python3 scripts/check.py backend
 # Target a changed workflow.
 python3 scripts/check.py backend tests/integration/test_import_execution.py
@@ -321,7 +321,7 @@ Browser tests require a second database ending in `_browser_test`:
 ```sh
 cd apps/web
 npx playwright install chromium
-BOOK_E2E_DATABASE_URL=postgresql+psycopg://book:example-password@localhost:5432/dewarr_browser_test npm run test:e2e
+BOOK_E2E_DATABASE_URL=postgresql+psycopg://book:example-password@localhost:5432/storyarr_browser_test npm run test:e2e
 ```
 
 The routine end-to-end command runs three journeys: foundation setup, reader details,

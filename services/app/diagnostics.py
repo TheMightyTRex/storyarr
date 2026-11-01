@@ -18,7 +18,7 @@ def auth_configuration(settings: Settings) -> dict:
     if token_mode and settings.proxy_networks:
         warnings.append("Proxy token mode takes precedence over trusted proxy addresses")
     return {
-        "installed_version": settings.build_version or f"{version('dewarr')}-dev",
+        "installed_version": settings.build_version or f"{version('storyarr')}-dev",
         "public_url": settings.public_url,
         "cookie_secure": settings.cookie_secure,
         "proxy_identity_mode": mode,

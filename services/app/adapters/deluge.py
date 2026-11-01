@@ -171,7 +171,7 @@ class DelugeClient(RpcTransport):
                 raise ValueError("Invalid torrent size")
             digest = await self.rpc(
                 "core.add_torrent_file",
-                ["dewarr.torrent", base64.b64encode(content).decode(), options],
+                ["storyarr.torrent", base64.b64encode(content).decode(), options],
                 mutating=True,
             )
         try:

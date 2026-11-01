@@ -14,8 +14,8 @@ Edit these values directly in Compose or pass them with `docker run -e`.
 | `PUBLIC_URL` | `http://localhost:8000` | The exact browser address, including port. Use your server's hostname or IP for LAN access. |
 | `DB_HOST` | `postgres` | PostgreSQL hostname reachable from the container. |
 | `DB_PORT` | `5432` | PostgreSQL port. |
-| `DB_NAME` | `dewarr` | Database name. |
-| `DB_USER` | `dewarr` | Database user. |
+| `DB_NAME` | `storyarr` | Database name. |
+| `DB_USER` | `storyarr` | Database user. |
 | `DB_PASSWORD` | Required | The same password configured for PostgreSQL. |
 | `BOOK_DOWNLOAD_DISPATCH_ENABLED` | `true` | Allow downloads after configuring clients, library routes, and policies. Set to `false` to disable downloads server-wide. |
 
@@ -132,7 +132,7 @@ Existing `BOOK_DATABASE_URL`, `BOOK_SECRET_KEY`, and `BOOK_SECRET_KEY_FILE` over
 
 ## HTTPS / reverse proxy
 
-Proxy to port 8000 and set `PUBLIC_URL=https://books.example.com`. Secure cookies are enabled automatically for HTTPS. Keep the browser's original Host header. A proxy on the Compose network can use `http://dewarr:8000` as its upstream.
+Proxy to port 8000 and set `PUBLIC_URL=https://books.example.com`. Secure cookies are enabled automatically for HTTPS. Keep the browser's original Host header. A proxy on the Compose network can use `http://storyarr:8000` as its upstream.
 
 Form submissions accept the request's own origin (scheme, hostname and port) or the configured `PUBLIC_URL`. Origin validation also accepts direct LAN addresses. However, an HTTPS public URL enables Secure cookies, so use HTTPS for sign-in: ordinary HTTP LAN access cannot retain those cookies. For a proxy that terminates HTTPS or rewrites the Host header, set `PUBLIC_URL` to the external browser address and recreate the container. Forwarded host/protocol headers do not authorize additional origins. `PUBLIC_URL` also remains the canonical address for identity-provider redirects and automatic secure-cookie configuration.
 
@@ -189,7 +189,7 @@ including in Docker. A host `.env` entry has no effect unless Compose passes it
 to the container. After changing settings:
 
 ```sh
-docker compose up -d --no-deps --force-recreate dewarr
+docker compose up -d --no-deps --force-recreate storyarr
 ```
 
 `docker compose restart` does not apply environment changes. For an image upgrade,
@@ -199,7 +199,7 @@ From v0.3.3, this operator-only command applies the same Docker aliases
 as startup and prints selected configuration without passwords, cookies or tokens:
 
 ```sh
-docker compose exec -T dewarr python -m app.diagnostics --container
+docker compose exec -T storyarr python -m app.diagnostics --container
 ```
 
 Native installations use `uv run python -m app.diagnostics`. A new `docker exec`
@@ -223,17 +223,17 @@ docker compose pull
 docker compose up -d
 ```
 
-The app stops both services together and runs migrations before restarting. If either service fails, the container exits so Docker can restart it. `pull` and `up -d` only recreate Storyarr, so PostgreSQL keeps its existing network attachment. If you renamed the Compose network or moved Storyarr into another stack since PostgreSQL was created, recreate both together with `docker compose up -d --force-recreate dewarr postgres`. To share a network between Compose projects, create it once with `docker network create <name>` and declare it `external: true` in each project. For manual `docker run` installations, pull the image, stop/remove only the Storyarr container, and recreate it using the same command and volumes.
+The app stops both services together and runs migrations before restarting. If either service fails, the container exits so Docker can restart it. `pull` and `up -d` only recreate Storyarr, so PostgreSQL keeps its existing network attachment. If you renamed the Compose network or moved Storyarr into another stack since PostgreSQL was created, recreate both together with `docker compose up -d --force-recreate storyarr postgres`. To share a network between Compose projects, create it once with `docker network create <name>` and declare it `external: true` in each project. For manual `docker run` installations, pull the image, stop/remove only the Storyarr container, and recreate it using the same command and volumes.
 
 ## Backups
 
 ```sh
 mkdir -p backups
 chmod 700 backups
-docker compose stop dewarr
-docker compose exec -T postgres pg_dump -U dewarr -d dewarr -Fc > backups/dewarr.dump
+docker compose stop storyarr
+docker compose exec -T postgres pg_dump -U storyarr -d storyarr -Fc > backups/storyarr.dump
 cp -R config backups/config
-docker compose start dewarr
+docker compose start storyarr
 ```
 
 Use your configured database user/name if different. Also back up library media. The encryption key in `config/app_key` is required to decrypt saved integration credentials. See [Recovery](RECOVERY.md) before restoring an old database.
@@ -260,6 +260,6 @@ Changing `POSTGRES_PASSWORD` in Compose does not change an existing database pas
 - **Database unavailable:** the log names the failed step. If `DB_HOST` does not resolve, Storyarr and PostgreSQL are not on the same Docker network. Check with `docker network inspect <network>`, then run `docker compose down` followed by `docker compose up -d` to recreate the containers and network. Your data is kept unless you add `-v`. A rejected password means the value differs from the one the database was created with.
 - **Existing database / missing key:** restore the original key to `config/app_key`.
 - **Migrations waiting:** stop any old API/worker containers using the same database.
-- **Inspect startup:** run `docker compose logs --tail=100 dewarr`.
+- **Inspect startup:** run `docker compose logs --tail=100 storyarr`.
 
 For a local source build, see [Contributing](DEVELOPMENT.md).

@@ -195,6 +195,24 @@ RELEASES = [
             "carry on.",
         ],
     ),
+    UpgradeRelease(
+        id="2026.11.01.2",
+        title="Storyarr everywhere",
+        highlights=[
+            "Notifications are titled Storyarr notification, including the ones you already have.",
+            "The sample compose files, the default database name and user, and the Docker guide "
+            "use storyarr. Compose files that set DB_NAME and DB_USER, as Dewarr's did, need no "
+            "change.",
+        ],
+        database_changes=[
+            "The notification title is renamed in the database function that creates "
+            "notifications and in notifications already stored.",
+        ],
+        rollback=(
+            "To go back to v0.4.5, run python -m app.downgrade storyarr_0085_user_preferences in "
+            "the Storyarr container first. Only the notification title changes back."
+        ),
+    ),
 ]
 CURRENT = RELEASES[-1].id
 

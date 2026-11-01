@@ -53,7 +53,7 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           load: ${{ !inputs.publish }}
           outputs: ${{ inputs.publish && format('type=image,name={0},push-by-digest=true,name-canonical=true,push=true', steps.image.outputs.name) || '' }}
-          tags: ${{ !inputs.publish && 'dewarr:ci' || '' }}
+          tags: ${{ !inputs.publish && 'storyarr:ci' || '' }}
           provenance: ${{ inputs.publish && 'mode=max' || 'false' }}
           build-args: |
             BOOK_BUILD_VERSION=${{ steps.version.outputs.version }}
@@ -61,11 +61,11 @@ jobs:
           labels: |
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
-          cache-from: type=gha,scope=dewarr-${{ matrix.arch }}
-          cache-to: type=gha,scope=dewarr-${{ matrix.arch }},mode=max
+          cache-from: type=gha,scope=storyarr-${{ matrix.arch }}
+          cache-to: type=gha,scope=storyarr-${{ matrix.arch }},mode=max
       - name: Smoke-test final image
         env:
-          IMAGE: ${{ inputs.publish && format('{0}@{1}', steps.image.outputs.name, steps.build.outputs.digest) || 'dewarr:ci' }}
+          IMAGE: ${{ inputs.publish && format('{0}@{1}', steps.image.outputs.name, steps.build.outputs.digest) || 'storyarr:ci' }}
           EXPECTED_VERSION: ${{ steps.version.outputs.version }}
           EXPECTED_ARCH: ${{ matrix.arch }}
         run: bash scripts/smoke_image.sh

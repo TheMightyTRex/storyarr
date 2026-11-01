@@ -1,10 +1,10 @@
 # Optional: docker compose -f compose.yaml -f deploy/compose.build.yaml up -d --build
 services:
-  dewarr:
-    image: dewarr:local
+  storyarr:
+    image: storyarr:local
     pull_policy: never
     build:
       context: .
       args:
         BOOK_BUILD_VERSION: 0.1.0
-        BOOK_RELEASE_REPOSITORY: logabell/dewarr
+        BOOK_RELEASE_REPOSITORY: TheMightyTRex/storyarr

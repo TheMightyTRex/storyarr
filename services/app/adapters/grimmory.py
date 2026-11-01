@@ -700,7 +700,7 @@ class Grimmory(JsonEndpoint):
             await self._download_catalog()
 
     async def _download_catalog(self):
-        self._catalog_file = tempfile.TemporaryDirectory(prefix="dewarr-inventory-")
+        self._catalog_file = tempfile.TemporaryDirectory(prefix="storyarr-inventory-")
         connection = sqlite3.connect(
             self._catalog_file.name + "/catalog.sqlite", check_same_thread=False
         )

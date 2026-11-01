@@ -17,7 +17,7 @@ from sqlalchemy.engine import URL, make_url
 
 from app.origins import configured_origin, parse_origin
 
-LOG = logging.getLogger("dewarr")
+LOG = logging.getLogger("storyarr")
 MAINTENANCE_LOCK = 720041
 
 
@@ -32,11 +32,11 @@ def configure_environment() -> Path:
             raise RuntimeError("Set DB_PASSWORD to the PostgreSQL password")
         os.environ["BOOK_DATABASE_URL"] = URL.create(
             "postgresql+psycopg",
-            username=os.environ.get("DB_USER", "dewarr"),
+            username=os.environ.get("DB_USER", "storyarr"),
             password=password,
             host=os.environ.get("DB_HOST", "postgres"),
             port=int(os.environ.get("DB_PORT", "5432")),
-            database=os.environ.get("DB_NAME", "dewarr"),
+            database=os.environ.get("DB_NAME", "storyarr"),
         ).render_as_string(hide_password=False)
     os.environ.setdefault("BOOK_PUBLIC_URL", os.environ.get("PUBLIC_URL", "http://localhost:8000"))
     try:

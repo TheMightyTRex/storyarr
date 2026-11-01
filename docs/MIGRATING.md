@@ -70,6 +70,9 @@ Nothing is deleted. New settings start at their defaults, which match how Dewarr
 The `x-dewarr-proxy-token` header, the `dewarr-` download folder prefix and every `BOOK_*` variable keep their
 names, so reverse proxies and download clients need no changes.
 
+Since v0.4.6 the default `DB_NAME` and `DB_USER` are `storyarr`. Dewarr's compose examples set both to `dewarr`,
+so they keep working. If yours leaves them out, add `DB_NAME: dewarr` and `DB_USER: dewarr` before switching.
+
 ## Going back to Dewarr
 
 1. Back up the database.

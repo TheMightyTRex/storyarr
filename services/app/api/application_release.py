@@ -39,7 +39,7 @@ class ApplicationRelease(BaseModel):
 @router.get("/application/release", response_model=ApplicationRelease)
 def application_release() -> ApplicationRelease:
     settings = get_settings()
-    installed = settings.build_version or f"{version('dewarr')}-dev"
+    installed = settings.build_version or f"{version('storyarr')}-dev"
     repository = settings.release_repository
     base = f"https://github.com/{repository}/releases" if repository else None
     latest = None
@@ -172,7 +172,7 @@ def load_release_history(repository: str) -> tuple[str, list[ApplicationReleaseN
 @router.get("/application/releases", response_model=ApplicationReleaseHistory)
 def application_releases() -> ApplicationReleaseHistory:
     settings = get_settings()
-    installed = settings.build_version or f"{version('dewarr')}-dev"
+    installed = settings.build_version or f"{version('storyarr')}-dev"
     repository = settings.release_repository
     if not repository:
         return ApplicationReleaseHistory(

@@ -1,4 +1,4 @@
-# Optional: docker compose -f compose.yaml -f deploy/compose.dev.yaml up -d --no-deps --pull always --wait dewarr
+# Optional: docker compose -f compose.yaml -f deploy/compose.dev.yaml up -d --no-deps --pull always --wait storyarr
 services:
-  dewarr:
-    image: ghcr.io/logabell/dewarr:dev
+  storyarr:
+    image: ghcr.io/themightytrex/storyarr:dev
