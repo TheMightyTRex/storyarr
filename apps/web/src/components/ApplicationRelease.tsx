@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, result } from "../api/client";
@@ -88,23 +88,41 @@ function useReleaseNotes(enabled: boolean) {
   });
 }
 
+/** The header line: the current version, then what is available or why notes are missing. */
 function statusLine(
   status: string,
   installed: string,
   latest: string | null,
   updateAvailable: boolean,
 ) {
+  const current = (
+    <span className="release-status-item">
+      Current version: <strong>{versionLabel(installed)}</strong>
+    </span>
+  );
+  let second: ReactNode;
   if (status === "unconfigured")
-    return "Release tracking is not configured, so notes from GitHub are unavailable.";
-  if (status === "no-release")
-    return "No GitHub releases have been published yet.";
-  if (status === "unavailable")
-    return "Release notes could not be loaded from GitHub.";
-  if (updateAvailable && latest)
-    return `${versionLabel(latest)} is available. You have ${versionLabel(installed)}.`;
-  if (!/^v?\d+\.\d+\.\d+(?:\+[\w.-]+)?$/.test(installed))
-    return `You have ${versionLabel(installed)}, a build that is not a published version.`;
-  return `You have ${versionLabel(installed)}, the latest version.`;
+    second =
+      "Release tracking is not configured, so notes from GitHub are unavailable.";
+  else if (status === "no-release")
+    second = "No GitHub releases have been published yet.";
+  else if (status === "unavailable")
+    second = "Release notes could not be loaded from GitHub.";
+  else if (updateAvailable && latest)
+    second = (
+      <>
+        Available: <strong>{versionLabel(latest)}</strong>
+      </>
+    );
+  else if (!/^v?\d+\.\d+\.\d+(?:\+[\w.-]+)?$/.test(installed))
+    second = "Not a published version";
+  else second = "Up to date";
+  return (
+    <>
+      {current}
+      <span className="release-status-item">{second}</span>
+    </>
+  );
 }
 
 const UPDATING_GUIDE =
@@ -212,7 +230,7 @@ function ReleaseHistory({
     >
       <div className="application-release-history">
         <div className="release-status">
-          <p>
+          <p className="release-status-line">
             {statusLine(
               notes.isError ? "unavailable" : notes.data?.status || status,
               installed,

@@ -126,3 +126,11 @@
 .upgrade-database p {
   margin: 8px 0 0;
 }
+
+/* Release notes: Upgrade now is the main action. In this later layer so the general link style does not win. */
+.how-to-upgrade .button-link.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--c-text-white-100, #fff);
+  font-weight: 600;
+}

@@ -98,9 +98,10 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
         .click();
       const notes = page.getByRole("dialog", { name: "Release notes" });
       // One line says where you stand, with View on GitHub at its end.
-      await expect(
-        notes.getByText("v1.10.0 is available. You have v1.9.0."),
-      ).toBeVisible();
+      const header = notes.locator(".release-status-line");
+      await expect(header).toHaveText(
+        "Current version: v1.9.0Available: v1.10.0",
+      );
       // How to upgrade: the administrator's upgrade page, then the steps.
       await expect(
         notes.getByRole("heading", { name: "How to upgrade to v1.10.0" }),
@@ -144,9 +145,9 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
       await expect(footer.getByText("Up to date")).toBeVisible();
       await footer.getByRole("button", { name: "v1.9.0", exact: true }).click();
       const notes = page.getByRole("dialog", { name: "Release notes" });
-      await expect(
-        notes.getByText("You have v1.9.0, the latest version."),
-      ).toBeVisible();
+      await expect(notes.locator(".release-status-line")).toHaveText(
+        "Current version: v1.9.0Up to date",
+      );
       await expect(
         notes.getByRole("heading", { name: "How to upgrade", exact: false }),
       ).toHaveCount(0);

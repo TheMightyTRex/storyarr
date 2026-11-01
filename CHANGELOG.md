@@ -6,7 +6,7 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 ## Unreleased
 
 ### Changed
-- **Release notes window:** one line says which version you have and which is available, with View on GitHub
+- **Release notes window:** the header reads "Current version: v0.4.7  Available: v0.4.8", with View on GitHub
   beside it; the release is headed by its version and date only; earlier releases moved to Settings.
 - **How to upgrade:** when a newer version is out, the release notes show the steps and the commands to copy, and
   **Upgrade now** when `BOOK_UPGRADE_URL` points to your own upgrade page.

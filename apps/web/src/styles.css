@@ -4331,8 +4331,13 @@ img.detail-cover {
   border-bottom: 1px solid var(--line);
 }
 .application-release-history .release-status p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
   margin: 0;
-  font-weight: 600;
+}
+.release-status-item strong {
+  font-weight: 700;
 }
 .release-note-date {
   margin-left: 10px;
@@ -4364,12 +4369,6 @@ img.detail-cover {
 }
 .application-release-history .how-to-upgrade ol {
   list-style: decimal;
-}
-.how-to-upgrade .button-link.primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--c-text-white-100, #fff);
-  font-weight: 600;
 }
 /* Notes inside a Settings fold read like the release notes window. */
 .release-list .release-notes ul,
