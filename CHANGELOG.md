@@ -3,6 +3,15 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## Unreleased
+
+### Changed
+- **Library tabs, one toolbar (design D):** In my libraries, Authors, Series and All saved titles share one section
+  header and toolbar: the tab's heading and count, the view switch, search, format chips, the Library filter,
+  Sort (with Reverse order on Authors and Series), then a row of applied filters with Clear all and how many show.
+- **Save as default:** each Library tab can save its filters and order as the person's default, stored with their
+  account, not the browser. Settings, General, Saved views lists them and resets them to default.
+
 ## v0.4.8 (1 November 2026)
 
 ### Changed

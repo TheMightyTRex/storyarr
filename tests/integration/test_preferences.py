@@ -29,14 +29,53 @@ async def sign_in(client, username, role):
 
 
 async def test_preferences_follow_the_account(client, admin):
-    assert (await client.get("/api/preferences")).json() == {"collection_view": "detail"}
+    assert (await client.get("/api/preferences")).json() == {
+        "collection_view": "detail",
+        "library_views": {},
+    }
     saved = await client.patch("/api/preferences", json={"collection_view": "list"})
     assert saved.status_code == 200, saved.text
-    assert saved.json() == {"collection_view": "list"}
-    assert (await client.get("/api/preferences")).json() == {"collection_view": "list"}
+    assert saved.json() == {"collection_view": "list", "library_views": {}}
+    assert (await client.get("/api/preferences")).json() == {
+        "collection_view": "list",
+        "library_views": {},
+    }
     # A partial change keeps what is already saved.
-    assert (await client.patch("/api/preferences", json={})).json() == {"collection_view": "list"}
+    assert (await client.patch("/api/preferences", json={})).json() == {
+        "collection_view": "list",
+        "library_views": {},
+    }
     for bad in ({"collection_view": "grid"}, {"theme": "dark"}):
+        assert (await client.patch("/api/preferences", json=bad)).status_code == 422
+
+
+async def test_default_library_views_can_be_saved_and_reset(client, admin):
+    library = "00000000-0000-0000-0000-0000000000aa"
+    views = {
+        "books": {"medium": "audio", "library": library, "sort": "recent"},
+        "series": {"sort": "number", "reverse": True},
+    }
+    saved = await client.patch("/api/preferences", json={"library_views": views})
+    assert saved.status_code == 200, saved.text
+    assert saved.json()["library_views"] == {
+        "books": {"medium": "audio", "library": library, "sort": "recent", "reverse": None},
+        "series": {"medium": None, "library": None, "sort": "number", "reverse": True},
+    }
+    # Saving the layout keeps the saved views.
+    await client.patch("/api/preferences", json={"collection_view": "list"})
+    assert set((await client.get("/api/preferences")).json()["library_views"]) == {
+        "books",
+        "series",
+    }
+    # Reset to default, from Settings.
+    reset = await client.patch("/api/preferences", json={"library_views": {}})
+    assert reset.json()["library_views"] == {}
+    for bad in (
+        {"library_views": {"shelf": {}}},
+        {"library_views": {"books": {"medium": "vinyl"}}},
+        {"library_views": {"books": {"sort": "Title; DROP"}}},
+        {"library_views": {"books": {"theme": "dark"}}},
+    ):
         assert (await client.patch("/api/preferences", json=bad)).status_code == 422
 
 
@@ -44,7 +83,10 @@ async def test_each_person_has_their_own_preferences(client, admin):
     await client.patch("/api/preferences", json={"collection_view": "list"})
     # Viewers can save their own choices too.
     await sign_in(client, "reader", "viewer")
-    assert (await client.get("/api/preferences")).json() == {"collection_view": "detail"}
+    assert (await client.get("/api/preferences")).json() == {
+        "collection_view": "detail",
+        "library_views": {},
+    }
     assert (
         await client.patch("/api/preferences", json={"collection_view": "list"})
     ).status_code == 200

@@ -35644,6 +35644,28 @@
               }
             ],
             "title": "Collection View"
+          },
+          "library_views": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/SavedView"
+                },
+                "propertyNames": {
+                  "enum": [
+                    "books",
+                    "authors",
+                    "series",
+                    "saved"
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Library Views"
           }
         },
         "additionalProperties": false,
@@ -39860,6 +39882,65 @@
         ],
         "title": "SaveSettings"
       },
+      "SavedView": {
+        "properties": {
+          "medium": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ebook",
+                  "audio"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Medium"
+          },
+          "library": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Library"
+          },
+          "sort": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "pattern": "^[a-z]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort"
+          },
+          "reverse": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reverse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SavedView",
+        "description": "The filters and order a person chose as their default for one Library tab."
+      },
       "ScanView": {
         "properties": {
           "id": {
@@ -43839,6 +43920,22 @@
             ],
             "title": "Collection View",
             "default": "detail"
+          },
+          "library_views": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SavedView"
+            },
+            "propertyNames": {
+              "enum": [
+                "books",
+                "authors",
+                "series",
+                "saved"
+              ]
+            },
+            "type": "object",
+            "title": "Library Views",
+            "default": {}
           }
         },
         "type": "object",

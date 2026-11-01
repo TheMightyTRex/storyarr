@@ -50,21 +50,23 @@ test("one bookshelf preserves filters and keeps library review for admins", asyn
   ).toHaveCount(0);
   await expect(page.getByLabel("Inventory state")).toHaveCount(0);
   await expect(page.getByLabel("Review queue")).toHaveCount(0);
+  await page.getByRole("button", { name: "Audiobooks", exact: true }).click();
   await page
-    .getByRole("combobox", { name: "Media", exact: true })
-    .selectOption("audio");
-  await page.getByLabel("Sort books").selectOption("recent");
+    .getByRole("combobox", { name: "Sort", exact: true })
+    .selectOption("recent");
   await page
     .getByRole("searchbox", { name: "Search your library" })
     .fill("Harbor");
   await page
-    .getByRole("button", { name: "Search library", exact: true })
-    .click();
+    .getByRole("searchbox", { name: "Search your library" })
+    .press("Enter");
   await page.reload();
-  await expect(page.getByLabel("Sort books")).toHaveValue("recent");
   await expect(
-    page.getByRole("combobox", { name: "Media", exact: true }),
-  ).toHaveValue("audio");
+    page.getByRole("combobox", { name: "Sort", exact: true }),
+  ).toHaveValue("recent");
+  await expect(
+    page.getByRole("button", { name: "Audiobooks", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(
     page.getByRole("searchbox", { name: "Search your library" }),
   ).toHaveValue("Harbor");

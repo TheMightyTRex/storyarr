@@ -14,6 +14,13 @@ import BookCover from "../components/BookCover";
 import BookSummary from "../components/BookSummary";
 import AssetMatchForm from "../components/AssetMatchForm";
 import CollectionContents from "./CollectionContents";
+import SectionToolbar, { SaveViewButton } from "../components/SectionToolbar";
+import { useSavedView } from "../hooks/useSavedView";
+
+const count = (total?: number) =>
+  total == null
+    ? "Loading…"
+    : `${total.toLocaleString("en-GB")} ${total === 1 ? "book" : "books"}`;
 
 type Asset = components["schemas"]["AssetView"];
 
@@ -59,9 +66,6 @@ export default function MyLibrary({
         : "any";
   const state: AssetState = "any";
   const sort: AssetSort = params.get("sort") === "recent" ? "recent" : "title";
-  const rawOffset = Number(params.get("offset") || 0);
-  const offset =
-    Number.isSafeInteger(rawOffset) && rawOffset >= 0 ? rawOffset : 0;
   function change(key: string, value: string) {
     const next = new URLSearchParams(params);
     if (value) next.set(key, value);
@@ -69,7 +73,6 @@ export default function MyLibrary({
     if (key !== "offset") next.delete("offset");
     setParams(next);
   }
-  const filtered = !!(q || libraryId || medium !== "any");
   const libraries = useQuery({
     queryKey: ["libraries"],
     refetchOnMount: "always",
@@ -128,85 +131,15 @@ export default function MyLibrary({
       ) : (
         <>
           <Notice error={libraries.error} />
-          <form
-            className="library-search"
-            aria-label="Search library books"
-            onSubmit={(event) => {
-              event.preventDefault();
-              change(
-                "q",
-                String(new FormData(event.currentTarget).get("q") || "").trim(),
-              );
-            }}
-          >
-            <label>
-              Search your library
-              <input
-                key={q}
-                name="q"
-                defaultValue={q}
-                maxLength={300}
-                type="search"
-                placeholder="Title, author or narrator"
-              />
-            </label>
-            <button type="submit">Search library</button>
-          </form>
-          <div className="library-filters library-shelf-filters">
-            <label>
-              Media
-              <select
-                value={medium}
-                onChange={(event) => change("medium", event.target.value)}
-              >
-                <option value="any">Ebooks and audiobooks</option>
-                <option value="ebook">Ebooks</option>
-                <option value="audio">Audiobooks</option>
-              </select>
-            </label>
-            <label>
-              Library
-              <select
-                value={libraryId}
-                onChange={(event) => change("library", event.target.value)}
-              >
-                <option value="">All accessible libraries</option>
-                {libraries.data?.map((library) => (
-                  <option key={library.id} value={library.id}>
-                    {library.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              Sort books
-              <select
-                value={sort}
-                onChange={(event) => change("sort", event.target.value)}
-              >
-                <option value="title">Title</option>
-                <option value="recent">Recently observed</option>
-              </select>
-            </label>
-          </div>
-          {(filtered || sort !== "title" || offset > 0) && (
-            <button type="button" onClick={() => setParams({})}>
-              Reset library view
-            </button>
-          )}
-          {sort === "recent" && (
-            <p className="muted">
-              Newest first observed by this app. Initial sync includes older
-              books; repeated syncs do not reset this order.
-            </p>
-          )}
           <LibraryBooks
             q={q}
             medium={medium}
             state={state}
             sort={sort}
             libraryId={libraryId}
+            libraries={libraries.data || []}
+            change={change}
+            clear={() => setParams({})}
           />
         </>
       )}
@@ -220,13 +153,20 @@ function LibraryBooks({
   state,
   sort,
   libraryId,
+  libraries,
+  change,
+  clear,
 }: {
   q: string;
   medium: Medium;
   state: AssetState;
   sort: AssetSort;
   libraryId: string;
+  libraries: components["schemas"]["LibraryView"][];
+  change: (key: string, value: string) => void;
+  clear: () => void;
 }) {
+  const view = useSavedView("books");
   // The book whose summary slides out from the right.
   const [summary, setSummary] = useState<
     components["schemas"]["WorkView"] | null
@@ -260,6 +200,92 @@ function LibraryBooks({
   });
   return (
     <section aria-label="Library books">
+      <SectionToolbar
+        title="In my libraries"
+        summary={count(books.data?.total)}
+        search={{
+          label: "Search your library",
+          placeholder: "Title, author or narrator",
+          value: q,
+          onSearch: (value) => change("q", value),
+        }}
+        chips={(
+          [
+            ["audio", "Audiobooks"],
+            ["ebook", "Ebooks"],
+          ] as const
+        ).map(([key, label]) => ({
+          key,
+          label,
+          pressed: medium === key,
+          onToggle: () => change("medium", medium === key ? "" : key),
+        }))}
+        menus={[
+          {
+            key: "library",
+            label: "Library",
+            value: libraryId,
+            emptyValue: "",
+            options: [
+              { value: "", label: "All libraries" },
+              ...libraries.map((library) => ({
+                value: library.id,
+                label: library.name,
+              })),
+            ],
+            onChange: (value) => change("library", value),
+          },
+        ]}
+        sort={{
+          key: "sort",
+          value: sort,
+          options: [
+            { value: "title", label: "Title" },
+            { value: "recent", label: "Recently added" },
+          ],
+          onChange: (value) => change("sort", value === "title" ? "" : value),
+        }}
+        applied={[
+          ...(q
+            ? [{ key: "q", label: `“${q}”`, onRemove: () => change("q", "") }]
+            : []),
+          ...(medium !== "any"
+            ? [
+                {
+                  key: "medium",
+                  label: medium === "audio" ? "Audiobooks" : "Ebooks",
+                  onRemove: () => change("medium", ""),
+                },
+              ]
+            : []),
+          ...(libraryId
+            ? [
+                {
+                  key: "library",
+                  label:
+                    libraries.find((library) => library.id === libraryId)
+                      ?.name || "One library",
+                  onRemove: () => change("library", ""),
+                },
+              ]
+            : []),
+        ]}
+        end={
+          <SaveViewButton
+            isDefault={view.isDefault}
+            saving={view.saving}
+            onSave={view.saveDefault}
+          />
+        }
+        onClearAll={clear}
+        showing={books.data && `Showing ${count(books.data.total)}`}
+      />
+      {sort === "recent" && (
+        <p className="muted">
+          Newest first observed by this app. Initial sync includes older books;
+          repeated syncs do not reset this order.
+        </p>
+      )}
       <Notice error={books.error} />
       {books.isPending && <Loading />}
       {books.error && (
@@ -269,12 +295,6 @@ function LibraryBooks({
       )}
       {books.data && (
         <>
-          <div className="section-heading">
-            <h2>{q ? "Matching books" : "Your bookshelf"}</h2>
-            <span className="count">
-              {books.data.total} {books.data.total === 1 ? "book" : "books"}
-            </span>
-          </div>
           {books.data.items.length ? (
             <div className="shelf-wall">
               {books.data.items.map((work) => (

@@ -6,6 +6,8 @@ import { Plus, X } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { api, result } from "../api/client";
 import { BookCard, Empty, Loading, Notice } from "../components";
+import SectionToolbar, { SaveViewButton } from "../components/SectionToolbar";
+import { useSavedView } from "../hooks/useSavedView";
 
 export default function Catalog({ canEdit }: { canEdit: boolean }) {
   const [params, setParams] = useSearchParams();
@@ -17,6 +19,14 @@ export default function Catalog({ canEdit }: { canEdit: boolean }) {
         ? "ebook"
         : "any";
   const client = useQueryClient();
+  const view = useSavedView("saved");
+  const change = (key: string, value: string) => {
+    const next = new URLSearchParams(params);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    next.delete("offset");
+    setParams(next);
+  };
   const [adding, setAdding] = useState(false);
   const books = usePagedQuery({
     queryKey: ["works", q, medium],
@@ -55,21 +65,67 @@ export default function Catalog({ canEdit }: { canEdit: boolean }) {
   });
   return (
     <>
-      <div className="page-heading">
-        <div>
-          <h2>{q ? `Results for “${q}”` : "All saved titles"}</h2>
-          <p className="muted">
-            Includes books saved from search and lists, even if you do not own a
-            copy.
-          </p>
-        </div>
-        {canEdit ? (
-          <button className="primary" onClick={() => setAdding(!adding)}>
-            {adding ? <X size={17} /> : <Plus size={17} />}
-            {adding ? "Close" : "Add a title"}
-          </button>
-        ) : null}
-      </div>
+      <SectionToolbar
+        title="All saved titles"
+        summary={
+          books.data
+            ? `${books.data.total.toLocaleString("en-GB")} ${books.data.total === 1 ? "title" : "titles"}, including books saved from search and lists that you do not own`
+            : "Loading…"
+        }
+        search={{
+          label: "Search saved titles",
+          placeholder: "Title or author",
+          value: q,
+          onSearch: (value) => change("q", value),
+        }}
+        chips={(
+          [
+            ["audio", "Audiobook in library"],
+            ["ebook", "Ebook in library"],
+          ] as const
+        ).map(([key, label]) => ({
+          key,
+          label,
+          pressed: medium === key,
+          onToggle: () => change("medium", medium === key ? "" : key),
+        }))}
+        end={
+          <>
+            <SaveViewButton
+              isDefault={view.isDefault}
+              saving={view.saving}
+              onSave={view.saveDefault}
+            />
+            {canEdit && (
+              <button className="primary" onClick={() => setAdding(!adding)}>
+                {adding ? <X size={17} /> : <Plus size={17} />}
+                {adding ? "Close" : "Add a title"}
+              </button>
+            )}
+          </>
+        }
+        applied={[
+          ...(q
+            ? [{ key: "q", label: `“${q}”`, onRemove: () => change("q", "") }]
+            : []),
+          ...(medium !== "any"
+            ? [
+                {
+                  key: "medium",
+                  label:
+                    medium === "audio"
+                      ? "Audiobook in library"
+                      : "Ebook in library",
+                  onRemove: () => change("medium", ""),
+                },
+              ]
+            : []),
+        ]}
+        onClearAll={() => setParams({ view: "saved" })}
+        showing={
+          books.data && `Showing ${books.data.total.toLocaleString("en-GB")}`
+        }
+      />
       {adding ? (
         <form
           className="panel editor"
@@ -102,61 +158,10 @@ export default function Catalog({ canEdit }: { canEdit: boolean }) {
           </button>
         </form>
       ) : null}
-      <form
-        className="library-search"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const next = new URLSearchParams(params);
-          const query = String(
-            new FormData(event.currentTarget).get("q") || "",
-          ).trim();
-          if (query) next.set("q", query);
-          else next.delete("q");
-          next.delete("offset");
-          setParams(next);
-        }}
-      >
-        <label>
-          Search saved titles
-          <input
-            key={q}
-            name="q"
-            defaultValue={q}
-            type="search"
-            maxLength={300}
-            placeholder="Title or author"
-          />
-        </label>
-        <button type="submit">Search saved titles</button>
-      </form>
-      <div className="library-filters library-shelf-filters">
-        <label>
-          Format
-          <select
-            value={medium}
-            onChange={(event) => {
-              const next = new URLSearchParams(params);
-              next.set("medium", event.target.value);
-              next.delete("offset");
-              setParams(next);
-            }}
-          >
-            <option value="any">Ebooks and audiobooks</option>
-            <option value="ebook">Ebooks in library</option>
-            <option value="audio">Audiobooks in library</option>
-          </select>
-        </label>
-      </div>
       <Notice error={books.error} />
       {books.isPending ? <Loading /> : null}
       {books.data ? (
         <>
-          <div className="section-heading">
-            <h2>{q ? "Matching titles" : "All books"}</h2>
-            <span className="count">
-              {books.data.total} {books.data.total === 1 ? "title" : "titles"}
-            </span>
-          </div>
           {books.data.items.length ? (
             <div className="book-grid">
               {books.data.items.map((work) => (

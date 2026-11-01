@@ -12149,6 +12149,10 @@ export interface components {
     PreferencesInput: {
       /** Collection View */
       collection_view?: ("detail" | "list") | null;
+      /** Library Views */
+      library_views?: {
+        [key: string]: components["schemas"]["SavedView"];
+      } | null;
     };
     /** PresetInfo */
     PresetInfo: {
@@ -13741,6 +13745,20 @@ export interface components {
       /** Expected Revision */
       expected_revision: string;
     };
+    /**
+     * SavedView
+     * @description The filters and order a person chose as their default for one Library tab.
+     */
+    SavedView: {
+      /** Medium */
+      medium?: ("ebook" | "audio") | null;
+      /** Library */
+      library?: string | null;
+      /** Sort */
+      sort?: string | null;
+      /** Reverse */
+      reverse?: boolean | null;
+    };
     /** ScanView */
     ScanView: {
       /**
@@ -15245,6 +15263,13 @@ export interface components {
        * @enum {string}
        */
       collection_view: "detail" | "list";
+      /**
+       * Library Views
+       * @default {}
+       */
+      library_views: {
+        [key: string]: components["schemas"]["SavedView"];
+      };
     };
     /** UserView */
     UserView: {

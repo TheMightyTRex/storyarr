@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BookOpen, Headphones, Library, Check, Star } from "lucide-react";
 import LayoutChoice from "../components/LayoutChoice";
 import DisplayPanel from "../components/DisplayPanel";
+import SavedViewsSettings from "../components/SavedViewsSettings";
 import {
   displayDefaults,
   saveDisplayPreferences,
@@ -111,6 +112,7 @@ export default function DisplaySettings() {
         Reset cover shapes
       </button>
       <p role="status">{message}</p>
+      <SavedViewsSettings />
       <div className="display-onboarding">
         <h3>Onboarding setup wizard</h3>
         <p className="muted">

@@ -119,7 +119,7 @@ test("one library card shows both formats and uses the mixed-view cover preferen
     "/series/hardcover/hc-series",
   );
   // A press outside the panel closes it; the cover reopens it, and the X still closes it.
-  await page.getByRole("heading", { name: "Your bookshelf" }).click();
+  await page.getByRole("heading", { name: "In my libraries" }).click();
   await expect(summary).toHaveCount(0);
   await card.click();
   await expect(summary).toBeVisible();
@@ -138,9 +138,7 @@ test("one library card shows both formats and uses the mixed-view cover preferen
     card.getByRole("img", { name: "Audiobook: in library", exact: true }),
   ).toBeVisible();
   await expect(card.locator("img")).toHaveAttribute("src", /medium=ebook$/);
-  await page
-    .getByRole("combobox", { name: "Media", exact: true })
-    .selectOption("audio");
+  await page.getByRole("button", { name: "Audiobooks", exact: true }).click();
   await expect(card).toHaveCount(1);
   await expect(card.locator(".cover-square")).toBeVisible();
   await expect(card.locator("img")).toHaveAttribute("src", /medium=audio$/);
@@ -161,8 +159,8 @@ test("one library card shows both formats and uses the mixed-view cover preferen
     /medium=ebook$/,
   );
   await page
-    .getByRole("combobox", { name: "Format", exact: true })
-    .selectOption("audio");
+    .getByRole("button", { name: "Audiobook in library", exact: true })
+    .click();
   await expect(page.locator(".book-card img")).toHaveAttribute(
     "src",
     /medium=audio$/,

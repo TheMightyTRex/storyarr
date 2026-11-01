@@ -6,13 +6,15 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { BookCard, Empty, Loading, Notice } from "../components";
 import {
+  collectionSorts,
   CollectionViewSwitch,
   GroupDetailView,
   GroupListView,
   readSort,
-  SortControl,
   useCollectionView,
 } from "./GroupShelf";
+import SectionToolbar, { SaveViewButton } from "./SectionToolbar";
+import { useSavedView } from "../hooks/useSavedView";
 
 type Kind = "authors" | "series";
 type Library = components["schemas"]["LibraryView"];
@@ -100,6 +102,7 @@ export default function LibraryGroups({
   });
   const active = group ? books : query;
   const layout = useCollectionView();
+  const saved = useSavedView(kind);
   const picked = params.get("pick") || undefined;
   const groupLink = (item: { name: string }) => {
     const next = new URLSearchParams(params);
@@ -129,100 +132,124 @@ export default function LibraryGroups({
           <ArrowLeft size={16} /> All {kind}
         </Link>
       )}
-      <div className="section-heading">
-        <div>
-          <h2>{group || `${title} in your collection`}</h2>
-          <p className="muted">
-            {group
-              ? `Books ${kind === "authors" ? "by this author" : "in this series"} in your libraries.`
-              : kind === "authors"
-                ? "Explore the writers on your shelves."
-                : "See the stories you are collecting, one series at a time."}
-          </p>
-        </div>
-        {active.data && !active.error && (
-          <span className="count">
-            {total}{" "}
-            {group
-              ? total === 1
-                ? "book"
-                : "books"
-              : kind === "authors" && total === 1
-                ? "author"
-                : kind}
-          </span>
-        )}
-      </div>
-      <div className="group-toolbar">
-        {!group && (
-          <form
-            className="library-search"
-            onSubmit={(event) => {
-              event.preventDefault();
-              change(
-                "q",
-                String(new FormData(event.currentTarget).get("q") || "").trim(),
-              );
-            }}
-          >
-            <label>
-              Search {kind}
-              <input
-                key={`${kind}:${q}`}
-                name="q"
-                type="search"
-                defaultValue={q}
-                maxLength={300}
-                placeholder={kind === "authors" ? "Author name" : "Series name"}
-              />
-            </label>
-            <button>Search {kind}</button>
-          </form>
-        )}
-        <div className="library-filters library-shelf-filters">
-          <label>
-            Media
-            <select
-              value={medium}
-              onChange={(event) => change("medium", event.target.value)}
-            >
-              <option value="any">Ebooks and audiobooks</option>
-              <option value="ebook">Ebooks</option>
-              <option value="audio">Audiobooks</option>
-            </select>
-          </label>
-          <label>
-            Library
-            <select
-              value={libraryId || ""}
-              onChange={(event) => change("library", event.target.value)}
-            >
-              <option value="">All accessible libraries</option>
-              {libraries.map((library) => (
-                <option key={library.id} value={library.id}>
-                  {library.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {!group && (
-            <SortControl sort={sort} reverse={reverse} onChange={change} />
-          )}
-          {(q || medium !== "any" || libraryId) && (
-            <button
-              type="button"
-              onClick={() =>
-                setParams({ view: kind, ...(group ? { group } : {}) })
+      <SectionToolbar
+        title={group || title}
+        summary={
+          active.data && !active.error
+            ? `${total.toLocaleString("en-GB")} ${
+                group
+                  ? total === 1
+                    ? "book"
+                    : "books"
+                  : kind === "authors"
+                    ? total === 1
+                      ? "author"
+                      : "authors"
+                    : "series"
+              }`
+            : "Loading…"
+        }
+        view={
+          !group && (
+            <CollectionViewSwitch
+              view={layout.view}
+              onChange={layout.setView}
+            />
+          )
+        }
+        search={
+          group
+            ? undefined
+            : {
+                label: `Search ${kind}`,
+                placeholder: kind === "authors" ? "Author name" : "Series name",
+                value: q,
+                onSearch: (value) => change("q", value),
               }
-            >
-              Clear filters
-            </button>
-          )}
-        </div>
-        {!group && (
-          <CollectionViewSwitch view={layout.view} onChange={layout.setView} />
-        )}
-      </div>
+        }
+        chips={(
+          [
+            ["audio", "Audiobooks"],
+            ["ebook", "Ebooks"],
+          ] as const
+        ).map(([key, label]) => ({
+          key,
+          label,
+          pressed: medium === key,
+          onToggle: () => change("medium", medium === key ? "" : key),
+        }))}
+        menus={[
+          {
+            key: "library",
+            label: "Library",
+            value: libraryId || "",
+            emptyValue: "",
+            options: [
+              { value: "", label: "All libraries" },
+              ...libraries.map((library) => ({
+                value: library.id,
+                label: library.name,
+              })),
+            ],
+            onChange: (value) => change("library", value),
+          },
+        ]}
+        sort={
+          group
+            ? undefined
+            : {
+                key: "sort",
+                value: sort,
+                options: collectionSorts.map(([value, label]) => ({
+                  value,
+                  label,
+                })),
+                onChange: (value) => change("sort", value),
+                reverse: {
+                  pressed: reverse,
+                  onToggle: () => change("reverse", reverse ? "" : "1"),
+                },
+              }
+        }
+        applied={[
+          ...(q
+            ? [{ key: "q", label: `“${q}”`, onRemove: () => change("q", "") }]
+            : []),
+          ...(medium !== "any"
+            ? [
+                {
+                  key: "medium",
+                  label: medium === "audio" ? "Audiobooks" : "Ebooks",
+                  onRemove: () => change("medium", ""),
+                },
+              ]
+            : []),
+          ...(libraryId
+            ? [
+                {
+                  key: "library",
+                  label:
+                    libraries.find((library) => library.id === libraryId)
+                      ?.name || "One library",
+                  onRemove: () => change("library", ""),
+                },
+              ]
+            : []),
+        ]}
+        end={
+          !group && (
+            <SaveViewButton
+              isDefault={saved.isDefault}
+              saving={saved.saving}
+              onSave={saved.saveDefault}
+            />
+          )
+        }
+        onClearAll={() =>
+          setParams({ view: kind, ...(group ? { group } : {}) })
+        }
+        showing={active.data && `Showing ${total.toLocaleString("en-GB")}`}
+      />
       <Notice error={active.error} />
       {active.isPending && <Loading />}
       {active.error && (

@@ -100,7 +100,7 @@ test("My library browses owned authors and series, filters, and opens books", as
     tabs.getByRole("link", { name: "In my libraries" }),
   ).not.toHaveAttribute("aria-current", "page");
   await expect(
-    page.getByRole("heading", { name: "Authors in your collection" }),
+    page.getByRole("heading", { name: "Authors", exact: true }),
   ).toBeVisible();
   // List and detail is the default: the list beside the chosen author.
   const layout = page.getByRole("group", { name: "Layout" });
@@ -148,27 +148,29 @@ test("My library browses owned authors and series, filters, and opens books", as
     layout.getByRole("button", { name: "List", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("searchbox", { name: "Search authors" }).fill("Nobody");
-  await page.getByRole("button", { name: "Search authors" }).click();
+  await page.getByRole("searchbox", { name: "Search authors" }).press("Enter");
   await expect(
     page.getByRole("heading", { name: "No authors to show" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Clear filters" }).click();
+  // The applied filter shows as a chip; Clear all removes it.
+  await expect(
+    page.getByRole("button", { name: "Remove filter: “Nobody”" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Clear all" }).click();
   await expect(
     page.getByRole("link", { name: "Ursula Le Guin, books in your library" }),
   ).toBeVisible();
   await tabs.getByRole("link", { name: "Series", exact: true }).click();
   // Wait for the Series list: an author's row can mention Earthsea too, through its covers.
   await expect(
-    page.getByRole("heading", { name: "Series in your collection" }),
+    page.getByRole("heading", { name: "Series", exact: true }),
   ).toBeVisible();
   const row = page.getByRole("row").filter({
     has: page.getByRole("link", { name: "Earthsea, books in your library" }),
   });
   await expect(row.getByText("Ursula Le Guin")).toBeVisible();
   await expect(row.getByText("2 in your library")).toBeVisible();
-  await page
-    .getByRole("combobox", { name: "Media", exact: true })
-    .selectOption("audio");
+  await page.getByRole("button", { name: "Audiobooks", exact: true }).click();
   await expect(page).toHaveURL(/medium=audio/);
   // Sort by surname, then reverse it: the page asks the server for that order.
   const asks = (sort: string, reverse: string) =>
@@ -181,7 +183,9 @@ test("My library browses owned authors and series, filters, and opens books", as
       );
     });
   let asked = asks("author", "false");
-  await page.getByLabel("Sort by").selectOption({ label: "Author" });
+  await page
+    .getByRole("combobox", { name: "Sort", exact: true })
+    .selectOption({ label: "Author" });
   await asked;
   asked = asks("author", "true");
   await page.getByRole("button", { name: "Reverse order" }).click();
@@ -190,6 +194,21 @@ test("My library browses owned authors and series, filters, and opens books", as
     page.getByRole("button", { name: "Reverse order" }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect(page).toHaveURL(/sort=author&reverse=1/);
+  // Save this view as the Series default: it is saved with the account.
+  await page.getByRole("button", { name: "Save as default" }).click();
+  await expect
+    .poll(() => saved.at(-1))
+    .toEqual({
+      library_views: {
+        series: {
+          medium: "audio",
+          library: null,
+          sort: "author",
+          reverse: true,
+        },
+      },
+    });
+  await expect(page.getByText("Your default view")).toBeVisible();
   await expect(row.locator(".group-covers .book-cover").first()).toHaveCSS(
     "aspect-ratio",
     "2 / 3",
@@ -216,7 +235,7 @@ test("My library browses owned authors and series, filters, and opens books", as
   ).toBeVisible();
   await page.goBack();
   await expect(
-    page.getByRole("heading", { name: "Series in your collection" }),
+    page.getByRole("heading", { name: "Series", exact: true }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });

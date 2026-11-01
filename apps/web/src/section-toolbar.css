@@ -1,0 +1,138 @@
+/* Section header and toolbar for collection pages (design D, filter chips). */
+.section-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 20px;
+}
+.section-toolbar-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.section-toolbar-head h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+.section-toolbar-summary {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.section-toolbar-filters,
+.section-toolbar-applied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.section-toolbar-spacer {
+  flex: 1 1 0;
+}
+.toolbar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 340px;
+  min-width: 200px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--c-bg-indigo-27, var(--surface));
+  color: var(--muted);
+}
+.toolbar-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--c-text-grey-97, inherit);
+  outline-offset: 4px;
+}
+.toolbar-chip,
+.toolbar-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--surface);
+  color: inherit;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.toolbar-chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--c-text-white-100, #fff);
+}
+.toolbar-chip-count {
+  opacity: 0.75;
+  font-weight: 600;
+}
+.toolbar-menu {
+  /* Labels stack their contents elsewhere; a filter chip keeps its name and value on one line. */
+  flex-direction: row;
+  gap: 4px;
+  padding-right: 6px;
+  font-weight: 400;
+}
+.toolbar-menu-label {
+  color: var(--muted);
+}
+.toolbar-menu select {
+  width: auto;
+  margin: 0;
+  min-height: 42px;
+  border: 0;
+  padding: 0 4px;
+  background: transparent;
+  color: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.toolbar-menu[data-set] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.toolbar-menu[data-set] .toolbar-menu-label {
+  color: inherit;
+}
+.section-toolbar-applied-label,
+.section-toolbar-showing {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.toolbar-chip-applied {
+  min-height: 36px;
+}
+@media (max-width: 720px) {
+  /* On phones the filters scroll sideways in one row, with Sort still in reach. */
+  .section-toolbar-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .toolbar-search {
+    flex: 0 0 220px;
+  }
+  .section-toolbar-spacer {
+    display: none;
+  }
+}
+.toolbar-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
