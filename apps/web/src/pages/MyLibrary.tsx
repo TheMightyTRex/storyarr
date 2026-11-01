@@ -227,7 +227,7 @@ function LibraryBooks({
   sort: AssetSort;
   libraryId: string;
 }) {
-  // The book whose summary slides out from the left.
+  // The book whose summary slides out from the right.
   const [summary, setSummary] = useState<
     components["schemas"]["WorkView"] | null
   >(null);

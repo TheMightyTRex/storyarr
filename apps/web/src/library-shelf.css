@@ -1,4 +1,4 @@
-/* My library: a compact cover wall, with a summary that slides out from the left. */
+/* My library: a compact cover wall, with a summary that slides out from the right. */
 .shelf-wall {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
@@ -46,18 +46,18 @@
   z-index: 40;
   top: var(--topbar-height, 64px);
   bottom: 0;
-  left: 0;
+  right: 0;
   width: min(360px, 100vw);
   overflow-y: auto;
   background: var(--surface);
-  border-right: 1px solid var(--line);
-  box-shadow: 8px 0 24px rgba(0, 0, 0, 0.18);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18);
   padding: 16px 20px 24px;
   animation: book-summary-in 0.2s ease-out;
 }
 @keyframes book-summary-in {
   from {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
 }
 @media (prefers-reduced-motion: reduce) {

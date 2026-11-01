@@ -15,7 +15,7 @@ function hours(seconds: number) {
   return h ? `${h} h ${m} min` : `${m} min`;
 }
 
-/** Basic information about a library book, sliding out from the left. */
+/** Basic information about a library book, sliding out from the right. */
 export default function BookSummary({
   work,
   close,
@@ -24,16 +24,12 @@ export default function BookSummary({
   close: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
-  // Slide out from the left edge of the page, beside the navigation and below the header.
-  const [edges, setEdges] = useState<{ left: number; top: number }>();
+  // Slide out from the right edge of the page, below the header.
+  const [edges, setEdges] = useState<{ top: number }>();
   useLayoutEffect(() => {
     const place = () => {
-      // Beside a fixed navigation column; on phones the navigation sits on top instead.
-      const nav = document.querySelector<HTMLElement>(".sidebar");
-      const beside = nav && getComputedStyle(nav).position === "fixed";
       const header = document.querySelector(".topbar");
       setEdges({
-        left: beside ? Math.max(0, nav.getBoundingClientRect().right) : 0,
         top: Math.max(0, header?.getBoundingClientRect().bottom || 0),
       });
     };
