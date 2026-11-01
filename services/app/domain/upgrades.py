@@ -201,8 +201,8 @@ RELEASES = [
         highlights=[
             "Notifications are titled Storyarr notification, including the ones you already have.",
             "The sample compose files, the default database name and user, and the Docker guide "
-            "use storyarr. Compose files that set DB_NAME and DB_USER, as Dewarr's did, need no "
-            "change.",
+            "use storyarr. Compose files moved from Dewarr set DB_NAME and DB_USER, so they need "
+            "no change.",
         ],
         database_changes=[
             "The notification title is renamed in the database function that creates "

@@ -47,6 +47,7 @@ SKIP = (
 KEEP = re.compile(
     r"logabell|fork of|from Dewarr|to Dewarr|on Dewarr|how Dewarr|Dewarr v0\.|X-Dewarr-Proxy-Token"
     r"|with Dewarr|Dewarr's release|Dewarr releases|Dewarr will|Dewarr migration"
+    r"|Dewarr notification"  # the old notification title, renamed by storyarr_0086
 )
 
 
