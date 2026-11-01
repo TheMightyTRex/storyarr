@@ -77,9 +77,25 @@ test("one library card shows both formats and uses the mixed-view cover preferen
     name: "Library books",
     exact: true,
   });
-  const card = library.locator(".book-card");
+  const card = library.locator(".shelf-book");
   await expect(card).toHaveCount(1);
   await expect(card.locator(".cover-portrait")).toBeVisible();
+  // Every book here is in the library: no Quick add on the cover.
+  await expect(card.getByRole("button", { name: /Quick add/ })).toHaveCount(0);
+  // A click slides out the summary; Escape puts it away.
+  await card.click();
+  const summary = page.locator(".book-summary");
+  await expect(summary).toBeVisible();
+  await expect(summary.getByText("Audiobook", { exact: true })).toBeVisible();
+  await expect(
+    summary.getByRole("link", { name: "Open book page" }),
+  ).toBeVisible();
+  await page.waitForTimeout(400); // Let the slide finish.
+  await page.screenshot({
+    path: testInfo.outputPath("library-summary.png"),
+  });
+  await page.keyboard.press("Escape");
+  await expect(summary).toHaveCount(0);
   await expect(
     card.getByRole("img", { name: "Ebook: in library", exact: true }),
   ).toBeVisible();

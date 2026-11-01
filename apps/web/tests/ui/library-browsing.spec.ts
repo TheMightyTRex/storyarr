@@ -61,7 +61,7 @@ test("library browsing searches books and preserves filters through navigation",
     .getByRole("combobox", { name: "Media", exact: true })
     .selectOption("ebook");
   await expect(page).not.toHaveURL(/offset=/);
-  await expect(copies.locator(".book-card").first()).toBeVisible();
+  await expect(copies.locator(".shelf-book").first()).toBeVisible();
   await page
     .getByRole("searchbox", { name: "Search your library" })
     .fill(first.title);
@@ -69,7 +69,7 @@ test("library browsing searches books and preserves filters through navigation",
     .getByRole("button", { name: "Search library", exact: true })
     .click();
   await expect(page).toHaveURL(/q=/);
-  await expect(copies.locator(".book-card")).toHaveCount(1);
+  await expect(copies.locator(".shelf-book")).toHaveCount(1);
   await page
     .getByRole("combobox", { name: "Sort books" })
     .selectOption("recent");
@@ -90,7 +90,7 @@ test("library browsing searches books and preserves filters through navigation",
   await expect(page.getByRole("combobox", { name: "Sort books" })).toHaveValue(
     "recent",
   );
-  await expect(copies.locator(".book-card").first()).toBeVisible();
+  await expect(copies.locator(".shelf-book").first()).toBeVisible();
   await page.screenshot({
     path: testInfo.outputPath("library-browsing-desktop.png"),
     fullPage: true,
@@ -107,7 +107,7 @@ test("library browsing searches books and preserves filters through navigation",
   ).toBe(true);
   await page.getByRole("button", { name: "Reset library view" }).click();
   await expect(page).toHaveURL(/\/library$/);
-  await expect(copies.locator(".book-card").first()).toBeVisible();
+  await expect(copies.locator(".shelf-book").first()).toBeVisible();
   expect(writes).toEqual([]);
   expect(errors).toEqual([]);
 });

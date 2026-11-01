@@ -91,7 +91,7 @@ test("first account, saved books, library connection and worker", async ({
   await expect(
     page.getByRole("heading", { name: "My library", exact: true }),
   ).toBeAttached();
-  await expect(page.locator(".book-card").first()).toBeVisible();
+  await expect(page.locator(".shelf-book").first()).toBeVisible();
   await page.goto("/settings#logs");
   await page.getByRole("button", { name: "Check background worker" }).click();
   await expect(

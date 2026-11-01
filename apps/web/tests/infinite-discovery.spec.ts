@@ -257,14 +257,14 @@ test("library appends books and changing format starts a fresh result set", asyn
     name: "Library books",
     exact: true,
   });
-  await expect(books.locator(".book-card")).toHaveCount(40);
+  await expect(books.locator(".shelf-book")).toHaveCount(40);
   await books.locator(".infinite-scroll").scrollIntoViewIfNeeded();
-  await expect(books.locator(".book-card")).toHaveCount(41);
+  await expect(books.locator(".shelf-book")).toHaveCount(41);
   expect(offsets).toContain(40);
   await page
     .getByRole("combobox", { name: "Media", exact: true })
     .selectOption("audio");
-  await expect(books.locator(".book-card")).toHaveCount(1);
+  await expect(books.locator(".shelf-book")).toHaveCount(1);
   await expect(
     page.getByRole("heading", { name: "Audio title 0" }),
   ).toBeVisible();

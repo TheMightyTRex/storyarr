@@ -9,7 +9,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
-import { BookCard, Empty, Loading, Notice } from "../components";
+import { Empty, Loading, Notice } from "../components";
+import BookCover from "../components/BookCover";
+import BookSummary from "../components/BookSummary";
 import AssetMatchForm from "../components/AssetMatchForm";
 import CollectionContents from "./CollectionContents";
 
@@ -225,6 +227,10 @@ function LibraryBooks({
   sort: AssetSort;
   libraryId: string;
 }) {
+  // The book whose summary slides out from the left.
+  const [summary, setSummary] = useState<
+    components["schemas"]["WorkView"] | null
+  >(null);
   const books = usePagedQuery({
     queryKey: ["library-books", q, medium, state, sort, libraryId],
     queryFn: async (offset, signal) =>
@@ -270,9 +276,30 @@ function LibraryBooks({
             </span>
           </div>
           {books.data.items.length ? (
-            <div className="book-grid">
+            <div className="shelf-wall">
               {books.data.items.map((work) => (
-                <BookCard key={work.id} work={work} medium={medium} />
+                <button
+                  key={work.id}
+                  type="button"
+                  className="shelf-book"
+                  aria-pressed={summary?.id === work.id}
+                  aria-label={`${work.title}, show summary`}
+                  onClick={() =>
+                    setSummary(summary?.id === work.id ? null : work)
+                  }
+                >
+                  <BookCover
+                    title={work.title}
+                    work={work}
+                    cover={work.cover_url}
+                    medium={medium}
+                    actions={false}
+                  />
+                  <h3 title={work.title}>{work.title}</h3>
+                  <p title={work.authors.join(", ")}>
+                    {work.authors.join(", ") || "Author unknown"}
+                  </p>
+                </button>
               ))}
             </div>
           ) : (
@@ -282,6 +309,13 @@ function LibraryBooks({
           )}
           <InfiniteScroll query={books} />
         </>
+      )}
+      {summary && (
+        <BookSummary
+          key={summary.id}
+          work={summary}
+          close={() => setSummary(null)}
+        />
       )}
     </section>
   );

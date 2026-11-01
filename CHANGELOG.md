@@ -6,6 +6,9 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 ## v0.4.5 (unreleased)
 
 ### Changed
+- **My library bookshelf:** a compact cover wall. Clicking a book slides out a summary from the left: cover,
+  author, series, formats you have, rating, published, narrator, length and description, with Open book page.
+  Covers no longer show Quick add or the in-library tick; getting a missing format is in the summary.
 - Source searches keep the loading bar under the header on while they run (book Sources, Quick add,
   Settings, Sources).
 
