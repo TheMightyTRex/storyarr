@@ -111,10 +111,32 @@ const admin = {
   csrf_token: "docs",
 };
 
+function libraryWork(index: number) {
+  return {
+    id: `00000000-0000-0000-0000-0000000003${String(index).padStart(2, "0")}`,
+    title: titles[index],
+    authors: ["Mara Ellison"],
+    cover_url: `/demo-covers/${index}.svg`,
+    publication_year: 2016 + index,
+    description:
+      index === 6
+        ? "A clockmaker's daughter keeps her father's shop running while she tracks down the missing gears of a clock that predicts storms."
+        : null,
+    availability: {
+      owned: true,
+      ebook: index % 3 === 0,
+      audio: index % 4 !== 3,
+      stale: false,
+      primary_audio_narrators: ["Imogen Hale"],
+    },
+  };
+}
+
 async function setup(
   page: Page,
   theme: "light" | "dark" = "light",
   upgrading = false,
+  newerRelease = false,
 ) {
   await page.addInitScript((value) => {
     localStorage.setItem(
@@ -138,6 +160,42 @@ async function setup(
     if (path === "/api/auth/me") data = admin;
     else if (path === "/api/setup/onboarding") data = { status: "completed" };
     else if (path === "/api/library/libraries") data = [];
+    else if (path === "/api/application/release")
+      data = {
+        installed_version: "v0.4.8",
+        installed_url: null,
+        latest_version: newerRelease ? "v0.4.9" : "v0.4.8",
+        release_url: null,
+        update_available: newerRelease,
+        status: "checked",
+      };
+    else if (path === "/api/library/books" || path === "/api/catalog/works")
+      data = {
+        items: titles.map((_, index) => libraryWork(index)),
+        total: titles.length,
+        offset: 0,
+        limit: 40,
+      };
+    else if (path.startsWith("/api/metadata/works/"))
+      data = {
+        sources: [
+          {
+            provider: "hardcover",
+            external_id: "docs-map",
+            series: [
+              { external_id: "77", name: "The Lantern Road", position: 7 },
+            ],
+          },
+        ],
+      };
+    else if (path.endsWith("/reader-details"))
+      data = {
+        authors: [{ external_id: "501", name: "Mara Ellison" }],
+        rating: 4.3,
+        ratings_count: 1287,
+        release_date: "2019-04-12",
+        audio_seconds: 41340,
+      };
     else if (path === "/api/acquisition/preferences/personal")
       data = { effective: { desired_media: "audio" } };
     else if (path === `/api/following/${list}/summary`)
@@ -236,6 +294,12 @@ async function setup(
         ],
         automatic: false,
         automatic_from_environment: false,
+        way_back: {
+          title: "Storyarr",
+          database_changes: ["Two new indexes on the operations table."],
+          rollback:
+            "Downgrade the database to 0082_installation_automation to remove the indexes.",
+        },
       };
     return route.fulfill({ json: data });
   });
@@ -311,4 +375,29 @@ test("settings", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}/settings.png` });
+});
+
+test("my library, with a summary and a newer release", async ({ page }) => {
+  await setup(page, "light", false, true);
+  await page.goto("/library");
+  const books = page.locator(".shelf-book");
+  await expect(books.first().locator("img")).toBeVisible();
+  await books.nth(6).click();
+  await expect(page.locator(".book-summary")).toBeVisible();
+  await expect(
+    page.locator(".book-summary").getByRole("link", { name: "Mara Ellison" }),
+  ).toBeVisible();
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: `${OUT}/my-library.png` });
+});
+
+test("restore previous version", async ({ page }) => {
+  await setup(page);
+  await page.goto("/settings#upgrades");
+  await page.getByText("Restore previous version", { exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "2. Undo database changes" }),
+  ).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${OUT}/restore-previous-version.png` });
 });

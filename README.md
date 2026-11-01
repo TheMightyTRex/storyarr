@@ -73,6 +73,9 @@ More: [Docker settings and backups](docs/DOCKER.md) · [Metadata sources](docs/M
 
 The books and covers below are invented for the screenshots.
 
+### My library, with a book's summary
+![My library as a cover wall, with a summary panel for one book and a red dot on the version number for an available upgrade](docs/images/my-library.png)
+
 ### Bookshelf, in the dark theme
 ![The same bookshelf in the dark theme](docs/images/bookshelf-dark.png)
 
@@ -80,13 +83,16 @@ The books and covers below are invented for the screenshots.
 ![A month of audiobook release days with small covers, and the Genres and Show menus](docs/images/calendar.png)
 
 ### Display and accessibility
-![Display and accessibility settings: theme, text size, low-vision font, high contrast and more](docs/images/display.png)
+![Display and accessibility settings: theme, text size, high contrast, reduced motion and more](docs/images/display.png)
 
 ### Settings
-![Settings in six groups, with the Layout choice of Classic or Shelf](docs/images/settings.png)
+![Settings in six groups: General, Accounts, Sources, Library, Downloads and System](docs/images/settings.png)
 
 ### Upgrade wizard
-![The upgrade wizard: what is new, database changes and the way back](docs/images/upgrade-wizard.png)
+![The upgrade wizard, shown only when a new version has settings to choose or database changes](docs/images/upgrade-wizard.png)
+
+### Restore previous version
+![Settings, Restore previous version: restore your settings, undo database changes, start the previous version](docs/images/restore-previous-version.png)
 
 ## Updates
 
@@ -96,7 +102,7 @@ docker compose up -d
 ```
 
 Back up `config` and PostgreSQL first. Storyarr saves a settings backup and runs database migrations on its own,
-then shows admins what changed. [Updating](docs/UPDATING.md) has the details.
+and shows admins the upgrade wizard only when there are settings to choose or database changes. [Updating](docs/UPDATING.md) has the details.
 
 ## Contributors
 
