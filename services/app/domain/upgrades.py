@@ -243,6 +243,9 @@ RELEASES = [
             "One typeface on every page: Atkinson Hyperlegible Next, designed for readers with low "
             "vision. The Low-vision font switch is gone, because it is always on.",
             "Every slide-out panel has the same header: its name in bold and the close button.",
+            "The Library tabs share one toolbar, and each can save its filters and order as your "
+            "default, with your account. Reset them in Settings, General, Saved views.",
+            "On phones, a menu button in the header opens every section and its pages.",
         ],
     ),
 ]
