@@ -12,6 +12,7 @@ import { useLibraryReviewCount } from "../hooks/useLibraryReviewCount";
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import ProviderSearch from "./ProviderSearch";
 import { searchTitle } from "../titleLabels";
+import { currentParams } from "../currentParams";
 
 type Asset = components["schemas"]["AssetView"];
 type ReadIssue = components["schemas"]["ReadIssueView"];
@@ -87,7 +88,7 @@ export default function LibraryReview() {
   const [resolved, setResolved] = useState("");
   const [continueReview, setContinueReview] = useState(true);
   const update = (values: Record<string, string>) => {
-    const next = new URLSearchParams(params);
+    const next = currentParams();
     for (const [key, value] of Object.entries(values)) {
       if (value) next.set(key, value);
       else next.delete(key);

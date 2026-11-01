@@ -9,6 +9,7 @@ import {
 import { ChevronRight } from "lucide-react";
 import { api, result } from "../api/client";
 import { Empty, Loading, Notice } from "../components";
+import { currentParams } from "../currentParams";
 
 const PAGE_SIZE = 50;
 
@@ -43,7 +44,7 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
   // In the URL so the open entry is still open after following its link and going back.
   const expanded = params.get("operation");
   function toggle(id: string) {
-    const next = new URLSearchParams(params);
+    const next = currentParams();
     if (expanded === id) next.delete("operation");
     else next.set("operation", id);
     navigate(
@@ -65,7 +66,7 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
       : 0;
   const cache = useQueryClient();
   function change(key: string, value: string) {
-    const next = new URLSearchParams(params);
+    const next = currentParams();
     if (value) next.set(key, value);
     else next.delete(key);
     if (key !== "offset") next.delete("offset");
@@ -198,7 +199,7 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
             type="button"
             aria-label="Reset activity view"
             onClick={() => {
-              const next = new URLSearchParams(params);
+              const next = currentParams();
               for (const key of ["q", "status", "kind", "offset", "operation"])
                 next.delete(key);
               navigate({

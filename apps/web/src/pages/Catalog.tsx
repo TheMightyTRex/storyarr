@@ -8,6 +8,7 @@ import { api, result } from "../api/client";
 import { BookCard, Empty, Loading, Notice } from "../components";
 import SectionToolbar, { SaveViewButton } from "../components/SectionToolbar";
 import { useSavedView } from "../hooks/useSavedView";
+import { currentParams } from "../currentParams";
 
 export default function Catalog({ canEdit }: { canEdit: boolean }) {
   const [params, setParams] = useSearchParams();
@@ -21,8 +22,7 @@ export default function Catalog({ canEdit }: { canEdit: boolean }) {
   const client = useQueryClient();
   const view = useSavedView("saved");
   const change = (key: string, value: string) => {
-    // The address as it is now, so two quick changes both stick.
-    const next = new URLSearchParams(window.location.search);
+    const next = currentParams();
     if (value) next.set(key, value);
     else next.delete(key);
     next.delete("offset");

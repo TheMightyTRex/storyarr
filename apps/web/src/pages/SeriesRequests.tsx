@@ -16,6 +16,7 @@ import SeriesAutomaticRoutes, {
 } from "./SeriesAutomaticRoutes";
 import { BookOpen, Headphones } from "lucide-react";
 import { randomUUID } from "../randomUUID";
+import { currentParams } from "../currentParams";
 
 type Spec = components["schemas"]["RequestOptions"];
 type Preview = components["schemas"]["SeriesRequestView"];
@@ -62,16 +63,12 @@ export default function SeriesRequests({
   const cache = useQueryClient();
   const [params, setParams] = useSearchParams();
   const id = params.get("request");
-  const setId = (value: string | null) =>
-    setParams(
-      (current) => {
-        const next = new URLSearchParams(current);
-        if (value) next.set("request", value);
-        else next.delete("request");
-        return next;
-      },
-      { replace: true },
-    );
+  const setId = (value: string | null) => {
+    const next = currentParams();
+    if (value) next.set("request", value);
+    else next.delete("request");
+    setParams(next, { replace: true });
+  };
   const [scope, setScope] = useState<"selected" | "complete_series">(
     "selected",
   );

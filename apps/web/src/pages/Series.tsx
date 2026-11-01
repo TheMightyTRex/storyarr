@@ -24,6 +24,7 @@ import FollowCatalog from "../components/FollowCatalog";
 import AddMissingBooks from "../components/AddMissingBooks";
 import FollowRelease from "../components/FollowRelease";
 import { randomUUID } from "../randomUUID";
+import { currentParams } from "../currentParams";
 
 function missingWorkIds(
   items: {
@@ -565,7 +566,7 @@ function SeriesContent({
                 <select
                   value={section}
                   onChange={(event) => {
-                    const next = new URLSearchParams(params);
+                    const next = currentParams();
                     next.set("section", event.target.value);
                     setParams(next);
                     setSelected([]);

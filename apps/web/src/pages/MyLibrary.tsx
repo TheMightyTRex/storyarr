@@ -16,6 +16,7 @@ import AssetMatchForm from "../components/AssetMatchForm";
 import CollectionContents from "./CollectionContents";
 import SectionToolbar, { SaveViewButton } from "../components/SectionToolbar";
 import { useSavedView } from "../hooks/useSavedView";
+import { currentParams } from "../currentParams";
 
 const count = (total?: number) =>
   total == null
@@ -67,9 +68,7 @@ export default function MyLibrary({
   const state: AssetState = "any";
   const sort: AssetSort = params.get("sort") === "recent" ? "recent" : "title";
   function change(key: string, value: string) {
-    // Start from the address as it is now, not as it was at the last render, so two quick changes
-    // (a format chip, then Sort) both stick.
-    const next = new URLSearchParams(window.location.search);
+    const next = currentParams();
     if (value) next.set(key, value);
     else next.delete(key);
     if (key !== "offset") next.delete("offset");

@@ -15,6 +15,7 @@ import {
 } from "./GroupShelf";
 import SectionToolbar, { SaveViewButton } from "./SectionToolbar";
 import { useSavedView } from "../hooks/useSavedView";
+import { currentParams } from "../currentParams";
 
 type Kind = "authors" | "series";
 type Library = components["schemas"]["LibraryView"];
@@ -112,9 +113,7 @@ export default function LibraryGroups({
     return `?${next}`;
   };
   const total = active.data?.total || 0;
-  // Start from the address as it is now, not as it was at the last render,
-  // so a quick change after switching tab keeps the new tab.
-  const current = () => new URLSearchParams(window.location.search);
+  const current = currentParams;
   const change = (key: string, value: string) => {
     const next = current();
     if (value) next.set(key, value);

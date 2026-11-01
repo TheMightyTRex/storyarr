@@ -59,6 +59,7 @@ import {
   useCollections,
 } from "../components/DiscoveryCollections";
 import ReleaseCalendar, { UpcomingShelf } from "./ReleaseCalendar";
+import { currentParams } from "../currentParams";
 
 const views = discoverViews;
 const viewIcons: Record<(typeof views)[number][0], LucideIcon> = {
@@ -456,12 +457,10 @@ function CollectionIndex({ awards }: { awards: boolean }) {
         : undefined,
   });
   function change(key: string, value: string) {
-    setParams((p) => {
-      const next = new URLSearchParams(p);
-      value ? next.set(key, value) : next.delete(key);
-      next.delete("page");
-      return next;
-    });
+    const next = currentParams();
+    value ? next.set(key, value) : next.delete(key);
+    next.delete("page");
+    setParams(next);
   }
   return (
     <>
@@ -689,12 +688,10 @@ function Browse() {
     staleTime: 60_000,
   });
   function change(key: string, value: string) {
-    setParams((p) => {
-      const n = new URLSearchParams(p);
-      value ? n.set(key, value) : n.delete(key);
-      n.delete("page");
-      return n;
-    });
+    const next = currentParams();
+    value ? next.set(key, value) : next.delete(key);
+    next.delete("page");
+    setParams(next);
   }
   return (
     <>
@@ -807,14 +804,9 @@ function CollectionPage({ id, canEdit }: { id: string; canEdit: boolean }) {
   const [params, setParams] = useSearchParams();
   const winners = params.get("winners") === "1";
   function setWinners(value: boolean) {
-    setParams(
-      (current) => {
-        const next = new URLSearchParams(current);
-        value ? next.set("winners", "1") : next.delete("winners");
-        return next;
-      },
-      { state: location.state },
-    );
+    const next = currentParams();
+    value ? next.set("winners", "1") : next.delete("winners");
+    setParams(next, { state: location.state });
   }
   const preview = useQuery({
     queryKey: ["discovery-collection", id, "snapshot", winners],

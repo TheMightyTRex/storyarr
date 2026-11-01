@@ -17,6 +17,7 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookCover from "../components/BookCover";
 import DetailTabs from "../components/DetailTabs";
+import { currentParams } from "../currentParams";
 const FollowSettings = lazy(() => import("./FollowSettings"));
 
 type Summary = components["schemas"]["FollowSummary"];
@@ -353,7 +354,7 @@ function FollowingReleases({
             <select
               value={selection}
               onChange={(event) => {
-                const next = new URLSearchParams(params);
+                const next = currentParams();
                 next.set("releases", event.target.value);
                 setParams(next);
               }}
@@ -476,8 +477,7 @@ function Overview() {
     </div>
   );
   const set = (key: string, value: string) => {
-    // The address as it is now, so a quick change keeps an earlier one.
-    const next = new URLSearchParams(window.location.search);
+    const next = currentParams();
     value ? next.set(key, value) : next.delete(key);
     setParams(next, { replace: true });
   };

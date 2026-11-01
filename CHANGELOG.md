@@ -13,6 +13,9 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
   upgrade is available). It opens a drawer from the left with Library, Discover, Activity and Settings, each
   folding open to its sub-menu, plus your account, Sign out and the version. The header sub-menu row is hidden on
   phones, because the drawer holds it.
+- **Filters keep up with quick changes everywhere:** every filter, sort and toggle (Library tabs, Library
+  review, Following, the series page, Activity history and the Discover filters) now starts from the page's current
+  address, so a second change made straight after the first no longer drops it.
 - **Save as default:** each Library tab can save its filters and order as the person's default, stored with their
   account, not the browser. Settings, General, Saved views lists them and resets them to default.
 - **Upgrade available:** a red dot on the version number, and "Upgrade available" instead of "Update", when a
