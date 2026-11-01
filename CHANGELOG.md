@@ -3,6 +3,14 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.4.7 (unreleased)
+
+### Fixed
+- **Soulseek (slskd) connection with a read-write API key** ([#1](https://github.com/TheMightyTRex/storyarr/issues/1)):
+  slskd 0.26 shares its download folder only with administrator keys, so the test failed with a misleading
+  "use a read-write key" message. Storyarr now checks the key before the Soulseek session and says to give the
+  key the administrator role. The settings page and the download clients guide say the same.
+
 ## v0.4.6 (1 November 2026)
 
 ### Changed
