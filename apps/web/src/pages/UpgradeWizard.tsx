@@ -6,10 +6,7 @@ import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
 import LayoutChoice from "../components/LayoutChoice";
 import DisplayPanel from "../components/DisplayPanel";
-import UpgradeBackups, {
-  AutomaticUpgrades,
-  useUpgrade,
-} from "../components/UpgradeBackups";
+import UpgradeBackups, { useUpgrade } from "../components/UpgradeBackups";
 import SettingsGroup from "../components/SettingsGroup";
 import AudibleStoreSetting from "../components/AudibleStoreSetting";
 import {
@@ -24,7 +21,6 @@ const steps = [
   ["whats-new", "New in this version"],
   ["backup", "Your backup"],
   ["settings", "New settings"],
-  ["way-back", "The way back"],
 ] as const;
 
 // New settings shown in place, so they can be changed without leaving the wizard.
@@ -167,6 +163,11 @@ export default function UpgradeWizard() {
                 Download it to keep a copy somewhere else.
               </p>
               <UpgradeBackups restore={false} />
+              <p>
+                If something is not right after the upgrade, go to Settings,
+                System, then{" "}
+                <Link to="/settings#upgrades">Restore previous version</Link>.
+              </p>
             </>
           )}
           {id === "settings" && (
@@ -198,25 +199,6 @@ export default function UpgradeWizard() {
                     ),
                   )}
               </div>
-            </>
-          )}
-          {id === "way-back" && (
-            <>
-              <p>
-                If something is not right after the upgrade, you can put your
-                settings back to how they were before it. Books, downloads and
-                history are not changed.
-              </p>
-              <UpgradeBackups />
-              <AutomaticUpgrades />
-              <h3>Going back to the previous version</h3>
-              <p>
-                Restoring settings does not change the app itself. To go back to
-                the previous version, start the previous image again with the
-                database backup you took before upgrading. Keep the settings
-                backup above, so you can bring your settings across again
-                afterwards.
-              </p>
             </>
           )}
           <div className="button-row upgrade-actions">

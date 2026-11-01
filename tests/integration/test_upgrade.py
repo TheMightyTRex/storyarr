@@ -132,3 +132,34 @@ async def test_automatic_upgrades_finish_at_startup(client, admin, monkeypatch, 
         }
         container._save_upgrade_state(connection, **record)
     assert (await client.get("/api/upgrade")).json()["acknowledged"] == upgrades.CURRENT
+
+
+async def test_releases_without_choices_or_changes_skip_the_wizard(
+    client, admin, database, monkeypatch
+):
+    from app import container
+
+    choice = upgrades.UpgradeRelease(
+        id="2099.01.01",
+        title="A new setting",
+        highlights=["New"],
+        review=[upgrades.UpgradeReviewItem(id="x", title="X", description="X", link="/settings")],
+    )
+    news = upgrades.UpgradeRelease(id="2099.01.02", title="Only news", highlights=["Faster"])
+    monkeypatch.setattr(upgrades, "RELEASES", [choice, news])
+    monkeypatch.setattr(upgrades, "CURRENT", news.id)
+    await finish_onboarding(database)
+    url = os.environ["BOOK_DATABASE_URL"].replace("postgresql+psycopg://", "postgresql://")
+    with psycopg.connect(url, autocommit=True) as connection:
+        # Coming from before the release with a choice: the wizard is still needed.
+        container._save_upgrade_state(connection, release="2026.01.01")
+        assert "release" not in container.prepare_upgrade(connection)
+        assert (await client.get("/api/upgrade")).json()["pending"] is True
+        # Coming from the release with a choice: only news is left, so the upgrade finishes itself.
+        container._save_upgrade_state(connection, release=choice.id, backed_up_for=None)
+        record = container.prepare_upgrade(connection)
+        assert record["release"] == news.id and record["backup"]
+        container._save_upgrade_state(connection, **record)
+    view = (await client.get("/api/upgrade")).json()
+    assert view["pending"] is False and view["acknowledged"] == news.id
+    assert view["way_back"] == {"title": "Only news", "database_changes": [], "rollback": None}

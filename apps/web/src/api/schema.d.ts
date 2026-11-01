@@ -15157,6 +15157,11 @@ export interface components {
        * @default []
        */
       database_changes: string[];
+      /**
+       * Configuration Changes
+       * @default []
+       */
+      configuration_changes: string[];
       /** Rollback */
       rollback?: string | null;
     };
@@ -15191,6 +15196,7 @@ export interface components {
       automatic: boolean;
       /** Automatic From Environment */
       automatic_from_environment: boolean;
+      way_back: components["schemas"]["WayBack"];
     };
     /** Usage */
     Usage: {
@@ -15377,6 +15383,15 @@ export interface components {
        * @default true
        */
       ebook: boolean;
+    };
+    /** WayBack */
+    WayBack: {
+      /** Title */
+      title: string;
+      /** Database Changes */
+      database_changes: string[];
+      /** Rollback */
+      rollback: string | null;
     };
     /** Window */
     Window: {

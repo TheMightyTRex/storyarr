@@ -4269,6 +4269,17 @@ img.detail-cover {
   color: var(--c-text-amber-77);
   font-size: 0.6875rem;
 }
+/* A newer release: a red dot on the version number, with "Upgrade available" as its text. */
+.application-release .update-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: #d93025;
+  box-shadow: 0 0 0 2px var(--surface);
+  vertical-align: super;
+}
 .application-release button.installed-version:hover,
 .application-release button.release-update:hover {
   background: transparent;

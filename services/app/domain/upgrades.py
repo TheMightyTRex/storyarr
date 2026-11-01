@@ -26,7 +26,14 @@ class UpgradeRelease(BaseModel):
     # Changes to the database structure, each with how to undo it. A settings backup is taken
     # before they run; take a full database backup too.
     database_changes: list[str] = []
+    # Changes to configuration an administrator should know about before carrying on, such as a
+    # renamed environment variable or a new required volume.
+    configuration_changes: list[str] = []
     rollback: str | None = None
+
+    def needs_attention(self) -> bool:
+        """The wizard opens only for a choice to make or a change worth a backup and a way back."""
+        return bool(self.review or self.database_changes or self.configuration_changes)
 
 
 # Newest last. Add a release whenever an upgrade brings changes an existing install should hear
@@ -224,6 +231,17 @@ RELEASES = [
             "role in slskd, then test the connection again.",
         ],
     ),
+    UpgradeRelease(
+        id="2026.11.01.4",
+        title="Quieter upgrades",
+        highlights=[
+            "A red dot on the version number, with Upgrade available, when a new version is out.",
+            "The upgrade wizard opens only when a version has settings to choose or changes to "
+            "your configuration or database. Every upgrade still saves a settings backup first.",
+            "The way back is in Settings, System, Upgrades and backups, as Restore previous "
+            "version.",
+        ],
+    ),
 ]
 CURRENT = RELEASES[-1].id
 
@@ -248,6 +266,11 @@ def since(release: str | None) -> list[UpgradeRelease]:
     if release in ids:
         return RELEASES[ids.index(release) + 1 :]
     return list(RELEASES)
+
+
+def needs_wizard(release: str | None) -> bool:
+    """Releases with only news finish on their own; their notes are under the version number."""
+    return any(item.needs_attention() for item in since(release))
 
 
 async def _schema(db) -> str | None:

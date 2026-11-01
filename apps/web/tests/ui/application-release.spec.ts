@@ -87,7 +87,13 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
     await expect(footer).toBeVisible();
     await expect(footer.getByText("v1.9.0", { exact: true })).toBeVisible();
     if (state === "update") {
-      await footer.getByRole("button", { name: "Update", exact: true }).click();
+      // A red dot on the version number, and "Upgrade available" beside it.
+      await expect(
+        footer.locator(".installed-version .update-dot"),
+      ).toBeVisible();
+      await footer
+        .getByRole("button", { name: "Upgrade available", exact: true })
+        .click();
       const notes = page.getByRole("dialog", { name: "Release notes" });
       await expect(notes.getByText("v1.10.0 is available.")).toBeVisible();
       await expect(
@@ -126,8 +132,9 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
       await notes.getByRole("button", { name: "Close release notes" }).click();
     } else {
       await expect(
-        footer.getByRole("button", { name: "Update", exact: true }),
+        footer.getByRole("button", { name: "Upgrade available", exact: true }),
       ).toHaveCount(0);
+      await expect(footer.locator(".update-dot")).toHaveCount(0);
       await expect(
         footer.getByText(
           state === "current"
@@ -152,7 +159,9 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
     await page.getByRole("button", { name: "Menu", exact: true }).click();
     await expect(footer).toBeVisible();
     if (state === "update") {
-      await footer.getByRole("button", { name: "Update", exact: true }).click();
+      await footer
+        .getByRole("button", { name: "Upgrade available", exact: true })
+        .click();
       const notes = page.getByRole("dialog", { name: "Release notes" });
       await expect(
         notes.getByRole("heading", { name: "Features" }),

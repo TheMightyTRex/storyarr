@@ -43556,6 +43556,14 @@
             "title": "Database Changes",
             "default": []
           },
+          "configuration_changes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Configuration Changes",
+            "default": []
+          },
           "rollback": {
             "anyOf": [
               {
@@ -43661,6 +43669,9 @@
           "automatic_from_environment": {
             "type": "boolean",
             "title": "Automatic From Environment"
+          },
+          "way_back": {
+            "$ref": "#/components/schemas/WayBack"
           }
         },
         "type": "object",
@@ -43672,7 +43683,8 @@
           "releases",
           "backups",
           "automatic",
-          "automatic_from_environment"
+          "automatic_from_environment",
+          "way_back"
         ],
         "title": "UpgradeView"
       },
@@ -44199,6 +44211,39 @@
         "type": "object",
         "title": "WantedSearch",
         "description": "Search again, on a back-off schedule, for requested books that are still wanted."
+      },
+      "WayBack": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "database_changes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Database Changes"
+          },
+          "rollback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rollback"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "database_changes",
+          "rollback"
+        ],
+        "title": "WayBack"
       },
       "Window": {
         "properties": {

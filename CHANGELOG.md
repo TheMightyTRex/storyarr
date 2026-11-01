@@ -3,6 +3,16 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.4.8 (1 November 2026)
+
+### Changed
+- **Upgrade available:** a red dot on the version number, and "Upgrade available" instead of "Update", when a
+  newer release is out.
+- **Quieter upgrades:** the upgrade wizard opens only when a version brings settings to choose, or
+  configuration or database changes. Other upgrades finish on their own after the settings backup.
+- **Restore previous version** in Settings, System, Upgrades and backups replaces the wizard's way-back step:
+  restore your settings, undo database changes, then start the previous image.
+
 ## v0.4.7 (1 November 2026)
 
 ### Fixed

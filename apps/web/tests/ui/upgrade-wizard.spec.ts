@@ -1,6 +1,6 @@
 import { expect, test } from "../fixtures";
 
-test("after an upgrade, admins get the wizard with release notes, backups and a way back", async ({
+test("after an upgrade, admins get the wizard; the way back is in Settings", async ({
   page,
 }) => {
   let acknowledged: string | null = null;
@@ -38,6 +38,11 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
     backups: [backup],
     automatic: false,
     automatic_from_environment: false,
+    way_back: {
+      title: "Layout, light theme, bookshelves and smarter searching",
+      database_changes: ["New automation settings."],
+      rollback: "Run python -m app.downgrade 0080_member_setup first.",
+    },
   });
   await page.route("**/api/**", async (route) => {
     const request = route.request();
@@ -98,10 +103,13 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
     "href",
     `/api/upgrade/backups/${backup.name}`,
   );
-  // Restoring is offered on the last step, not here.
+  // Restoring is in Settings, not in the wizard.
   await expect(
     page.getByRole("button", { name: "Restore settings" }),
   ).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Restore previous version" }),
+  ).toHaveAttribute("href", "/settings#upgrades");
 
   await page.getByRole("button", { name: "Next step" }).click();
   // New settings open in place, so changing one does not leave the wizard.
@@ -112,7 +120,23 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
   await expect(store.getByRole("status")).toHaveText("Audible store saved.");
   expect(saved).toMatchObject({ primary: "hardcover", audible_region: "uk" });
   await expect(page).toHaveURL(/\/upgrade$/);
-  await page.getByRole("button", { name: "Next step" }).click();
+  // New settings are the last step: there is no way-back step any more.
+  await expect(page.getByRole("button", { name: "Next step" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Finish", exact: true }).click();
+  await expect(page).toHaveURL(/\/library$/);
+  expect(acknowledged).toBe("2026.10.30");
+
+  // Settings, System, Upgrades and backups: Restore previous version.
+  await page.goto("/settings#upgrades");
+  await page.getByText("Restore previous version", { exact: true }).click();
+  await expect(page.getByText("New automation settings.")).toBeVisible();
+  await expect(
+    page.getByText("Run python -m app.downgrade 0080_member_setup first."),
+  ).toBeVisible();
+  // The wizard is finished, so Settings no longer links to it.
+  await expect(
+    page.getByRole("link", { name: "Open the upgrade wizard" }),
+  ).toHaveCount(0);
   await page.getByRole("button", { name: "Restore settings" }).click();
   const confirm = page.getByRole("group", { name: "Confirm restore" });
   await expect(confirm).toContainText("user accounts or passwords");
@@ -126,10 +150,6 @@ test("after an upgrade, admins get the wizard with release notes, backups and a 
       body: { confirm: true },
     },
   ]);
-
-  await page.getByRole("button", { name: "Finish", exact: true }).click();
-  await expect(page).toHaveURL(/\/library$/);
-  expect(acknowledged).toBe("2026.10.30");
 });
 
 test("Remind me later hides the wizard until the tab closes", async ({

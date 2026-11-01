@@ -223,16 +223,19 @@ export function ApplicationRelease() {
         onClick={() => setOpen(true)}
       >
         {label}
+        {data.update_available && (
+          <span className="update-dot" aria-hidden="true" />
+        )}
       </button>
       {data.update_available ? (
         <button
           type="button"
           className="release-update text-button"
           aria-haspopup="dialog"
-          title={`Version ${data.latest_version} is available`}
+          title={`${versionLabel(data.latest_version || "")} is available`}
           onClick={() => setOpen(true)}
         >
-          Update
+          Upgrade available
         </button>
       ) : (
         <small>{footerStatus(data)}</small>

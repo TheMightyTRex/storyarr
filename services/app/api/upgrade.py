@@ -28,6 +28,12 @@ class BackupView(BaseModel):
     rows: dict[str, int]
 
 
+class WayBack(BaseModel):
+    title: str
+    database_changes: list[str]
+    rollback: str | None
+
+
 class UpgradeView(BaseModel):
     release: str
     # The installed Storyarr version, such as 0.4.0, for the wizard's title.
@@ -41,6 +47,8 @@ class UpgradeView(BaseModel):
     # Upgrades finish on their own: a backup is taken and new settings keep their defaults.
     automatic: bool
     automatic_from_environment: bool
+    # For Settings, Restore previous version: how to undo the installed release.
+    way_back: WayBack
 
 
 class RestoreInput(BaseModel):
@@ -72,12 +80,19 @@ async def view(db) -> UpgradeView:
         release=upgrades.CURRENT,
         version=installed_version(),
         acknowledged=acknowledged,
-        pending=acknowledged != upgrades.CURRENT and await _existing_install(db),
+        pending=acknowledged != upgrades.CURRENT
+        and upgrades.needs_wizard(acknowledged)
+        and await _existing_install(db),
         releases=upgrades.since(acknowledged),
         backups=upgrade_backups.listing(),
         restored_from=saved.get("restored_from"),
         automatic=bool(saved.get("automatic")) or upgrades.automatic_from_environment(),
         automatic_from_environment=upgrades.automatic_from_environment(),
+        way_back=WayBack(
+            title=upgrades.RELEASES[-1].title,
+            database_changes=upgrades.RELEASES[-1].database_changes,
+            rollback=upgrades.RELEASES[-1].rollback,
+        ),
     )
 
 
