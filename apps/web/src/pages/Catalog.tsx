@@ -21,7 +21,8 @@ export default function Catalog({ canEdit }: { canEdit: boolean }) {
   const client = useQueryClient();
   const view = useSavedView("saved");
   const change = (key: string, value: string) => {
-    const next = new URLSearchParams(params);
+    // The address as it is now, so two quick changes both stick.
+    const next = new URLSearchParams(window.location.search);
     if (value) next.set(key, value);
     else next.delete(key);
     next.delete("offset");

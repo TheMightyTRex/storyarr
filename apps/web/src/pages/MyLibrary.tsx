@@ -67,7 +67,9 @@ export default function MyLibrary({
   const state: AssetState = "any";
   const sort: AssetSort = params.get("sort") === "recent" ? "recent" : "title";
   function change(key: string, value: string) {
-    const next = new URLSearchParams(params);
+    // Start from the address as it is now, not as it was at the last render, so two quick changes
+    // (a format chip, then Sort) both stick.
+    const next = new URLSearchParams(window.location.search);
     if (value) next.set(key, value);
     else next.delete(key);
     if (key !== "offset") next.delete("offset");

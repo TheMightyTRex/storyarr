@@ -261,9 +261,7 @@ test("library appends books and changing format starts a fresh result set", asyn
   await books.locator(".infinite-scroll").scrollIntoViewIfNeeded();
   await expect(books.locator(".shelf-book")).toHaveCount(41);
   expect(offsets).toContain(40);
-  await page
-    .getByRole("combobox", { name: "Media", exact: true })
-    .selectOption("audio");
+  await page.getByRole("button", { name: "Audiobooks", exact: true }).click();
   await expect(books.locator(".shelf-book")).toHaveCount(1);
   await expect(
     page.getByRole("heading", { name: "Audio title 0" }),
