@@ -3,7 +3,13 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
+  max-width: 100%;
   margin: 0 0 20px;
+}
+.section-toolbar > *,
+.toolbar-filters-end {
+  min-width: 0;
 }
 .section-toolbar-head {
   display: flex;
@@ -23,11 +29,20 @@
   font-size: 0.9375rem;
 }
 .section-toolbar-filters,
-.section-toolbar-applied {
+.section-toolbar-applied,
+.toolbar-filters-main,
+.toolbar-filters-end {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+}
+.toolbar-filters-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.toolbar-filters-end {
+  margin-left: auto;
 }
 .section-toolbar-spacer {
   flex: 1 1 0;
@@ -115,14 +130,26 @@
   min-height: 36px;
 }
 @media (max-width: 720px) {
-  /* On phones the filters scroll sideways in one row, with Sort still in reach. */
+  /*
+   * On phones the search and filters scroll sideways in one row, and Sort and the end actions get a
+   * row of their own underneath, so they never scroll out of reach.
+   */
   .section-toolbar-filters {
+    flex-direction: column;
+    /* One column, so each row takes the toolbar's width and the filter row scrolls inside it. */
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+  .toolbar-filters-main {
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 4px;
   }
   .toolbar-search {
     flex: 0 0 220px;
+  }
+  .toolbar-filters-end {
+    margin-left: 0;
   }
   .section-toolbar-spacer {
     display: none;

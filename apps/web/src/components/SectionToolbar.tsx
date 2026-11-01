@@ -112,81 +112,87 @@ export default function SectionToolbar({
         role="group"
         aria-label="Filters"
       >
-        {search && (
-          <form
-            className="toolbar-search"
-            role="search"
-            onSubmit={(event) => {
-              event.preventDefault();
-              search.onSearch(
-                String(new FormData(event.currentTarget).get("q") || "").trim(),
-              );
-            }}
-          >
-            <Search size={16} aria-hidden="true" />
-            <input
-              key={search.value}
-              name="q"
-              type="search"
-              defaultValue={search.value}
-              maxLength={300}
-              placeholder={search.placeholder}
-              aria-label={search.label}
-            />
-            <button type="submit" className="sr-only">
-              {search.label}
-            </button>
-          </form>
-        )}
-        {chips.map((chip) => (
-          <button
-            key={chip.key}
-            type="button"
-            className="toolbar-chip"
-            aria-pressed={chip.pressed}
-            onClick={chip.onToggle}
-          >
-            {chip.label}
-            {chip.count != null && (
-              <span className="toolbar-chip-count">
-                {chip.count.toLocaleString("en-GB")}
-              </span>
-            )}
-          </button>
-        ))}
-        {menus.map((menu) => (
-          <MenuChip
-            key={menu.key}
-            label={menu.label}
-            value={menu.value}
-            options={menu.options}
-            onChange={menu.onChange}
-            set={menu.value !== menu.emptyValue}
-          />
-        ))}
-        <span className="section-toolbar-spacer" />
-        {sort && (
-          <>
-            <MenuChip
-              label="Sort"
-              value={sort.value}
-              options={sort.options}
-              onChange={sort.onChange}
-              set={false}
-            />
-            {sort.reverse && (
-              <button
-                type="button"
-                className="toolbar-chip"
-                aria-pressed={sort.reverse.pressed}
-                onClick={sort.reverse.onToggle}
-              >
-                <ArrowDownUp size={15} aria-hidden="true" /> Reverse order
+        <div className="toolbar-filters-main">
+          {search && (
+            <form
+              className="toolbar-search"
+              role="search"
+              onSubmit={(event) => {
+                event.preventDefault();
+                search.onSearch(
+                  String(
+                    new FormData(event.currentTarget).get("q") || "",
+                  ).trim(),
+                );
+              }}
+            >
+              <Search size={16} aria-hidden="true" />
+              <input
+                key={search.value}
+                name="q"
+                type="search"
+                defaultValue={search.value}
+                maxLength={300}
+                placeholder={search.placeholder}
+                aria-label={search.label}
+              />
+              <button type="submit" className="sr-only">
+                {search.label}
               </button>
-            )}
-          </>
-        )}
-        {end}
+            </form>
+          )}
+          {chips.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              className="toolbar-chip"
+              aria-pressed={chip.pressed}
+              onClick={chip.onToggle}
+            >
+              {chip.label}
+              {chip.count != null && (
+                <span className="toolbar-chip-count">
+                  {chip.count.toLocaleString("en-GB")}
+                </span>
+              )}
+            </button>
+          ))}
+          {menus.map((menu) => (
+            <MenuChip
+              key={menu.key}
+              label={menu.label}
+              value={menu.value}
+              options={menu.options}
+              onChange={menu.onChange}
+              set={menu.value !== menu.emptyValue}
+            />
+          ))}
+        </div>
+        {/* Sort and the end actions stay in reach: their own row on phones, the far end otherwise. */}
+        <div className="toolbar-filters-end">
+          {sort && (
+            <>
+              <MenuChip
+                label="Sort"
+                value={sort.value}
+                options={sort.options}
+                onChange={sort.onChange}
+                set={false}
+              />
+              {sort.reverse && (
+                <button
+                  type="button"
+                  className="toolbar-chip"
+                  aria-pressed={sort.reverse.pressed}
+                  onClick={sort.reverse.onToggle}
+                >
+                  <ArrowDownUp size={15} aria-hidden="true" /> Reverse order
+                </button>
+              )}
+            </>
+          )}
+          {end}
+        </div>
       </div>
       {applied.length > 0 && (
         <div className="section-toolbar-applied">

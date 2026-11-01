@@ -103,6 +103,15 @@ test("library browsing searches books and preserves filters through navigation",
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+  // On a phone, Sort and Save as default keep a row of their own, inside the screen.
+  for (const control of [
+    page.getByRole("combobox", { name: "Sort", exact: true }),
+    page.getByRole("button", { name: "Save as default" }),
+  ]) {
+    const box = await control.boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(390);
+  }
   await page.getByRole("button", { name: "Clear all" }).click();
   await expect(page).toHaveURL(/\/library$/);
   await expect(copies.locator(".shelf-book").first()).toBeVisible();
