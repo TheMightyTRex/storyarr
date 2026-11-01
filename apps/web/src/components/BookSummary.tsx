@@ -24,6 +24,7 @@ export default function BookSummary({
   close: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const panel = useRef<HTMLElement>(null);
   // Slide out from the right edge of the page, below the header.
   const [edges, setEdges] = useState<{ top: number }>();
   useLayoutEffect(() => {
@@ -54,9 +55,35 @@ export default function BookSummary({
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
     };
+    // A press outside the panel closes it. The covers toggle the panel themselves, and pop-ups
+    // opened from the panel (Get the ebook, menus) count as inside.
+    const onPointer = (event: PointerEvent) => {
+      const target = event.target as Element | null;
+      if (
+        !target ||
+        panel.current?.contains(target) ||
+        target.closest(
+          "[data-summary-trigger], dialog, [role='dialog'], [role='menu'], [role='listbox']",
+        )
+      )
+        return;
+      close();
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
   }, [work.id, close]);
+  const authorLink = (name: string) => {
+    const author = details.data?.authors?.find(
+      (item) => item.name.toLocaleLowerCase() === name.toLocaleLowerCase(),
+    );
+    return author
+      ? `/authors/hardcover/${author.external_id}`
+      : `/search?q=${encodeURIComponent(name)}`;
+  };
   const facts: [string, string][] = [];
   const published =
     details.data?.release_date?.slice(0, 4) || work.publication_year;
@@ -67,6 +94,7 @@ export default function BookSummary({
   if (details.data?.pages) facts.push(["Pages", String(details.data.pages)]);
   return (
     <aside
+      ref={panel}
       className="book-summary"
       aria-labelledby="book-summary-title"
       style={edges}
@@ -93,10 +121,27 @@ export default function BookSummary({
           <h2 id="book-summary-title" ref={heading} tabIndex={-1}>
             {work.title}
           </h2>
-          <p className="muted">{work.authors.join(", ") || "Author unknown"}</p>
+          <p className="muted">
+            {work.authors.length
+              ? work.authors.map((name, index) => (
+                  <span key={`${name}:${index}`}>
+                    {index > 0 ? ", " : ""}
+                    <Link to={authorLink(name)}>{name}</Link>
+                  </span>
+                ))
+              : "Author unknown"}
+          </p>
           {series.map((item) => (
             <p key={item.external_id} className="muted">
-              {item.name}
+              {hardcover ? (
+                <Link
+                  to={`/series/hardcover/${encodeURIComponent(item.external_id)}`}
+                >
+                  {item.name}
+                </Link>
+              ) : (
+                item.name
+              )}
               {item.position ? ` · Book ${item.position}` : ""}
             </p>
           ))}

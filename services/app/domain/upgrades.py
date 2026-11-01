@@ -199,6 +199,8 @@ RELEASES = [
         id="2026.11.01.2",
         title="Storyarr everywhere",
         highlights=[
+            "In the My library summary, the author and series open their pages, and selecting "
+            "anywhere outside the summary closes it.",
             "Notifications are titled Storyarr notification, including the ones you already have.",
             "The sample compose files, the default database name and user, and the Docker guide "
             "use storyarr. Compose files moved from Dewarr set DB_NAME and DB_USER, so they need "

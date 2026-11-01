@@ -64,6 +64,22 @@ test("one library card shows both formats and uses the mixed-view cover preferen
         known_works: { ebook: work, audio: work },
       };
     }
+    if (url.pathname === `/api/metadata/works/${work.id}`)
+      data = {
+        sources: [
+          {
+            provider: "hardcover",
+            external_id: "hc-giver",
+            series: [
+              { external_id: "hc-series", name: "Kentucky", position: 1 },
+            ],
+          },
+        ],
+      };
+    if (
+      url.pathname === "/api/metadata/books/hardcover/hc-giver/reader-details"
+    )
+      data = { authors: [{ external_id: "hc-moyes", name: "Jojo Moyes" }] };
     if (
       new URL(route.request().url()).pathname.includes(
         "/acquisition/preferences/",
@@ -94,6 +110,25 @@ test("one library card shows both formats and uses the mixed-view cover preferen
   await page.screenshot({
     path: testInfo.outputPath("library-summary.png"),
   });
+  // The author and series open their own pages.
+  await expect(
+    summary.getByRole("link", { name: "Jojo Moyes" }),
+  ).toHaveAttribute("href", "/authors/hardcover/hc-moyes");
+  await expect(summary.getByRole("link", { name: "Kentucky" })).toHaveAttribute(
+    "href",
+    "/series/hardcover/hc-series",
+  );
+  // A press outside the panel closes it; the cover reopens it, and the X still closes it.
+  await page.getByRole("heading", { name: "Your bookshelf" }).click();
+  await expect(summary).toHaveCount(0);
+  await card.click();
+  await expect(summary).toBeVisible();
+  await card.click();
+  await expect(summary).toHaveCount(0);
+  await card.click();
+  await summary.getByRole("button", { name: "Close summary" }).click();
+  await expect(summary).toHaveCount(0);
+  await card.click();
   await page.keyboard.press("Escape");
   await expect(summary).toHaveCount(0);
   await expect(

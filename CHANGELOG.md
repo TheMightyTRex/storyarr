@@ -12,6 +12,8 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
   and the package, logger, sample compose overrides, CI images and the Docker and development guides use
   Storyarr names. The `x-dewarr-proxy-token` header and the `dewarr-` download folder prefix keep their names.
 
+- **My library summary:** the author and series names open their pages, and a click outside the panel closes it
+  (the close button and Escape still work).
 - `compose.yaml` names the containers `storyarr` and `storyarr-postgres`, matching the `docker run` guide.
 - `scripts/storyarr_rename.py --apply` also restores the lowercase names Storyarr changed, after a Dewarr merge.
 

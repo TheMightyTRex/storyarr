@@ -284,6 +284,7 @@ function LibraryBooks({
                   className="shelf-book"
                   aria-pressed={summary?.id === work.id}
                   aria-label={`${work.title}, show summary`}
+                  data-summary-trigger
                   onClick={() =>
                     setSummary(summary?.id === work.id ? null : work)
                   }
