@@ -99,8 +99,8 @@ export default function BookSummary({
       aria-labelledby="book-summary-title"
       style={edges}
     >
-      <header className="book-summary-top">
-        <span>Summary</span>
+      <header className="side-panel-header">
+        <span className="side-panel-title">Summary</span>
         <button
           type="button"
           className="icon-button"

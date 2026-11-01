@@ -61,8 +61,14 @@ test("Display and accessibility settings change the theme and reading aids, and 
 
   await dialog.getByRole("radio", { name: "150%" }).check();
   await expect(html).toHaveCSS("font-size", "24px");
+  // Every page uses the low-vision typeface, so there is no switch for it.
+  await expect(
+    dialog.getByRole("switch", { name: /Low-vision font/ }),
+  ).toHaveCount(0);
+  expect(
+    await page.evaluate(() => getComputedStyle(document.body).fontFamily),
+  ).toContain("Atkinson Hyperlegible Next");
   for (const name of [
-    "Low-vision font",
     "High contrast",
     "Reduce motion",
     "Underline links",
@@ -70,7 +76,7 @@ test("Display and accessibility settings change the theme and reading aids, and 
   ])
     await dialog.getByRole("switch", { name: new RegExp(name) }).check();
   await expect(html).toHaveClass(
-    /pref-readable.*pref-hc.*pref-calm.*pref-underline.*pref-spacing/,
+    /pref-hc.*pref-calm.*pref-underline.*pref-spacing/,
   );
   await expect(dialog.getByRole("status")).toHaveText(
     "Wider text spacing activated.",

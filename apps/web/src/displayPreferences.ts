@@ -7,7 +7,6 @@ export type DisplayPreferences = {
   layout: "classic" | "shelf";
   theme: "light" | "dark" | "auto";
   textSize: 100 | 125 | 150 | 175;
-  readableFont: boolean;
   highContrast: boolean;
   reduceMotion: boolean;
   underlineLinks: boolean;
@@ -20,7 +19,6 @@ export const displayDefaults: DisplayPreferences = {
   layout: "classic",
   theme: "light",
   textSize: 100,
-  readableFont: false,
   highContrast: false,
   reduceMotion: false,
   underlineLinks: false,
@@ -30,7 +28,6 @@ export const displayDefaults: DisplayPreferences = {
 export const accessibilityKeys = [
   "theme",
   "textSize",
-  "readableFont",
   "highContrast",
   "reduceMotion",
   "underlineLinks",
@@ -43,7 +40,6 @@ const allowed: { [K in keyof DisplayPreferences]: readonly unknown[] } = {
   layout: ["classic", "shelf"],
   theme: ["light", "dark", "auto"],
   textSize: [100, 125, 150, 175],
-  readableFont: [true, false],
   highContrast: [true, false],
   reduceMotion: [true, false],
   underlineLinks: [true, false],
@@ -65,21 +61,15 @@ function read() {
   applyDisplay(snapshot);
 }
 
-let fontLoaded = false;
 // Puts the theme and accessibility choices on <html>, where the stylesheets read them.
 export function applyDisplay(value: DisplayPreferences) {
   const root = document.documentElement;
   root.dataset.theme = value.theme;
   root.style.fontSize = value.textSize === 100 ? "" : `${value.textSize}%`;
-  root.classList.toggle("pref-readable", value.readableFont);
   root.classList.toggle("pref-hc", value.highContrast);
   root.classList.toggle("pref-calm", value.reduceMotion);
   root.classList.toggle("pref-underline", value.underlineLinks);
   root.classList.toggle("pref-spacing", value.wideSpacing);
-  if (value.readableFont && !fontLoaded) {
-    fontLoaded = true;
-    void import("@fontsource-variable/atkinson-hyperlegible-next");
-  }
 }
 read();
 const listeners = new Set<() => void>();

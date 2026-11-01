@@ -314,24 +314,27 @@ function DayPanel({
       aria-modal="false"
       aria-labelledby="release-day-heading"
     >
-      <header className="release-drawer-heading">
-        <div>
-          <h2 id="release-day-heading" tabIndex={-1} ref={heading}>
-            {title}
-          </h2>
-          <p className="muted">
-            {entries.length === 1 ? "1 release" : `${entries.length} releases`}
-          </p>
-        </div>
+      <header className="side-panel-header">
+        <h2
+          id="release-day-heading"
+          className="side-panel-title"
+          tabIndex={-1}
+          ref={heading}
+        >
+          {title}
+        </h2>
         <button
           type="button"
           className="icon-button"
           aria-label="Close day"
           onClick={onClose}
         >
-          <X size={16} aria-hidden="true" />
+          <X size={18} aria-hidden="true" />
         </button>
       </header>
+      <p className="muted release-drawer-count">
+        {entries.length === 1 ? "1 release" : `${entries.length} releases`}
+      </p>
       {canEdit && upcoming && entries.length > 0 && (
         <p className="muted release-drawer-note">
           Request on release day waits until the book is out, then starts

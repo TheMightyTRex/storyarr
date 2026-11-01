@@ -331,7 +331,7 @@
 .library-custom-path input {
   width: 100%;
   min-width: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font);
   font-size: 0.75rem;
 }
 .library-custom-path > button {

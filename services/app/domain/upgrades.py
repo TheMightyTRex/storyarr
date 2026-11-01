@@ -240,6 +240,9 @@ RELEASES = [
             "your configuration or database. Every upgrade still saves a settings backup first.",
             "The way back is in Settings, System, Upgrades and backups, as Restore previous "
             "version.",
+            "One typeface on every page: Atkinson Hyperlegible Next, designed for readers with low "
+            "vision. The Low-vision font switch is gone, because it is always on.",
+            "Every slide-out panel has the same header: its name in bold and the close button.",
         ],
     ),
 ]

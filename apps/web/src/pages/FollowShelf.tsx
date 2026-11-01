@@ -366,8 +366,8 @@ function BookDrawer({
     : "";
   return (
     <aside className="book-drawer" aria-labelledby="book-drawer-title">
-      <div className="book-drawer-top">
-        <p className="wall-eyebrow">Book</p>
+      <header className="side-panel-header">
+        <span className="side-panel-title">Book</span>
         <button
           type="button"
           className="icon-button"
@@ -376,7 +376,7 @@ function BookDrawer({
         >
           <X size={18} aria-hidden="true" />
         </button>
-      </div>
+      </header>
       <div className="book-drawer-cover">
         <BookCover title={book.title} cover={book.cover_url} actions={false} />
       </div>

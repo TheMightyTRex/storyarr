@@ -564,7 +564,7 @@ button.help-button:hover {
   display: flex;
   gap: 7px;
   align-items: flex-start;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font);
   font-size: 0.6875rem;
   line-height: 1.55;
   padding-block: 5px;
@@ -606,7 +606,7 @@ button.help-button:hover {
   margin: 24px 0;
 }
 .onboarding-intro h1 {
-  font-family: inherit;
+  font-family: var(--font);
   font-weight: 650;
   font-size: 1.75rem;
   margin: 0 0 6px;
@@ -1389,9 +1389,7 @@ button.help-button:hover {
   border-radius: 0;
   background: var(--surface);
   color: var(--accent);
-  font:
-    1.625rem Georgia,
-    serif;
+  font: 1.625rem var(--font);
 }
 .reading-account-title {
   display: grid;
@@ -1981,7 +1979,7 @@ button.help-button:hover {
   margin: 10px 0;
 }
 .settings-section-body .naming-customize input {
-  font-family: ui-monospace, monospace;
+  font-family: var(--font);
   font-size: 0.75rem;
 }
 .settings-section-body .settings-empty {
@@ -2556,7 +2554,7 @@ button.help-button:hover {
   color: var(--c-text-indigo-87);
 }
 .naming-choice-example {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font);
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.4;
@@ -2740,7 +2738,7 @@ button.help-button:hover {
 .naming-tree-section .folder-tree a {
   margin-left: auto;
   white-space: nowrap;
-  font-family: inherit;
+  font-family: var(--font);
 }
 .settings-section-body .naming-builder .settings-form-footer {
   margin-top: 12px;

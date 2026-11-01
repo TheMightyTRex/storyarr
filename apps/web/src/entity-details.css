@@ -10,7 +10,7 @@
   min-width: 0;
 }
 .entity-hero h1 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font);
   font-size: clamp(1.875rem, 3.6vw, 3rem);
   line-height: 1.12;
   font-weight: 500;
@@ -148,7 +148,7 @@
   color: var(--muted);
 }
 .series-position span {
-  font-family: Georgia, serif;
+  font-family: var(--font);
   font-size: 1.6875rem;
   color: var(--accent);
 }

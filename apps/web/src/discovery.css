@@ -76,7 +76,7 @@
   margin: 0 0 8px;
 }
 .explore-spotlight h2 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font);
   font-size: clamp(1.75rem, 3.2vw, 2.6875rem);
   font-weight: 400;
   line-height: 1.13;
@@ -458,7 +458,7 @@
   gap: 26px;
 }
 .explore-book-preview h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font);
   font-size: 1.6875rem;
   line-height: 1.2;
   margin: 10px 0;
@@ -1261,23 +1261,8 @@ button.release-day[aria-expanded="true"] {
   box-shadow: -24px 0 48px var(--c-shadow-grey-0-a53);
   overflow: auto;
 }
-.release-drawer-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-.release-drawer-heading h2 {
+.release-drawer-count {
   margin: 0;
-  font-size: 1.25rem;
-  line-height: 1.25;
-  letter-spacing: -0.3px;
-}
-.release-drawer-heading h2:focus {
-  outline: none;
-}
-.release-drawer-heading p {
-  margin: 4px 0 0;
 }
 .release-drawer-note {
   margin: -8px 0 0;

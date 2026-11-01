@@ -655,9 +655,7 @@ button.list-choice-option[aria-checked="true"]:hover:not(:disabled) {
   border-radius: 0;
   background: var(--c-bg-slate-21);
   color: var(--accent);
-  font:
-    1.25rem Georgia,
-    serif;
+  font: 1.25rem var(--font);
 }
 .list-choice-check {
   flex: 0 0 auto;

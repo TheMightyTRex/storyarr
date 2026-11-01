@@ -12,6 +12,10 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
   configuration or database changes. Other upgrades finish on their own after the settings backup.
 - **Restore previous version** in Settings, System, Upgrades and backups replaces the wizard's way-back step:
   restore your settings, undo database changes, then start the previous image.
+- **One typeface:** Atkinson Hyperlegible Next on every page, replacing the system, serif and monospace fonts.
+  The Display panel's Low-vision font switch is removed.
+- **Slide-out panels** (My library summary, the bookshelf drawer, the calendar day) share one header: the name in
+  bold on a white bar with a grey line, and the close button.
 
 ## v0.4.7 (1 November 2026)
 

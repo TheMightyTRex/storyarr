@@ -15,20 +15,10 @@ const themes: { id: DisplayPreferences["theme"]; label: string }[] = [
 ];
 const sizes: DisplayPreferences["textSize"][] = [100, 125, 150, 175];
 const switches: {
-  id:
-    | "readableFont"
-    | "highContrast"
-    | "reduceMotion"
-    | "underlineLinks"
-    | "wideSpacing";
+  id: "highContrast" | "reduceMotion" | "underlineLinks" | "wideSpacing";
   label: string;
   hint: string;
 }[] = [
-  {
-    id: "readableFont",
-    label: "Low-vision font",
-    hint: "Uses Atkinson Hyperlegible Next, a typeface designed for readers with low vision.",
-  },
   {
     id: "highContrast",
     label: "High contrast",

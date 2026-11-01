@@ -124,7 +124,7 @@
   min-width: 0;
 }
 .download-review-identity h2 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font);
   font-size: clamp(1.5625rem, 3vw, 2.125rem);
   line-height: 1.2;
   margin: 8px 0 12px;

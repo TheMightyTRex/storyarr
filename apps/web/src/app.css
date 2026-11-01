@@ -18,6 +18,7 @@
 @import "./header.css" layer(controls);
 @import "./wall.css" layer(controls);
 @import "./upgrade.css" layer(controls);
+@import "./side-panel.css" layer(controls);
 
 .brand img {
   border-radius: 0;

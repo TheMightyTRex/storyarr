@@ -22,19 +22,6 @@ body {
   outline-offset: 2px;
 }
 
-:root.pref-readable body,
-:root.pref-readable button,
-:root.pref-readable input,
-:root.pref-readable select,
-:root.pref-readable textarea {
-  font-family:
-    "Atkinson Hyperlegible Next Variable",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-}
-
 :root.pref-underline .main-content a:not(:has(img, svg)),
 :root.pref-underline .main-content :is(p, li, dd, td, small) a {
   text-decoration: underline;

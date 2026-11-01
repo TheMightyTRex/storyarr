@@ -171,15 +171,6 @@
   border-radius: 0;
   background: var(--surface);
 }
-.book-drawer-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.book-drawer-top .icon-button {
-  min-width: 44px;
-  min-height: 44px;
-}
 .book-drawer-cover {
   width: 100%;
   max-width: 220px;

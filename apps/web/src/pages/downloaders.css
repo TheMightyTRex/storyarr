@@ -154,7 +154,7 @@
 .downloader-map-row input {
   width: 100%;
   min-width: 0;
-  font-family: monospace;
+  font-family: var(--font);
 }
 .downloader-map-arrow {
   align-self: end;

@@ -65,15 +65,8 @@
     animation: none;
   }
 }
-.book-summary-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--muted);
-  font-size: 0.8125rem;
-  margin-bottom: 12px;
-}
 .book-summary-head {
+  margin-top: 16px;
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr);
   gap: 14px;
