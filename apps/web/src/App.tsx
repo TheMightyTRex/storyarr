@@ -34,6 +34,7 @@ import { useLibraryReviewCount } from "./hooks/useLibraryReviewCount";
 import { canManageOwnRequests } from "./permissions";
 import { useDisplayPreferences } from "./displayPreferences";
 import { LibraryTabs, ShelfRail } from "./components/ShelfNavigation";
+import PhoneMenu from "./components/PhoneMenu";
 import { DisplayButton } from "./components/DisplayPanel";
 import { HeaderSubmenuSlot } from "./components/HeaderSubmenu";
 import LoadingBar from "./components/LoadingBar";
@@ -551,6 +552,16 @@ function Shell({ auth }: { auth: Auth }) {
         <div className="workspace">
           <div className="topbar-sticky">
             <header className="topbar">
+              {shelf && (
+                <PhoneMenu
+                  name={auth.user.display_name}
+                  role={auth.user.role}
+                  permissions={permissions}
+                  reviewing={reviewing}
+                  signOut={() => logout.mutate()}
+                  signingOut={logout.isPending}
+                />
+              )}
               <form className="search" role="search" onSubmit={searchSubmit}>
                 <Search size={18} aria-hidden="true" />
                 <input

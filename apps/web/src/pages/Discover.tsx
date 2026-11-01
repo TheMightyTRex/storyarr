@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import HeaderSubmenu from "../components/HeaderSubmenu";
+import { discoverViews } from "../navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
@@ -59,15 +60,7 @@ import {
 } from "../components/DiscoveryCollections";
 import ReleaseCalendar, { UpcomingShelf } from "./ReleaseCalendar";
 
-const views = [
-  ["home", "For you"],
-  ["series", "Your series"],
-  ["browse", "Browse"],
-  ["calendar", "Calendar"],
-  ["collections", "Collections"],
-  ["awards", "Awards"],
-  ["yours", "Your lists"],
-] as const;
+const views = discoverViews;
 const viewIcons: Record<(typeof views)[number][0], LucideIcon> = {
   home: Sparkles,
   series: Library,

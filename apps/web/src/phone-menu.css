@@ -1,0 +1,175 @@
+/* The phone main menu: a menu button in the header and a drawer from the left (option A). */
+.phone-menu-button {
+  display: none;
+  position: relative;
+  flex: 0 0 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.phone-menu-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #d93025;
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.phone-menu-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+.phone-menu-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 14, 24, 0.5);
+}
+.phone-menu {
+  --panel-pad-top: 0px;
+  --panel-pad-x: 16px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(340px, 86vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  box-shadow: 8px 0 24px rgba(0, 0, 0, 0.25);
+  animation: phone-menu-in 0.2s ease-out;
+}
+@keyframes phone-menu-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+.phone-menu .side-panel-header {
+  margin: 0;
+}
+.phone-menu-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.phone-menu-sections {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.phone-menu-section {
+  border-bottom: 1px solid var(--line);
+}
+.phone-menu-section-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+}
+.phone-menu-section[data-current] > .phone-menu-section-button {
+  color: var(--accent);
+}
+.phone-menu-chevron {
+  margin-left: auto;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+.phone-menu-section-button[aria-expanded="true"] .phone-menu-chevron {
+  transform: rotate(90deg);
+}
+.phone-menu-section ul {
+  margin: 0;
+  padding: 0 0 8px;
+  list-style: none;
+}
+.phone-menu-section a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px 0 48px;
+  color: inherit;
+  text-decoration: none;
+}
+.phone-menu-section a[aria-current="page"] {
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--c-bg-indigo-31, rgba(47, 62, 143, 0.08));
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.phone-menu-count {
+  margin-left: auto;
+  padding: 0 6px;
+  background: var(--accent);
+  color: var(--c-text-white-100, #fff);
+  font-size: 0.75rem;
+}
+.phone-menu-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+.phone-menu-account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.phone-menu-account > span:not(.avatar) {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.phone-menu-account small {
+  color: var(--muted);
+}
+.phone-menu-sign-out {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0 12px;
+}
+.phone-menu-footer .application-release {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .phone-menu {
+    animation: none;
+  }
+  .phone-menu-chevron {
+    transition: none;
+  }
+}
+@media (max-width: 720px) {
+  /* The menu button replaces the bottom bar, and the drawer holds the sub-menus. */
+  [data-layout="shelf"] .phone-menu-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  [data-layout="shelf"] .shelf-rail,
+  [data-layout="shelf"] .header-submenu {
+    display: none;
+  }
+  [data-layout="shelf"].app-shell {
+    --submenu-height: 0px;
+  }
+  [data-layout="shelf"] .workspace {
+    padding-bottom: 0;
+  }
+}

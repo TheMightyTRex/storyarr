@@ -9,6 +9,10 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Library tabs, one toolbar (design D):** In my libraries, Authors, Series and All saved titles share one section
   header and toolbar: the tab's heading and count, the view switch, search, format chips, the Library filter,
   Sort (with Reverse order on Authors and Series), then a row of applied filters with Clear all and how many show.
+- **Phone menu:** on phones the bottom bar is replaced by a menu button in the header (with the red dot when an
+  upgrade is available). It opens a drawer from the left with Library, Discover, Activity and Settings, each
+  folding open to its sub-menu, plus your account, Sign out and the version. The header sub-menu row is hidden on
+  phones, because the drawer holds it.
 - **Save as default:** each Library tab can save its filters and order as the person's default, stored with their
   account, not the browser. Settings, General, Saved views lists them and resets them to default.
 

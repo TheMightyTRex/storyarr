@@ -1,64 +1,10 @@
 import { Suspense, useEffect, useRef, useState } from "react";
-import {
-  BookMarked,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Library,
-  ScrollText,
-  SlidersHorizontal,
-  UserRound,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { Loading } from "../components";
 import { settingsSections } from "./SettingsSections";
 import HeaderSubmenu from "../components/HeaderSubmenu";
-
-// Six settings groups. Each lists its sections in order; sections a role cannot see are left out.
-const groups: {
-  id: string;
-  title: string;
-  icon: LucideIcon;
-  sections: string[];
-}[] = [
-  {
-    id: "general",
-    title: "General",
-    icon: SlidersHorizontal,
-    sections: ["display", "notifications"],
-  },
-  {
-    id: "accounts",
-    title: "Accounts",
-    icon: UserRound,
-    sections: ["sign-in", "accounts"],
-  },
-  {
-    id: "reading",
-    title: "Sources",
-    icon: BookMarked,
-    sections: ["reading", "catalog"],
-  },
-  {
-    id: "library",
-    title: "Library",
-    icon: Library,
-    sections: ["libraries", "naming"],
-  },
-  {
-    id: "downloads",
-    title: "Downloads",
-    icon: Download,
-    sections: ["sources", "downloaders", "preferences", "automation"],
-  },
-  {
-    id: "system",
-    title: "System",
-    icon: ScrollText,
-    sections: ["logs", "background-work", "upgrades"],
-  },
-];
+import { settingsGroups } from "../navigation";
 
 export default function Settings({
   role,
@@ -74,7 +20,7 @@ export default function Settings({
   const selected =
     sections.find((section) => section.id === location.hash.slice(1)) ||
     sections[0];
-  const visibleGroups = groups
+  const visibleGroups = settingsGroups
     .map((group) => ({
       ...group,
       items: group.sections
