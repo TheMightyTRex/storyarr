@@ -3,7 +3,7 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
-## v0.4.7 (unreleased)
+## v0.4.7 (1 November 2026)
 
 ### Fixed
 - **Soulseek (slskd) connection with a read-write API key** ([#1](https://github.com/TheMightyTRex/storyarr/issues/1)):

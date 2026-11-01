@@ -215,6 +215,15 @@ RELEASES = [
             "the Storyarr container first. Only the notification title changes back."
         ),
     ),
+    UpgradeRelease(
+        id="2026.11.01.3",
+        title="Soulseek with an administrator key",
+        highlights=[
+            "Connecting slskd with a read-write API key now explains what to change: slskd only "
+            "shares its download folder with an administrator key. Give the key the administrator "
+            "role in slskd, then test the connection again.",
+        ],
+    ),
 ]
 CURRENT = RELEASES[-1].id
 

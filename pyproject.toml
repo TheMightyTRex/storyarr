@@ -1,6 +1,6 @@
 [project]
 name = "storyarr"
-version = "0.4.6"
+version = "0.4.7"
 description = "Self-hosted book discovery, curation and acquisition"
 requires-python = ">=3.13,<3.14"
 license = "MIT"
