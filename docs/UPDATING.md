@@ -6,6 +6,18 @@
   note at the bottom of the menu says so, and links to the release notes.
 - **On GitHub:** select **Watch → Custom → Releases** on the repository to get an email for each release.
 
+## Upgrading from the release notes
+
+When a newer version is out, the version number in the menu has a red dot and **Upgrade available**. Select it
+to open the release notes. They say which version you have and which is available, show **How to upgrade** with
+the commands to copy, and link to every earlier release in **Settings → System → Upgrades and backups →
+Releases**.
+
+Storyarr runs in a container, and a container cannot replace its own image, so the upgrade itself happens outside
+Storyarr. Other *arr apps work the same way in Docker. If you have a page that upgrades your containers, such as
+a server dashboard, set `BOOK_UPGRADE_URL` to its address and the release notes show **Upgrade now**, which
+opens it.
+
 ## Updating
 
 1. Back up the PostgreSQL database and the `config` folder. [Backups](DOCKER.md#backups) shows how.

@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     web_dist: Path = Path("apps/web/dist")
     build_version: str = ""
     release_repository: str = ""
+    # An administrator's own page that upgrades this install, such as a server dashboard. Shown as
+    # "Upgrade now" in the release notes when a newer version is out.
+    upgrade_url: str = ""
     recovery_mode: bool = False
     download_dispatch_enabled: bool = True
     db_pool_size: int = 5
@@ -116,6 +119,19 @@ class Settings(BaseSettings):
 
         if value and not re.fullmatch(r"[A-Za-z0-9_-]+/[A-Za-z0-9_.-]+", value):
             raise ValueError("Use a GitHub owner/repository name")
+        return value
+
+    @field_validator("upgrade_url")
+    @classmethod
+    def validate_upgrade_url(cls, value: str) -> str:
+        from urllib.parse import urlsplit
+
+        value = value.strip()
+        parts = urlsplit(value)
+        if value and (
+            parts.scheme not in {"http", "https"} or not parts.hostname or parts.username
+        ):
+            raise ValueError("Use an http or https address without credentials")
         return value
 
     @field_validator("public_url", "plex_api_origin", "plex_auth_origin")

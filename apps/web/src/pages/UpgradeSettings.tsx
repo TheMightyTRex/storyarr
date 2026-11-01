@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import SettingsGroup from "../components/SettingsGroup";
+import { ReleaseList } from "../components/ApplicationRelease";
 import UpgradeBackups, {
   AutomaticUpgrades,
   useUpgrade,
@@ -11,6 +12,13 @@ export default function UpgradeSettings() {
   const version = data ? `v${data.version}` : "this version";
   return (
     <>
+      <SettingsGroup
+        id="releases"
+        title="Releases"
+        description="Every Storyarr release and its notes, newest first."
+      >
+        <ReleaseList />
+      </SettingsGroup>
       <SettingsGroup
         id="restore-previous-version"
         title="Restore previous version"

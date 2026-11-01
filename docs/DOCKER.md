@@ -17,6 +17,7 @@ Edit these values directly in Compose or pass them with `docker run -e`.
 | `DB_NAME` | `storyarr` | Database name. |
 | `DB_USER` | `storyarr` | Database user. |
 | `DB_PASSWORD` | Required | The same password configured for PostgreSQL. |
+| `BOOK_UPGRADE_URL` | none | Optional. The address of your own page that upgrades Storyarr, such as a server dashboard. When a newer version is out, the release notes show **Upgrade now**, which opens it. Storyarr cannot upgrade itself from inside its container. |
 | `BOOK_DOWNLOAD_DISPATCH_ENABLED` | `true` | Allow downloads after configuring clients, library routes, and policies. Set to `false` to disable downloads server-wide. |
 
 To use another external port, change `8000:8000` to, for example, `8085:8000`, then set `PUBLIC_URL=http://your-server:8085`.

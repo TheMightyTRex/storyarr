@@ -4320,6 +4320,120 @@ img.detail-cover {
   color: var(--c-text-amber-77);
   font-weight: 650;
 }
+/* Where you stand on one line, with View on GitHub at its end. */
+.application-release-history .release-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.application-release-history .release-status p {
+  margin: 0;
+  font-weight: 600;
+}
+.release-note-date {
+  margin-left: 10px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+.application-release-history .how-to-upgrade {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.application-release-history .how-to-upgrade h2 {
+  margin: 0 0 8px;
+}
+.application-release-history .how-to-upgrade ol {
+  margin: 8px 0;
+  padding-left: 22px;
+}
+.application-release-history .how-to-upgrade li {
+  margin: 6px 0;
+}
+.application-release-history .how-to-upgrade pre {
+  margin: 6px 0;
+  padding: 8px 10px;
+  overflow-x: auto;
+  background: var(--c-bg-indigo-27, var(--surface));
+  border: 1px solid var(--line);
+}
+.application-release-history .how-to-upgrade ol {
+  list-style: decimal;
+}
+.how-to-upgrade .button-link.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--c-text-white-100, #fff);
+  font-weight: 600;
+}
+/* Notes inside a Settings fold read like the release notes window. */
+.release-list .release-notes ul,
+.release-list .release-notes ol {
+  margin: 8px 0;
+  padding-left: 22px;
+}
+.release-list .release-notes ul {
+  list-style: disc;
+}
+.release-list .release-notes ol {
+  list-style: decimal;
+}
+.release-list .release-notes h3,
+.release-list .release-notes h4,
+.release-list .release-notes h5 {
+  margin: 14px 0 4px;
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+.release-fold > a {
+  display: inline-block;
+  font-size: 0.875rem;
+  text-decoration: underline;
+}
+/* Settings: every release in a fold; the installed one starts open. */
+.release-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+}
+.release-fold {
+  border-bottom: 1px solid var(--line);
+}
+.release-fold > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 4px;
+  cursor: pointer;
+}
+.release-fold-version {
+  font-weight: 700;
+}
+.release-fold .release-note-date {
+  margin-left: 0;
+}
+.release-tag {
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.release-tag-new {
+  border-color: #d93025;
+  color: #b3261e;
+}
+.release-fold > :not(summary) {
+  margin: 0 4px 12px;
+}
+.release-list .release-notes p,
+.release-list .release-notes li,
 .application-release-history .release-notes p,
 .application-release-history .release-notes li {
   margin: 8px 0;

@@ -20112,6 +20112,17 @@
           "status": {
             "type": "string",
             "title": "Status"
+          },
+          "upgrade_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upgrade Url"
           }
         },
         "type": "object",

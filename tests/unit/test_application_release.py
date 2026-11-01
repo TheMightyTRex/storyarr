@@ -143,3 +143,14 @@ def test_invalid_or_unstable_release(monkeypatch, payload):
         lambda url, **kwargs: httpx.Response(200, json=payload, request=httpx.Request("GET", url)),
     )
     assert not release.application_release().update_available
+
+
+def test_an_upgrade_page_is_offered_when_configured(monkeypatch):
+    from app.config import Settings
+
+    assert Settings(upgrade_url="http://192.168.1.3:8090/#updates").upgrade_url == (
+        "http://192.168.1.3:8090/#updates"
+    )
+    for bad in ("javascript:alert(1)", "ftp://host/x", "http://user:pass@host/"):
+        with pytest.raises(ValueError):
+            Settings(upgrade_url=bad)

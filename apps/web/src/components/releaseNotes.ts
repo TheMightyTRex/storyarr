@@ -139,7 +139,8 @@ export function releaseDate(value: string | null) {
   if (!value) return null;
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString(undefined, {
+  // British style everywhere, such as 1 Nov 2026, whatever the browser's language.
+  return date.toLocaleDateString("en-GB", {
     year: "numeric",
     month: "short",
     day: "numeric",

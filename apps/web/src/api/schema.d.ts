@@ -6347,6 +6347,8 @@ export interface components {
       update_available: boolean;
       /** Status */
       status: string;
+      /** Upgrade Url */
+      upgrade_url?: string | null;
     };
     /** ApplicationReleaseHistory */
     ApplicationReleaseHistory: {

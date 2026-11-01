@@ -28,6 +28,8 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
           latest_version: state === "update" ? "v1.10.0" : "v1.9.0",
           release_url: "https://github.com/example/books/releases/tag/v1.10.0",
           update_available: state === "update",
+          upgrade_url:
+            state === "update" ? "http://dashboard.test/#updates" : null,
           status:
             state === "offline"
               ? "unavailable"
@@ -95,18 +97,38 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
         .getByRole("button", { name: "Upgrade available", exact: true })
         .click();
       const notes = page.getByRole("dialog", { name: "Release notes" });
-      await expect(notes.getByText("v1.10.0 is available.")).toBeVisible();
+      // One line says where you stand, with View on GitHub at its end.
+      await expect(
+        notes.getByText("v1.10.0 is available. You have v1.9.0."),
+      ).toBeVisible();
+      // How to upgrade: the administrator's upgrade page, then the steps.
+      await expect(
+        notes.getByRole("heading", { name: "How to upgrade to v1.10.0" }),
+      ).toBeVisible();
+      await expect(
+        notes.getByRole("link", { name: "Upgrade now" }),
+      ).toHaveAttribute("href", "http://dashboard.test/#updates");
+      await expect(
+        notes.getByRole("button", { name: "Copy commands" }),
+      ).toBeVisible();
+      // The release heading is its version and date, not the name repeated.
+      await expect(
+        notes.getByRole("heading", { name: /^v1\.10\.0/ }),
+      ).toBeVisible();
       await expect(
         notes.getByRole("heading", { name: "Storyarr v1.10.0" }),
-      ).toBeVisible();
+      ).toHaveCount(0);
       await expect(
         notes.getByRole("heading", { name: "Features" }),
       ).toBeVisible();
       await expect(notes.getByText("Reading lists")).toBeVisible();
+      // Earlier releases are in Settings now.
+      await expect(notes.getByText("Earlier fixes.")).toHaveCount(0);
       await expect(
-        notes.getByRole("heading", { name: "Earlier releases" }),
-      ).toBeVisible();
-      await expect(notes.getByText("Earlier fixes.")).toBeVisible();
+        notes.getByRole("link", {
+          name: "Settings, System, Upgrades and backups",
+        }),
+      ).toHaveAttribute("href", "/settings#upgrades");
       await expect(
         notes.getByRole("link", { name: "View on GitHub" }).first(),
       ).toHaveAttribute(
@@ -123,10 +145,13 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
       await footer.getByRole("button", { name: "v1.9.0", exact: true }).click();
       const notes = page.getByRole("dialog", { name: "Release notes" });
       await expect(
-        notes.getByText("This installation is up to date."),
+        notes.getByText("You have v1.9.0, the latest version."),
       ).toBeVisible();
       await expect(
-        notes.getByRole("heading", { name: "Storyarr v1.9.0" }),
+        notes.getByRole("heading", { name: "How to upgrade", exact: false }),
+      ).toHaveCount(0);
+      await expect(
+        notes.getByRole("heading", { name: /^v1\.9\.0/ }),
       ).toBeVisible();
       await expect(notes.getByText("Current release notes.")).toBeVisible();
       await notes.getByRole("button", { name: "Close release notes" }).click();

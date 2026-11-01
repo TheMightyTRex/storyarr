@@ -54,9 +54,13 @@ test("release notes read left to right in the Shelf layout, without a repeated t
   await page.goto("/library");
   await page.locator('button[title="Show release notes"]').click();
   const dialog = page.getByRole("dialog", { name: "Release notes" });
+  // The notes start with "# Storyarr v0.4.0": the window shows the version once, as its heading.
   await expect(
     dialog.getByRole("heading", { name: "Storyarr v0.4.0" }),
-  ).toHaveCount(1);
+  ).toHaveCount(0);
+  await expect(dialog.getByRole("heading", { name: /^v0\.4\.0/ })).toHaveCount(
+    1,
+  );
   const item = dialog.getByRole("listitem");
   await expect(item).toHaveText(
     "A bookshelf page for each follow, with a progress bar.",

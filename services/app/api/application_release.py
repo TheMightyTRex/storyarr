@@ -34,6 +34,8 @@ class ApplicationRelease(BaseModel):
     release_url: str | None
     update_available: bool
     status: str
+    # The administrator's own upgrade page (BOOK_UPGRADE_URL), when there is one.
+    upgrade_url: str | None = None
 
 
 @router.get("/application/release", response_model=ApplicationRelease)
@@ -83,6 +85,7 @@ def application_release() -> ApplicationRelease:
         release_url=f"{base}/tag/{quote(latest, safe='')}" if base and latest else base,
         update_available=bool(current and newer and newer > current),
         status=status,
+        upgrade_url=getattr(settings, "upgrade_url", "") or None,
     )
 
 

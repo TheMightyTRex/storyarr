@@ -3,6 +3,19 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## Unreleased
+
+### Changed
+- **Release notes window:** one line says which version you have and which is available, with View on GitHub
+  beside it; the release is headed by its version and date only; earlier releases moved to Settings.
+- **How to upgrade:** when a newer version is out, the release notes show the steps and the commands to copy, and
+  **Upgrade now** when `BOOK_UPGRADE_URL` points to your own upgrade page.
+- **Releases in Settings:** System, Upgrades and backups, Releases lists every release in a fold, newest first,
+  marking the current version (open) and any newer one.
+
+### Fixed
+- Release dates show in British style (1 Nov 2026) whatever the browser's language.
+
 ## v0.4.8 (1 November 2026)
 
 ### Changed
