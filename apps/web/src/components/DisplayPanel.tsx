@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Contrast } from "lucide-react";
+import { Contrast, X } from "lucide-react";
 import {
   accessibilityKeys,
   displayDefaults,
@@ -44,8 +44,11 @@ const switches: {
 // Theme, text size and reading aids. Used in Settings, onboarding and the Display dialog.
 export default function DisplayPanel({
   headingLevel = 3,
+  showHeading = true,
 }: {
   headingLevel?: 2 | 3;
+  // The Display dialog shows the name in its own header bar.
+  showHeading?: boolean;
 }) {
   const display = useDisplayPreferences();
   const [message, setMessage] = useState("");
@@ -69,7 +72,9 @@ export default function DisplayPanel({
   }
   return (
     <section className="display-panel" aria-labelledby={id}>
-      <Heading id={id}>Display and accessibility</Heading>
+      <Heading id={id} className={showHeading ? undefined : "sr-only"}>
+        Display and accessibility
+      </Heading>
       <p className="muted">
         These settings apply to this browser only, and you can change them at
         any time.
@@ -168,7 +173,18 @@ export function DisplayButton() {
         aria-label="Display and accessibility"
         onClose={() => setOpen(false)}
       >
-        {open && <DisplayPanel headingLevel={2} />}
+        <header className="side-panel-header">
+          <h2 className="side-panel-title">Display and accessibility</h2>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Close display and accessibility"
+            onClick={() => setOpen(false)}
+          >
+            <X size={18} />
+          </button>
+        </header>
+        {open && <DisplayPanel headingLevel={3} showHeading={false} />}
         <div className="display-dialog-actions">
           <button
             type="button"

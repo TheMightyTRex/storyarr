@@ -909,12 +909,7 @@ button.help-button:hover {
 .book-dialog.access-dialog-wide {
   width: min(960px, calc(100vw - 32px));
 }
-.access-dialog .book-dialog-heading {
-  font-size: 0.9375rem;
-}
 .settings-section-body .access-dialog .book-dialog-heading button {
-  min-height: 0;
-  padding: 5px;
   border: 0;
   background: transparent;
 }

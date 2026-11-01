@@ -1,5 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
+// Every modal has the slide-out panels' header: the name in bold and the close button, on a white
+// bar with a grey line under it (side-panel.css).
 export default function BookDialog({
   title,
   close,
@@ -46,10 +48,11 @@ export default function BookDialog({
         }
       }}
     >
-      <header className="book-dialog-heading">
-        <span>{title}</span>
+      <header className="book-dialog-heading side-panel-header">
+        <h2 className="side-panel-title">{title}</h2>
         <button
           type="button"
+          className="icon-button"
           aria-label={`Close ${title.toLowerCase()}`}
           onClick={close}
         >

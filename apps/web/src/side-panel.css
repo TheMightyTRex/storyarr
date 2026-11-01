@@ -31,6 +31,14 @@
   --panel-pad-top: 24px;
   --panel-pad-x: 24px;
 }
+/* A modal's header sits outside its padded content, so it needs no pull to the edges. */
+.book-dialog > .side-panel-header {
+  padding-left: 22px;
+}
+.display-dialog {
+  --panel-pad-top: 24px;
+  --panel-pad-x: 24px;
+}
 .release-drawer {
   --panel-pad-top: 22px;
   --panel-pad-x: 18px;

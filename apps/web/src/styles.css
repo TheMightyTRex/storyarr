@@ -3452,22 +3452,11 @@ img.detail-cover {
   backdrop-filter: blur(3px);
 }
 .book-dialog-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
-  position: sticky;
-  top: 0;
   z-index: 2;
-  font-size: 0.8125rem;
-  font-weight: 600;
 }
 .book-dialog-heading button {
   display: grid;
   place-items: center;
-  padding: 5px;
   border: 0;
   background: transparent;
 }
