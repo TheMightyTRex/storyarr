@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
-import LayoutChoice from "../components/LayoutChoice";
 import DisplayPanel from "../components/DisplayPanel";
 import UpgradeBackups, { useUpgrade } from "../components/UpgradeBackups";
 import SettingsGroup from "../components/SettingsGroup";
@@ -176,7 +175,6 @@ export default function UpgradeWizard() {
                 New settings start with sensible defaults, so you only need to
                 change the ones you want to.
               </p>
-              <LayoutChoice />
               <DisplayPanel />
               <div className="settings-section-body upgrade-settings">
                 {review

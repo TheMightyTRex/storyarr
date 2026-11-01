@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Headphones, Library, Check, Star } from "lucide-react";
-import LayoutChoice from "../components/LayoutChoice";
 import DisplayPanel from "../components/DisplayPanel";
 import SavedViewsSettings from "../components/SavedViewsSettings";
 import CoverSizeSetting from "../components/CoverSizeSetting";
@@ -26,7 +25,6 @@ export default function DisplaySettings() {
   }
   return (
     <div className="display-settings">
-      <LayoutChoice />
       <DisplayPanel />
       <CoverSizeSetting />
       <h3>Appearance</h3>
@@ -107,10 +105,7 @@ export default function DisplaySettings() {
           appear on covers. Gray icons indicate missing or unknown formats.
         </p>
       </div>
-      <button
-        type="button"
-        onClick={() => update({ ...displayDefaults, layout: display.layout })}
-      >
+      <button type="button" onClick={() => update(displayDefaults)}>
         Reset cover shapes
       </button>
       <p role="status">{message}</p>

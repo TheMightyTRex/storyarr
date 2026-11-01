@@ -1,27 +1,14 @@
 import NavigationContinuity from "./components/NavigationContinuity";
 import ContentSkeleton from "./components/ContentSkeleton";
 import ConnectionHealth from "./components/ConnectionHealth";
-import { ApplicationRelease } from "./components/ApplicationRelease";
 import { useRefreshReadingLists } from "./hooks/useRefreshReadingLists";
 import type { ReadingProvider } from "./hooks/useRefreshReadingLists";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Download,
-  BookOpen,
-  Compass,
-  ListPlus,
-  RefreshCw,
-  ChevronDown,
-  ListChecks,
-  LogOut,
-  Search,
-  Settings,
-} from "lucide-react";
+import { ListPlus, RefreshCw, ChevronDown, Search } from "lucide-react";
 import {
   Navigate,
-  NavLink,
   Route,
   Routes,
   useLocation,
@@ -32,7 +19,6 @@ import type { Auth } from "./api/client";
 import { Loading, Notice } from "./components";
 import { useLibraryReviewCount } from "./hooks/useLibraryReviewCount";
 import { canManageOwnRequests } from "./permissions";
-import { useDisplayPreferences } from "./displayPreferences";
 import { LibraryTabs, ShelfRail } from "./components/ShelfNavigation";
 import PhoneMenu from "./components/PhoneMenu";
 import { DisplayButton } from "./components/DisplayPanel";
@@ -399,8 +385,6 @@ function Shell({ auth }: { auth: Auth }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [search, setSearch] = useState("");
-  const [mobileMenu, setMobileMenu] = useState(false);
-  useEffect(() => setMobileMenu(false), [location.pathname]);
   const [addingList, setAddingList] = useState(false);
   const listsRefresh = useRefreshReadingLists();
   useEffect(() => {
@@ -411,7 +395,6 @@ function Shell({ auth }: { auth: Auth }) {
   const admin = auth.user.role === "admin";
   const canEdit = auth.user.role !== "viewer";
   const reviewing = useLibraryReviewCount(admin).data?.total ?? 0;
-  const shelf = useDisplayPreferences().layout === "shelf";
   const [submenuSlot, setSubmenuSlot] = useState<HTMLElement | null>(null);
   const upgrade = useUpgrade(admin);
   const logout = useMutation({
@@ -448,120 +431,30 @@ function Shell({ auth }: { auth: Auth }) {
       </main>
     );
   return (
-    <div className="app-shell" data-layout={shelf ? "shelf" : "classic"}>
+    <div className="app-shell" data-layout="shelf">
       <NavigationContinuity />
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      {shelf ? (
-        <ShelfRail
-          name={auth.user.display_name}
-          role={auth.user.role}
-          reviewing={reviewing}
-          signOut={() => logout.mutate()}
-          signingOut={logout.isPending}
-        />
-      ) : (
-        <aside className="sidebar" data-menu-open={mobileMenu}>
-          <button
-            type="button"
-            className="mobile-menu-button"
-            aria-expanded={mobileMenu}
-            aria-controls="main-navigation"
-            onClick={() => setMobileMenu(!mobileMenu)}
-          >
-            {mobileMenu ? "Close menu" : "Menu"}
-          </button>
-          <NavLink to="/" className="brand">
-            <img src="/assets/storyarr.svg" width="32" height="32" alt="" />
-            <span>Storyarr</span>
-          </NavLink>
-          <button
-            className="icon-button mobile-signout"
-            aria-label="Sign out"
-            onClick={() => logout.mutate()}
-            disabled={logout.isPending}
-          >
-            <LogOut size={18} />
-          </button>
-          <p className="nav-caption">YOUR COLLECTION</p>
-          <nav
-            id="main-navigation"
-            aria-label="Main navigation"
-            onClick={(event) => {
-              if ((event.target as HTMLElement).closest("a"))
-                setMobileMenu(false);
-            }}
-          >
-            <NavLink to="/discover">
-              <Compass size={19} />
-              Discover
-            </NavLink>
-            {canEdit && (
-              <NavLink to="/following">
-                <ListPlus size={19} />
-                Following
-              </NavLink>
-            )}
-            <NavLink to="/library" end>
-              <BookOpen size={19} />
-              My library
-            </NavLink>
-            {admin && (
-              <NavLink to="/review">
-                <ListChecks size={19} />
-                Library review
-                {reviewing > 0 && (
-                  <span className="nav-count">
-                    {reviewing > 99 ? "99+" : reviewing}
-                    <span className="sr-only"> library items to review</span>
-                  </span>
-                )}
-              </NavLink>
-            )}
-            <NavLink to="/requests">
-              <Download size={19} />
-              Requests
-            </NavLink>
-            <NavLink to="/settings">
-              <Settings size={19} />
-              Settings
-            </NavLink>
-          </nav>
-          <div className="sidebar-bottom">
-            <div className="avatar">
-              {auth.user.display_name.slice(0, 1).toUpperCase()}
-            </div>
-            <div>
-              <strong>{auth.user.display_name}</strong>
-              <small>{auth.user.access_label}</small>
-            </div>
-            <button
-              className="icon-button"
-              aria-label="Sign out"
-              onClick={() => logout.mutate()}
-              disabled={logout.isPending}
-            >
-              <LogOut size={18} />
-            </button>
-          </div>
-          <ApplicationRelease />
-        </aside>
-      )}
+      <ShelfRail
+        name={auth.user.display_name}
+        role={auth.user.role}
+        reviewing={reviewing}
+        signOut={() => logout.mutate()}
+        signingOut={logout.isPending}
+      />
       <HeaderSubmenuSlot.Provider value={submenuSlot}>
         <div className="workspace">
           <div className="topbar-sticky">
             <header className="topbar">
-              {shelf && (
-                <PhoneMenu
-                  name={auth.user.display_name}
-                  role={auth.user.role}
-                  permissions={permissions}
-                  reviewing={reviewing}
-                  signOut={() => logout.mutate()}
-                  signingOut={logout.isPending}
-                />
-              )}
+              <PhoneMenu
+                name={auth.user.display_name}
+                role={auth.user.role}
+                permissions={permissions}
+                reviewing={reviewing}
+                signOut={() => logout.mutate()}
+                signingOut={logout.isPending}
+              />
               <form className="search" role="search" onSubmit={searchSubmit}>
                 <Search size={18} aria-hidden="true" />
                 <input
@@ -593,7 +486,7 @@ function Shell({ auth }: { auth: Auth }) {
                 <DisplayButton />
               </div>
             </header>
-            {shelf && <div className="header-submenu" ref={setSubmenuSlot} />}
+            <div className="header-submenu" ref={setSubmenuSlot} />
             <LoadingBar />
             <PageTitle />
           </div>
@@ -603,13 +496,11 @@ function Shell({ auth }: { auth: Auth }) {
             </Suspense>
           )}
           <main id="main" className="main-content">
-            {shelf && (
-              <LibraryTabs
-                canEdit={canEdit}
-                admin={admin}
-                reviewing={reviewing}
-              />
-            )}
+            <LibraryTabs
+              canEdit={canEdit}
+              admin={admin}
+              reviewing={reviewing}
+            />
             <Notice error={logout.error} />
             <Notice error={listsRefresh.error} />
             {(listsRefresh.busy || listsRefresh.message) && (

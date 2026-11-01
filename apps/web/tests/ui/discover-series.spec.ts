@@ -147,6 +147,8 @@ test("Discover series tab scrolls through saved pages without starting catalog r
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+  // On phones the sub-menu lives in the menu drawer; check the header one at desktop width.
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/discover/series");
   await expect(page).toHaveURL(/\/discover\?view=series$/);
   await expect(nav.getByRole("link", { name: "Your series" })).toHaveAttribute(

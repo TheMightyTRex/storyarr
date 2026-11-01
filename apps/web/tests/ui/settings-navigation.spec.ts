@@ -145,7 +145,7 @@ for (const role of ["admin", "member", "viewer"]) {
     ).toHaveCount(role === "admin" ? 1 : 0);
     await page
       .getByRole("navigation", { name: "Main navigation" })
-      .getByRole("link", { name: "Requests", exact: true })
+      .getByRole("link", { name: "Activity", exact: true })
       .click();
     await expect(
       page.getByRole("heading", { name: "Requests", exact: true }),

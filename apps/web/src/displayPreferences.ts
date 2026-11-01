@@ -4,7 +4,6 @@ export type DisplayPreferences = {
   defaultShape: "square" | "portrait";
   audioShape: "square" | "portrait";
   ebookShape: "square" | "portrait";
-  layout: "classic" | "shelf";
   theme: "light" | "dark" | "auto";
   textSize: 100 | 125 | 150 | 175;
   highContrast: boolean;
@@ -16,7 +15,6 @@ export const displayDefaults: DisplayPreferences = {
   defaultShape: "portrait",
   audioShape: "portrait",
   ebookShape: "portrait",
-  layout: "classic",
   theme: "light",
   textSize: 100,
   highContrast: false,
@@ -37,7 +35,6 @@ const allowed: { [K in keyof DisplayPreferences]: readonly unknown[] } = {
   defaultShape: ["square", "portrait"],
   audioShape: ["square", "portrait"],
   ebookShape: ["square", "portrait"],
-  layout: ["classic", "shelf"],
   theme: ["light", "dark", "auto"],
   textSize: [100, 125, 150, 175],
   highContrast: [true, false],

@@ -146,7 +146,7 @@ test("library review links unmatched items to Storyarr and Hardcover books", asy
   });
 
   await page.goto("/review");
-  const nav = page.getByRole("navigation", { name: "Main navigation" });
+  const nav = page.getByRole("navigation", { name: "Library" });
   await expect(
     nav.getByRole("link", { name: /^Library review/ }),
   ).toContainText("3");

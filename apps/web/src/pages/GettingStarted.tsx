@@ -6,7 +6,6 @@ import { Check, ArrowRight } from "lucide-react";
 import { api, result, type Auth } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
-import LayoutChoice from "../components/LayoutChoice";
 import DisplayPanel from "../components/DisplayPanel";
 import { settingsSections } from "./SettingsSections";
 
@@ -47,13 +46,8 @@ export default function GettingStarted({ role }: { role: string }) {
   );
   all.push({
     id: "layout",
-    title: "Layout and display",
-    content: (
-      <>
-        <LayoutChoice />
-        <DisplayPanel />
-      </>
-    ),
+    title: "Display and accessibility",
+    content: <DisplayPanel />,
   });
   if (admin)
     all.push({
@@ -91,7 +85,7 @@ export default function GettingStarted({ role }: { role: string }) {
     automation:
       "Choose which kinds of books new follows include, and whether wanted books are searched again automatically.",
     layout:
-      "Choose a layout, a light or dark theme, a text size, and any reading aids you need.",
+      "Choose a light or dark theme, a text size, and any reading aids you need.",
     finish:
       "Your saved settings are ready. You can change them at any time in Settings.",
   };

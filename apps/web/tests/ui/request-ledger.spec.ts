@@ -233,8 +233,8 @@ test("requests show transfer telemetry, review actions and counts in compact row
   await expect(
     page
       .getByRole("navigation", { name: "Main navigation" })
-      .getByRole("link", { name: "Requests", exact: true }),
-  ).toHaveText("Requests");
+      .getByRole("link", { name: "Activity", exact: true }),
+  ).toHaveText("Activity");
   const filters = page.getByRole("navigation", { name: "Activity" });
   await expect(filters.getByRole("link")).toHaveText([
     /^Queue/,

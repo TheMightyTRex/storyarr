@@ -5,13 +5,11 @@ import {
   useRef,
   useState,
 } from "react";
-import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
-import { useDisplayPreferences } from "../displayPreferences";
 
-// The header row that page sub-menus move into in the Shelf layout. Set by the app shell.
+// The header row that page sub-menus move into. Set by the app shell.
 export const HeaderSubmenuSlot = createContext<HTMLElement | null>(null);
 
 export type SubmenuItem = {
@@ -23,21 +21,15 @@ export type SubmenuItem = {
   countLabel?: string;
 };
 
-/**
- * A page's sub-menu. In the Shelf layout it shows in the header with icons; in Classic the page keeps
- * its own tabs, passed as `classic`.
- */
+/** A page's sub-menu, shown in the header with icons. */
 export default function HeaderSubmenu({
   label,
   items,
-  classic = null,
 }: {
   label: string;
   items: SubmenuItem[];
-  classic?: ReactNode;
 }) {
   const slot = useContext(HeaderSubmenuSlot);
-  const shelf = useDisplayPreferences().layout === "shelf";
   const nav = useRef<HTMLElement>(null);
   const fullWidth = useRef(0);
   // When the tabs with their names do not fit, show icons only; the names stay as tooltips and
@@ -45,7 +37,7 @@ export default function HeaderSubmenu({
   const [compact, setCompact] = useState(false);
   const names = items.map((item) => item.label).join("|");
   useLayoutEffect(() => {
-    if (!slot || !shelf) return;
+    if (!slot) return;
     const check = () => {
       const element = nav.current;
       if (!element) return;
@@ -61,8 +53,7 @@ export default function HeaderSubmenu({
     const observer = new ResizeObserver(check);
     observer.observe(slot);
     return () => observer.disconnect();
-  }, [slot, shelf, compact, names]);
-  if (!shelf) return <>{classic}</>;
+  }, [slot, compact, names]);
   if (!slot) return null;
   return createPortal(
     <nav

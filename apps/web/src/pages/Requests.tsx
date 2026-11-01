@@ -103,25 +103,6 @@ export default function Requests({
             count: tabCount[item.id],
             countLabel: countLabel[item.id],
           }))}
-          classic={
-            <nav className="page-tabs" aria-label="Activity">
-              {tabs.map((item) => (
-                <Link
-                  key={item.id}
-                  to={queryFor(item.id)}
-                  aria-current={tab === item.id ? "page" : undefined}
-                >
-                  {item.title}
-                  {!!tabCount[item.id] && (
-                    <span className="requests-tab-count">
-                      {tabCount[item.id]}
-                      <span className="sr-only"> {countLabel[item.id]}</span>
-                    </span>
-                  )}
-                </Link>
-              ))}
-            </nav>
-          }
         />
         <div className="page-tabs-tools">
           <label className="request-sort">

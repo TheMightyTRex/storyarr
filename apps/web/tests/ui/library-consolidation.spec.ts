@@ -77,7 +77,7 @@ test("one bookshelf preserves filters and keeps library review for admins", asyn
   await expect(page.getByText("All caught up")).toBeVisible();
   await expect(
     page
-      .getByRole("navigation", { name: "Main navigation" })
+      .getByRole("navigation", { name: "Library" })
       .getByRole("link", { name: "Library review", exact: true }),
   ).toBeVisible();
   role = "member";

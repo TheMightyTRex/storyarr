@@ -1,6 +1,6 @@
 import { expect, test, emptyDiscoveryHome } from "../fixtures";
 
-test("the Shelf layout groups library pages and can be switched back to Classic", async ({
+test("the Shelf layout groups library pages under one menu item", async ({
   page,
 }) => {
   await page.route("**/api/**", (route) => {
@@ -26,13 +26,9 @@ test("the Shelf layout groups library pages and can be switched back to Classic"
   });
 
   await page.goto("/settings");
-  const classic = page.getByRole("navigation", { name: "Main navigation" });
-  await expect(classic.getByRole("link", { name: "My library" })).toBeVisible();
-
-  await page.getByText("Shelf", { exact: true }).click();
-  await expect(page.getByRole("status").first()).toContainText(
-    "Layout changed to Shelf.",
-  );
+  // Shelf is the only layout: there is no Classic sidebar and no layout choice.
+  await expect(page.locator(".sidebar")).toHaveCount(0);
+  await expect(page.getByText("Classic", { exact: true })).toHaveCount(0);
   const shelf = page.getByRole("navigation", { name: "Main navigation" });
   await expect(shelf.getByRole("link")).toHaveText([
     /Library/,
@@ -66,14 +62,6 @@ test("the Shelf layout groups library pages and can be switched back to Classic"
 
   await page.reload();
   await expect(page.getByRole("navigation", { name: "Library" })).toBeVisible();
-
-  await page.goto("/settings");
-  await page.getByText("Classic", { exact: true }).click();
-  await expect(
-    page
-      .getByRole("navigation", { name: "Main navigation" })
-      .getByRole("link", { name: "My library" }),
-  ).toBeVisible();
 });
 
 test("Settings has six groups in the header, each with its own section tabs", async ({

@@ -138,9 +138,10 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
       );
       await notes.getByRole("button", { name: "Close release notes" }).click();
       await expect(notes).toHaveCount(0);
-      const sidebar = await page.locator(".sidebar").boundingBox();
+      // The version sits at the foot of the icon menu.
+      const rail = await page.locator(".shelf-rail").boundingBox();
       const bounds = await footer.boundingBox();
-      expect(bounds!.y).toBeGreaterThan(sidebar!.height - 150);
+      expect(bounds!.y).toBeGreaterThan(rail!.height - 150);
     } else if (state === "current") {
       await expect(footer.getByText("Up to date")).toBeVisible();
       await footer.getByRole("button", { name: "v1.9.0", exact: true }).click();
@@ -182,7 +183,8 @@ for (const state of ["update", "current", "offline", "unconfigured"]) {
       await notes.getByRole("button", { name: "Close release notes" }).click();
     }
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.getByRole("button", { name: "Menu", exact: true }).click();
+    // On phones the version sits in the menu drawer; the button names an available upgrade.
+    await page.getByRole("button", { name: /^Menu/ }).click();
     await expect(footer).toBeVisible();
     if (state === "update") {
       await footer

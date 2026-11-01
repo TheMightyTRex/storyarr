@@ -90,26 +90,6 @@ export default function Settings({
           icon: item.icon,
           current: item.id === group?.id,
         }))}
-        classic={
-          <nav
-            className="page-tabs settings-groups"
-            aria-label="Settings groups"
-          >
-            {visibleGroups.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.id}
-                  to={`/settings#${item.items[0].id}`}
-                  aria-current={item.id === group?.id ? "page" : undefined}
-                >
-                  <Icon size={16} aria-hidden="true" />
-                  {item.title}
-                </Link>
-              );
-            })}
-          </nav>
-        }
       />
       <div className="settings-tabs-bar">
         {(overflow.left || overflow.right) && (

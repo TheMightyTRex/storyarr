@@ -16,6 +16,10 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Bigger covers on My library,** with a cover size setting in Settings, General: Small, Medium (the new,
   larger default) or Large, saved with your account.
 
+- **One layout:** the Classic layout is retired, and everyone uses Shelf (the icon menu, with sub-menus in the
+  header, and the menu drawer on phones). The Layout choice is gone from Settings, onboarding and the upgrade
+  wizard; installs that chose Classic open in Shelf.
+
 ### Fixed
 - Release dates show in British style (1 Nov 2026) whatever the browser's language.
 

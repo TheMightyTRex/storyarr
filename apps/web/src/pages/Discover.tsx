@@ -129,21 +129,6 @@ function DiscoverNavigation({
           icon: viewIcons[key],
           current: !collectionId && view === key,
         }))}
-        classic={
-          <nav className="page-tabs" aria-label="Discover navigation">
-            {views.map(([key, label]) => (
-              <Link
-                key={key}
-                to={key === "home" ? "/discover" : `/discover?view=${key}`}
-                aria-current={
-                  !collectionId && view === key ? "page" : undefined
-                }
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
-        }
       />
       {children && <div className="page-tabs-tools">{children}</div>}
     </div>
