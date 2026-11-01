@@ -34,6 +34,8 @@ Moving from Dewarr? Read [Moving from Dewarr](MIGRATING.md) instead. Your existi
    - Set `PUID` and `PGID` to the user that owns your library folders (run `id` to see yours).
    - Set `PUBLIC_URL` to the address you will open, such as `http://192.168.1.10:8000`.
    - Add your download and library folders under `volumes`, for example `- /mnt/media:/data`.
+   - The containers are named `storyarr` and `storyarr-postgres`. To run a second copy on the same machine,
+     change or remove the `container_name` lines.
 
 3. Start it:
 

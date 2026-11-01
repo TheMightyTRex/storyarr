@@ -51,8 +51,10 @@ Merge releases, not every commit on Dewarr's `main`.
    python3 scripts/storyarr_rename.py --apply
    ```
 
-   It renames Dewarr to Storyarr in code and tests, and lists anything left in the docs. CI runs the same check
-   without `--apply`, so a missed one fails the build.
+   It renames Dewarr to Storyarr in code and tests, and lists anything left in the docs. It also restores the
+   lowercase names Storyarr changed (the package, logger, database defaults, CI image names and the deploy
+   overrides), while leaving `x-dewarr-proxy-token` and the `dewarr-` download folders alone. CI runs the same
+   check without `--apply`, so a missed one fails the build.
 
 3. **Database migrations.** Dewarr's new migrations and Storyarr's must form one line again:
    - Add a `# From Dewarr` line to each migration that came from Dewarr, so the naming test accepts it.

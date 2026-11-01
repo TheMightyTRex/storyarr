@@ -3,7 +3,7 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
-## v0.4.6 (unreleased)
+## v0.4.6 (1 November 2026)
 
 ### Changed
 - **Storyarr everywhere:** notifications are titled "Storyarr notification", including stored ones
@@ -11,6 +11,9 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
   `python -m app.downgrade storyarr_0085_user_preferences`). The default `DB_NAME` and `DB_USER` are `storyarr`,
   and the package, logger, sample compose overrides, CI images and the Docker and development guides use
   Storyarr names. The `x-dewarr-proxy-token` header and the `dewarr-` download folder prefix keep their names.
+
+- `compose.yaml` names the containers `storyarr` and `storyarr-postgres`, matching the `docker run` guide.
+- `scripts/storyarr_rename.py --apply` also restores the lowercase names Storyarr changed, after a Dewarr merge.
 
 ### Fixed
 - `deploy/compose.build.yaml` and `deploy/compose.dev.yaml` named a `dewarr` service and Dewarr's image and
