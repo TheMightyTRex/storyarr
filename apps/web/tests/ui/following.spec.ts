@@ -496,7 +496,10 @@ test("Following shows library coverage, releases, and useful filtered books", as
     page.getByRole("heading", { name: "Releases from your follows" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Sample future publication", exact: true }),
+    page.getByRole("button", {
+      name: "Sample future publication, details",
+      exact: true,
+    }),
   ).toBeVisible();
   await page.getByRole("tab", { name: /Authors/ }).click();
   // List: one aligned row per follow, with its coverage and statuses.
@@ -644,7 +647,10 @@ test("catalog completion refreshes the shelf and an open book list", async ({
   await expect(
     page
       .getByRole("region", { name: "Coming up", exact: true })
-      .getByRole("link", { name: "Sample future publication", exact: true }),
+      .getByRole("button", {
+        name: "Sample future publication, details",
+        exact: true,
+      }),
   ).toBeVisible();
 });
 
@@ -674,8 +680,8 @@ for (const tab of ["authors", "releases"]) {
         exact: true,
       });
       await expect(
-        region.getByRole("link", {
-          name: "Sample future publication",
+        region.getByRole("button", {
+          name: "Sample future publication, details",
           exact: true,
         }),
       ).toBeVisible();

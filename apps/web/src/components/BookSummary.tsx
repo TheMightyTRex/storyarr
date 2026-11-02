@@ -1,4 +1,6 @@
 import StatusChip from "./StatusChip";
+import { useQuery } from "@tanstack/react-query";
+import { api, result } from "../api/client";
 import { Link } from "react-router-dom";
 import { ContextLink } from "./NavigationContinuity";
 import { Star } from "lucide-react";
@@ -17,6 +19,8 @@ export type SummaryBook = {
   authors: string[];
   cover?: string | null;
   work?: Work | null;
+  /** The catalog work's id, when the page has no whole work: the Summary reads it. */
+  workId?: string;
   /** The book's own page, for "Open book page". */
   to: string;
   rating?: number | null;
@@ -37,8 +41,19 @@ export default function BookSummary({
   book: SummaryBook;
   close: () => void;
 }) {
-  return book.work ? (
-    <WorkSummary work={book.work} to={book.to} close={close} />
+  const read = useQuery({
+    queryKey: ["work", book.workId],
+    enabled: !book.work && !!book.workId,
+    queryFn: async () =>
+      result(
+        await api.GET("/api/catalog/works/{work_id}", {
+          params: { path: { work_id: book.workId! } },
+        }),
+      ),
+  });
+  const work = book.work ?? read.data;
+  return work ? (
+    <WorkSummary work={work} to={book.to} close={close} />
   ) : (
     <CatalogSummary book={book} close={close} />
   );

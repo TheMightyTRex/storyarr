@@ -230,9 +230,17 @@ test("series uses reading order and library counts with accessible tabs", async 
   await expect(
     page.getByRole("tab", { name: "Requests", exact: true }),
   ).toHaveCount(0);
+  // Each row opens the book's Summary; its actions sit at the end of the row (UX-44).
+  const firstRow = page.locator(".series-book-row").first();
+  await expect(firstRow.locator(".cover-actions--row")).toBeVisible();
+  // The title lets presses through to the row (force skips the check that it is on top).
+  await firstRow.locator(".book-row__title").click({ force: true });
   await expect(
-    page.locator(".series-row-copy").first().getByRole("link"),
+    page
+      .getByRole("dialog", { name: /Summary/ })
+      .getByRole("link", { name: "Open book page" }),
   ).toHaveAttribute("href", "/books/work-0");
+  await page.getByRole("button", { name: "Close summary" }).click();
   await page.screenshot({
     path: testInfo.outputPath("series-desktop.png"),
     fullPage: true,
@@ -339,7 +347,14 @@ test("global search opens book details and legacy source menus return to search"
   });
   await search.fill("Earthsea");
   await search.press("Enter");
-  await page.getByRole("link", { name: "View A Wizard of Earthsea" }).click();
+  // The result row opens the Summary; its book page is one press away (UX-44).
+  await page
+    .getByRole("button", { name: "A Wizard of Earthsea, details" })
+    .click();
+  await page
+    .getByRole("dialog", { name: /Summary/ })
+    .getByRole("link", { name: "Open book page" })
+    .click();
   await expect(page).toHaveURL(/\/discover\/books\/hardcover\/101$/);
   await expect(
     page.getByRole("heading", { name: titles[0], exact: true }),

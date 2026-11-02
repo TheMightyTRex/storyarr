@@ -385,7 +385,7 @@ test("library series show follow status, every book and a way to add missing boo
   await expect(card.getByText("2 of 3")).toBeVisible();
   await expect(card.getByText("1 waiting")).toBeVisible();
   await expect(
-    card.getByRole("link", { name: "Tehanu", exact: true }),
+    card.getByRole("button", { name: "Tehanu, details", exact: true }),
   ).toBeVisible();
   await expect(card.getByText("Next automatic search")).toBeVisible();
   await expect(

@@ -1,8 +1,7 @@
 import StatusChip from "../components/StatusChip";
 import InfiniteScroll from "../components/InfiniteScroll";
-import BookLink from "../components/BookLink";
 import BookCover from "../components/BookCover";
-import CoverCard from "../components/CoverCard";
+import { BookRow } from "../components/CoverCard";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useInfiniteQuery,
@@ -234,59 +233,40 @@ export default function ProviderSearch({
             <span className="muted">{providerItems.length} books loaded</span>
           </div>
           {providerItems.length ? (
-            <div className="provider-results">
+            <div className={embedded ? "provider-results" : "provider-rows"}>
               {providerItems.map((book) => {
                 const known = knownWorks[book.external_id];
                 const page =
                   known && book.provider !== "audible"
                     ? `/books/${known.id}`
                     : `/discover/books/${book.provider}/${encodeURIComponent(book.external_id)}`;
-                const content = (
+                const text = (
                   <>
-                    <div className="provider-cover">
-                      {embedded ? (
-                        <BookCover
-                          title={book.title}
-                          cover={book.cover_url}
-                          work={known}
-                        />
-                      ) : (
-                        <CoverCard
-                          title={book.title}
-                          authors={book.authors || []}
-                          cover={book.cover_url}
-                          work={known}
-                          providerBook={book}
-                          to={page}
-                          caption={false}
-                          actions={false}
-                        />
-                      )}
-                    </div>
-                    <span>
-                      <strong>{book.title}</strong>
-                      <small>
-                        {(book.authors || []).join(", ") || "Author unknown"}
-                      </small>
-                      <small>{book.publication_year || "Year unknown"}</small>
-                      {known ? (
-                        <SearchAvailability work={known} />
-                      ) : (
-                        <small>Library match not established</small>
-                      )}
-                    </span>
+                    <strong className="book-row__title">{book.title}</strong>
+                    <small>
+                      {(book.authors || []).join(", ") || "Author unknown"}
+                    </small>
+                    <small>{book.publication_year || "Year unknown"}</small>
+                    {known ? (
+                      <SearchAvailability work={known} />
+                    ) : (
+                      <small>Library match not established</small>
+                    )}
                   </>
                 );
                 return !embedded ? (
-                  <BookLink
-                    aria-label={`View ${book.title}`}
-                    className="provider-result"
+                  <BookRow
+                    className="provider-row"
                     key={`${book.provider}:${book.external_id}`}
+                    title={book.title}
+                    authors={book.authors || []}
+                    cover={book.cover_url}
+                    work={known}
+                    providerBook={book}
                     to={page}
-                    state={{ search: `/search?${params.toString()}` }}
                   >
-                    {content}
-                  </BookLink>
+                    {text}
+                  </BookRow>
                 ) : (
                   <button
                     className="provider-result"
@@ -300,7 +280,14 @@ export default function ProviderSearch({
                       selected.provider === book.provider
                     }
                   >
-                    {content}
+                    <div className="provider-cover">
+                      <BookCover
+                        title={book.title}
+                        cover={book.cover_url}
+                        work={known}
+                      />
+                    </div>
+                    <span>{text}</span>
                   </button>
                 );
               })}

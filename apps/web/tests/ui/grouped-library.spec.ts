@@ -176,10 +176,10 @@ test("one library card shows both formats and uses the mixed-view cover preferen
   });
   await page.goto("/search?q=Giver");
   await expect(page.locator(".cover-card")).toHaveCount(1);
-  await expect(page.locator(".provider-result")).toHaveCount(0);
+  await expect(page.locator(".provider-row")).toHaveCount(0);
   await page.goto("/search?q=recording");
-  await expect(page.locator(".provider-result")).toHaveCount(1);
-  await expect(page.locator(".provider-result img")).toHaveAttribute(
+  await expect(page.locator(".provider-row")).toHaveCount(1);
+  await expect(page.locator(".provider-row img")).toHaveAttribute(
     "src",
     /medium=ebook$/,
   );

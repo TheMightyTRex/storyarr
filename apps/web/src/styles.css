@@ -199,51 +199,23 @@ button.discovery-book:hover {
   margin-top: 8px;
   font-size: 0.8125rem;
 }
+/* Series gaps as small cover tiles (UX-44 B): the cover opens the Summary, More holds the actions. */
 .series-gap-books {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 96px);
+  gap: var(--space-4, 16px);
   list-style: none;
   padding: 0;
   margin: 20px 0;
 }
-.series-gap-books > li + li {
-  border-top: 1px solid var(--line);
-  margin-top: 14px;
-  padding-top: 14px;
-}
 .series-gap-book {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  border-radius: 0;
+  --cover-w: 96px;
+  width: 96px;
 }
-.series-gap-cover {
-  flex-shrink: 0;
-  width: 76px;
-  display: grid;
-  place-items: center;
-  border-radius: 0;
-  background: var(--c-bg-indigo-34);
-  box-shadow: inset 4px 0 0 var(--c-shadow-indigo-29);
-  overflow: hidden;
-  color: var(--c-text-slate-87);
-}
-.series-gap-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.series-gap-book-detail {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.series-gap-book h4 {
-  font-size: 0.9375rem;
-  font-weight: 650;
-  line-height: 1.4;
-  margin-block: 4px;
-}
-.series-gap-book-detail > .series-gap-note {
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
+.series-gap-book .media-badges {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
 }
 .series-gap-card header {
   padding-bottom: 16px;
@@ -4523,4 +4495,19 @@ input,
 select,
 textarea {
   font-family: inherit;
+}
+
+/* Search results as book rows (UX-44 A): the whole row opens the Summary, the actions sit at the end. */
+.provider-rows {
+  border-top: 1px solid var(--line);
+}
+.provider-row {
+  --book-row-art: 64px;
+  padding-inline: var(--space-2, 8px);
+  border-bottom: 1px solid var(--line);
+}
+.provider-row .book-row__text small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
 }

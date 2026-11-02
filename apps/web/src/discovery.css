@@ -1269,6 +1269,8 @@ button.release-day[aria-expanded="true"] {
   list-style: none;
 }
 .release-day-card {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -1289,6 +1291,49 @@ button.release-day[aria-expanded="true"] {
 }
 .release-day-card:has(.release-day-card-actions) > .release-day-card-main {
   grid-column: 1;
+}
+/* UX-44 B: the card opens the book's Summary; More on the corner holds the actions in words. */
+.release-day-card-open {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.release-day-card-open:hover {
+  background: var(--color-control-active);
+}
+.release-day-card-open:focus-visible {
+  outline: var(--focus-w, 3px) solid var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-w, 3px));
+}
+.release-day-card:has(> .release-day-card-open) > .release-day-card-main {
+  grid-column: 1;
+  grid-row: 1;
+  pointer-events: none;
+}
+.release-day-card > .cover-card__more {
+  position: static;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+}
+.release-day-card:has(> .cover-card__more) > .release-day-card-actions {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.release-day-card:has(> .release-day-card-open:hover) .release-day-card-title {
+  text-decoration: underline;
+}
+.release-day-card > .cover-card__status {
+  grid-column: 1 / -1;
 }
 .release-day-card .book-cover {
   width: 48px;

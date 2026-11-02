@@ -1,6 +1,5 @@
 import InfiniteScroll from "./InfiniteScroll";
 import { usePagedQuery } from "../hooks/usePagedQuery";
-import BookLink from "./BookLink";
 import CoverCard from "./CoverCard";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -233,57 +232,44 @@ function SeriesCard({
       <ol className="series-gap-books">
         {series.books.map(({ work, position, ambiguous_position, unseen }) => (
           <li key={work.id}>
-            <BookLink
-              aria-label={`View ${work.title}`}
+            <CoverCard
               className="series-gap-book"
+              title={work.title}
+              authors={work.authors}
+              work={work}
+              medium={medium}
               to={`/books/${work.id}`}
-            >
-              <div className="series-gap-cover">
-                <CoverCard
-                  title={work.title}
-                  authors={work.authors}
-                  work={work}
-                  medium={medium}
-                  to={`/books/${work.id}`}
-                  caption={false}
-                  actions={false}
-                />
-              </div>
-              <div className="series-gap-book-detail">
-                <span className="series-gap-note">
+              actions="more"
+              meta={
+                <>
                   {position !== null ? `Book ${position}` : "Order unknown"}
                   {ambiguous_position && " · Order needs review"}
                   {unseen && " · New"}
-                </span>
-                <h4>{work.title}</h4>
-                <p className="muted">
-                  {work.authors.join(", ") || "Author unknown"}
-                </p>
-                <div className="media-badges">
-                  {work.availability.owned && (
-                    <span>
-                      <Check size={12} aria-hidden="true" /> In library
-                    </span>
-                  )}
-                  {work.availability.ebook && (
-                    <span>
-                      <BookOpen size={12} aria-hidden="true" /> Ebook
-                    </span>
-                  )}
-                  {work.availability.audio && (
-                    <span>
-                      <Headphones size={12} aria-hidden="true" /> Audio
-                    </span>
-                  )}
-                  {work.availability.stale && (
-                    <span>Last known availability</span>
-                  )}
-                  {work.availability.in_collection && (
-                    <span>In collection</span>
-                  )}
-                </div>
+                </>
+              }
+            >
+              <div className="media-badges">
+                {work.availability.owned && (
+                  <span>
+                    <Check size={12} aria-hidden="true" /> In library
+                  </span>
+                )}
+                {work.availability.ebook && (
+                  <span>
+                    <BookOpen size={12} aria-hidden="true" /> Ebook
+                  </span>
+                )}
+                {work.availability.audio && (
+                  <span>
+                    <Headphones size={12} aria-hidden="true" /> Audio
+                  </span>
+                )}
+                {work.availability.stale && (
+                  <span>Last known availability</span>
+                )}
+                {work.availability.in_collection && <span>In collection</span>}
               </div>
-            </BookLink>
+            </CoverCard>
           </li>
         ))}
       </ol>

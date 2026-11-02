@@ -1802,6 +1802,149 @@
     right: auto;
   }
 
+  /* Book row (UX-44 A, 2 November 2026): a book in a list row (a series' Books in order, search
+     results, Following). Pressing anywhere on the row opens the book's Summary. The same five actions
+     as the cover column (Details, Ebook, Audiobook, Add to a list, More) sit in a row at the end,
+     always shown, with the same names, ticks and hover labels. On phones they go under the title.
+     Markup: .book-row (.book-row--lead when a lead column, such as the series position, comes first)
+               > button.book-row__open   named "<title>, details"; it lies under the whole row
+               > [lead], .book-row__art (a small cover), .book-row__text (.book-row__title first),
+                 .cover-actions.cover-actions--row
+     Links, buttons and check boxes inside the text stay pressable; the rest of the row opens the
+     Summary. Set --book-row-art for the cover width (56px by default). */
+  .book-row {
+    --book-row-art: 56px;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: var(--book-row-art) minmax(0, 1fr) auto;
+    gap: var(--space-2) var(--space-4);
+    align-items: center;
+    padding: var(--space-3) 0;
+  }
+  .book-row--lead {
+    grid-template-columns: auto var(--book-row-art) minmax(0, 1fr) auto;
+  }
+  .book-row__open {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+  .book-row__open:hover {
+    background: var(--color-control-active);
+  }
+  .book-row__open:focus-visible {
+    outline: var(--focus-w) solid var(--color-focus);
+    outline-offset: calc(-1 * var(--focus-w));
+  }
+  .book-row > :not(.book-row__open, .cover-actions) {
+    pointer-events: none;
+  }
+  .book-row :is(a, button, input, select, textarea, label, summary, [tabindex]) {
+    pointer-events: auto;
+  }
+  .book-row__art {
+    width: var(--book-row-art);
+  }
+  .book-row__art > * {
+    width: 100%;
+  }
+  .book-row__text {
+    display: grid;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .book-row__title {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: var(--weight-strong);
+    line-height: var(--leading-tight);
+    overflow-wrap: anywhere;
+  }
+  .book-row:has(> .book-row__open:hover) .book-row__title {
+    text-decoration: underline;
+  }
+  /* Progress from getting a format shows under the actions. */
+  .book-row > .cover-card__status {
+    grid-column: -2 / -1;
+    justify-self: end;
+  }
+  .cover-actions--row {
+    position: relative;
+    top: auto;
+    right: auto;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .cover-actions--row .cover-actions__tip {
+    top: auto;
+    right: auto;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  @media (max-width: 720px) {
+    .book-row {
+      grid-template-columns: var(--book-row-art) minmax(0, 1fr);
+    }
+    .book-row--lead {
+      grid-template-columns: auto var(--book-row-art) minmax(0, 1fr);
+    }
+    .book-row > .cover-actions--row {
+      grid-column: -2 / -1;
+    }
+  }
+
+  /* Small cover tile (UX-44 B, 2 November 2026): a cover too small for the action column (series
+     gaps, calendar day cards) gets one 44px More button on its corner. Its menu says each action in
+     words: View details, Get the ebook (or "Ebook in library"), Get the audiobook, Add to a list,
+     Open the book page. The cover itself opens the Summary.
+     Markup: .cover-card[data-actions="more"] > .cover-card__art > the cover, then
+             button.cover-card__more (aria-haspopup="menu", named "More for <title>") and its .menu.
+     .cover-card__more also works on its own in any positioned box, such as a calendar day card. */
+  .cover-card__more {
+    position: absolute;
+    z-index: 2;
+    top: 2px;
+    right: 2px;
+    display: grid;
+    place-items: center;
+    width: var(--control-h);
+    height: var(--control-h);
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-surface-raised);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  .cover-card__more:hover,
+  .cover-card__more[aria-expanded="true"] {
+    background: var(--color-control-active);
+  }
+  .cover-card__more:focus-visible {
+    outline: var(--focus-w) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .cover-card__more > svg {
+    width: 18px;
+    height: 18px;
+  }
+
   /* Shelf (UX-30, option A, 2 November 2026): one row of covers that scrolls sideways with no scroll
      bar. At each end the covers fade into the page, with a 44px arrow over the fade in the middle of
      the covers; the arrow and its fade show only when there are more books that way. Each press moves

@@ -44,19 +44,18 @@
 }
 .follow-release-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
   gap: 16px;
 }
 .follow-releases:not(.follow-release-shelf) .follow-release-grid {
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
 }
 .follow-release-shelf {
   margin-bottom: 34px;
 }
 .follow-book {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  --book-row-art: 60px;
+  gap: 8px 14px;
   min-width: 0;
   padding: 16px;
   background: var(--surface);
@@ -254,14 +253,12 @@ button.follow-count[aria-expanded="true"] {
   line-height: 1.5;
 }
 .follow-book.compact {
+  --book-row-art: 55px;
   border: 0;
   padding: 0;
   border-radius: 0;
   background: transparent;
   align-items: start;
-}
-.follow-book.compact .follow-book-cover {
-  width: 55px;
 }
 .follow-latest-books {
   display: flex;
@@ -302,7 +299,8 @@ button.follow-count[aria-expanded="true"] {
 }
 .follow-books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  /* Wide enough for a row's five actions at the end (UX-44 A). */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
   gap: 14px;
   margin-top: 18px;
 }
@@ -414,12 +412,7 @@ button.follow-count[aria-expanded="true"] {
   .follow-latest-books > a > span {
     display: none;
   }
-  .follow-release-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .follow-release-grid > article:last-child:nth-child(3) {
-    grid-column: 1 / -1;
-  }
+
 }
 @media (max-width: 720px) {
   .following-heading {

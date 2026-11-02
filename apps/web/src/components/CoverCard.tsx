@@ -48,8 +48,11 @@ export type CoverCardProps = {
   rating?: number | null;
   /** The book's own page, opened from the Summary and from More. */
   to: string;
-  /** Hides the action column (the cover still opens the Summary). */
-  actions?: boolean;
+  /**
+   * The action column (true), none (false; the cover still opens the Summary), or one More button on
+   * the cover's corner with the actions in words ("more", for small tiles: UX-44 B).
+   */
+  actions?: boolean | "more";
   /** The title and meta line under the cover; off where a row shows them beside it. */
   caption?: boolean;
   /** A fixed layout, for the examples in Settings; otherwise the person's saved choice. */
@@ -100,7 +103,7 @@ export default function CoverCard({
   return (
     <div
       className={`media-card cover-card ${className}`}
-      data-actions={layout ?? saved}
+      data-actions={actions === "more" ? "more" : (layout ?? saved)}
       onPointerEnter={() => setEngaged(true)}
       onFocus={() => setEngaged(true)}
     >
@@ -121,16 +124,27 @@ export default function CoverCard({
           actions={false}
           badges={false}
         />
-        {actions && (
-          <CoverActions
+        {actions === "more" ? (
+          <CoverMore
             title={title}
             work={work}
             providerBook={providerBook}
             to={to}
             engaged={engaged}
-            example={example}
             openSummary={open}
           />
+        ) : (
+          actions && (
+            <CoverActions
+              title={title}
+              work={work}
+              providerBook={providerBook}
+              to={to}
+              engaged={engaged}
+              example={example}
+              openSummary={open}
+            />
+          )
         )}
       </div>
       {caption && (
@@ -144,6 +158,94 @@ export default function CoverCard({
         </>
       )}
       {children}
+    </div>
+  );
+}
+
+/**
+ * A book in a list row (UX-44 A, the library's `.book-row`): pressing anywhere on the row opens the
+ * book's Summary, and the same five actions as the cover column sit in a row at the end (under the
+ * title on phones). `lead` comes first (a series position); `children` is the text, starting with
+ * the title in `.book-row__title`. Links, buttons and check boxes in the text stay pressable.
+ */
+export function BookRow({
+  title,
+  authors = [],
+  work,
+  workId,
+  owned,
+  providerBook,
+  cover,
+  medium = "any",
+  rating,
+  to,
+  lead,
+  className = "",
+  children,
+}: {
+  title: string;
+  authors?: string[];
+  work?: Work | null;
+  workId?: string;
+  owned?: { ebook?: boolean; audio?: boolean };
+  providerBook?: ProviderBook;
+  cover?: string | null;
+  medium?: "any" | "ebook" | "audio";
+  rating?: number | null;
+  to: string;
+  lead?: ReactNode;
+  className?: string;
+  children: ReactNode;
+}) {
+  const summary = useBookSummary();
+  const [engaged, setEngaged] = useState(false);
+  const open = () =>
+    summary.open({
+      title,
+      authors,
+      cover: cover ?? work?.cover_url,
+      work,
+      workId,
+      to,
+      rating,
+      providerBook,
+    });
+  return (
+    <div
+      className={`book-row${lead ? " book-row--lead" : ""} ${className}`}
+      onPointerEnter={() => setEngaged(true)}
+      onFocus={() => setEngaged(true)}
+    >
+      <button
+        type="button"
+        className="book-row__open"
+        aria-label={`${title}, details`}
+        onClick={open}
+      />
+      {lead}
+      <div className="book-row__art">
+        <BookCover
+          title={title}
+          work={work}
+          cover={cover}
+          medium={medium}
+          rating={rating}
+          actions={false}
+          badges={false}
+        />
+      </div>
+      <div className="book-row__text">{children}</div>
+      <CoverActions
+        row
+        title={title}
+        work={work}
+        workId={workId}
+        owned={owned}
+        providerBook={providerBook}
+        to={to}
+        engaged={engaged}
+        openSummary={open}
+      />
     </div>
   );
 }
@@ -194,23 +296,35 @@ function ActionButton({
   );
 }
 
-function CoverActions({
-  title,
-  work,
-  providerBook,
-  to,
-  engaged,
-  example,
-  openSummary,
-}: {
+/** What a cover's actions need to know about the book. */
+type CoverBook = {
   title: string;
   work?: Work | null;
+  /** The catalog work, when the page has its id but not the whole work (Following, the calendar). */
+  workId?: string;
+  /** Formats in the library, when the page has no whole work. */
+  owned?: { ebook?: boolean; audio?: boolean };
   providerBook?: ProviderBook;
   to: string;
   engaged: boolean;
-  example: boolean;
+  example?: boolean;
   openSummary: () => void;
-}) {
+};
+
+/**
+ * The logic behind every set of cover actions (the column, the row and the More button): the
+ * formats in the library, getting a format with Quick add, adding to a list and the More menu.
+ */
+function useCoverBook({
+  title,
+  work,
+  workId,
+  owned,
+  providerBook,
+  engaged,
+  example = false,
+  openSummary,
+}: CoverBook) {
   const { data: session } = useQuery<Auth | null>({
     queryKey: ["session"],
     enabled: false,
@@ -219,18 +333,18 @@ function CoverActions({
   const [menuOpen, setMenuOpen] = useState(false);
   const more = useRef<HTMLButtonElement>(null);
   const menuId = useId();
-  const availability = work?.availability;
-  const skip = example ? -1 : undefined;
+  const id = work?.id ?? workId;
+  const availability = work?.availability ?? owned;
   // Audible books are found through the book page; anything else can be added from its cover.
   const resolvable =
     !!session &&
-    !!(work || providerBook) &&
+    !!(id || providerBook) &&
     providerBook?.provider !== "audible";
   const resolveWork = providerBook
     ? () => resolveBookWork(providerBook)
     : undefined;
   const quick = useQuickAdd({
-    workId: work?.id,
+    workId: id,
     resolveWork,
     engaged: engaged && resolvable && !example,
     cover: true,
@@ -238,11 +352,11 @@ function CoverActions({
   const canList = !!session && session.user.role !== "viewer" && resolvable;
   function format(kind: "ebook" | "audio") {
     const noun = kind === "audio" ? "Audiobook" : "Ebook";
-    const owned = !!availability?.[kind];
+    const have = !!availability?.[kind];
     const allowed =
       resolvable &&
       (kind === "audio" ? quick.audioDownload : quick.ebookDownload);
-    if (owned)
+    if (have)
       return {
         name: `${noun} of ${title} in library`,
         tip: `${noun} in library`,
@@ -289,10 +403,100 @@ function CoverActions({
       : busy
         ? LoaderCircle
         : Check;
+  const status = showStatus && (
+    <p
+      className="cover-card__status"
+      role={quick.feedbackError ? "alert" : "status"}
+      title={
+        quick.feedbackError?.message ||
+        quick.starting ||
+        quick.status.data?.message
+      }
+    >
+      <StatusIcon
+        aria-hidden="true"
+        className={busy ? "source-download-spinner" : undefined}
+      />
+      {quick.missingPreference ? (
+        <>
+          Format choice not set.{" "}
+          <Link to="/settings#preferences">Set it here</Link>
+        </>
+      ) : quick.starting || quick.feedbackError ? (
+        quick.coverStatus
+      ) : (
+        <Link
+          to={
+            quick.id && quick.coverNeedsReview
+              ? `/books/${quick.id}?tab=sources`
+              : quick.status.data?.request_id
+                ? `/requests#request-${quick.status.data.request_id}`
+                : "/requests"
+          }
+          aria-label={`${quick.coverStatus}: ${quick.coverNeedsReview && quick.id ? "review sources" : "view downloads"}`}
+        >
+          {quick.coverStatus}
+        </Link>
+      )}
+    </p>
+  );
+  const extraItems = extra.map((item) => (
+    <button
+      key={item.label}
+      type="button"
+      role="menuitem"
+      disabled={quick.busy}
+      onClick={() => quick.choose(item.mode)}
+    >
+      <item.icon size={18} aria-hidden="true" />
+      {item.label}
+    </button>
+  ));
+  const list = listing && (
+    <AddToList
+      title={title}
+      workId={id}
+      providerBook={providerBook}
+      close={() => setListing(false)}
+    />
+  );
+  return {
+    id,
+    ebook,
+    audio,
+    canList,
+    status,
+    extraItems,
+    list,
+    startListing: () => !example && setListing(true),
+    menuOpen,
+    setMenuOpen,
+    more,
+    menuId,
+  };
+}
+
+/**
+ * The five actions (Details, Ebook, Audiobook, Add to a list, More) as the column down a cover's
+ * edge (UX-42), or as a row at the end of a list row (`row`, UX-44 A). Progress shows in a status
+ * line straight after them.
+ */
+export function CoverActions({
+  row = false,
+  example = false,
+  ...book
+}: Omit<CoverBook, "example"> & {
+  row?: boolean;
+  example?: boolean;
+}) {
+  const { title, to } = book;
+  const cover = useCoverBook({ ...book, example });
+  const skip = example ? -1 : undefined;
+  const { menuOpen, setMenuOpen, more, menuId } = cover;
   return (
     <>
       <div
-        className="cover-actions"
+        className={row ? "cover-actions cover-actions--row" : "cover-actions"}
         role="group"
         aria-label={`Actions for ${title}`}
       >
@@ -301,17 +505,17 @@ function CoverActions({
           icon={Info}
           name={`Details of ${title}`}
           tip="Details"
-          onClick={openSummary}
+          onClick={book.openSummary}
         />
-        <ActionButton icon={BookOpen} tabIndex={skip} {...ebook} />
-        <ActionButton icon={Headphones} tabIndex={skip} {...audio} />
-        {canList && (
+        <ActionButton icon={BookOpen} tabIndex={skip} {...cover.ebook} />
+        <ActionButton icon={Headphones} tabIndex={skip} {...cover.audio} />
+        {cover.canList && (
           <ActionButton
             tabIndex={skip}
             icon={ListPlus}
             name={`Add ${title} to a list`}
             tip="Add to a list"
-            onClick={() => !example && setListing(true)}
+            onClick={cover.startListing}
           />
         )}
         <ActionButton
@@ -326,43 +530,7 @@ function CoverActions({
           onClick={() => !example && setMenuOpen(!menuOpen)}
         />
       </div>
-      {showStatus && (
-        <p
-          className="cover-card__status"
-          role={quick.feedbackError ? "alert" : "status"}
-          title={
-            quick.feedbackError?.message ||
-            quick.starting ||
-            quick.status.data?.message
-          }
-        >
-          <StatusIcon
-            aria-hidden="true"
-            className={busy ? "source-download-spinner" : undefined}
-          />
-          {quick.missingPreference ? (
-            <>
-              Format choice not set.{" "}
-              <Link to="/settings#preferences">Set it here</Link>
-            </>
-          ) : quick.starting || quick.feedbackError ? (
-            quick.coverStatus
-          ) : (
-            <Link
-              to={
-                quick.id && quick.coverNeedsReview
-                  ? `/books/${quick.id}?tab=sources`
-                  : quick.status.data?.request_id
-                    ? `/requests#request-${quick.status.data.request_id}`
-                    : "/requests"
-              }
-              aria-label={`${quick.coverStatus}: ${quick.coverNeedsReview && quick.id ? "review sources" : "view downloads"}`}
-            >
-              {quick.coverStatus}
-            </Link>
-          )}
-        </p>
-      )}
+      {cover.status}
       {menuOpen && (
         <CoverMenu
           id={menuId}
@@ -374,28 +542,87 @@ function CoverActions({
             <ExternalLink size={18} aria-hidden="true" />
             Open the book page
           </ContextLink>
-          {extra.map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              role="menuitem"
-              disabled={quick.busy}
-              onClick={() => quick.choose(item.mode)}
-            >
-              <item.icon size={18} aria-hidden="true" />
-              {item.label}
-            </button>
-          ))}
+          {cover.extraItems}
         </CoverMenu>
       )}
-      {listing && (
-        <AddToList
+      {cover.list}
+    </>
+  );
+}
+
+/**
+ * One 44px More button for a small cover tile (UX-44 B): its menu says every action in words (View
+ * details, Get the ebook, Get the audiobook, Add to a list, Open the book page).
+ */
+export function CoverMore(book: Omit<CoverBook, "example">) {
+  const { title, to } = book;
+  const cover = useCoverBook(book);
+  const { menuOpen, setMenuOpen, more, menuId } = cover;
+  return (
+    <>
+      <button
+        ref={more}
+        type="button"
+        className="cover-card__more"
+        aria-label={`More for ${title}`}
+        aria-haspopup="menu"
+        aria-expanded={menuOpen}
+        aria-controls={menuOpen ? menuId : undefined}
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        <Ellipsis aria-hidden="true" />
+      </button>
+      {cover.status}
+      {menuOpen && (
+        <CoverMenu
+          id={menuId}
           title={title}
-          workId={work?.id}
-          providerBook={providerBook}
-          close={() => setListing(false)}
-        />
+          button={more}
+          close={() => setMenuOpen(false)}
+        >
+          <button type="button" role="menuitem" onClick={book.openSummary}>
+            <Info size={18} aria-hidden="true" />
+            View details
+          </button>
+          {(
+            [
+              [cover.ebook, BookOpen],
+              [cover.audio, Headphones],
+            ] as const
+          ).map(([action, Icon]) => (
+            <button
+              key={action.tip}
+              type="button"
+              role="menuitem"
+              disabled={"disabled" in action && action.disabled}
+              onClick={action.onClick}
+            >
+              {action.done ? (
+                <Check size={18} aria-hidden="true" />
+              ) : (
+                <Icon size={18} aria-hidden="true" />
+              )}
+              {action.tip}
+            </button>
+          ))}
+          {cover.canList && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={cover.startListing}
+            >
+              <ListPlus size={18} aria-hidden="true" />
+              Add to a list
+            </button>
+          )}
+          <ContextLink role="menuitem" to={to}>
+            <ExternalLink size={18} aria-hidden="true" />
+            Open the book page
+          </ContextLink>
+          {cover.extraItems}
+        </CoverMenu>
       )}
+      {cover.list}
     </>
   );
 }

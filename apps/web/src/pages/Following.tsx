@@ -16,7 +16,7 @@ import { ArrowRight, Check, Search, UserRound } from "lucide-react";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
-import BookCover from "../components/BookCover";
+import { BookRow } from "../components/CoverCard";
 import DetailTabs from "../components/DetailTabs";
 import { currentParams } from "../currentParams";
 const FollowSettings = lazy(() => import("./FollowSettings"));
@@ -109,41 +109,38 @@ function BookPreview({
   compact?: boolean;
 }) {
   return (
-    <article className={compact ? "follow-book compact" : "follow-book"}>
-      <Link
-        to={bookHref(book)}
-        className="follow-book-cover"
-        aria-label={"View " + book.title}
-      >
-        <BookCover title={book.title} cover={book.cover_url} actions={false} />
-      </Link>
-      <div className="follow-book-copy">
-        <Link to={bookHref(book)} className="follow-book-title">
-          {book.title}
-        </Link>
-        {!compact && (
-          <p className="muted">
-            {book.follow_names?.length
-              ? book.follow_names.join(" · ")
-              : book.authors.join(", ")}
-          </p>
-        )}
-        <p className="follow-book-date">{publication(book)}</p>
-        {book.status ? (
-          <BookStatusLine status={book.status} />
-        ) : (
-          <>
-            {(book.ebook || book.audio) && (
-              <p className="follow-book-owned">
-                <Check size={12} aria-hidden="true" /> In library
-                {book.stale ? " · Last known" : ""}
-              </p>
-            )}
-            {!book.included && <p className="muted">Excluded from updates</p>}
-          </>
-        )}
-      </div>
-    </article>
+    <BookRow
+      className={compact ? "follow-book compact" : "follow-book"}
+      title={book.title}
+      authors={book.authors}
+      cover={book.cover_url}
+      workId={book.work_id}
+      owned={{ ebook: !!book.ebook, audio: !!book.audio }}
+      to={bookHref(book)}
+    >
+      <span className="follow-book-title book-row__title">{book.title}</span>
+      {!compact && (
+        <p className="muted">
+          {book.follow_names?.length
+            ? book.follow_names.join(" · ")
+            : book.authors.join(", ")}
+        </p>
+      )}
+      <p className="follow-book-date">{publication(book)}</p>
+      {book.status ? (
+        <BookStatusLine status={book.status} />
+      ) : (
+        <>
+          {(book.ebook || book.audio) && (
+            <p className="follow-book-owned">
+              <Check size={12} aria-hidden="true" /> In library
+              {book.stale ? " · Last known" : ""}
+            </p>
+          )}
+          {!book.included && <p className="muted">Excluded from updates</p>}
+        </>
+      )}
+    </BookRow>
   );
 }
 

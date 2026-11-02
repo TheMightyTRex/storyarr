@@ -6,7 +6,8 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookCover from "../components/BookCover";
-import CoverCard from "../components/CoverCard";
+import CoverCard, { CoverMore } from "../components/CoverCard";
+import { useBookSummary } from "../components/BookSummaryContext";
 import ShelfScroller from "../components/ShelfScroller";
 import { genreLabel } from "../components/DiscoveryCollections";
 import FollowRelease, { basisLabel } from "../components/FollowRelease";
@@ -237,18 +238,46 @@ function ReleaseCard({
       </span>
     </>
   );
+  const book = useBookSummary();
+  const [engaged, setEngaged] = useState(false);
+  const providerBook =
+    !entry.work_id && entry.provider === "hardcover" && entry.external_id
+      ? { provider: "hardcover", external_id: entry.external_id }
+      : undefined;
+  const open = () =>
+    href &&
+    book.open({
+      title: entry.title,
+      authors: entry.authors,
+      cover: entry.cover_url,
+      workId: entry.work_id || undefined,
+      providerBook,
+      to: href,
+    });
   return (
-    <article className="release-day-card">
-      {href ? (
-        <Link
-          className="release-day-card-main"
+    <article
+      className="release-day-card"
+      onPointerEnter={() => setEngaged(true)}
+      onFocus={() => setEngaged(true)}
+    >
+      {href && (
+        <button
+          type="button"
+          className="release-day-card-open"
+          aria-label={`${entry.title}, details`}
+          onClick={open}
+        />
+      )}
+      <div className="release-day-card-main">{summary}</div>
+      {href && (
+        <CoverMore
+          title={entry.title}
+          workId={entry.work_id || undefined}
+          providerBook={providerBook}
           to={href}
-          aria-label={`View ${entry.title}`}
-        >
-          {summary}
-        </Link>
-      ) : (
-        <div className="release-day-card-main">{summary}</div>
+          engaged={engaged}
+          openSummary={open}
+        />
       )}
       {canEdit && (upcoming || entry.followed || canRequest) && (
         <div className="release-day-card-actions">

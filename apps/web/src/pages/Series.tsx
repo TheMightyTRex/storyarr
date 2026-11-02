@@ -17,7 +17,7 @@ import {
   Headphones,
 } from "lucide-react";
 import BookCover from "../components/BookCover";
-import CoverCard from "../components/CoverCard";
+import { BookRow } from "../components/CoverCard";
 import DetailTabs from "../components/DetailTabs";
 import SeriesRequests from "./SeriesRequests";
 import SeriesScopeReview from "./SeriesScopeReview";
@@ -627,28 +627,24 @@ function SeriesContent({
               <div className="series-selection-books">
                 <div className="series-book-list">
                   {data.items.map((entry) => (
-                    <article
+                    <BookRow
                       className="series-book-row"
                       key={entry.membership_id}
+                      title={entry.work.title}
+                      authors={entry.work.authors}
+                      work={entry.work}
+                      to={`/books/${entry.work.id}`}
+                      lead={
+                        <div className="series-position">
+                          <span>{entry.position ?? "—"}</span>
+                          <small>
+                            {entry.category === "collection"
+                              ? "collection"
+                              : "book"}
+                          </small>
+                        </div>
+                      }
                     >
-                      <div className="series-position">
-                        <span>{entry.position ?? "—"}</span>
-                        <small>
-                          {entry.category === "collection"
-                            ? "collection"
-                            : "book"}
-                        </small>
-                      </div>
-                      <CoverCard
-                        className="series-row-cover"
-                        title={entry.work.title}
-                        authors={entry.work.authors}
-                        work={entry.work}
-                        to={`/books/${entry.work.id}`}
-                        caption={false}
-                        actions={false}
-                      />
-                      <div className="series-row-copy">
                         {(tab === "requests" || tab === "lists") && canEdit && (
                           <label className="check-label">
                             <input
@@ -677,10 +673,8 @@ function SeriesContent({
                             </span>
                           </label>
                         )}
-                        <h2>
-                          <Link to={`/books/${entry.work.id}`}>
-                            {entry.work.title}
-                          </Link>
+                        <h2 className="book-row__title">
+                          {entry.work.title}
                         </h2>
                         <p>
                           {entry.work.authors.join(", ") || "Author unknown"}
@@ -737,8 +731,7 @@ function SeriesContent({
                             }}
                           />
                         )}
-                      </div>
-                    </article>
+                    </BookRow>
                   ))}
                 </div>
                 {data.fetched_at && !data.total && (

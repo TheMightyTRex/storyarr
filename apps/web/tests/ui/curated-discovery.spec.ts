@@ -264,10 +264,18 @@ for (const catalogued of [false, true]) {
     });
     await page.goto("/search?q=Harbor&provider=automatic");
     await expect(
-      page.getByRole("link", { name: "View Another recording" }),
+      page.getByRole("button", { name: "Another recording, details" }),
     ).toBeVisible();
     expect(searches).toEqual(["automatic:1", "audible:2"]);
-    await page.locator('a[href="/discover/books/audible/B012345678"]').click();
+    // A search result row opens the Summary, which leads to the book page (UX-44).
+    await page
+      .locator(".provider-row")
+      .getByRole("button", { name: "Harbor, details" })
+      .click();
+    await page
+      .getByRole("dialog", { name: /Summary/ })
+      .locator('a[href="/discover/books/audible/B012345678"]')
+      .click();
     await expect(page.getByRole("button", { name: /Quick add/ })).toHaveCount(
       0,
     );
