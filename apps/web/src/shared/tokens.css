@@ -1,6 +1,6 @@
 /*
  * Shared design tokens for Storyarr and Starboard (version 1, 2 November 2026).
- * Copied from ~/Documents/Claude/design/shared-components/tokens.css: change it there first, then copy.
+ * Copied by tools/sync.py from ~/Documents/Claude/design/shared-components: change it there, not here.
  * Storyarr's copy leaves out the font (styles.css loads Atkinson Hyperlegible Next and sets --font).
  *
  * Role names only: components use these and nothing else, so both apps look like one family and a
@@ -79,12 +79,12 @@
   --color-text-muted: #424b5b;
   --color-border: #7d879a;
   --color-divider: #c2cddf;
-  --color-accent: #323a77;
+  --color-accent: #0b5f5a; /* teal (UX-02, option B) */
   --color-accent-text: #ffffff;
-  --color-accent-soft: #e3e7fb;
+  --color-accent-soft: #dff1ef;
   --color-panel-header: #ffffff;
   --color-control-active: color-mix(in srgb, var(--color-accent) 12%, transparent);
-  --color-focus: #323a77;
+  --color-focus: #0b5f5a;
   --color-count: #af4e24;
   --color-count-text: #ffffff;
   --color-backdrop: rgb(16 24 40 / 0.45);
@@ -123,12 +123,11 @@
     --color-text-muted: #a4aec1;
     --color-border: #6f7b91;
     --color-divider: #303c51;
-    --color-accent: #a5b4fc;
+    --color-accent: #5ed3c6;
     --color-accent-text: #101827;
-    --color-accent-soft: #252f52;
-  --color-panel-header: #232f42;
+    --color-accent-soft: #163a38;
     --color-panel-header: #232f42;
-    --color-focus: #a5b4fc;
+    --color-focus: #5ed3c6;
     --color-count: #b7562c;
     --color-backdrop: rgb(0 0 0 / 0.6);
     --color-logo-tile: #a5b4fc;
@@ -161,11 +160,11 @@
   --color-text-muted: #a4aec1;
   --color-border: #6f7b91;
   --color-divider: #303c51;
-  --color-accent: #a5b4fc;
+  --color-accent: #5ed3c6;
   --color-accent-text: #101827;
-  --color-accent-soft: #252f52;
+  --color-accent-soft: #163a38;
   --color-panel-header: #232f42;
-  --color-focus: #a5b4fc;
+  --color-focus: #5ed3c6;
   --color-count: #b7562c;
   --color-backdrop: rgb(0 0 0 / 0.6);
   --color-logo-tile: #a5b4fc;
@@ -199,9 +198,9 @@
   --color-text-muted: #19212f;
   --color-border: #000000;
   --color-divider: #596272;
-  --color-accent: #11104a;
+  --color-accent: #003d39;
   --color-accent-text: #ffffff;
-  --color-accent-soft: #dbe0ff;
+  --color-accent-soft: #d6eeeb;
   --color-panel-header: #ffffff;
   --chart-1: #1f2a8a;
   --chart-2: #8a3200;
@@ -228,9 +227,9 @@
   --color-text-muted: #d5e0f4;
   --color-border: #ffffff;
   --color-divider: #8391aa;
-  --color-accent: #e7ecff;
+  --color-accent: #b8f2ea;
   --color-accent-text: #000000;
-  --color-accent-soft: #0d2245;
+  --color-accent-soft: #0b2a27;
   --color-panel-header: #000000;
   --chart-1: #c2cbff;
   --chart-2: #ffb38a;

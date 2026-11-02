@@ -1,6 +1,6 @@
 /*
  * Shared components for Storyarr and Starboard (version 1, 2 November 2026).
- * Copied from ~/Documents/Claude/design/shared-components/components.css: change it there first, then copy.
+ * Copied by tools/sync.py from ~/Documents/Claude/design/shared-components: change it there, not here.
  *
  * Uses only tokens.css. Everything is in the "shared" layer, so an app's own styles win without
  * !important. Class names are plain and match Starboard's; Storyarr maps its older classes to these
@@ -875,18 +875,29 @@
 
   /* 5. Content -------------------------------------------------------------------------------- */
 
-  /* Status chip: words, a shape and a colour together (chosen style: filled tint with a dot). */
+  /* Status chip: words, an icon and a colour together (chosen style B, UX-04: outline with icon). A
+     surface background, a border and text in the tone colour, so it stays clear on busy walls and
+     covers. Put the state's icon first (svg, aria-hidden); a chip with no icon shows the tone's shape
+     instead: dot, diamond (warning), square (danger), ring (muted). */
   .chip {
+    --chip-tone: var(--status-neutral-fg);
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    padding: 2px var(--space-2);
-    border: 1px solid transparent;
-    background: var(--status-neutral-bg);
-    color: var(--status-neutral-fg);
+    min-height: 24px;
+    padding: 1px var(--space-2);
+    border: 1px solid var(--chip-tone);
+    background: var(--color-surface);
+    color: var(--chip-tone);
     font-size: var(--text-xs);
     font-weight: var(--weight-strong);
+    line-height: 1.4;
     white-space: nowrap;
+  }
+  .chip > svg {
+    flex: none;
+    width: 14px;
+    height: 14px;
   }
   .chip::before {
     content: "";
@@ -896,39 +907,39 @@
     border-radius: var(--radius-round);
     background: currentColor;
   }
+  .chip:has(> svg)::before {
+    display: none;
+  }
   .chip[data-tone="success"] {
-    background: var(--status-success-bg);
-    color: var(--status-success-fg);
+    --chip-tone: var(--status-success-fg);
   }
   .chip[data-tone="info"] {
-    background: var(--status-info-bg);
-    color: var(--status-info-fg);
+    --chip-tone: var(--status-info-fg);
   }
   .chip[data-tone="warning"] {
-    background: var(--status-warning-bg);
-    color: var(--status-warning-fg);
+    --chip-tone: var(--status-warning-fg);
   }
   .chip[data-tone="warning"]::before {
     border-radius: 0;
     transform: rotate(45deg) scale(0.85);
   }
   .chip[data-tone="danger"] {
-    background: var(--status-danger-bg);
-    color: var(--status-danger-fg);
+    --chip-tone: var(--status-danger-fg);
   }
   .chip[data-tone="danger"]::before {
     border-radius: 0;
   }
   .chip[data-tone="muted"] {
-    background: var(--status-muted-bg);
-    color: var(--status-muted-fg);
+    --chip-tone: var(--status-muted-fg);
   }
   .chip[data-tone="muted"]::before {
     background: transparent;
     border: 2px solid currentColor;
   }
-  .pref-contrast .chip {
-    border-color: currentColor;
+  /* On a cover or a coloured edge the chip keeps its own surface, so it reads on any picture. */
+  .stat .chip,
+  .cover .chip {
+    background: var(--color-surface-raised);
   }
   /* Count: a number on a tab or button, with its meaning in a visually hidden label. */
   .count {
@@ -2203,6 +2214,26 @@
     content: " · today";
     font-weight: var(--weight-regular);
   }
+  /* A day with releases: small covers, the first title and "N releases", which opens the day's slide-out. */
+  .calendar__covers {
+    display: flex;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+  }
+  .cover--mini {
+    width: 24px;
+    flex: none;
+  }
+  .calendar__titles {
+    margin-top: var(--space-1);
+  }
+  .calendar__open {
+    margin-top: var(--space-1);
+  }
+  .calendar__short {
+    display: none;
+    text-decoration: none;
+  }
 
   /* Selection bar: "3 selected" with bulk actions; same place and look as the save bar. */
   .selection-bar {
@@ -2279,6 +2310,12 @@
 
   /* 7. Phones and narrow windows ---------------------------------------------------------------- */
   @media (max-width: 1100px) {
+    .calendar__long {
+      display: none;
+    }
+    .calendar__short {
+      display: inline;
+    }
     .page {
       padding: var(--space-6) var(--space-6) var(--space-12);
     }
@@ -2355,8 +2392,30 @@
     .steps__short:only-child {
       display: block;
     }
+    /* On phones the month becomes an agenda: only the days with releases, each with its full date. */
+    .calendar thead {
+      display: none;
+    }
+    .calendar,
+    .calendar tbody,
+    .calendar tr,
     .calendar td {
-      height: 72px;
+      display: block;
+      width: 100%;
+    }
+    .calendar td {
+      height: auto;
+      border-width: 1px 0 0;
+    }
+    .calendar td[data-empty] {
+      display: none;
+    }
+    .calendar td::before {
+      content: attr(data-label);
+      font-weight: var(--weight-strong);
+    }
+    .calendar td .calendar__day {
+      display: none;
     }
     .setting__control {
       justify-content: start;

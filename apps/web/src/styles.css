@@ -303,7 +303,8 @@ button.discovery-book:hover {
   --surface: var(--c-bg-indigo-27);
   --muted: var(--c-text-slate-75);
   --line: var(--c-border-indigo-35);
-  --accent: var(--c-text-indigo-79);
+  /* The accent and focus colours come from the shared library (teal, UX-02 option B). */
+  --accent: var(--color-accent);
 }
 .mobile-signout {
   display: none;
@@ -371,7 +372,7 @@ button.primary:hover {
   background: var(--c-bg-indigo-62);
 }
 :focus-visible {
-  outline: 3px solid var(--c-border-indigo-87);
+  outline: 3px solid var(--color-focus);
   outline-offset: 4px;
 }
 input,
