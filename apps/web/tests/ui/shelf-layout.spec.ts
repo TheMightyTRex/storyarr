@@ -163,7 +163,8 @@ test("on a narrow window the Discover menu shows icons only, with no scroll bar"
   expect(
     await row.evaluate((element) => element.scrollWidth <= element.clientWidth),
   ).toBe(true);
-  // With room again, the names come back.
-  await page.setViewportSize({ width: 1600, height: 800 });
+  // With room again, the names come back. Discover shares its header row with search and three
+  // buttons, so its names need about 1,640px.
+  await page.setViewportSize({ width: 1920, height: 800 });
   await expect(menu).not.toHaveClass(/is-compact/);
 });

@@ -113,21 +113,28 @@ for (const scenario of [
         : route.fulfill({ status: 202, json: { id, status: "queued" } });
     });
     await page.goto("/discover");
-    const button = page.getByRole("button", {
-      name: "Refresh lists",
-      exact: true,
-    });
-    await expect(
-      page
-        .locator(".topbar-actions")
-        .getByRole("button", { name: "Add list", exact: true }),
-    ).toBeVisible();
+    // Adding and refreshing lists share one Lists menu in the header.
+    const button = page
+      .locator(".topbar-actions")
+      .getByRole("button", { name: "Lists", exact: true });
     await button.click();
+    const menu = page.getByRole("menu", { name: "Lists" });
+    await expect(
+      menu.getByRole("menuitem", { name: "Add list", exact: true }),
+    ).toBeFocused();
+    await menu.getByRole("menuitem", { name: "Refresh all lists" }).click();
+    await expect(menu).toHaveCount(0);
     if (scenario !== "empty") {
       await expect
         .poll(() => calls)
         .toEqual(["one", "two", "hardcover", "storygraph"]);
-      await expect(button).toBeDisabled();
+      await expect(button).toHaveText(/Refreshing/);
+      await button.click();
+      await expect(
+        menu.getByRole("menuitem", { name: "Refresh all lists" }),
+      ).toBeDisabled();
+      await page.keyboard.press("Escape");
+      await expect(button).toBeFocused();
       finished = true;
     }
     const expected =
@@ -141,7 +148,7 @@ for (const scenario of [
     await expect(
       page.getByRole("status").filter({ hasText: expected }),
     ).toBeVisible();
-    await expect(button).toBeEnabled();
+    await expect(button).toHaveText(/Lists/);
     expect(calls).toEqual(
       scenario === "empty" ? [] : ["one", "two", "hardcover", "storygraph"],
     );
@@ -176,10 +183,14 @@ test("topbar refresh can update StoryGraph lists only", async ({ page }) => {
     return route.fulfill({ status: 202, json: { status: "queued" } });
   });
   await page.goto("/discover");
-  await page
-    .getByRole("button", { name: "Choose which lists to refresh" })
-    .click();
-  await page.getByRole("menuitem", { name: "StoryGraph", exact: true }).click();
+  await page.getByRole("button", { name: "Lists", exact: true }).click();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  await expect(
+    page.getByRole("menuitem", { name: "Refresh StoryGraph lists" }),
+  ).toBeFocused();
+  await page.keyboard.press("Enter");
   await expect.poll(() => calls).toEqual(["storygraph"]);
   await expect(page.getByText("Refreshed 1 StoryGraph list.")).toBeVisible();
 });

@@ -129,7 +129,8 @@ test("manual list preview is bounded and mobile navigation fits", async ({
 }, info) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/discover");
-  await page.getByRole("button", { name: "Add list", exact: true }).click();
+  await page.getByRole("button", { name: "Lists", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Add list" }).click();
   const dialog = page.getByRole("dialog", { name: "Add a list" });
   await dialog
     .getByLabel("List URL")

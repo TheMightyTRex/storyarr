@@ -424,7 +424,8 @@ test("connect StoryGraph, follow a shelf, and paste a tag list", async ({
     storygraph.getByRole("link", { name: "To-read", exact: true }),
   ).toBeVisible();
   await page.goto("/discover?view=yours");
-  await page.getByRole("button", { name: "Add list" }).click();
+  await page.getByRole("button", { name: "Lists", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Add list" }).click();
   const dialog = page.getByRole("dialog", { name: "Add a list" });
   await dialog
     .getByLabel("List URL")

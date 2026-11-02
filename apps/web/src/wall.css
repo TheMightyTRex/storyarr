@@ -155,7 +155,7 @@
 }
 .wall-more {
   align-self: center;
-  min-height: 44px;
+  min-height: var(--control-height-large);
 }
 
 .book-drawer {
@@ -204,7 +204,7 @@
 .drawer-action {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height-large);
   padding: 0 18px;
   border: 1px solid var(--line);
   border-radius: 0;

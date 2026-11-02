@@ -625,9 +625,7 @@ nav a.active .nav-count {
   gap: 8px;
   margin-left: auto;
 }
-.list-refresh {
-  display: flex;
-  align-items: stretch;
+.lists-menu {
   position: relative;
 }
 .list-refresh-menu {
@@ -635,17 +633,12 @@ nav a.active .nav-count {
   right: 0;
   top: calc(100% + 6px);
   z-index: 30;
-  min-width: 11rem;
+  min-width: 15rem;
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 0;
   background: var(--panel, var(--c-bg-indigo-27));
   box-shadow: 0 12px 30px var(--c-shadow-grey-0-a27);
-}
-@media (max-width: 1100px) {
-  .list-refresh-label {
-    display: none;
-  }
 }
 .page-view-toolbar {
   display: flex;
@@ -2109,7 +2102,7 @@ img.detail-cover {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 44px;
+  min-height: var(--control-height-large);
 }
 .reader-action-link {
   padding: 9px 14px;

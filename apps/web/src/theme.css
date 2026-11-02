@@ -104,7 +104,7 @@ body {
   display: inline-flex;
   width: auto;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height-large);
   padding: 0 16px;
   border-radius: 0;
   font-weight: 600;
@@ -182,7 +182,7 @@ body {
 }
 .display-panel > button {
   align-self: flex-start;
-  min-height: 44px;
+  min-height: var(--control-height-large);
 }
 .display-status:empty {
   display: none;
@@ -208,6 +208,6 @@ body {
   justify-content: flex-end;
 }
 .display-dialog-actions button {
-  min-height: 44px;
+  min-height: var(--control-height-large);
   min-width: 96px;
 }

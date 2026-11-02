@@ -2,11 +2,10 @@ import NavigationContinuity from "./components/NavigationContinuity";
 import ContentSkeleton from "./components/ContentSkeleton";
 import ConnectionHealth from "./components/ConnectionHealth";
 import { useRefreshReadingLists } from "./hooks/useRefreshReadingLists";
-import type { ReadingProvider } from "./hooks/useRefreshReadingLists";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
+import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ListPlus, RefreshCw, ChevronDown, Search } from "lucide-react";
+import { List, ListPlus, RefreshCw, ChevronDown, Search } from "lucide-react";
 import {
   Navigate,
   Route,
@@ -288,67 +287,92 @@ function SignIn({ onSuccess }: { onSuccess: (auth: Auth) => void }) {
   );
 }
 
-function RefreshLists({
+// Lists in the header: one menu for adding a list and refreshing the lists Storyarr tracks.
+function ListsMenu({
   refresh,
+  addList,
 }: {
   refresh: ReturnType<typeof useRefreshReadingLists>;
+  addList: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const items = () => [
+    ...(root.current?.querySelectorAll<HTMLButtonElement>(
+      '[role="menuitem"]:not(:disabled)',
+    ) ?? []),
+  ];
   useEffect(() => {
     if (!open) return;
+    items()[0]?.focus();
     const close = (event: PointerEvent) => {
       if (!root.current?.contains(event.target as Node)) setOpen(false);
     };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
     document.addEventListener("pointerdown", close);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", close);
-      document.removeEventListener("keydown", onKey);
-    };
+    return () => document.removeEventListener("pointerdown", close);
   }, [open]);
-  function choose(provider?: ReadingProvider) {
+  function onKeyDown(event: ReactKeyboardEvent) {
+    if (!open) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setOpen(false);
+      trigger.current?.focus();
+      return;
+    }
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    event.preventDefault();
+    const list = items();
+    const at = list.indexOf(document.activeElement as HTMLButtonElement);
+    const step = event.key === "ArrowDown" ? 1 : -1;
+    list[(at + step + list.length) % list.length]?.focus();
+  }
+  function choose(action: () => void) {
     setOpen(false);
-    refresh.refresh(provider);
+    trigger.current?.focus();
+    action();
   }
   return (
-    <div
-      className="list-refresh"
-      data-busy={refresh.busy ? "true" : "false"}
-      ref={root}
-    >
+    <div className="lists-menu" ref={root} onKeyDown={onKeyDown}>
       <button
-        className="topbar-action list-refresh-main"
-        aria-label="Refresh lists"
-        title="Refresh tracked Goodreads, StoryGraph, and Hardcover lists. Community lists keep their own schedule."
-        disabled={refresh.busy}
-        onClick={() => choose()}
-      >
-        <RefreshCw
-          size={18}
-          aria-hidden="true"
-          className={refresh.busy ? "list-refresh-spinning" : undefined}
-        />
-        <span className="list-refresh-label">
-          {refresh.busy ? "Refreshing…" : "Refresh lists"}
-        </span>
-      </button>
-      <button
+        ref={trigger}
         type="button"
-        className="list-refresh-toggle"
-        aria-label="Choose which lists to refresh"
-        aria-expanded={open}
+        className="topbar-action"
         aria-haspopup="menu"
-        disabled={refresh.busy}
+        aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
+        {refresh.busy ? (
+          <RefreshCw
+            size={18}
+            aria-hidden="true"
+            className="list-refresh-spinning"
+          />
+        ) : (
+          <List size={18} aria-hidden="true" />
+        )}
+        <span className="topbar-label">
+          {refresh.busy ? "Refreshing…" : "Lists"}
+        </span>
         <ChevronDown size={16} aria-hidden="true" />
       </button>
       {open && (
-        <div className="list-refresh-menu" role="menu">
+        <div className="list-refresh-menu" role="menu" aria-label="Lists">
+          <button type="button" role="menuitem" onClick={() => choose(addList)}>
+            <ListPlus size={16} aria-hidden="true" />
+            Add list
+          </button>
+          <hr />
+          <button
+            type="button"
+            role="menuitem"
+            disabled={refresh.busy}
+            title="Refresh tracked Goodreads, StoryGraph and Hardcover lists. Community lists keep their own schedule."
+            onClick={() => choose(() => refresh.refresh())}
+          >
+            <RefreshCw size={16} aria-hidden="true" />
+            Refresh all lists
+          </button>
           {(
             [
               ["goodreads", "Goodreads"],
@@ -361,9 +385,9 @@ function RefreshLists({
               type="button"
               role="menuitem"
               disabled={refresh.busy}
-              onClick={() => choose(provider)}
+              onClick={() => choose(() => refresh.refresh(provider))}
             >
-              {name}
+              Refresh {name} lists
             </button>
           ))}
         </div>
@@ -455,6 +479,8 @@ function Shell({ auth }: { auth: Auth }) {
                 signOut={() => logout.mutate()}
                 signingOut={logout.isPending}
               />
+              {/* The page's sub-menu sits on the left of the header, with search and Display on the right. */}
+              <div className="header-submenu" ref={setSubmenuSlot} />
               <form className="search" role="search" onSubmit={searchSubmit}>
                 <Search size={18} aria-hidden="true" />
                 <input
@@ -472,21 +498,14 @@ function Shell({ auth }: { auth: Auth }) {
                   /^\/(discover(?:\/collections\/[^/]+)?|lists(?:\/.*)?|following(?:\/.*)?)$/.test(
                     location.pathname,
                   ) && (
-                    <>
-                      <button
-                        className="topbar-action"
-                        onClick={() => setAddingList(true)}
-                      >
-                        <ListPlus size={18} aria-hidden="true" />
-                        Add list
-                      </button>
-                      <RefreshLists refresh={listsRefresh} />
-                    </>
+                    <ListsMenu
+                      refresh={listsRefresh}
+                      addList={() => setAddingList(true)}
+                    />
                   )}
                 <DisplayButton />
               </div>
             </header>
-            <div className="header-submenu" ref={setSubmenuSlot} />
             <LoadingBar />
             <PageTitle />
           </div>

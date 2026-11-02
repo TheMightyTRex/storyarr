@@ -180,7 +180,7 @@
   flex-direction: row;
   align-items: flex-end;
   gap: 10px;
-  min-height: 44px;
+  min-height: var(--control-height-large);
   padding: 10px 14px;
   border: 1px solid var(--line);
   background: var(--surface);

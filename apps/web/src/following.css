@@ -470,7 +470,7 @@ button.follow-count[aria-expanded="true"] {
   .catalog-follow-control > button,
   .catalog-follow-control > a,
   .book-author-follows summary {
-    min-height: 44px;
+    min-height: var(--control-height-large);
   }
   .follow-toolbar input,
   .follow-toolbar select {

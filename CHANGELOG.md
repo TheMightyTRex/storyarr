@@ -16,6 +16,11 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Bigger covers on My library,** with a cover size setting in Settings, General: Small, Medium (the new,
   larger default) or Large, saved with your account.
 
+- **One header row:** the page's sub-menu sits on the left of the header, with search and Display on the right,
+  so the header takes one row instead of two. Below 1100px the sub-menu drops to a row of its own; on phones it
+  stays in the menu drawer. Search and every header button share one height (44px).
+- **Lists menu:** on Discover, Add list and Refresh lists are now one Lists menu: Add list, Refresh all lists,
+  and refresh Goodreads, StoryGraph or Hardcover lists only.
 - **One header for every pop-up:** release notes, the Display dialog and every other pop-up now have the
   slide-out panels' header: the name in bold at the same size, the close button, a white bar and a grey line.
 - **One layout:** the Classic layout is retired, and everyone uses Shelf (the icon menu, with sub-menus in the

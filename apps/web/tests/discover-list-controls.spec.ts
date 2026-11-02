@@ -203,7 +203,8 @@ test("Discover owns list browsing, refresh, format downloads and settings", asyn
 
 test("local list creation stays within Discover", async ({ page }) => {
   await page.goto("/discover?view=yours");
-  await page.getByRole("button", { name: "Add list", exact: true }).click();
+  await page.getByRole("button", { name: "Lists", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Add list" }).click();
   await page.getByRole("button", { name: "Create a local list" }).click();
   const dialog = page.getByRole("dialog", { name: "Create a list" });
   await dialog.getByLabel("List name").fill("Weekend reading");
@@ -218,7 +219,8 @@ test("reading accounts owns monitoring and compact list details", async ({
   page,
 }, info) => {
   await page.goto("/discover?view=yours");
-  await page.getByRole("button", { name: "Add list", exact: true }).click();
+  await page.getByRole("button", { name: "Lists", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Add list" }).click();
   await page.getByRole("button", { name: "Create a local list" }).click();
   const create = page.getByRole("dialog", { name: "Create a list" });
   await create.getByLabel("List name").fill("Settings test shelf");

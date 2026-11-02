@@ -102,7 +102,7 @@ test("top bar explains connection failures and links to settings", async ({
   expect(state.rechecks).toBe(1);
   const warningBox = await warning.boundingBox();
   const addBox = await page
-    .getByRole("button", { name: "Add list", exact: true })
+    .getByRole("button", { name: "Lists", exact: true })
     .boundingBox();
   expect(addBox!.x - (warningBox!.x + warningBox!.width)).toBeLessThan(20);
   expect(addBox!.x).toBeGreaterThan(warningBox!.x);

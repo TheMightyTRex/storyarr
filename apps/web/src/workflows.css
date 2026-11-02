@@ -438,7 +438,7 @@
     gap: 4px;
   }
   .sidebar #main-navigation a {
-    min-height: 44px;
+    min-height: var(--control-height-large);
   }
   .topbar {
     padding-inline: 16px;
@@ -529,10 +529,10 @@
   :is(.requests-page, .book-sources, .download-review, .review-dialog)
     :is(button, .button, .control-action, summary),
   .request-ledger .request-icon-action {
-    min-height: 44px;
+    min-height: var(--control-height-large);
   }
   .request-ledger .request-icon-action {
-    min-width: 44px;
+    min-width: var(--control-height-large);
   }
   .skeleton-book .skeleton-cover {
     width: 90px;
@@ -695,7 +695,7 @@
 @media (max-width: 720px) {
   .mobile-menu-button,
   .sidebar .mobile-signout {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: var(--control-height-large);
+    min-width: var(--control-height-large);
   }
 }

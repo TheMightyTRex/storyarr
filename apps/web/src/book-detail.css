@@ -48,7 +48,7 @@
   gap: 4px;
 }
 .reader-page .book-tabs.reader-nav a {
-  min-height: 44px;
+  min-height: var(--control-height-large);
   padding: 12px 16px;
 }
 .reader-page .book-tabs.reader-nav a[aria-selected="true"] {

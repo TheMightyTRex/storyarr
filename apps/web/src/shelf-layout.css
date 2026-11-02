@@ -83,8 +83,8 @@
   gap: 6px;
 }
 .shelf-account .icon-button {
-  min-width: 44px;
-  min-height: 44px;
+  min-width: var(--control-height-large);
+  min-height: var(--control-height-large);
 }
 .shelf-rail .application-release {
   margin: 0;
