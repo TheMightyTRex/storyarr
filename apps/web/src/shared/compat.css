@@ -1,0 +1,64 @@
+/*
+ * Storyarr still uses some class names that the shared library also styles (.notice, .count, .empty,
+ * .panel...). Until each page moves to the library's markup, these rules put back what those classes
+ * looked like before the library arrived. This layer sits above the library and below Storyarr's own
+ * styles. When a page moves over, delete the rule for the class it now uses the library way.
+ */
+.notice {
+  display: block;
+  grid-template-columns: none;
+  gap: normal;
+  align-items: normal;
+  border-left: 0;
+  background: none;
+  color: inherit;
+}
+.count {
+  display: inline;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  font-variant-numeric: normal;
+  font-weight: inherit;
+  text-align: inherit;
+  outline: 0;
+}
+.empty {
+  display: block;
+  gap: normal;
+  justify-items: legacy;
+}
+.panel {
+  display: block;
+  gap: normal;
+}
+.settings-section {
+  display: block;
+  gap: normal;
+  max-width: none;
+}
+.phone-menu {
+  inset: auto;
+  z-index: auto;
+}
+.segmented {
+  width: auto;
+  max-width: none;
+}
+.actions,
+.page-head .actions {
+  width: auto;
+  margin-left: 0;
+}
+.avatar {
+  font-size: inherit;
+}
+.back-link {
+  min-height: 0;
+  font-weight: inherit;
+}
+.skip-link {
+  left: auto;
+  color: inherit;
+  font-weight: inherit;
+}

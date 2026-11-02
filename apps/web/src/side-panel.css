@@ -4,9 +4,10 @@
  * padding it has, so the bar can reach its edges.
  */
 :root {
-  --panel-header-bg: #ffffff;
-  --panel-header-line: #c9ced8;
-  --panel-header-text: #1c2233;
+  /* The shared library's panel header colours, so Storyarr and Starboard match. */
+  --panel-header-bg: var(--color-panel-header);
+  --panel-header-line: var(--color-divider);
+  --panel-header-text: var(--color-text);
 }
 :root[data-theme="dark"] {
   --panel-header-bg: var(--surface);

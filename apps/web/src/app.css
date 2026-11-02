@@ -1,5 +1,9 @@
 /* Load page layouts once, then apply the shared controls consistently on every route. */
 @import "tailwindcss";
+/* The shared library (with Starboard), below Storyarr's own layers so pages change only as they move over. */
+@import "./shared/tokens.css" layer(shared-tokens);
+@import "./shared/components.css";
+@import "./shared/compat.css" layer(shared-compat);
 @import "./theme-tokens.css" layer(app);
 @import "./styles.css" layer(app);
 @import "./settings.css" layer(app);

@@ -3,7 +3,7 @@
 :root {
   --control-height: 30px;
   /* Toolbars, the header, panels and menus: one 44px height, which is also the touch target. */
-  --control-height-large: 44px;
+  --control-height-large: var(--control-h); /* 44px, from the shared library */
   --control-radius: 0;
   --control-font-size: 0.6875rem;
   --control-gap: 5px;

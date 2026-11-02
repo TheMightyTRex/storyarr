@@ -1,0 +1,273 @@
+/*
+ * Shared design tokens for Storyarr and Starboard (version 1, 2 November 2026).
+ * Copied from ~/Documents/Claude/design/shared-components/tokens.css: change it there first, then copy.
+ * Storyarr's copy leaves out the font (styles.css loads Atkinson Hyperlegible Next and sets --font).
+ *
+ * Role names only: components use these and nothing else, so both apps look like one family and a
+ * theme is a change of values, not of components. Three themes: Light, Dark, High contrast (light and
+ * dark). Display preferences (text size, wider spacing, reduced motion) are classes on <html>.
+ *
+ * Colours are Storyarr's, already used by Starboard. Every text and control pair below meets
+ * WCAG 2.2 AA (4.5:1 text, 3:1 borders of controls and focus) in every theme; see README.md.
+ */
+
+:root {
+  /* Type: one typeface, five sizes, scaled by the Text size setting. */
+  --text-scale: 1;
+  --text-xs: calc(0.75rem * var(--text-scale));
+  --text-sm: calc(0.875rem * var(--text-scale));
+  --text-md: calc(1rem * var(--text-scale));
+  --text-lg: calc(1.25rem * var(--text-scale));
+  --text-xl: calc(1.5rem * var(--text-scale));
+  --text-2xl: calc(2rem * var(--text-scale));
+  --leading: 1.5;
+  --leading-tight: 1.25;
+  --letter-spacing: normal;
+  --word-spacing: normal;
+  --weight-regular: 400;
+  --weight-strong: 600;
+  --weight-heading: 700;
+
+  /* Space: a 4px scale. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* Size. 44px is the control height and the touch target everywhere; 32px only inside dense tables,
+     never for the only way to do something. */
+  --control-h: 44px;
+  --control-h-compact: 32px;
+  --icon-sm: 16px;
+  --icon-md: 18px;
+  --icon-lg: 20px;
+  --radius: 0;
+  --radius-round: 50%;
+  --header-h: 64px;
+  --tabs-h: 48px;
+  --rail-w: 88px;
+  --panel-w: 420px;
+  --dialog-w: 560px;
+  --content-max: 1440px;
+  --focus-w: 3px;
+  --current-bar-w: 3px;
+  --status-edge-w: 6px;
+
+  /* Motion. Zero when the person asks for less motion. */
+  --motion-fast: 120ms;
+  --motion-panel: 200ms ease-out;
+
+  /* Layers. */
+  --layer-sticky: 10;
+  --layer-header: 50;
+  --layer-menu: 60;
+  --layer-panel: 70;
+  --layer-dialog: 80;
+  --layer-toast: 90;
+
+  /* Colour: Light. */
+  --color-bg: #f0f5ff;
+  --color-header: #fcfdff;
+  --color-surface: #f7faff;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #e4ebf7;
+  --color-text: #141416;
+  --color-text-muted: #424b5b;
+  --color-border: #7d879a;
+  --color-divider: #c2cddf;
+  --color-accent: #323a77;
+  --color-accent-text: #ffffff;
+  --color-accent-soft: #e3e7fb;
+  --color-panel-header: #ffffff;
+  --color-control-active: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --color-focus: #323a77;
+  --color-count: #af4e24;
+  --color-count-text: #ffffff;
+  --color-backdrop: rgb(16 24 40 / 0.45);
+  --color-logo-tile: #323a77;
+  --color-logo-star: #af4e24;
+  --chart-1: #4552a8;
+  --chart-2: #c0602f;
+  --shadow-raised: 0 8px 28px rgb(16 24 40 / 0.18);
+
+  /* Status: background and text pairs, always shown with words and an icon or shape too. */
+  --status-success-bg: #dcf2e3;
+  --status-success-fg: #135c2e;
+  --status-info-bg: #dde9fb;
+  --status-info-fg: #154a96;
+  --status-neutral-bg: #eceef2;
+  --status-neutral-fg: #3c4350;
+  --status-warning-bg: #fdefc8;
+  --status-warning-fg: #6b4500;
+  --status-danger-bg: #fbe0de;
+  --status-danger-fg: #9b1c14;
+  --status-muted-bg: #eceef2;
+  --status-muted-fg: #4a5160;
+
+  color-scheme: light;
+}
+
+/* Dark: by the device, unless the person chose Light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #101827;
+    --color-header: #141e2e;
+    --color-surface: #1c2738;
+    --color-surface-raised: #232f42;
+    --color-surface-sunken: #0c1220;
+    --color-text: #f3f4f6;
+    --color-text-muted: #a4aec1;
+    --color-border: #6f7b91;
+    --color-divider: #303c51;
+    --color-accent: #a5b4fc;
+    --color-accent-text: #101827;
+    --color-accent-soft: #252f52;
+  --color-panel-header: #232f42;
+    --color-panel-header: #232f42;
+    --color-focus: #a5b4fc;
+    --color-count: #b7562c;
+    --color-backdrop: rgb(0 0 0 / 0.6);
+    --color-logo-tile: #a5b4fc;
+    --color-logo-star: #ffb38a;
+    --chart-1: #6f80e6;
+    --chart-2: #d2733c;
+    --shadow-raised: 0 8px 28px rgb(0 0 0 / 0.5);
+    --status-success-bg: #12351f;
+    --status-success-fg: #8fe0aa;
+    --status-info-bg: #142a4b;
+    --status-info-fg: #a8c8ff;
+    --status-neutral-bg: #262a33;
+    --status-neutral-fg: #c9ced8;
+    --status-warning-bg: #3a2c09;
+    --status-warning-fg: #f6cf6b;
+    --status-danger-bg: #431816;
+    --status-danger-fg: #ffaaa3;
+    --status-muted-bg: #262a33;
+    --status-muted-fg: #b3b9c5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --color-bg: #101827;
+  --color-header: #141e2e;
+  --color-surface: #1c2738;
+  --color-surface-raised: #232f42;
+  --color-surface-sunken: #0c1220;
+  --color-text: #f3f4f6;
+  --color-text-muted: #a4aec1;
+  --color-border: #6f7b91;
+  --color-divider: #303c51;
+  --color-accent: #a5b4fc;
+  --color-accent-text: #101827;
+  --color-accent-soft: #252f52;
+  --color-panel-header: #232f42;
+  --color-focus: #a5b4fc;
+  --color-count: #b7562c;
+  --color-backdrop: rgb(0 0 0 / 0.6);
+  --color-logo-tile: #a5b4fc;
+  --color-logo-star: #ffb38a;
+  --chart-1: #6f80e6;
+  --chart-2: #d2733c;
+  --shadow-raised: 0 8px 28px rgb(0 0 0 / 0.5);
+  --status-success-bg: #12351f;
+  --status-success-fg: #8fe0aa;
+  --status-info-bg: #142a4b;
+  --status-info-fg: #a8c8ff;
+  --status-neutral-bg: #262a33;
+  --status-neutral-fg: #c9ced8;
+  --status-warning-bg: #3a2c09;
+  --status-warning-fg: #f6cf6b;
+  --status-danger-bg: #431816;
+  --status-danger-fg: #ffaaa3;
+  --status-muted-bg: #262a33;
+  --status-muted-fg: #b3b9c5;
+  color-scheme: dark;
+}
+
+/* High contrast: stronger text, borders and focus; borders instead of shadows. */
+:root.pref-contrast {
+  --color-bg: #f0f5ff;
+  --color-header: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #f0f0f0;
+  --color-text: #030304;
+  --color-text-muted: #19212f;
+  --color-border: #000000;
+  --color-divider: #596272;
+  --color-accent: #11104a;
+  --color-accent-text: #ffffff;
+  --color-accent-soft: #dbe0ff;
+  --color-panel-header: #ffffff;
+  --chart-1: #1f2a8a;
+  --chart-2: #8a3200;
+  --color-focus: #c4006a;
+  --color-count: #863309;
+  --color-logo-tile: #11104a;
+  --color-logo-star: #863309;
+  --shadow-raised: none;
+  --status-success-fg: #003d17;
+  --status-info-fg: #00266e;
+  --status-neutral-fg: #000000;
+  --status-warning-fg: #3d2600;
+  --status-danger-fg: #6e0000;
+  --status-muted-fg: #000000;
+}
+:root.pref-contrast[data-theme="dark"],
+:root.pref-contrast.is-dark {
+  --color-bg: #000000;
+  --color-header: #000000;
+  --color-surface: #000000;
+  --color-surface-raised: #000000;
+  --color-surface-sunken: #111111;
+  --color-text: #ffffff;
+  --color-text-muted: #d5e0f4;
+  --color-border: #ffffff;
+  --color-divider: #8391aa;
+  --color-accent: #e7ecff;
+  --color-accent-text: #000000;
+  --color-accent-soft: #0d2245;
+  --color-panel-header: #000000;
+  --chart-1: #c2cbff;
+  --chart-2: #ffb38a;
+  --color-focus: #ffd400;
+  --color-count: #a44418;
+  --color-logo-tile: #e7ecff;
+  --color-logo-star: #ffc7a6;
+  --status-success-bg: #002b10;
+  --status-success-fg: #a6ffc2;
+  --status-info-bg: #001c45;
+  --status-info-fg: #c2dbff;
+  --status-neutral-bg: #1a1a1a;
+  --status-neutral-fg: #ffffff;
+  --status-warning-bg: #2e2000;
+  --status-warning-fg: #ffe08a;
+  --status-danger-bg: #330000;
+  --status-danger-fg: #ffc2bd;
+  --status-muted-bg: #1a1a1a;
+  --status-muted-fg: #ffffff;
+}
+
+/* Display and accessibility preferences. */
+:root.pref-text-125 { --text-scale: 1.25; }
+:root.pref-text-150 { --text-scale: 1.5; }
+:root.pref-text-175 { --text-scale: 1.75; }
+:root.pref-spacing {
+  --leading: 1.8;
+  --letter-spacing: 0.12em;
+  --word-spacing: 0.16em;
+}
+:root.pref-motion {
+  --motion-fast: 0ms;
+  --motion-panel: 0ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-panel: 0ms;
+  }
+}
