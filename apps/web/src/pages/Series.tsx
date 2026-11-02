@@ -645,92 +645,88 @@ function SeriesContent({
                         </div>
                       }
                     >
-                        {(tab === "requests" || tab === "lists") && canEdit && (
-                          <label className="check-label">
-                            <input
-                              type="checkbox"
-                              checked={selected.includes(entry.work.id)}
-                              disabled={
-                                add.isPending ||
-                                loading ||
-                                entry.publication === "unreleased" ||
-                                entry.metadata_incomplete ||
-                                (!selected.includes(entry.work.id) &&
-                                  selected.length >= 100)
-                              }
-                              onChange={(e) =>
-                                setSelected((previous) =>
-                                  e.target.checked
-                                    ? [...new Set([...previous, entry.work.id])]
-                                    : previous.filter(
-                                        (id) => id !== entry.work.id,
-                                      ),
-                                )
-                              }
-                            />
-                            <span className="sr-only">
-                              Select {entry.work.title}
-                            </span>
-                          </label>
-                        )}
-                        <h2 className="book-row__title">
-                          {entry.work.title}
-                        </h2>
-                        <p>
-                          {entry.work.authors.join(", ") || "Author unknown"}
-                        </p>
-                        <p className="series-format-status">
-                          {entry.work.availability.owned ? (
-                            <StatusChip label="In library" />
-                          ) : (
-                            "Not in your library"
-                          )}
-                          {entry.work.availability.ebook && (
-                            <span>
-                              <BookOpen size={14} aria-hidden="true" /> Ebook
-                            </span>
-                          )}
-                          {entry.work.availability.audio && (
-                            <span>
-                              <Headphones size={14} aria-hidden="true" />{" "}
-                              Audiobook
-                            </span>
-                          )}
-                          {entry.work.availability.stale &&
-                            " · Inventory needs refresh"}
-                        </p>
-                        <p className="muted">
-                          {[
-                            entry.metadata_incomplete &&
-                              "Incomplete Hardcover record",
-                            entry.category === "collection" && "Compilation",
-                            entry.partial && "Partial book",
-                            entry.merged_record && "Merged provider record",
-                            entry.ambiguous_position &&
-                              "Multiple works at this position",
-                            entry.publication === "unreleased" &&
-                              `Unreleased · ${entry.release_date || "date unknown"}`,
-                            entry.publication === "unknown" &&
-                              "Publication date unknown",
-                            entry.details !== entry.position && entry.details,
-                          ]
-                            .filter(Boolean)
-                            .join(" · ")}
-                        </p>
-                        {entry.publication === "unreleased" && (
-                          <FollowRelease
-                            canEdit={canEdit}
-                            following={entry.followed}
-                            workId={entry.work.id}
-                            body={{
-                              work_id: entry.work.id,
-                              title: entry.work.title,
-                              authors: entry.work.authors,
-                              release_date: entry.release_date,
-                              basis: "work",
-                            }}
+                      {(tab === "requests" || tab === "lists") && canEdit && (
+                        <label className="check-label">
+                          <input
+                            type="checkbox"
+                            checked={selected.includes(entry.work.id)}
+                            disabled={
+                              add.isPending ||
+                              loading ||
+                              entry.publication === "unreleased" ||
+                              entry.metadata_incomplete ||
+                              (!selected.includes(entry.work.id) &&
+                                selected.length >= 100)
+                            }
+                            onChange={(e) =>
+                              setSelected((previous) =>
+                                e.target.checked
+                                  ? [...new Set([...previous, entry.work.id])]
+                                  : previous.filter(
+                                      (id) => id !== entry.work.id,
+                                    ),
+                              )
+                            }
                           />
+                          <span className="sr-only">
+                            Select {entry.work.title}
+                          </span>
+                        </label>
+                      )}
+                      <h2 className="book-row__title">{entry.work.title}</h2>
+                      <p>{entry.work.authors.join(", ") || "Author unknown"}</p>
+                      <p className="series-format-status">
+                        {entry.work.availability.owned ? (
+                          <StatusChip label="In library" />
+                        ) : (
+                          "Not in your library"
                         )}
+                        {entry.work.availability.ebook && (
+                          <span>
+                            <BookOpen size={14} aria-hidden="true" /> Ebook
+                          </span>
+                        )}
+                        {entry.work.availability.audio && (
+                          <span>
+                            <Headphones size={14} aria-hidden="true" />{" "}
+                            Audiobook
+                          </span>
+                        )}
+                        {entry.work.availability.stale &&
+                          " · Inventory needs refresh"}
+                      </p>
+                      <p className="muted">
+                        {[
+                          entry.metadata_incomplete &&
+                            "Incomplete Hardcover record",
+                          entry.category === "collection" && "Compilation",
+                          entry.partial && "Partial book",
+                          entry.merged_record && "Merged provider record",
+                          entry.ambiguous_position &&
+                            "Multiple works at this position",
+                          entry.publication === "unreleased" &&
+                            `Unreleased · ${entry.release_date || "date unknown"}`,
+                          entry.publication === "unknown" &&
+                            "Publication date unknown",
+                          entry.details !== entry.position && entry.details,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                      {entry.publication === "unreleased" && (
+                        <FollowRelease
+                          canEdit={canEdit}
+                          following={entry.followed}
+                          workId={entry.work.id}
+                          body={{
+                            work_id: entry.work.id,
+                            title: entry.work.title,
+                            authors: entry.work.authors,
+                            release_date: entry.release_date,
+                            basis: "work",
+                          }}
+                        />
+                      )}
                     </BookRow>
                   ))}
                 </div>

@@ -337,9 +337,7 @@ function useCoverBook({
   const availability = work?.availability ?? owned;
   // Audible books are found through the book page; anything else can be added from its cover.
   const resolvable =
-    !!session &&
-    !!(id || providerBook) &&
-    providerBook?.provider !== "audible";
+    !!session && !!(id || providerBook) && providerBook?.provider !== "audible";
   const resolveWork = providerBook
     ? () => resolveBookWork(providerBook)
     : undefined;
@@ -606,11 +604,7 @@ export function CoverMore(book: Omit<CoverBook, "example">) {
             </button>
           ))}
           {cover.canList && (
-            <button
-              type="button"
-              role="menuitem"
-              onClick={cover.startListing}
-            >
+            <button type="button" role="menuitem" onClick={cover.startListing}>
               <ListPlus size={18} aria-hidden="true" />
               Add to a list
             </button>

@@ -412,7 +412,6 @@ button.follow-count[aria-expanded="true"] {
   .follow-latest-books > a > span {
     display: none;
   }
-
 }
 @media (max-width: 720px) {
   .following-heading {

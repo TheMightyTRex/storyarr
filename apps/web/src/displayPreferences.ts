@@ -70,7 +70,8 @@ export function applyDisplay(value: DisplayPreferences) {
   // The same choices under the shared library's names (shared/tokens.css), used by Starboard too.
   const dark =
     value.theme === "dark" ||
-    (value.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+    (value.theme === "auto" &&
+      matchMedia("(prefers-color-scheme: dark)").matches);
   root.classList.toggle("pref-contrast", value.highContrast);
   root.classList.toggle("is-dark", dark);
   root.classList.toggle("pref-motion", value.reduceMotion);
