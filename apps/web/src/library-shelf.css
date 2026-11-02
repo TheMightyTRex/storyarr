@@ -1,21 +1,42 @@
 /* My library: a compact cover wall, with a summary that slides out from the right. */
 .shelf-wall {
-  /* Cover size from Settings, General: Small, Medium (the default) or Large. */
-  --shelf-cover: 148px;
+  /* Cover size from Settings, General: Small, Medium (the default) or Large. Each cover is this wide,
+     10% larger than the covers were at 1440px (David, 2 November 2026: 113, 167 and 238px). The
+     columns keep that width and the space left over goes between them, so covers line up in rows and
+     columns. Small stays 120px or more, so a square cover still holds five 24px action targets. */
+  --shelf-cover: 184px;
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(min(var(--shelf-cover), 45%), 1fr)
-  );
+  grid-template-columns: repeat(auto-fill, var(--shelf-cover));
+  justify-content: space-between;
   gap: 24px 18px;
 }
 .shelf-wall[data-size="small"] {
-  --shelf-cover: 108px;
+  --shelf-cover: 124px;
   gap: 22px 16px;
 }
 .shelf-wall[data-size="large"] {
-  --shelf-cover: 196px;
+  --shelf-cover: 260px;
   gap: 28px 22px;
+}
+/* Beside the cover: the card is one action column (44px) wider, so the cover keeps its size. Here,
+   not in cover-cards.css: this file is not in a cascade layer, so a layered rule would lose to it. */
+.shelf-wall:has(.cover-card[data-actions="beside"]) {
+  --shelf-cover: 228px;
+}
+.shelf-wall[data-size="small"]:has(.cover-card[data-actions="beside"]) {
+  --shelf-cover: 168px;
+}
+.shelf-wall[data-size="large"]:has(.cover-card[data-actions="beside"]) {
+  --shelf-cover: 304px;
+}
+/* Phones: two or more covers fill the width (the screen, not the setting, decides their size). */
+@media (max-width: 720px) {
+  .shelf-wall {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(var(--shelf-cover), 45%), 1fr)
+    );
+  }
 }
 .shelf-wall[data-size="large"] .shelf-book h3 {
   font-size: 0.9375rem;

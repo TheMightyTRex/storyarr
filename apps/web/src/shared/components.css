@@ -941,6 +941,52 @@
   .cover .chip {
     background: var(--color-surface-raised);
   }
+  /* Title with status (2 November 2026): the status of the thing a heading names goes on the heading's
+     line, straight after the name, centred on it; never on a line of its own under the heading. Details
+     (a version, a time) go on the right or in the muted line, not in the chip. At most two chips; more
+     belongs in a facts list.
+     Markup: .title-status > h2 (or h1 to h4) + .title-status__chips > .chip... */
+  .title-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-3);
+    min-width: 0;
+  }
+  .title-status > :is(h1, h2, h3, h4) {
+    margin: 0;
+  }
+  .title-status__chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  /* Status icon: in a list of things that each have a state (Manage apps, what an app can access), the state
+     is an icon straight after the name, with the word in hidden text and a tooltip, instead of a chip.
+     Markup: <span class="status-icon" data-tone="success" title="Connected"><svg aria-hidden>…</svg>
+     <span class="visually-hidden">Connected</span></span> */
+  .status-icon {
+    display: inline-flex;
+    vertical-align: -3px;
+    margin-left: var(--space-2);
+    color: var(--status-neutral-fg);
+  }
+  .status-icon[data-tone="success"] {
+    color: var(--status-success-fg);
+  }
+  .status-icon[data-tone="info"] {
+    color: var(--status-info-fg);
+  }
+  .status-icon[data-tone="warning"] {
+    color: var(--status-warning-fg);
+  }
+  .status-icon[data-tone="danger"] {
+    color: var(--status-danger-fg);
+  }
+  .status-icon[data-tone="muted"] {
+    color: var(--color-text-muted);
+  }
   /* Count: a number on a tab or button, with its meaning in a visually hidden label. */
   .count {
     display: inline-block;
@@ -1658,16 +1704,19 @@
   .cover-card:has(> .cover-card__open:hover) .media-card__title {
     text-decoration: underline;
   }
+  /* The column is exactly the height of the cover, whatever its shape or size (David, 2 November
+     2026): top and bottom edges match the art. Its 44px targets spread down the cover; on a cover
+     shorter than five targets (a small or square cover) they share the height evenly instead of
+     running past the bottom edge. Keep covers at least 120px tall so each target stays 24px or more. */
   .cover-actions {
     position: absolute;
     z-index: 2;
     top: 0;
     right: 0;
-    display: grid;
-    /* Square 44px targets spread down the full height of the cover. */
-    grid-auto-rows: var(--control-h);
-    align-content: space-between;
-    min-height: 100%;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     background: var(--color-surface-raised);
     border-left: 1px solid var(--color-divider);
     box-shadow: var(--shadow-raised);
@@ -1692,6 +1741,12 @@
       pointer-events: auto;
     }
   }
+  .cover-actions:not(.cover-actions--row) > .cover-actions__btn {
+    flex: 0 1 var(--control-h);
+    min-height: 0;
+  }
+  /* Beside the art: the column takes the cover's height (size containment stops its own five
+     targets from making the row taller than the cover). */
   .cover-card[data-actions="beside"] .cover-card__art {
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--control-h);
@@ -1701,8 +1756,9 @@
     position: relative;
     top: auto;
     right: auto;
-    grid-auto-rows: var(--control-h);
-    min-height: 0;
+    bottom: auto;
+    align-self: stretch;
+    contain: size;
     border: 1px solid var(--color-divider);
     border-left: 0;
     box-shadow: none;
@@ -1879,7 +1935,9 @@
     position: relative;
     top: auto;
     right: auto;
+    bottom: auto;
     display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     min-height: 0;
     background: transparent;

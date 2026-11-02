@@ -147,15 +147,7 @@
 ) {
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
 }
-.shelf-wall:has(.cover-card[data-actions="beside"]) {
-  --shelf-cover: 192px;
-}
-.shelf-wall[data-size="small"]:has(.cover-card[data-actions="beside"]) {
-  --shelf-cover: 152px;
-}
-.shelf-wall[data-size="large"]:has(.cover-card[data-actions="beside"]) {
-  --shelf-cover: 240px;
-}
+/* My library's wall sets its own wider cards beside the cover in library-shelf.css. */
 @media (max-width: 720px) {
   .discovery-shelf:has(.cover-card[data-actions="beside"]) {
     grid-auto-columns: 176px;
