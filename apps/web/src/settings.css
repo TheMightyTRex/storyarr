@@ -2575,8 +2575,6 @@ button.help-button:hover {
   padding: 2px 0 4px;
   margin: 0;
   gap: 6px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--c-text-indigo-56) transparent;
 }
 .naming-token-lane .sortable > li {
   flex: 0 0 auto;

@@ -76,6 +76,31 @@
   svg {
     flex: none;
   }
+  /* Scroll bars: thin and square, in the border colour on a clear track, in every scrolling area (the
+     page, long lists, slide-outs). They stay visible; only shelves hide theirs, behind arrows. */
+  :root {
+    scrollbar-color: var(--color-scrollbar) transparent;
+  }
+  :where(*) {
+    scrollbar-width: thin;
+  }
+  @supports not (scrollbar-color: auto) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: 0;
+      background: var(--color-scrollbar) padding-box;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-scrollbar-hover) padding-box;
+    }
+  }
   :focus-visible {
     outline: var(--focus-w) solid var(--color-focus);
     outline-offset: 2px;
@@ -1092,6 +1117,11 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+  /* With its logo, the icon is just the image: no tile and no border. Initials keep the tile. */
+  .app-icon.has-image {
+    border-color: transparent;
+    background: none;
   }
   /* Cover: a book cover at 2:3; audiobook squares are letterboxed, never cropped. */
   .cover {
@@ -3068,6 +3098,12 @@
     padding: var(--space-2);
     background: var(--color-surface-sunken);
   }
+  /* A found file's own picture (another site's image cannot be a mask). */
+  .logo-candidate__art > img {
+    max-width: 112px;
+    max-height: 48px;
+    object-fit: contain;
+  }
   .logo-candidate__art > .logo-mask {
     width: 112px;
     height: 48px;
@@ -3191,6 +3227,12 @@
     display: block;
     max-width: 100%;
     height: auto;
+  }
+  /* The logo editor's eraser and paintbrush draw on the cut-out (UX-48). */
+  .checker[data-tool="erase"] canvas,
+  .checker[data-tool="paint"] canvas {
+    cursor: crosshair;
+    touch-action: none;
   }
   /* Upload your own. */
   .logo-drop {

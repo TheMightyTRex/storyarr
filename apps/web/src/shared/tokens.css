@@ -84,6 +84,10 @@
   --color-accent-text: #ffffff;
   --color-accent-soft: #dff1ef;
   --color-panel-header: #ffffff;
+  /* Scroll bars: thin, square and in the border colour, so they show without shouting (David, 2 November
+     2026). They follow every theme because they point at other roles. */
+  --color-scrollbar: var(--color-border);
+  --color-scrollbar-hover: var(--color-text-muted);
   --color-slide-header: var(--color-bg); /* slide-out headers: the page background over a white body */
   --color-control-active: color-mix(in srgb, var(--color-accent) 12%, transparent);
   --color-focus: #0b5f5a;
@@ -205,6 +209,8 @@
 
 /* High contrast: stronger text, borders and focus; borders instead of shadows. */
 :root.pref-contrast {
+  --color-scrollbar: var(--color-text);
+  --color-scrollbar-hover: var(--color-text);
   --color-bg: #f0f5ff;
   --color-header: #ffffff;
   --color-surface: #ffffff;
