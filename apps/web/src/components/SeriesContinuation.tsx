@@ -1,7 +1,7 @@
 import InfiniteScroll from "./InfiniteScroll";
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import BookLink from "./BookLink";
-import BookCover from "./BookCover";
+import CoverCard from "./CoverCard";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -239,11 +239,14 @@ function SeriesCard({
               to={`/books/${work.id}`}
             >
               <div className="series-gap-cover">
-                <BookCover
+                <CoverCard
                   title={work.title}
+                  authors={work.authors}
                   work={work}
                   medium={medium}
-                  actions={canEdit}
+                  to={`/books/${work.id}`}
+                  caption={false}
+                  actions={false}
                 />
               </div>
               <div className="series-gap-book-detail">

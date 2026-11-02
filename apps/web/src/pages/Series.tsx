@@ -1,7 +1,6 @@
 import StatusChip from "../components/StatusChip";
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
-import BookLink from "../components/BookLink";
 import ListChoice from "./ListChoice";
 import { useEffect, useRef, useState, type SetStateAction } from "react";
 import type { components } from "../api/schema";
@@ -18,6 +17,7 @@ import {
   Headphones,
 } from "lucide-react";
 import BookCover from "../components/BookCover";
+import CoverCard from "../components/CoverCard";
 import DetailTabs from "../components/DetailTabs";
 import SeriesRequests from "./SeriesRequests";
 import SeriesScopeReview from "./SeriesScopeReview";
@@ -639,17 +639,15 @@ function SeriesContent({
                             : "book"}
                         </small>
                       </div>
-                      <BookLink
-                        aria-label={`View ${entry.work.title}`}
+                      <CoverCard
                         className="series-row-cover"
+                        title={entry.work.title}
+                        authors={entry.work.authors}
+                        work={entry.work}
                         to={`/books/${entry.work.id}`}
-                      >
-                        <BookCover
-                          title={entry.work.title}
-                          work={entry.work}
-                          actions={tab !== "requests" && tab !== "lists"}
-                        />
-                      </BookLink>
+                        caption={false}
+                        actions={false}
+                      />
                       <div className="series-row-copy">
                         {(tab === "requests" || tab === "lists") && canEdit && (
                           <label className="check-label">

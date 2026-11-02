@@ -12157,6 +12157,8 @@ export interface components {
       } | null;
       /** Cover Size */
       cover_size?: ("small" | "medium" | "large") | null;
+      /** Cover Actions */
+      cover_actions?: ("on" | "beside") | null;
     };
     /** PresetInfo */
     PresetInfo: {
@@ -15280,6 +15282,12 @@ export interface components {
        * @enum {string}
        */
       cover_size: "small" | "medium" | "large";
+      /**
+       * Cover Actions
+       * @default on
+       * @enum {string}
+       */
+      cover_actions: "on" | "beside";
     };
     /** UserView */
     UserView: {

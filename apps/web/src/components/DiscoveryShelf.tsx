@@ -1,8 +1,7 @@
 import ShelfViewAll from "./ShelfViewAll";
-import BookLink from "./BookLink";
 import type { ReactNode } from "react";
-import BookCover from "./BookCover";
-import ShelfPagination from "./ShelfPagination";
+import CoverCard from "./CoverCard";
+import ShelfScroller from "./ShelfScroller";
 import { Link } from "react-router-dom";
 import type { components } from "../api/schema";
 import { BookCard } from "../components";
@@ -24,6 +23,48 @@ export default function DiscoveryShelf({
   medium?: "any" | "ebook" | "audio";
 }) {
   const items = shelf.items || [];
+  const books = (
+    <>
+      {items.map((item) => (
+        <li
+          key={
+            item.work?.id || `${item.book.provider}:${item.book.external_id}`
+          }
+        >
+          {item.work ? (
+            <BookCard
+              work={item.work}
+              rating={item.book.rating}
+              cover={item.book.cover_url}
+              medium={medium}
+            />
+          ) : (
+            <CoverCard
+              title={item.book.title}
+              authors={item.book.authors}
+              to={
+                item.book.provider && item.book.external_id
+                  ? `/discover/books/${item.book.provider}/${encodeURIComponent(item.book.external_id)}`
+                  : `/search?q=${encodeURIComponent(item.book.title)}`
+              }
+              providerBook={
+                item.book.external_id
+                  ? {
+                      provider: item.book.provider,
+                      external_id: item.book.external_id,
+                    }
+                  : undefined
+              }
+              rating={item.book.rating}
+              cover={item.book.cover_url}
+              medium={medium}
+            />
+          )}
+        </li>
+      ))}
+      {viewAll && !controls && <ShelfViewAll to={viewAll} />}
+    </>
+  );
   return (
     <>
       <div className="section-heading discovery-heading">
@@ -31,17 +72,7 @@ export default function DiscoveryShelf({
           <h2 title={shelf.attribution}>{shelf.title}</h2>
           <span className="sr-only">{shelf.attribution}</span>
         </div>
-        {items.length > 0 &&
-          (controls ||
-            (items.length > 0 && (
-              <ShelfPagination
-                page={1}
-                hasMore={false}
-                busy={false}
-                onPage={() => {}}
-                label={shelf.title}
-              />
-            )))}
+        {items.length > 0 && controls}
         {shelf.stale && <span className="count">Cached shelf</span>}
       </div>
       {shelf.warning && (
@@ -57,60 +88,14 @@ export default function DiscoveryShelf({
       {shelf.status === "ready" && items.length === 0 && (
         <p className="muted">No titles available for this shelf yet.</p>
       )}
-      {items.length > 0 && (
-        <ul
-          className={grid ? "explore-books" : "discovery-shelf"}
-          aria-label={shelf.title}
-        >
-          {items.map((item) => (
-            <li
-              key={
-                item.work?.id ||
-                `${item.book.provider}:${item.book.external_id}`
-              }
-            >
-              {item.work ? (
-                <BookCard
-                  work={item.work}
-                  rating={item.book.rating}
-                  cover={item.book.cover_url}
-                  medium={medium}
-                />
-              ) : (
-                <BookLink
-                  className="book-card discovery-book"
-                  to={
-                    item.book.provider && item.book.external_id
-                      ? `/discover/books/${item.book.provider}/${encodeURIComponent(item.book.external_id)}`
-                      : `/search?q=${encodeURIComponent(item.book.title)}`
-                  }
-                  aria-label={`View ${item.book.title}`}
-                >
-                  <BookCover
-                    title={item.book.title}
-                    providerBook={
-                      item.book.external_id
-                        ? {
-                            provider: item.book.provider,
-                            external_id: item.book.external_id,
-                          }
-                        : undefined
-                    }
-                    rating={item.book.rating}
-                    cover={item.book.cover_url}
-                    medium={medium}
-                  />
-                  <h3 title={item.book.title}>{item.book.title}</h3>
-                  <p title={item.book.authors.join(", ")}>
-                    {item.book.authors.join(", ") || "Author unknown"}
-                  </p>
-                </BookLink>
-              )}
-            </li>
-          ))}
-          {viewAll && !controls && <ShelfViewAll to={viewAll} />}
-        </ul>
-      )}
+      {items.length > 0 &&
+        (grid ? (
+          <ul className="explore-books" aria-label={shelf.title}>
+            {books}
+          </ul>
+        ) : (
+          <ShelfScroller label={shelf.title}>{books}</ShelfScroller>
+        ))}
     </>
   );
 }

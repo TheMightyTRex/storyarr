@@ -168,10 +168,16 @@ test("author links stay in app; biography tabs, pagination, and mobile work", as
   await expect(
     page.getByRole("heading", { name: author.name, exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".entity-book-grid .book-card")).toHaveCount(3);
+  await expect(page.locator(".entity-book-grid .cover-card")).toHaveCount(3);
+  await page
+    .getByRole("button", { name: "A Wizard of Earthsea, details" })
+    .click();
   await expect(
-    page.getByRole("link", { name: "View A Wizard of Earthsea" }),
+    page
+      .getByRole("dialog", { name: /Summary/ })
+      .getByRole("link", { name: "Open book page" }),
   ).toHaveAttribute("href", "/discover/books/hardcover/101");
+  await page.keyboard.press("Escape");
   await page.screenshot({
     path: testInfo.outputPath("author-desktop.png"),
     fullPage: true,
@@ -193,9 +199,9 @@ test("author links stay in app; biography tabs, pagination, and mobile work", as
       authorPages.some((url) => new URL(url).searchParams.get("page") === "2"),
     )
     .toBe(true);
-  await expect(page.locator(".entity-book-grid .book-card")).toHaveCount(3);
+  await expect(page.locator(".entity-book-grid .cover-card")).toHaveCount(3);
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator(".entity-book-grid .book-card")).toHaveCount(3);
+  await expect(page.locator(".entity-book-grid .cover-card")).toHaveCount(3);
   await page.screenshot({
     path: testInfo.outputPath("author-mobile.png"),
     fullPage: true,
@@ -328,7 +334,9 @@ test("global search opens book details and legacy source menus return to search"
   await expect(
     navigation.getByRole("link", { name: "Sources", exact: true }),
   ).toHaveCount(0);
-  const search = page.getByRole("searchbox", { name: "Search books or authors" });
+  const search = page.getByRole("searchbox", {
+    name: "Search books or authors",
+  });
   await search.fill("Earthsea");
   await search.press("Enter");
   await page.getByRole("link", { name: "View A Wizard of Earthsea" }).click();

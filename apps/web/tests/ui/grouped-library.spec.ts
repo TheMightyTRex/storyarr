@@ -93,7 +93,7 @@ test("one library card shows both formats and uses the mixed-view cover preferen
     name: "Library books",
     exact: true,
   });
-  const card = library.locator(".shelf-book");
+  const card = library.locator(".cover-card");
   await expect(card).toHaveCount(1);
   await expect(card.locator(".cover-portrait")).toBeVisible();
   // Every book here is in the library: no Quick add on the cover.
@@ -131,12 +131,13 @@ test("one library card shows both formats and uses the mixed-view cover preferen
   await card.click();
   await page.keyboard.press("Escape");
   await expect(summary).toHaveCount(0);
+  // Both formats show as in library on the cover actions: a tick and the words.
   await expect(
-    card.getByRole("img", { name: "Ebook: in library", exact: true }),
-  ).toBeVisible();
+    card.getByRole("button", { name: /^Ebook of .* in library$/ }),
+  ).toBeAttached();
   await expect(
-    card.getByRole("img", { name: "Audiobook: in library", exact: true }),
-  ).toBeVisible();
+    card.getByRole("button", { name: /^Audiobook of .* in library$/ }),
+  ).toBeAttached();
   await expect(card.locator("img")).toHaveAttribute("src", /medium=ebook$/);
   await page.getByRole("button", { name: "Audiobooks", exact: true }).click();
   await expect(card).toHaveCount(1);
@@ -153,15 +154,15 @@ test("one library card shows both formats and uses the mixed-view cover preferen
   await page.reload();
   await expect(card.locator(".cover-square")).toBeVisible();
   await page.goto("/library?view=saved");
-  await expect(page.locator(".book-card")).toHaveCount(1);
-  await expect(page.locator(".book-card img")).toHaveAttribute(
+  await expect(page.locator(".cover-card")).toHaveCount(1);
+  await expect(page.locator(".cover-card img")).toHaveAttribute(
     "src",
     /medium=ebook$/,
   );
   await page
     .getByRole("button", { name: "Audiobook in library", exact: true })
     .click();
-  await expect(page.locator(".book-card img")).toHaveAttribute(
+  await expect(page.locator(".cover-card img")).toHaveAttribute(
     "src",
     /medium=audio$/,
   );
@@ -174,7 +175,7 @@ test("one library card shows both formats and uses the mixed-view cover preferen
     fullPage: true,
   });
   await page.goto("/search?q=Giver");
-  await expect(page.locator(".book-card")).toHaveCount(1);
+  await expect(page.locator(".cover-card")).toHaveCount(1);
   await expect(page.locator(".provider-result")).toHaveCount(0);
   await page.goto("/search?q=recording");
   await expect(page.locator(".provider-result")).toHaveCount(1);

@@ -86,19 +86,23 @@ test("cover-led shelves, format overlays and persistent display preferences", as
     name: "Recent library additions",
     exact: true,
   });
-  await expect(shelf.locator(".book-card")).toHaveCount(12);
+  await expect(shelf.locator(".cover-card")).toHaveCount(12);
   await expect(shelf.locator(".cover-portrait")).toHaveCount(12);
   await expect(shelf.locator(".book-cover img").first()).toBeVisible();
-  await expect(shelf.locator(".cover-owned")).toHaveCount(12);
+  await expect(
+    shelf.locator(".cover-card:has(.cover-actions__tick)"),
+  ).toHaveCount(12);
   await expect(shelf.getByText("Library copy first observed")).toHaveCount(0);
   await expect(page.getByText("Library match not established")).toHaveCount(0);
   const heights = await shelf
-    .locator(".book-card h3")
+    .locator(".cover-card h3")
     .evaluateAll((nodes) =>
       nodes.map((node) => node.getBoundingClientRect().height),
     );
   expect(new Set(heights).size).toBe(1);
-  await shelf.getByRole("button", { name: "Scroll library forward" }).click();
+  await shelf
+    .getByRole("button", { name: "More books in Recent library additions" })
+    .click();
   await expect
     .poll(() =>
       shelf.locator(".discovery-shelf").evaluate((node) => node.scrollLeft),
@@ -132,7 +136,9 @@ test("cover-led shelves, format overlays and persistent display preferences", as
   await expect(shelf.locator(".cover-square")).toHaveCount(12);
   await shelf.getByLabel("Show library additions").selectOption("audio");
   await expect(shelf.locator(".cover-portrait")).toHaveCount(12);
-  await expect(shelf.locator(".cover-formats")).toHaveCount(12);
+  await expect(
+    shelf.locator(".cover-card:has(.cover-actions__tick)"),
+  ).toHaveCount(12);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({
     path: testInfo.outputPath("discover-mobile.png"),

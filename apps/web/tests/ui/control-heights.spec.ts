@@ -97,7 +97,8 @@ async function controls(page: Page) {
   return page.evaluate(() => {
     const frame = ".toolbar-search, .toolbar-menu, .quick-add-split";
     const selector = [
-      "button",
+      // A cover's own button is the cover itself (the whole card opens the Summary), not a control.
+      "button:not(.cover-card__open)",
       "select",
       "input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=range]):not([type=file])",
       ".button-link",

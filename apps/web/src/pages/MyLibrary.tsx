@@ -12,8 +12,7 @@ import { shelfIcons as ShelfIcon } from "../navigation";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Empty, Loading, Notice } from "../components";
-import BookCover from "../components/BookCover";
-import BookSummary from "../components/BookSummary";
+import CoverCard from "../components/CoverCard";
 import AssetMatchForm from "../components/AssetMatchForm";
 import CollectionContents from "./CollectionContents";
 import SectionToolbar, { SaveViewButton } from "../components/SectionToolbar";
@@ -178,10 +177,6 @@ function LibraryBooks({
 }) {
   const view = useSavedView("books");
   const coverSize = usePreferences().preferences?.cover_size ?? "medium";
-  // The book whose summary slides out from the right.
-  const [summary, setSummary] = useState<
-    components["schemas"]["WorkView"] | null
-  >(null);
   const books = usePagedQuery({
     queryKey: ["library-books", q, medium, state, sort, libraryId],
     queryFn: async (offset, signal) =>
@@ -309,28 +304,15 @@ function LibraryBooks({
           {books.data.items.length ? (
             <div className="shelf-wall" data-size={coverSize}>
               {books.data.items.map((work) => (
-                <button
+                <CoverCard
                   key={work.id}
-                  type="button"
-                  className="shelf-book"
-                  aria-pressed={summary?.id === work.id}
-                  aria-label={`${work.title}, show summary`}
-                  onClick={() =>
-                    setSummary(summary?.id === work.id ? null : work)
-                  }
-                >
-                  <BookCover
-                    title={work.title}
-                    work={work}
-                    cover={work.cover_url}
-                    medium={medium}
-                    actions={false}
-                  />
-                  <h3 title={work.title}>{work.title}</h3>
-                  <p title={work.authors.join(", ")}>
-                    {work.authors.join(", ") || "Author unknown"}
-                  </p>
-                </button>
+                  title={work.title}
+                  authors={work.authors}
+                  work={work}
+                  cover={work.cover_url}
+                  medium={medium}
+                  to={`/books/${work.id}`}
+                />
               ))}
             </div>
           ) : (
@@ -340,13 +322,6 @@ function LibraryBooks({
           )}
           <InfiniteScroll query={books} />
         </>
-      )}
-      {summary && (
-        <BookSummary
-          key={summary.id}
-          work={summary}
-          close={() => setSummary(null)}
-        />
       )}
     </section>
   );

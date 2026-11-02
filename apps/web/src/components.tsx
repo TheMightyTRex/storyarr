@@ -1,8 +1,7 @@
-import BookLink from "./components/BookLink";
 import type { ReactNode } from "react";
 import { BookOpen } from "lucide-react";
 import type { Work } from "./api/client";
-import BookCover from "./components/BookCover";
+import CoverCard from "./components/CoverCard";
 
 export function Notice({ error }: { error: Error | null }) {
   return error ? (
@@ -37,6 +36,7 @@ export function Loading({ label = "Loading…" }: { label?: string }) {
   );
 }
 
+/** A catalog book's cover and title: the cover opens its Summary, with the cover actions (UX-42). */
 export function BookCard({
   work,
   to,
@@ -51,22 +51,14 @@ export function BookCard({
   medium?: "any" | "ebook" | "audio";
 }) {
   return (
-    <BookLink
-      aria-label={`View ${work.title}`}
-      className="book-card"
+    <CoverCard
+      title={work.title}
+      authors={work.authors}
+      work={work}
+      cover={cover}
+      medium={medium}
+      rating={rating}
       to={to || `/books/${work.id}`}
-    >
-      <BookCover
-        title={work.title}
-        work={work}
-        cover={cover}
-        medium={medium}
-        rating={rating}
-      />
-      <h3 title={work.title}>{work.title}</h3>
-      <p title={work.authors.join(", ")}>
-        {work.authors.join(", ") || "Author unknown"}
-      </p>
-    </BookLink>
+    />
   );
 }

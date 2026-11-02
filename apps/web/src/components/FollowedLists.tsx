@@ -12,6 +12,7 @@ import { Loading, Notice } from "../components";
 import EnrichedBookCard from "./EnrichedBookCard";
 import ListDownloads from "./ListDownloads";
 import ShelfPagination from "./ShelfPagination";
+import ShelfScroller from "./ShelfScroller";
 import { randomUUID } from "../randomUUID";
 
 function emptyShelfCopy(
@@ -268,11 +269,7 @@ export function PersonalRow({
         <p role="status">{subscription.data.message}</p>
       )}
       {items.length ? (
-        <ul
-          ref={shelf}
-          className="discovery-shelf"
-          aria-label={`${list.name} book preview`}
-        >
+        <ShelfScroller label={list.name} trackRef={shelf}>
           {items.map((work) => (
             <li key={work.id}>
               <EnrichedBookCard work={work} />
@@ -281,7 +278,7 @@ export function PersonalRow({
           {!books.hasNextPage && (
             <ShelfViewAll to={`/discover?view=yours&list=${list.id}`} />
           )}
-        </ul>
+        </ShelfScroller>
       ) : (
         <p className="explore-footnote">
           {emptyShelfCopy(

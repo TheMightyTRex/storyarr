@@ -139,7 +139,13 @@ test("award filters, follow controls and recording selection preserve the distin
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  await page.getByRole("link", { name: "View My Name Is Barbra" }).click();
+  await page
+    .getByRole("button", { name: "My Name Is Barbra, details" })
+    .click();
+  await page
+    .getByRole("dialog", { name: /Summary/ })
+    .getByRole("link", { name: "Open book page" })
+    .click();
   await expect(
     page.getByText(/Choose its edition before requesting/),
   ).toBeVisible();

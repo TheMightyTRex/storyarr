@@ -33,6 +33,9 @@ class UserPreferences(BaseModel):
     library_views: dict[LibrarySection, SavedView] = {}
     # How big covers are on My library's cover wall.
     cover_size: Literal["small", "medium", "large"] = "medium"
+    # Where a cover's actions sit: "on" the cover's right edge, shown on hover and focus (the
+    # default), or "beside" the cover, always shown.
+    cover_actions: Literal["on", "beside"] = "on"
 
 
 class PreferencesInput(BaseModel):
@@ -41,6 +44,7 @@ class PreferencesInput(BaseModel):
     # Replaces every saved view: send all the ones to keep, or {} to reset them all.
     library_views: dict[LibrarySection, SavedView] | None = None
     cover_size: Literal["small", "medium", "large"] | None = None
+    cover_actions: Literal["on", "beside"] | None = None
 
 
 def view(saved: dict | None) -> UserPreferences:

@@ -1,8 +1,9 @@
 import StatusChip from "./StatusChip";
 import { Link } from "react-router-dom";
+import { ContextLink } from "./NavigationContinuity";
 import { Star } from "lucide-react";
 import type { components } from "../api/schema";
-import BookCover from "./BookCover";
+import BookCover, { resolveBookWork } from "./BookCover";
 import QuickAdd from "./QuickAdd";
 import SidePanel from "./SidePanel";
 import { useLocalBookMetadata, useReaderDetails } from "./BookReaderDetails";
@@ -10,18 +11,129 @@ import "../library-shelf.css";
 
 type Work = components["schemas"]["WorkView"];
 
+/** What a cover knows about its book: enough for the Summary of a book that is not in the catalog yet. */
+export type SummaryBook = {
+  title: string;
+  authors: string[];
+  cover?: string | null;
+  work?: Work | null;
+  /** The book's own page, for "Open book page". */
+  to: string;
+  rating?: number | null;
+  providerBook?: { provider: string; external_id: string };
+};
+
 function hours(seconds: number) {
   const h = Math.floor(seconds / 3600);
   const m = Math.round((seconds % 3600) / 60);
   return h ? `${h} h ${m} min` : `${m} min`;
 }
 
-/** Basic information about a library book, in a slide-out from the right. */
+/** Basic information about a book, in a slide-out from the right. Every cover opens it. */
 export default function BookSummary({
+  book,
+  close,
+}: {
+  book: SummaryBook;
+  close: () => void;
+}) {
+  return book.work ? (
+    <WorkSummary work={book.work} to={book.to} close={close} />
+  ) : (
+    <CatalogSummary book={book} close={close} />
+  );
+}
+
+/** A book that is not in the catalog yet: what the shelf knows, and the book page for the rest. */
+function CatalogSummary({
+  book,
+  close,
+}: {
+  book: SummaryBook;
+  close: () => void;
+}) {
+  const details = useReaderDetails(
+    book.providerBook?.provider === "hardcover"
+      ? book.providerBook.external_id
+      : undefined,
+  );
+  const rating = details.data?.rating ?? book.rating;
+  const published = details.data?.release_date?.slice(0, 4);
+  const facts: [string, string][] = [];
+  if (published) facts.push(["Published", published]);
+  if (details.data?.audio_seconds)
+    facts.push(["Length", hours(details.data.audio_seconds)]);
+  if (details.data?.pages) facts.push(["Pages", String(details.data.pages)]);
+  return (
+    <SidePanel
+      title="Summary"
+      labelledBy="book-summary-title"
+      closeLabel="Close summary"
+      className="book-summary"
+      onClose={close}
+      footer={
+        <ContextLink className="drawer-action primary" to={book.to}>
+          Open book page
+        </ContextLink>
+      }
+    >
+      <div className="side-panel__lead book-summary-head">
+        <BookCover title={book.title} cover={book.cover} actions={false} />
+        <div>
+          <h3 id="book-summary-title">{book.title}</h3>
+          <p className="muted">
+            {book.authors.length
+              ? book.authors.map((name, index) => (
+                  <span key={`${name}:${index}`}>
+                    {index > 0 ? ", " : ""}
+                    <Link to={`/search?q=${encodeURIComponent(name)}`}>
+                      {name}
+                    </Link>
+                  </span>
+                ))
+              : "Author unknown"}
+          </p>
+        </div>
+      </div>
+      {rating != null && (
+        <p className="book-summary-rating">
+          <Star size={14} aria-hidden="true" />
+          {rating.toFixed(1)}
+          {details.data?.ratings_count
+            ? ` from ${details.data.ratings_count.toLocaleString()} ratings on Hardcover`
+            : " average rating"}
+        </p>
+      )}
+      {!!facts.length && (
+        <dl className="book-summary-facts">
+          {facts.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {book.providerBook && book.providerBook.provider !== "audible" && (
+        <QuickAdd
+          resolveWork={() => resolveBookWork(book.providerBook!)}
+          actionLabel="Quick add"
+        />
+      )}
+      <p className="muted">
+        Open the book page for editions, reviews and every way to get it.
+      </p>
+    </SidePanel>
+  );
+}
+
+function WorkSummary({
   work,
+  to,
   close,
 }: {
   work: Work;
+  to: string;
   close: () => void;
 }) {
   const metadata = useLocalBookMetadata(work.id);
@@ -56,9 +168,9 @@ export default function BookSummary({
       className="book-summary"
       onClose={close}
       footer={
-        <Link className="drawer-action primary" to={`/books/${work.id}`}>
+        <ContextLink className="drawer-action primary" to={to}>
           Open book page
-        </Link>
+        </ContextLink>
       }
     >
       <div className="side-panel__lead book-summary-head">

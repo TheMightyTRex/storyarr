@@ -51,7 +51,7 @@ test("cover size is chosen in Settings, saved with the account, and sizes My lib
   await page.goto("/library");
   const wall = page.locator(".shelf-wall");
   await expect(wall).toHaveAttribute("data-size", "medium");
-  const medium = (await wall.locator(".shelf-book").first().boundingBox())!
+  const medium = (await wall.locator(".cover-card").first().boundingBox())!
     .width;
 
   await page.goto("/settings#display");
@@ -62,7 +62,7 @@ test("cover size is chosen in Settings, saved with the account, and sizes My lib
 
   await page.goto("/library");
   await expect(wall).toHaveAttribute("data-size", "large");
-  const large = (await wall.locator(".shelf-book").first().boundingBox())!
+  const large = (await wall.locator(".cover-card").first().boundingBox())!
     .width;
   expect(large).toBeGreaterThan(medium);
 });

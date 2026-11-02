@@ -103,7 +103,14 @@ test("cover shapes persist while legacy overlay preferences cannot hide overlays
     name: "Recent library additions",
     exact: true,
   });
-  await expect(shelf.locator(".cover-owned")).toBeVisible();
-  await expect(shelf.locator(".cover-format.is-missing")).toBeVisible();
-  await expect(shelf.locator(".cover-format.is-owned")).toBeVisible();
+  // Library status is on the cover actions (UX-42): a tick and "in library" on the format's icon.
+  await expect(shelf.locator(".cover-actions__tick").first()).toBeAttached();
+  await expect(
+    shelf.getByRole("button", { name: / in library$/ }).first(),
+  ).toBeAttached();
+  await expect(
+    shelf
+      .getByRole("button", { name: /^(Get the|.* not in library$)/ })
+      .first(),
+  ).toBeAttached();
 });

@@ -129,7 +129,11 @@ for (const scenario of ["connected", "disabled", "open pending"] as const) {
     if (openPending) {
       await expect.poll(() => lookups).toBeGreaterThan(0);
       await shelf
-        .getByRole("link", { name: "View Atmosphere", exact: true })
+        .getByRole("button", { name: "Atmosphere, details", exact: true })
+        .click();
+      await page
+        .getByRole("dialog", { name: /Summary/ })
+        .getByRole("link", { name: "Open book page" })
         .click();
       await expect(page).toHaveURL(new RegExp(`/books/${workId}`));
       await expect(

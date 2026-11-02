@@ -33,20 +33,28 @@ async def test_preferences_follow_the_account(client, admin):
         "collection_view": "detail",
         "library_views": {},
         "cover_size": "medium",
+        "cover_actions": "on",
     }
     saved = await client.patch("/api/preferences", json={"collection_view": "list"})
     assert saved.status_code == 200, saved.text
-    assert saved.json() == {"collection_view": "list", "library_views": {}, "cover_size": "medium"}
+    assert saved.json() == {
+        "collection_view": "list",
+        "library_views": {},
+        "cover_size": "medium",
+        "cover_actions": "on",
+    }
     assert (await client.get("/api/preferences")).json() == {
         "collection_view": "list",
         "library_views": {},
         "cover_size": "medium",
+        "cover_actions": "on",
     }
     # A partial change keeps what is already saved.
     assert (await client.patch("/api/preferences", json={})).json() == {
         "collection_view": "list",
         "library_views": {},
         "cover_size": "medium",
+        "cover_actions": "on",
     }
     for bad in ({"collection_view": "grid"}, {"theme": "dark"}):
         assert (await client.patch("/api/preferences", json=bad)).status_code == 422
@@ -90,6 +98,20 @@ async def test_cover_size_is_saved_with_the_account(client, admin):
     assert (await client.patch("/api/preferences", json={"cover_size": "huge"})).status_code == 422
 
 
+async def test_cover_actions_are_saved_with_the_account(client, admin):
+    assert (await client.get("/api/preferences")).json()["cover_actions"] == "on"
+    saved = await client.patch("/api/preferences", json={"cover_actions": "beside"})
+    assert saved.status_code == 200, saved.text
+    assert saved.json()["cover_actions"] == "beside"
+    # Saving another choice keeps it, and each person has their own.
+    await client.patch("/api/preferences", json={"cover_size": "small"})
+    assert (await client.get("/api/preferences")).json()["cover_actions"] == "beside"
+    wrong = await client.patch("/api/preferences", json={"cover_actions": "below"})
+    assert wrong.status_code == 422
+    await sign_in(client, "reader", "viewer")
+    assert (await client.get("/api/preferences")).json()["cover_actions"] == "on"
+
+
 async def test_each_person_has_their_own_preferences(client, admin):
     await client.patch("/api/preferences", json={"collection_view": "list"})
     # Viewers can save their own choices too.
@@ -98,6 +120,7 @@ async def test_each_person_has_their_own_preferences(client, admin):
         "collection_view": "detail",
         "library_views": {},
         "cover_size": "medium",
+        "cover_actions": "on",
     }
     assert (
         await client.patch("/api/preferences", json={"collection_view": "list"})

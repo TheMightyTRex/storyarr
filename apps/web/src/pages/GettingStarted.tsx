@@ -7,6 +7,7 @@ import { api, result, type Auth } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import DisplayPanel from "../components/DisplayPanel";
+import CoverActionsSetting from "../components/CoverActionsSetting";
 import { settingsSections } from "./SettingsSections";
 
 function setupCount(
@@ -47,7 +48,12 @@ export default function GettingStarted({ role }: { role: string }) {
   all.push({
     id: "layout",
     title: "Display and accessibility",
-    content: <DisplayPanel />,
+    content: (
+      <>
+        <DisplayPanel />
+        <CoverActionsSetting />
+      </>
+    ),
   });
   if (admin)
     all.push({
@@ -85,7 +91,7 @@ export default function GettingStarted({ role }: { role: string }) {
     automation:
       "Choose which kinds of books new follows include, and whether wanted books are searched again automatically.",
     layout:
-      "Choose a light or dark theme, a text size, and any reading aids you need.",
+      "Choose a light or dark theme, a text size, any reading aids you need, and where the buttons on book covers sit.",
     finish:
       "Your saved settings are ready. You can change them at any time in Settings.",
   };

@@ -4,6 +4,7 @@ import { BookOpen, Headphones, Library, Check, Star } from "lucide-react";
 import DisplayPanel from "../components/DisplayPanel";
 import SavedViewsSettings from "../components/SavedViewsSettings";
 import CoverSizeSetting from "../components/CoverSizeSetting";
+import CoverActionsSetting from "../components/CoverActionsSetting";
 import {
   displayDefaults,
   saveDisplayPreferences,
@@ -27,6 +28,7 @@ export default function DisplaySettings() {
     <div className="display-settings">
       <DisplayPanel />
       <CoverSizeSetting />
+      <CoverActionsSetting />
       <h3>Appearance</h3>
       <p className="muted">
         Choose how covers look on your shelves. Changes save automatically in
@@ -101,8 +103,8 @@ export default function DisplaySettings() {
           <Star size={15} />
         </div>
         <p className="muted">
-          Library status, format availability and available ratings always
-          appear on covers. Gray icons indicate missing or unknown formats.
+          Ratings appear on covers. Whether a format is in your library shows as
+          a tick on its button in the cover actions.
         </p>
       </div>
       <button type="button" onClick={() => update(displayDefaults)}>

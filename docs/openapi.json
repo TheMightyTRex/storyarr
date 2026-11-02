@@ -35693,6 +35693,21 @@
               }
             ],
             "title": "Cover Size"
+          },
+          "cover_actions": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "on",
+                  "beside"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Actions"
           }
         },
         "additionalProperties": false,
@@ -43973,6 +43988,15 @@
             ],
             "title": "Cover Size",
             "default": "medium"
+          },
+          "cover_actions": {
+            "type": "string",
+            "enum": [
+              "on",
+              "beside"
+            ],
+            "title": "Cover Actions",
+            "default": "on"
           }
         },
         "type": "object",

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import SelectMenu from "./components/SelectMenu";
+import { BookSummaryProvider } from "./components/BookSummaryContext";
 // One typeface throughout: Atkinson Hyperlegible Next, designed for readers with low vision.
 import "@fontsource-variable/atkinson-hyperlegible-next";
 import "./app.css";
@@ -15,7 +16,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <App />
+        <BookSummaryProvider>
+          <App />
+        </BookSummaryProvider>
         <SelectMenu />
       </BrowserRouter>
     </QueryClientProvider>

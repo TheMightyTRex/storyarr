@@ -28,6 +28,9 @@ button:not(
     .settings-nav button,
     .onboarding-steps button,
     .cover-quick-add button,
+    .cover-card__open,
+    .cover-actions__btn,
+    .shelf-arrow,
     .btn,
     .icon-btn
   )
@@ -72,6 +75,9 @@ button:not(
       .settings-nav button,
       .onboarding-steps button,
       .cover-quick-add button,
+      .cover-card__open,
+      .cover-actions__btn,
+      .shelf-arrow,
       .btn,
       .icon-btn
     )

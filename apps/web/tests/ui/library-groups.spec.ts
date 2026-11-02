@@ -123,7 +123,7 @@ test("My library browses owned authors and series, filters, and opens books", as
     "border-radius",
     "50%",
   );
-  await expect(detail.locator(".book-grid .book-card")).toHaveCount(2);
+  await expect(detail.locator(".book-grid .cover-card")).toHaveCount(2);
   await page.screenshot({
     path: testInfo.outputPath("library-authors.png"),
     fullPage: true,
@@ -137,12 +137,17 @@ test("My library browses owned authors and series, filters, and opens books", as
   await expect(
     page.getByRole("heading", { name: "Ursula Le Guin", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".book-grid .book-card")).toHaveCount(2);
+  await expect(page.locator(".book-grid .cover-card")).toHaveCount(2);
+  // A cover opens the Summary, which links to the book page.
+  await page.locator(".book-grid .cover-card__open").first().click();
   await expect(
-    page.locator(".book-grid .book-card .book-link-target").first(),
+    page
+      .getByRole("dialog", { name: /Summary/ })
+      .getByRole("link", { name: "Open book page" }),
   ).toHaveAttribute("href", "/books/book-0");
+  await page.keyboard.press("Escape");
   await page.reload();
-  await expect(page.locator(".book-grid .book-card")).toHaveCount(2);
+  await expect(page.locator(".book-grid .cover-card")).toHaveCount(2);
   await page.getByRole("link", { name: "All authors", exact: true }).click();
   await expect(
     layout.getByRole("button", { name: "List", exact: true }),

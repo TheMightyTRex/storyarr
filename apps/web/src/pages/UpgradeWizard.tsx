@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
 import DisplayPanel from "../components/DisplayPanel";
+import CoverActionsSetting from "../components/CoverActionsSetting";
 import UpgradeBackups, { useUpgrade } from "../components/UpgradeBackups";
 import SettingsGroup from "../components/SettingsGroup";
 import AudibleStoreSetting from "../components/AudibleStoreSetting";
@@ -176,6 +177,7 @@ export default function UpgradeWizard() {
                 change the ones you want to.
               </p>
               <DisplayPanel />
+              <CoverActionsSetting />
               <div className="settings-section-body upgrade-settings">
                 {review
                   .filter((item) => item.id !== "layout")

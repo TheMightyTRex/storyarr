@@ -23,6 +23,7 @@
 @import "./wall.css" layer(controls);
 @import "./upgrade.css" layer(controls);
 @import "./side-panel.css" layer(controls);
+@import "./cover-cards.css" layer(controls);
 
 .brand img {
   border-radius: 0;

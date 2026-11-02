@@ -2,6 +2,7 @@ import StatusChip from "../components/StatusChip";
 import InfiniteScroll from "../components/InfiniteScroll";
 import BookLink from "../components/BookLink";
 import BookCover from "../components/BookCover";
+import CoverCard from "../components/CoverCard";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useInfiniteQuery,
@@ -236,16 +237,31 @@ export default function ProviderSearch({
             <div className="provider-results">
               {providerItems.map((book) => {
                 const known = knownWorks[book.external_id];
+                const page =
+                  known && book.provider !== "audible"
+                    ? `/books/${known.id}`
+                    : `/discover/books/${book.provider}/${encodeURIComponent(book.external_id)}`;
                 const content = (
                   <>
                     <div className="provider-cover">
-                      <BookCover
-                        title={book.title}
-                        cover={book.cover_url}
-                        work={known}
-                        providerBook={book}
-                        actions={!embedded}
-                      />
+                      {embedded ? (
+                        <BookCover
+                          title={book.title}
+                          cover={book.cover_url}
+                          work={known}
+                        />
+                      ) : (
+                        <CoverCard
+                          title={book.title}
+                          authors={book.authors || []}
+                          cover={book.cover_url}
+                          work={known}
+                          providerBook={book}
+                          to={page}
+                          caption={false}
+                          actions={false}
+                        />
+                      )}
                     </div>
                     <span>
                       <strong>{book.title}</strong>
@@ -266,11 +282,7 @@ export default function ProviderSearch({
                     aria-label={`View ${book.title}`}
                     className="provider-result"
                     key={`${book.provider}:${book.external_id}`}
-                    to={
-                      known && book.provider !== "audible"
-                        ? `/books/${known.id}`
-                        : `/discover/books/${book.provider}/${encodeURIComponent(book.external_id)}`
-                    }
+                    to={page}
                     state={{ search: `/search?${params.toString()}` }}
                   >
                     {content}

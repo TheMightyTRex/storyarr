@@ -342,7 +342,9 @@ a {
   text-decoration: none;
 }
 /* The shared library's .btn and .icon-btn keep the library's own look. */
-button:not(:where(.btn, .icon-btn)) {
+button:not(
+  :where(.btn, .icon-btn, .cover-card__open, .cover-actions__btn, .shelf-arrow)
+) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -357,7 +359,15 @@ button:not(:where(.btn, .icon-btn)) {
   cursor: pointer;
   transition: background 120ms;
 }
-button:not(:where(.btn, .icon-btn)):hover {
+button:not(
+    :where(
+      .btn,
+      .icon-btn,
+      .cover-card__open,
+      .cover-actions__btn,
+      .shelf-arrow
+    )
+  ):hover {
   background: var(--c-bg-indigo-38);
 }
 button:disabled {

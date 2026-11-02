@@ -1,4 +1,3 @@
-import BookLink from "./BookLink";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
@@ -7,6 +6,7 @@ import { ContextLink, ReturnLink } from "./NavigationContinuity";
 import { api, result } from "../api/client";
 import { BookCard, Loading, Notice } from "../components";
 import BookCover from "./BookCover";
+import CoverCard from "./CoverCard";
 import type { Entry } from "./DiscoveryCollections";
 
 // Resolve only visible cards, with bounded concurrency. Provider responses are
@@ -90,35 +90,26 @@ export function GoodreadsCard({ book }: { book: Entry }) {
           cover={cover}
         />
       ) : (
-        <BookLink
-          className="book-card discovery-book"
-          state={{ goodreads: book }}
-          aria-label={`View ${book.title}`}
+        <CoverCard
+          actions={!book.subject || book.subject === "work"}
+          title={match?.title || book.title}
+          authors={match?.authors || book.authors || []}
+          rating={match?.rating ?? book.rating}
+          cover={cover}
           to={
             match
               ? `/discover/books/hardcover/${match.external_id}`
               : `/discover/books/${book.provider === "audible" ? "audible" : !book.provider || book.provider === "goodreads" ? "goodreads" : "curation"}/${book.external_id}`
           }
-        >
-          <BookCover
-            actions={!book.subject || book.subject === "work"}
-            title={match?.title || book.title}
-            rating={match?.rating ?? book.rating}
-            cover={cover}
-            providerBook={{
-              provider: match
-                ? "hardcover"
-                : !book.provider || book.provider === "goodreads"
-                  ? "goodreads"
-                  : "curation",
-              external_id: match?.external_id || book.external_id,
-            }}
-          />
-          <h3 title={book.title}>{match?.title || book.title}</h3>
-          <p title={(book.authors || []).join(", ")}>
-            {(match?.authors || book.authors || []).join(", ")}
-          </p>
-        </BookLink>
+          providerBook={{
+            provider: match
+              ? "hardcover"
+              : !book.provider || book.provider === "goodreads"
+                ? "goodreads"
+                : "curation",
+            external_id: match?.external_id || book.external_id,
+          }}
+        />
       )}
     </div>
   );
@@ -219,22 +210,16 @@ export default function GoodreadsBook() {
               <ul className="explore-books">
                 {value.match.candidates?.map((book) => (
                   <li key={book.external_id}>
-                    <BookLink
-                      aria-label={`View ${book.title}`}
-                      className="book-card"
+                    <CoverCard
+                      title={book.title}
+                      authors={book.authors || []}
+                      cover={book.cover_url}
                       to={`/discover/books/hardcover/${book.external_id}`}
-                    >
-                      <BookCover
-                        title={book.title}
-                        cover={book.cover_url}
-                        providerBook={{
-                          provider: "hardcover",
-                          external_id: book.external_id,
-                        }}
-                      />
-                      <h3>{book.title}</h3>
-                      <p>{(book.authors || []).join(", ")}</p>
-                    </BookLink>
+                      providerBook={{
+                        provider: "hardcover",
+                        external_id: book.external_id,
+                      }}
+                    />
                   </li>
                 ))}
               </ul>

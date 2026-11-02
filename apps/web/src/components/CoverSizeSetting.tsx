@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Notice } from "../components";
 import { usePreferences } from "../hooks/usePreferences";
 import "../library-shelf.css";
@@ -12,7 +13,10 @@ const sizes: { id: CoverSize; label: string; hint: string }[] = [
 /** Settings, General: how big covers are on My library. Saved with the account. */
 export default function CoverSizeSetting() {
   const { preferences, save } = usePreferences();
-  const current = preferences?.cover_size ?? "medium";
+  // The choice shows at once; the saved preference follows (and wins if saving fails).
+  const [chosen, setChosen] = useState<CoverSize>();
+  const current =
+    (save.isError ? undefined : chosen) ?? preferences?.cover_size ?? "medium";
   return (
     <fieldset className="cover-size-setting">
       <legend>Cover size on My library</legend>
@@ -26,7 +30,10 @@ export default function CoverSizeSetting() {
               type="radio"
               name="cover-size"
               checked={current === size.id}
-              onChange={() => save.mutate({ cover_size: size.id })}
+              onChange={() => {
+                setChosen(size.id);
+                save.mutate({ cover_size: size.id });
+              }}
             />
             <span className="cover-size-swatch" aria-hidden="true" />
             <span>

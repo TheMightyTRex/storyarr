@@ -12,6 +12,7 @@ import { ContextLink } from "./NavigationContinuity";
 import { Loading, Notice } from "../components";
 import { GoodreadsCard } from "./GoodreadsDiscoveryBook";
 import ShelfPagination from "./ShelfPagination";
+import ShelfScroller from "./ShelfScroller";
 
 export type Collection = components["schemas"]["CollectionCard"];
 export type Entry = components["schemas"]["CollectionEntry"];
@@ -129,16 +130,16 @@ export function CollectionBooks({
   items,
   shelf = false,
   viewAll,
+  label = "Books",
 }: {
   items: Entry[];
   shelf?: boolean;
   viewAll?: string;
+  /** The shelf's name, for the list and its arrows. */
+  label?: string;
 }) {
-  return (
-    <ul
-      className={shelf ? "discovery-shelf" : "explore-books"}
-      aria-label="Books"
-    >
+  const books = (
+    <>
       {items.map((book) => (
         <li key={`${book.provider}:${book.external_id}`}>
           <GoodreadsCard book={book} />
@@ -169,6 +170,13 @@ export function CollectionBooks({
         </li>
       ))}
       {viewAll && <ShelfViewAll to={viewAll} />}
+    </>
+  );
+  return shelf ? (
+    <ShelfScroller label={label}>{books}</ShelfScroller>
+  ) : (
+    <ul className="explore-books" aria-label={label}>
+      {books}
     </ul>
   );
 }
@@ -242,6 +250,7 @@ export function CollectionRow({
       {query.data && (
         <CollectionBooks
           shelf
+          label={collection.title}
           items={query.data.items.slice(0, 100)}
           viewAll={
             !query.hasNextPage ? collectionPath(collection.id) : undefined

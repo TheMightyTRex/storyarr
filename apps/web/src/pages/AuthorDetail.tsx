@@ -1,13 +1,12 @@
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import { browseCache, refreshPending } from "../queryPolicies";
 import InfiniteScroll from "../components/InfiniteScroll";
-import BookLink from "../components/BookLink";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ExternalLink, UserRound } from "lucide-react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { api, result } from "../api/client";
+import CoverCard from "../components/CoverCard";
 import { BookCard, Loading, Notice } from "../components";
-import BookCover from "../components/BookCover";
 import DetailTabs from "../components/DetailTabs";
 
 import FollowCatalog from "../components/FollowCatalog";
@@ -174,23 +173,17 @@ function AuthorContent({
                     cover={book.cover_url}
                   />
                 ) : (
-                  <BookLink
+                  <CoverCard
                     key={book.external_id}
-                    className="book-card discovery-book"
+                    title={book.title}
+                    cover={book.cover_url}
+                    meta={book.publication_year || "Publication date unknown"}
                     to={`/discover/books/hardcover/${book.external_id}`}
-                    aria-label={`View ${book.title}`}
-                  >
-                    <BookCover
-                      title={book.title}
-                      cover={book.cover_url}
-                      providerBook={{
-                        provider: "hardcover",
-                        external_id: book.external_id,
-                      }}
-                    />
-                    <h3>{book.title}</h3>
-                    <p>{book.publication_year || "Publication date unknown"}</p>
-                  </BookLink>
+                    providerBook={{
+                      provider: "hardcover",
+                      external_id: book.external_id,
+                    }}
+                  />
                 );
               })}
             </div>

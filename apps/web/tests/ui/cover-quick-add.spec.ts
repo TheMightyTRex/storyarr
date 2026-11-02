@@ -1,6 +1,6 @@
 import { expect, test, emptyDiscoveryHome } from "../fixtures";
 
-test("cover shortcuts acquire missing formats without navigating, including provider imports", async ({
+test("cover actions get missing formats without navigating, including provider imports", async ({
   page,
 }, testInfo) => {
   const errors: string[] = [];
@@ -88,48 +88,50 @@ test("cover shortcuts acquire missing formats without navigating, including prov
   await page.goto("/discover");
   await expect(page.locator(".cover-rating")).toHaveCount(3);
   await expect(page.locator(".cover-rating").first()).toHaveText("4.3");
-  const missing = page.locator(".book-card").filter({
-    has: page.getByRole("heading", { name: "missing", exact: true }),
-  });
-  const owned = page.locator(".book-card").filter({
-    has: page.getByRole("heading", { name: "ebook-owned", exact: true }),
-  });
-  const complete = page.locator(".book-card").filter({
-    has: page.getByRole("heading", { name: "complete", exact: true }),
-  });
-  const provider = page.locator(".book-card").filter({
-    has: page.getByRole("heading", { name: "provider", exact: true }),
-  });
+  const card = (title: string) =>
+    page.locator(".cover-card").filter({
+      has: page.getByRole("button", { name: `${title}, details`, exact: true }),
+    });
+  const missing = card("missing");
+  const owned = card("ebook-owned");
+  const complete = card("complete");
+  const provider = card("provider");
   await expect(missing).toBeVisible();
   await expect(owned.locator(".book-cover img")).toHaveAttribute("src", art);
   await expect(complete.locator(".book-cover img")).toHaveAttribute("src", art);
   // Automatic edition selection must not block public artwork behind the library.
   // An explicitly selected edition still gets its library image first.
   expect(libraryCoverReads).toEqual(["/api/catalog/works/complete/cover"]);
-  await expect(
-    missing.getByRole("button", { name: "Quick add from cover" }),
-  ).toBeHidden();
+  // The old badges along the bottom of the cover are gone: the icons carry that status.
+  await expect(page.locator(".cover-formats, .cover-owned")).toHaveCount(0);
+  await expect(missing.locator(".cover-actions")).toHaveCSS("opacity", "0");
   await missing.hover();
-  await expect(
-    missing.getByRole("button", { name: "Download ebook", exact: true }),
-  ).toBeVisible();
-  await expect(missing.locator(".cover-quick-add")).toHaveCSS("opacity", "1");
+  await expect(missing.locator(".cover-actions")).toHaveCSS("opacity", "1");
   await page.screenshot({ path: testInfo.outputPath("cover-hover.png") });
-  await missing.getByRole("button", { name: "Quick add from cover" }).click();
+  // More holds Quick add with the saved choice, and Get both formats.
+  await missing.getByRole("button", { name: "More for missing" }).click();
+  await page
+    .getByRole("menuitem", { name: "Quick add · Ebook + audiobook" })
+    .click();
   await expect.poll(() => writes.length).toBe(1);
   expect(writes[0]).toEqual({ work_id: "missing", specification: {} });
   await expect(page).toHaveURL(/\/discover$/);
   await missing
-    .getByRole("button", { name: "Download ebook", exact: true })
+    .getByRole("button", { name: "Get the ebook of missing", exact: true })
     .click();
   await expect.poll(() => writes.length).toBe(2);
   expect(writes[1].specification).toEqual({ mode: "ebook" });
-  await owned.getByRole("link").focus();
-  await expect(
-    owned.getByRole("button", { name: "Ebook already in library" }),
-  ).toBeDisabled();
+  // A format in the library: a tick on its icon and "in library" in its name.
+  await owned.getByRole("button", { name: "ebook-owned, details" }).focus();
+  const ownedEbook = owned.getByRole("button", {
+    name: "Ebook of ebook-owned in library",
+  });
+  await expect(ownedEbook.locator(".cover-actions__tick")).toBeVisible();
   await owned
-    .getByRole("button", { name: "Download audiobook", exact: true })
+    .getByRole("button", {
+      name: "Get the audiobook of ebook-owned",
+      exact: true,
+    })
     .click();
   await expect.poll(() => writes.length).toBe(3);
   expect(writes[2]).toEqual({
@@ -137,11 +139,13 @@ test("cover shortcuts acquire missing formats without navigating, including prov
     specification: { mode: "audio" },
   });
   await complete.hover();
-  await expect(complete.locator(".cover-quick-add")).toHaveCount(0);
+  await expect(complete.getByRole("button", { name: /^Get the / })).toHaveCount(
+    0,
+  );
   fail = true;
   await provider.hover();
   await provider
-    .getByRole("button", { name: "Download audiobook", exact: true })
+    .getByRole("button", { name: "Get the audiobook of provider", exact: true })
     .click();
   await expect(provider.getByRole("alert")).toHaveText("Retry needed");
   await expect(provider.getByRole("alert")).toHaveAttribute(
@@ -151,12 +155,15 @@ test("cover shortcuts acquire missing formats without navigating, including prov
   fail = false;
   queued = true;
   await provider
-    .getByRole("button", { name: "Download audiobook", exact: true })
+    .getByRole("button", { name: "Get the audiobook of provider", exact: true })
     .click();
   await expect(
-    provider.getByRole("button", { name: "Download audiobook", exact: true }),
-  ).toBeDisabled();
-  await expect(provider.locator(".cover-quick-status")).toHaveText(
+    provider.getByRole("button", {
+      name: "Get the audiobook of provider",
+      exact: true,
+    }),
+  ).toHaveAttribute("aria-disabled", "true");
+  await expect(provider.locator(".cover-card__status")).toHaveText(
     "Searching…",
   );
   expect(imports).toHaveLength(1);
@@ -173,11 +180,12 @@ test("cover shortcuts acquire missing formats without navigating, including prov
   role = "viewer";
   await page.reload();
   await expect(missing).toBeVisible();
-  await expect(page.locator(".cover-quick-add")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /^Get the / })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /to a list$/ })).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
-test("cover quick add links to preferences when no default media is saved", async ({
+test("cover actions leave out Quick add when no format choice is saved", async ({
   page,
 }) => {
   const writes: unknown[] = [];
@@ -239,27 +247,21 @@ test("cover quick add links to preferences when no default media is saved", asyn
     await route.fulfill({ json: data });
   });
   await page.goto("/discover");
-  const card = page.locator(".book-card").filter({
-    has: page.getByRole("heading", { name: "Unset preference", exact: true }),
+  const card = page.locator(".cover-card").filter({
+    has: page.getByRole("button", { name: "Unset preference, details" }),
   });
   await card.hover();
-  const quickAdd = card.getByRole("button", { name: "Quick add from cover" });
-  await expect(quickAdd).toHaveAttribute(
-    "title",
-    "Quick add preference not set",
+  await card.getByRole("button", { name: "More for Unset preference" }).click();
+  // Without a saved choice, More offers the formats but not Quick add with the saved choice.
+  await expect(page.getByRole("menuitem", { name: /^Quick add/ })).toHaveCount(
+    0,
   );
-  await quickAdd.click();
-  await expect(card.getByText("Preference not set")).toBeVisible();
-  const settings = card.getByRole("link", { name: "Set here" });
-  await expect(settings).toBeVisible();
-  await expect(settings).toHaveAttribute("href", "/settings#preferences");
-  await expect(card.getByRole("alert")).toHaveCount(0);
-  expect(writes).toEqual([]);
+  await page.keyboard.press("Escape");
   await card
-    .getByRole("button", { name: "Download ebook", exact: true })
+    .getByRole("button", {
+      name: "Get the ebook of Unset preference",
+      exact: true,
+    })
     .click();
   await expect.poll(() => writes.length).toBe(1);
-  await quickAdd.click();
-  await card.getByRole("link", { name: "Set here" }).click();
-  await expect(page).toHaveURL(/\/settings#preferences$/);
 });

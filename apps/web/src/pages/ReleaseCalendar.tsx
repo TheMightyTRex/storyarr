@@ -6,11 +6,12 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookCover from "../components/BookCover";
+import CoverCard from "../components/CoverCard";
+import ShelfScroller from "../components/ShelfScroller";
 import { genreLabel } from "../components/DiscoveryCollections";
 import FollowRelease, { basisLabel } from "../components/FollowRelease";
 import QuickAdd from "../components/QuickAdd";
 import SidePanel from "../components/SidePanel";
-import BookLink from "../components/BookLink";
 import CalendarSettings, {
   shownOnCalendar,
   useCalendarPreferences,
@@ -386,7 +387,7 @@ export function UpcomingShelf({ canEdit }: { canEdit: boolean }) {
         </p>
       )}
       {items.length > 0 && (
-        <ul className="discovery-shelf" aria-label="Upcoming releases">
+        <ShelfScroller label="Upcoming releases">
           {items.map((item) => (
             <li
               key={
@@ -394,8 +395,19 @@ export function UpcomingShelf({ canEdit }: { canEdit: boolean }) {
                 `${item.book.provider}:${item.book.external_id}`
               }
             >
-              <BookLink
-                className="book-card discovery-book"
+              <CoverCard
+                title={item.book.title}
+                authors={item.book.authors}
+                cover={item.book.cover_url}
+                work={item.work}
+                providerBook={
+                  !item.work && item.book.external_id
+                    ? {
+                        provider: "hardcover",
+                        external_id: item.book.external_id,
+                      }
+                    : undefined
+                }
                 to={
                   item.work
                     ? `/books/${item.work.id}`
@@ -403,19 +415,10 @@ export function UpcomingShelf({ canEdit }: { canEdit: boolean }) {
                       ? `/discover/books/hardcover/${encodeURIComponent(item.book.external_id)}`
                       : `/search?q=${encodeURIComponent(item.book.title)}`
                 }
-                aria-label={`View ${item.book.title}`}
-              >
-                <BookCover
-                  title={item.book.title}
-                  cover={item.book.cover_url}
-                  actions={false}
-                />
-                <h3 title={item.book.title}>{item.book.title}</h3>
-                <p title={item.book.authors.join(", ")}>
-                  {item.book.authors.join(", ") || "Author unknown"}
-                </p>
-                <p className="muted">{basisLabel(item.book.date_basis)}</p>
-              </BookLink>
+              />
+              <p className="muted release-basis">
+                {basisLabel(item.book.date_basis)}
+              </p>
               <FollowRelease
                 canEdit={canEdit}
                 workId={item.work?.id}
@@ -432,7 +435,7 @@ export function UpcomingShelf({ canEdit }: { canEdit: boolean }) {
               />
             </li>
           ))}
-        </ul>
+        </ShelfScroller>
       )}
     </section>
   );

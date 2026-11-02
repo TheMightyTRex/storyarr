@@ -164,7 +164,7 @@ test("a slide-out takes focus, keeps Tab inside and gives focus back when it clo
 }) => {
   await mock(page);
   await page.goto("/library");
-  const cover = page.locator(".shelf-book").first();
+  const cover = page.locator(".cover-card").first();
   await cover.click();
   const panel = page.getByRole("dialog", {
     name: "Summary The Giver of Stars",
@@ -198,7 +198,7 @@ test("a slide-out takes focus, keeps Tab inside and gives focus back when it clo
   // Escape closes it and puts focus back on the cover that opened it.
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
-  await expect(cover).toBeFocused();
+  await expect(cover.locator(".cover-card__open")).toBeFocused();
   expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
 
   // The calendar day returns focus to its day, too.
@@ -239,7 +239,7 @@ for (const theme of ["light", "dark"] as const) {
       await page.setViewportSize({ width, height: 844 });
 
       await page.goto("/library");
-      await page.locator(".shelf-book").first().click();
+      await page.locator(".cover-card").first().click();
       await expect(
         page.getByRole("dialog", { name: /Summary/ }).getByText("Julia Whelan"),
       ).toBeVisible();
