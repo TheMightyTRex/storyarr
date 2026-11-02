@@ -1,10 +1,9 @@
-import { Suspense, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Suspense, useEffect, useRef } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { Loading } from "../components";
 import { settingsSections } from "./SettingsSections";
-import HeaderSubmenu from "../components/HeaderSubmenu";
-import { settingsGroups } from "../navigation";
+import HeaderSubmenu, { HeaderTabs } from "../components/HeaderSubmenu";
+import { settingsGroups, settingsSectionIcons } from "../navigation";
 
 export default function Settings({
   role,
@@ -16,7 +15,6 @@ export default function Settings({
   const sections = settingsSections(role, permissions);
   const location = useLocation();
   const tabs = useRef<HTMLElement>(null);
-  const [overflow, setOverflow] = useState({ left: false, right: false });
   const selected =
     sections.find((section) => section.id === location.hash.slice(1)) ||
     sections[0];
@@ -33,29 +31,24 @@ export default function Settings({
       group.items.some((section) => section.id === selected.id),
     ) || visibleGroups[0];
   const groupSections = group ? group.items : sections;
+  // The section tabs scroll sideways in the header's second row; keep the current one in view,
+  // centred, and centre it again when the row's width changes.
   useEffect(() => {
     const bar = tabs.current;
     const current = bar?.querySelector("a[aria-current='page']");
     if (!(current instanceof HTMLElement) || !bar) return;
-    const measure = () =>
-      setOverflow({
-        left: bar.scrollLeft > 1,
-        right: bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 1,
-      });
+    let width = -1;
     const centerTab = () => {
+      if (Math.abs(bar.clientWidth - width) < 1) return;
+      width = bar.clientWidth;
       const left =
         current.offsetLeft - (bar.clientWidth - current.offsetWidth) / 2;
       bar.scrollTo({ left: Math.max(0, left) });
-      measure();
     };
     centerTab();
     const observer = new ResizeObserver(centerTab);
     observer.observe(bar);
-    bar.addEventListener("scroll", measure, { passive: true });
-    return () => {
-      observer.disconnect();
-      bar.removeEventListener("scroll", measure);
-    };
+    return () => observer.disconnect();
   }, [selected.id, groupSections.length]);
   if (location.hash === "#recovery" || location.hash === "#quotas") {
     const group = location.hash.slice(1);
@@ -91,45 +84,29 @@ export default function Settings({
           current: item.id === group?.id,
         }))}
       />
-      <div className="settings-tabs-bar">
-        {(overflow.left || overflow.right) && (
-          <button
-            type="button"
-            className="settings-tabs-scroll"
-            aria-label="Earlier settings categories"
-            disabled={!overflow.left}
-            onClick={() =>
-              tabs.current?.scrollBy({ left: -tabs.current.clientWidth * 0.75 })
-            }
+      <HeaderTabs>
+        <div className="settings-tabs-bar">
+          <nav
+            ref={tabs}
+            className="page-tabs"
+            aria-label="Settings categories"
           >
-            <ChevronLeft size={18} aria-hidden="true" />
-          </button>
-        )}
-        <nav ref={tabs} className="page-tabs" aria-label="Settings categories">
-          {groupSections.map((item) => (
-            <Link
-              key={item.id}
-              to={`/settings#${item.id}`}
-              aria-current={selected.id === item.id ? "page" : undefined}
-            >
-              {item.title}
-            </Link>
-          ))}
-        </nav>
-        {(overflow.left || overflow.right) && (
-          <button
-            type="button"
-            className="settings-tabs-scroll"
-            aria-label="More settings categories"
-            disabled={!overflow.right}
-            onClick={() =>
-              tabs.current?.scrollBy({ left: tabs.current.clientWidth * 0.75 })
-            }
-          >
-            <ChevronRight size={18} aria-hidden="true" />
-          </button>
-        )}
-      </div>
+            {groupSections.map((item) => {
+              const Icon = settingsSectionIcons[item.id];
+              return (
+                <Link
+                  key={item.id}
+                  to={`/settings#${item.id}`}
+                  aria-current={selected.id === item.id ? "page" : undefined}
+                >
+                  {Icon && <Icon size={17} aria-hidden="true" />}
+                  {item.title}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      </HeaderTabs>
       <section
         id={selected.id}
         className="settings-section"

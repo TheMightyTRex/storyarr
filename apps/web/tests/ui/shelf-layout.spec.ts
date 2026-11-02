@@ -39,7 +39,7 @@ test("the Shelf layout groups library pages under one menu item", async ({
 
   await shelf.getByRole("link", { name: /Library/ }).click();
   await expect(page).toHaveURL(/\/library$/);
-  const tabs = page.getByRole("navigation", { name: "Library" });
+  const tabs = page.getByRole("navigation", { name: "Library", exact: true });
   // In Shelf the library sub-menu sits in the header row under search, with square tabs.
   await expect(
     page.locator(".header-submenu").getByRole("navigation"),

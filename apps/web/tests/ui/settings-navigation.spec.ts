@@ -197,38 +197,27 @@ for (const role of ["admin", "member", "viewer"]) {
     ).toHaveValue("completed");
     await page.screenshot({ path: testInfo.outputPath("logs-desktop.png") });
     await page.setViewportSize({ width: 390, height: 844 });
-    const earlierCategories = page.getByRole("button", {
-      name: "Earlier settings categories",
-    });
-    // Logs is the only section in the System group, so its tabs fit without scroll arrows.
-    await expect(earlierCategories).toHaveCount(0);
+    // On a phone the section tabs scroll sideways in the header's second row, with no arrows.
+    await expect(
+      page.getByRole("button", { name: "Earlier settings categories" }),
+    ).toHaveCount(0);
+    await expect(categories.getByRole("link", { name: "Logs" })).toBeVisible();
     if (role === "admin") {
-      // Downloads has four sections, which scroll on a phone.
+      // Downloads has four sections; the current one is scrolled into view.
       await page.goto("/settings#downloaders");
-      await expect(earlierCategories).toBeEnabled();
       await expect
         .poll(() =>
           categories.evaluate((nav) => {
             const selected = nav.querySelector("[aria-current='page']")!;
-            return (
-              selected.getBoundingClientRect().right <=
-              nav.getBoundingClientRect().right + 1
-            );
+            const box = selected.getBoundingClientRect();
+            const row = nav.getBoundingClientRect();
+            return box.left >= row.left - 1 && box.right <= row.right + 1;
           }),
         )
         .toBe(true);
-      const initialScroll = await categories.evaluate((nav) => nav.scrollLeft);
-      await earlierCategories.click();
-      await expect
-        .poll(() => categories.evaluate((nav) => nav.scrollLeft))
-        .toBeLessThan(initialScroll);
-      const scrolledBack = await categories.evaluate((nav) => nav.scrollLeft);
-      await page
-        .getByRole("button", { name: "More settings categories" })
-        .click();
-      await expect
-        .poll(() => categories.evaluate((nav) => nav.scrollLeft))
-        .toBeGreaterThan(scrolledBack);
+      expect(
+        await categories.evaluate((nav) => nav.scrollWidth > nav.clientWidth),
+      ).toBe(true);
     }
     await page.screenshot({ path: testInfo.outputPath("logs-mobile.png") });
     expect(

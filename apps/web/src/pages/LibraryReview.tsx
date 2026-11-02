@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { HeaderTabs } from "../components/HeaderSubmenu";
+import { reviewIcons } from "../navigation";
 import { CheckCircle2, ExternalLink } from "lucide-react";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
@@ -161,31 +163,35 @@ export default function LibraryReview() {
   return (
     <div className="library-review">
       <h1 className="workspace-title">Library review</h1>
-      <nav className="page-tabs" aria-label="Review filter">
-        {KINDS.map(({ id, label, count }) => {
-          const total = summary.data ? count(summary.data) : 0;
-          const next = new URLSearchParams(params);
-          next.delete("item");
-          next.delete("source");
-          next.delete("reason");
-          if (id === "all") next.delete("kind");
-          else next.set("kind", id);
-          return (
-            <Link
-              key={id}
-              to={`?${next}`}
-              aria-current={kind === id && !reason ? "page" : undefined}
-            >
-              {label}
-              {total > 0 && (
-                <span className="requests-tab-count">
-                  {total > 999 ? "999+" : total}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
+      <HeaderTabs>
+        <nav className="page-tabs" aria-label="Review filter">
+          {KINDS.map(({ id, label, count }) => {
+            const Icon = reviewIcons[id];
+            const total = summary.data ? count(summary.data) : 0;
+            const next = new URLSearchParams(params);
+            next.delete("item");
+            next.delete("source");
+            next.delete("reason");
+            if (id === "all") next.delete("kind");
+            else next.set("kind", id);
+            return (
+              <Link
+                key={id}
+                to={`?${next}`}
+                aria-current={kind === id && !reason ? "page" : undefined}
+              >
+                {Icon && <Icon size={17} aria-hidden="true" />}
+                {label}
+                {total > 0 && (
+                  <span className="requests-tab-count">
+                    {total > 999 ? "999+" : total}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+      </HeaderTabs>
       <div className="review-toolbar">
         <form
           className="library-search review-search"

@@ -1,11 +1,18 @@
 /*
- * The header stays at the top of every page: the page's sub-menu on the left, then search, with
- * Display always at the far right. On phones the sub-menu drops to a row of its own.
+ * The header, as on Starboard. Row 1: the section's sub-menu on the left, then search, with Display
+ * always at the far right. Row 2 (only when a page has its own tabs): those tabs. On phones row 1 is
+ * the menu button, the name and Display; search and the sub-menus are in the menu drawer.
  */
 :root {
   --search-row-height: 64px;
   --submenu-height: 0px;
-  --topbar-height: calc(var(--search-row-height) + var(--submenu-height));
+  --tabs-height: 0px;
+  --topbar-height: calc(
+    var(--search-row-height) + var(--submenu-height) + var(--tabs-height)
+  );
+}
+.app-shell:has(.header-tabs:not(:empty)) {
+  --tabs-height: 48px;
 }
 .topbar-sticky {
   position: sticky;
@@ -145,40 +152,6 @@
 .topbar:has(.header-submenu:not(:empty)) {
   padding-left: 0;
 }
-@media (max-width: 1100px) {
-  :root {
-    --search-row-height: 63px;
-  }
-  .app-shell:has(.header-submenu:not(:empty)) {
-    --submenu-height: 52px;
-  }
-  /* On narrower screens the sub-menu is a full-width row under the search row. */
-  .topbar {
-    flex-wrap: wrap;
-    row-gap: 0;
-    height: auto;
-    min-height: var(--topbar-height);
-    padding: 9px 16px 10px;
-  }
-  .topbar:has(.header-submenu:not(:empty)) {
-    padding: 9px 16px 0;
-  }
-  .topbar .search {
-    flex: 1 1 0;
-  }
-  .header-submenu {
-    order: 99;
-    flex: 0 0 calc(100% + 32px);
-    height: var(--submenu-height);
-    margin: 10px -16px 0;
-    padding: 0 8px;
-    border-top: 1px solid var(--line);
-  }
-  .header-submenu-nav a {
-    padding: 0 12px;
-  }
-}
-
 /* Settings groups in the Classic layout sit above the section tabs. */
 .settings-groups {
   margin-bottom: 12px;
@@ -309,4 +282,164 @@
 }
 .page-actions:empty {
   display: none;
+}
+
+/*
+ * Starboard's header look (2 November 2026): a white bar with a grey line under it, tabs at 0.875rem,
+ * a plain search box with 1rem text, and a framed Display button. Shared with the Starboard dashboard.
+ */
+.topbar {
+  background: var(--panel-header-bg);
+  border-bottom: 1px solid var(--panel-header-line);
+  color: var(--panel-header-text);
+  gap: 16px;
+}
+.header-submenu-nav a {
+  gap: 8px;
+  padding: 0 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.topbar .search {
+  flex: 0 1 360px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.topbar .search:focus-within {
+  box-shadow: none;
+}
+.topbar .search input {
+  width: 100%;
+  height: var(--control-height-large);
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 1rem;
+}
+.topbar .search input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 0;
+}
+.topbar-actions > .display-button {
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Row 2: the page's own tabs, Starboard's sub-menu row. */
+.header-tabs {
+  height: var(--tabs-height);
+  background: var(--panel-header-bg);
+  border-bottom: 1px solid var(--panel-header-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.header-tabs::-webkit-scrollbar {
+  display: none;
+}
+.header-tabs:empty {
+  display: none;
+}
+.header-tabs :is(.settings-tabs-bar, .page-tabs) {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  gap: 0;
+}
+.header-tabs .settings-tabs-bar {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+}
+.header-tabs .page-tabs {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.header-tabs .page-tabs a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.header-tabs .page-tabs a:hover,
+.header-tabs .page-tabs a[aria-current="page"] {
+  background: var(--control-active);
+  color: var(--c-text-grey-97);
+}
+.header-tabs .page-tabs a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--accent);
+}
+.header-tabs .page-tabs a:focus-visible {
+  outline-offset: -3px;
+}
+
+/* The name beside the menu button; phones only. */
+.topbar-brand {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  :root {
+    --search-row-height: 60px;
+  }
+  .topbar,
+  .topbar:has(.header-submenu:not(:empty)) {
+    padding: 0 16px;
+    gap: 12px;
+  }
+  .topbar-brand {
+    display: inline-flex;
+  }
+  .topbar .search {
+    display: none;
+  }
+  .topbar-actions {
+    margin-left: auto;
+  }
+  .topbar-actions > .display-button {
+    width: var(--control-height-large);
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+/* On narrower windows the search box gives up width first, so the menu keeps room for its icons. */
+@media (max-width: 1100px) {
+  .topbar .search {
+    flex-basis: 240px;
+  }
+}
+@media (max-width: 900px) {
+  .topbar .search {
+    flex-basis: 180px;
+  }
 }

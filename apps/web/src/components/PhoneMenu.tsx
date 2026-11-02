@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
@@ -13,13 +13,25 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { api, result } from "../api/client";
-import { activityTabs, discoverViews, settingsGroups } from "../navigation";
+import {
+  activityTabs,
+  discoverViewIcons,
+  discoverViews,
+  libraryIcons,
+  settingsGroups,
+} from "../navigation";
 import { settingsSections } from "../pages/SettingsSections";
 import { requestFilter, requestTab } from "../pages/requestFilters";
 import { ApplicationRelease } from "./ApplicationRelease";
 import "../phone-menu.css";
 
-type Item = { to: string; label: string; current: boolean; count?: number };
+type Item = {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  current: boolean;
+  count?: number;
+};
 type Section = { id: string; label: string; icon: LucideIcon; items: Item[] };
 
 /*
@@ -42,6 +54,7 @@ export default function PhoneMenu({
   signOut: () => void;
   signingOut: boolean;
 }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const opener = useRef<HTMLButtonElement>(null);
@@ -61,12 +74,18 @@ export default function PhoneMenu({
       label: "Library",
       icon: BookOpen,
       items: [
-        { to: "/library", label: "My library", current: path === "/library" },
+        {
+          to: "/library",
+          label: "My library",
+          icon: libraryIcons.library,
+          current: path === "/library",
+        },
         ...(role !== "viewer"
           ? [
               {
                 to: "/following",
                 label: "Following",
+                icon: libraryIcons.following,
                 current: path.startsWith("/following"),
               },
             ]
@@ -76,6 +95,7 @@ export default function PhoneMenu({
               {
                 to: "/review",
                 label: "Library review",
+                icon: libraryIcons.review,
                 current: path.startsWith("/review"),
                 count: reviewing,
               },
@@ -90,6 +110,7 @@ export default function PhoneMenu({
       items: discoverViews.map(([key, label]) => ({
         to: key === "home" ? "/discover" : `/discover?view=${key}`,
         label,
+        icon: discoverViewIcons[key],
         current: path === "/discover" && (params.get("view") || "home") === key,
       })),
     },
@@ -100,6 +121,7 @@ export default function PhoneMenu({
       items: activityTabs.map((tab) => ({
         to: tab.to,
         label: tab.title,
+        icon: tab.icon,
         current:
           path === "/requests" &&
           requestTab(requestFilter(location.hash, params.get("status"))) ===
@@ -124,6 +146,7 @@ export default function PhoneMenu({
           .map(({ group, first }) => ({
             to: `/settings#${first}`,
             label: group.title,
+            icon: group.icon,
             current:
               path === "/settings" &&
               (group.sections.includes(hash) ||
@@ -198,6 +221,29 @@ export default function PhoneMenu({
                 <X size={18} aria-hidden="true" />
               </button>
             </header>
+            <form
+              className="phone-menu-search"
+              role="search"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const q = new FormData(event.currentTarget).get("q");
+                close();
+                navigate(
+                  "/search?q=" + encodeURIComponent(String(q ?? "").trim()),
+                );
+              }}
+            >
+              <input
+                type="search"
+                name="q"
+                aria-label="Search books or authors"
+                placeholder="Search books or authors"
+                maxLength={300}
+              />
+              <button type="submit" className="sr-only">
+                Search
+              </button>
+            </form>
             <div className="phone-menu-sections">
               {sections.map((section) => {
                 const isOpen = unfolded.includes(section.id);
@@ -236,6 +282,7 @@ export default function PhoneMenu({
                             to={item.to}
                             aria-current={item.current ? "page" : undefined}
                           >
+                            <item.icon size={18} aria-hidden="true" />
                             {item.label}
                             {!!item.count && (
                               <span className="phone-menu-count">

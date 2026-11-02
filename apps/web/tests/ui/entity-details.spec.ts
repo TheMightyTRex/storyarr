@@ -328,7 +328,7 @@ test("global search opens book details and legacy source menus return to search"
   await expect(
     navigation.getByRole("link", { name: "Sources", exact: true }),
   ).toHaveCount(0);
-  const search = page.getByRole("textbox", { name: "Search books or authors" });
+  const search = page.getByRole("searchbox", { name: "Search books or authors" });
   await search.fill("Earthsea");
   await search.press("Enter");
   await page.getByRole("link", { name: "View A Wizard of Earthsea" }).click();

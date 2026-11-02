@@ -7,6 +7,8 @@ import DeleteLibraryCopy from "../components/DeleteLibraryCopy";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
+import { HeaderTabs } from "../components/HeaderSubmenu";
+import { shelfIcons as ShelfIcon } from "../navigation";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Empty, Loading, Notice } from "../components";
@@ -84,32 +86,38 @@ export default function MyLibrary({
     <>
       <h1 className="sr-only">My library</h1>
       <div className="page-tabs-bar">
-        <nav className="page-tabs" aria-label="Library shelves">
-          <Link
-            to="/library"
-            aria-current={!saved && !groupView ? "page" : undefined}
-          >
-            In my libraries
-          </Link>
-          <Link
-            to="/library?view=authors"
-            aria-current={groupView === "authors" ? "page" : undefined}
-          >
-            Authors
-          </Link>
-          <Link
-            to="/library?view=series"
-            aria-current={groupView === "series" ? "page" : undefined}
-          >
-            Series
-          </Link>
-          <Link
-            to="/library?view=saved"
-            aria-current={saved ? "page" : undefined}
-          >
-            All saved titles
-          </Link>
-        </nav>
+        <HeaderTabs>
+          <nav className="page-tabs" aria-label="Library shelves">
+            <Link
+              to="/library"
+              aria-current={!saved && !groupView ? "page" : undefined}
+            >
+              <ShelfIcon.libraries size={17} aria-hidden="true" />
+              In my libraries
+            </Link>
+            <Link
+              to="/library?view=authors"
+              aria-current={groupView === "authors" ? "page" : undefined}
+            >
+              <ShelfIcon.authors size={17} aria-hidden="true" />
+              Authors
+            </Link>
+            <Link
+              to="/library?view=series"
+              aria-current={groupView === "series" ? "page" : undefined}
+            >
+              <ShelfIcon.series size={17} aria-hidden="true" />
+              Series
+            </Link>
+            <Link
+              to="/library?view=saved"
+              aria-current={saved ? "page" : undefined}
+            >
+              <ShelfIcon.saved size={17} aria-hidden="true" />
+              All saved titles
+            </Link>
+          </nav>
+        </HeaderTabs>
         {admin && (
           <div className="page-tabs-tools">
             <Link className="page-view-action" to="/settings#libraries">

@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Contrast, X } from "lucide-react";
+import { Sun, X } from "lucide-react";
 import {
   accessibilityKeys,
   displayDefaults,
@@ -164,7 +164,7 @@ export function DisplayButton() {
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >
-        <Contrast size={18} aria-hidden="true" />
+        <Sun size={20} aria-hidden="true" />
         <span className="topbar-label">Display</span>
       </button>
       <dialog

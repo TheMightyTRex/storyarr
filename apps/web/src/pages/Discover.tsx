@@ -3,18 +3,8 @@ import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
 import { HardcoverCollections } from "./CommunityLists";
 import { useState } from "react";
-import {
-  Award,
-  CalendarDays,
-  LayoutGrid,
-  Layers,
-  Library,
-  List,
-  Sparkles,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import HeaderSubmenu from "../components/HeaderSubmenu";
-import { discoverViews } from "../navigation";
+import { discoverViewIcons, discoverViews } from "../navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
@@ -62,15 +52,6 @@ import ReleaseCalendar, { UpcomingShelf } from "./ReleaseCalendar";
 import { currentParams } from "../currentParams";
 
 const views = discoverViews;
-const viewIcons: Record<(typeof views)[number][0], LucideIcon> = {
-  home: Sparkles,
-  series: Library,
-  browse: LayoutGrid,
-  calendar: CalendarDays,
-  collections: Layers,
-  awards: Award,
-  yours: List,
-};
 export default function Discover({ canEdit = true }: { canEdit?: boolean }) {
   const [params] = useSearchParams();
   const { collectionId } = useParams();
@@ -126,7 +107,7 @@ function DiscoverNavigation({
         items={views.map(([key, label]) => ({
           to: key === "home" ? "/discover" : `/discover?view=${key}`,
           label,
-          icon: viewIcons[key],
+          icon: discoverViewIcons[key],
           current: !collectionId && view === key,
         }))}
       />

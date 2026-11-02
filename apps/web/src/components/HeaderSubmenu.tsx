@@ -5,12 +5,21 @@ import {
   useRef,
   useState,
 } from "react";
+import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 
 // The header row that page sub-menus move into. Set by the app shell.
 export const HeaderSubmenuSlot = createContext<HTMLElement | null>(null);
+// The header's second row, which a page's own tabs (level 3) move into, as on Starboard.
+export const HeaderTabsSlot = createContext<HTMLElement | null>(null);
+
+/** A page's tabs (In my libraries, Authors...), shown in the header's second row. */
+export function HeaderTabs({ children }: { children: ReactNode }) {
+  const slot = useContext(HeaderTabsSlot);
+  return slot ? createPortal(children, slot) : <>{children}</>;
+}
 
 export type SubmenuItem = {
   to: string;

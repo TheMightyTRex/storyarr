@@ -3647,20 +3647,6 @@ img.detail-cover {
   border-bottom: 0;
   position: relative;
 }
-.settings-tabs-scroll {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 32px;
-  min-height: 40px;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  color: var(--muted);
-}
-.settings-tabs-scroll:disabled {
-  opacity: 0.3;
-}
 .page-tabs-bar {
   display: flex;
   align-items: stretch;
