@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   useInfiniteQuery,
   useMutation,
@@ -6,13 +6,14 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookCover from "../components/BookCover";
 import AddMissingBooks from "../components/AddMissingBooks";
 import QuickAdd from "../components/QuickAdd";
+import SidePanel from "../components/SidePanel";
 import {
   publication,
   statusChip,
@@ -104,10 +105,6 @@ export function FollowShelfView({
         ? last.offset + last.limit
         : undefined,
   });
-  function close() {
-    setOpen(null);
-    opener.current?.focus();
-  }
   if (summary.isPending) return <Loading />;
   if (summary.error || !summary.data)
     return (
@@ -129,7 +126,7 @@ export function FollowShelfView({
       "/api/catalog/cover-image?url=" + encodeURIComponent(follow.image_url)) ||
     items[0]?.cover_url;
   return (
-    <div className={open ? "follow-shelf has-drawer" : "follow-shelf"}>
+    <div className="follow-shelf">
       <div className="follow-shelf-main">
         {!embedded && (
           <Link to="/following" className="follow-shelf-back">
@@ -296,7 +293,8 @@ export function FollowShelfView({
         <BookDrawer
           book={open}
           listId={listId}
-          close={close}
+          opener={opener.current}
+          close={() => setOpen(null)}
           changed={(next) => setOpen(next)}
         />
       )}
@@ -307,11 +305,13 @@ export function FollowShelfView({
 function BookDrawer({
   book,
   listId,
+  opener,
   close,
   changed,
 }: {
   book: Book;
   listId: string;
+  opener: HTMLElement | null;
   close: () => void;
   changed: (book: Book) => void;
 }) {
@@ -350,13 +350,6 @@ function BookDrawer({
       } as Book);
     },
   });
-  const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => heading.current?.focus(), [book.work_id]);
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => event.key === "Escape" && close();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [close]);
   const status = book.status;
   const href = status ? statusLinks[status.kind] : undefined;
   const detail = status
@@ -365,62 +358,60 @@ function BookDrawer({
         .join(" ")
     : "";
   return (
-    <aside className="book-drawer" aria-labelledby="book-drawer-title">
-      <header className="side-panel-header">
-        <span className="side-panel-title">Book</span>
-        <button
-          type="button"
-          className="icon-button"
-          aria-label="Close book details"
-          onClick={close}
-        >
-          <X size={18} aria-hidden="true" />
-        </button>
-      </header>
+    <SidePanel
+      title="Book"
+      labelledBy="book-drawer-title"
+      closeLabel="Close book details"
+      className="book-drawer"
+      opener={opener}
+      onClose={close}
+      footer={
+        <>
+          <Link className="drawer-action primary" to={"/books/" + book.work_id}>
+            Open book page
+          </Link>
+          {href && (
+            <Link className="drawer-action" to={href}>
+              Open in Activity
+            </Link>
+          )}
+          {canEdit && book.observation_id && (
+            <button
+              type="button"
+              className="drawer-action"
+              disabled={exclude.isPending}
+              onClick={() => exclude.mutate()}
+            >
+              {excluded ? "Include in this follow" : "Exclude from this follow"}
+            </button>
+          )}
+        </>
+      }
+    >
       <div className="book-drawer-cover">
         <BookCover title={book.title} cover={book.cover_url} actions={false} />
       </div>
-      <h2 id="book-drawer-title" ref={heading} tabIndex={-1}>
-        {book.title}
-      </h2>
-      <p className="muted">
-        {book.follow_names?.length
-          ? book.follow_names.join(" · ")
-          : book.authors.join(", ")}
-      </p>
-      <p className="muted">{publication(book)}</p>
+      <div className="book-drawer-text">
+        <h3 id="book-drawer-title">{book.title}</h3>
+        <p className="muted">
+          {book.follow_names?.length
+            ? book.follow_names.join(" · ")
+            : book.authors.join(", ")}
+        </p>
+        <p className="muted">{publication(book)}</p>
+      </div>
       {status && (
         <div className="book-drawer-status">
           <span className="request-status" data-state={statusChip[status.kind]}>
             {status.label}
           </span>
           {detail && <p>{detail}</p>}
+          {canEdit && SEARCHABLE.has(status.kind) && (
+            <QuickAdd workId={book.work_id} actionLabel="Search now" />
+          )}
         </div>
       )}
-      <div className="book-drawer-actions">
-        <Link className="drawer-action primary" to={"/books/" + book.work_id}>
-          Open book page
-        </Link>
-        {href && (
-          <Link className="drawer-action" to={href}>
-            Open in Activity
-          </Link>
-        )}
-        {canEdit && status && SEARCHABLE.has(status.kind) && (
-          <QuickAdd workId={book.work_id} actionLabel="Search now" />
-        )}
-        {canEdit && book.observation_id && (
-          <button
-            type="button"
-            className="drawer-action"
-            disabled={exclude.isPending}
-            onClick={() => exclude.mutate()}
-          >
-            {excluded ? "Include in this follow" : "Exclude from this follow"}
-          </button>
-        )}
-      </div>
       <Notice error={exclude.error} />
-    </aside>
+    </SidePanel>
   );
 }

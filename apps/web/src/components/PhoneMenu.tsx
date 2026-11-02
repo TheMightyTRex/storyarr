@@ -9,7 +9,6 @@ import {
   LogOut,
   Menu,
   Settings,
-  X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { api, result } from "../api/client";
@@ -23,6 +22,7 @@ import {
 import { settingsSections } from "../pages/SettingsSections";
 import { requestFilter, requestTab } from "../pages/requestFilters";
 import { ApplicationRelease } from "./ApplicationRelease";
+import SidePanel from "./SidePanel";
 import "../phone-menu.css";
 
 type Item = {
@@ -36,8 +36,8 @@ type Section = { id: string; label: string; icon: LucideIcon; items: Item[] };
 
 /*
  * On phones the main menu is a drawer from the left, opened by the menu button in the header. Each
- * section folds open to its sub-menu; the one you are in starts open. It closes on a choice, the
- * close button, Escape, or a press outside it.
+ * section folds open to its sub-menu; the one you are in starts open. It is a SidePanel from the left,
+ * so it closes on the close button, Escape or a press outside it, and also on a choice.
  */
 export default function PhoneMenu({
   name,
@@ -58,7 +58,6 @@ export default function PhoneMenu({
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const opener = useRef<HTMLButtonElement>(null);
-  const closer = useRef<HTMLButtonElement>(null);
   const release = useQuery({
     queryKey: ["application-release"],
     queryFn: async () => result(await api.GET("/api/application/release")),
@@ -165,24 +164,11 @@ export default function PhoneMenu({
     [location.pathname, location.search, location.hash],
   );
   useEffect(() => {
-    if (!open) return;
-    setUnfolded(here ? [here.id] : []);
-    closer.current?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-        opener.current?.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    if (open) setUnfolded(here ? [here.id] : []);
     // Unfold the current section each time the menu opens, not on every change while open.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
-  const close = () => {
-    setOpen(false);
-    opener.current?.focus();
-  };
+  const close = () => setOpen(false);
   const upgrade = !!release.data?.update_available;
   return (
     <>
@@ -199,132 +185,123 @@ export default function PhoneMenu({
         {upgrade && <span className="phone-menu-dot" aria-hidden="true" />}
       </button>
       {open && (
-        <div className="phone-menu-layer">
-          <div className="phone-menu-overlay" onClick={close} />
-          <nav
-            id="phone-menu"
-            className="phone-menu"
-            aria-label="Main navigation"
+        <SidePanel
+          side="left"
+          id="phone-menu"
+          label="Main menu"
+          title={
+            <span className="panel-header__brand">
+              <img src="/assets/storyarr.svg" width="28" height="28" alt="" />
+              Storyarr
+            </span>
+          }
+          closeLabel="Close menu"
+          opener={opener.current}
+          onClose={close}
+        >
+          <form
+            className="phone-menu-search"
+            role="search"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const q = new FormData(event.currentTarget).get("q");
+              close();
+              navigate(
+                "/search?q=" + encodeURIComponent(String(q ?? "").trim()),
+              );
+            }}
           >
-            <header className="side-panel-header">
-              <span className="side-panel-title phone-menu-brand">
-                <img src="/assets/storyarr.svg" width="28" height="28" alt="" />
-                Storyarr
+            <input
+              type="search"
+              name="q"
+              aria-label="Search books or authors"
+              placeholder="Search books or authors"
+              maxLength={300}
+            />
+            <button type="submit" className="sr-only">
+              Search
+            </button>
+          </form>
+          <nav className="phone-menu-sections" aria-label="Main navigation">
+            {sections.map((section) => {
+              const isOpen = unfolded.includes(section.id);
+              const Icon = section.icon;
+              return (
+                <div
+                  key={section.id}
+                  className="phone-menu-section"
+                  data-current={section === here || undefined}
+                >
+                  <button
+                    type="button"
+                    className="phone-menu-section-button"
+                    aria-expanded={isOpen}
+                    aria-controls={`phone-menu-${section.id}`}
+                    onClick={() =>
+                      setUnfolded((list) =>
+                        isOpen
+                          ? list.filter((id) => id !== section.id)
+                          : [...list, section.id],
+                      )
+                    }
+                  >
+                    <Icon size={20} aria-hidden="true" />
+                    {section.label}
+                    <ChevronRight
+                      size={18}
+                      className="phone-menu-chevron"
+                      aria-hidden="true"
+                    />
+                  </button>
+                  <ul id={`phone-menu-${section.id}`} hidden={!isOpen}>
+                    {section.items.map((item) => (
+                      <li key={item.to}>
+                        <Link
+                          to={item.to}
+                          aria-current={item.current ? "page" : undefined}
+                        >
+                          <item.icon size={18} aria-hidden="true" />
+                          {item.label}
+                          {!!item.count && (
+                            <span className="phone-menu-count">
+                              {item.count > 99 ? "99+" : item.count}
+                            </span>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </nav>
+          <footer className="phone-menu-footer">
+            <div className="phone-menu-account">
+              <span className="avatar" aria-hidden="true">
+                {name.slice(0, 1).toUpperCase()}
+              </span>
+              <span>
+                <strong>{name}</strong>
+                <small>
+                  {admin
+                    ? "Administrator"
+                    : role === "viewer"
+                      ? "Viewer"
+                      : "Member"}
+                </small>
               </span>
               <button
-                ref={closer}
                 type="button"
-                className="icon-button"
-                aria-label="Close menu"
-                onClick={close}
+                className="phone-menu-sign-out"
+                onClick={signOut}
+                disabled={signingOut}
               >
-                <X size={18} aria-hidden="true" />
+                <LogOut size={18} aria-hidden="true" /> Sign out
               </button>
-            </header>
-            <form
-              className="phone-menu-search"
-              role="search"
-              onSubmit={(event) => {
-                event.preventDefault();
-                const q = new FormData(event.currentTarget).get("q");
-                close();
-                navigate(
-                  "/search?q=" + encodeURIComponent(String(q ?? "").trim()),
-                );
-              }}
-            >
-              <input
-                type="search"
-                name="q"
-                aria-label="Search books or authors"
-                placeholder="Search books or authors"
-                maxLength={300}
-              />
-              <button type="submit" className="sr-only">
-                Search
-              </button>
-            </form>
-            <div className="phone-menu-sections">
-              {sections.map((section) => {
-                const isOpen = unfolded.includes(section.id);
-                const Icon = section.icon;
-                return (
-                  <div
-                    key={section.id}
-                    className="phone-menu-section"
-                    data-current={section === here || undefined}
-                  >
-                    <button
-                      type="button"
-                      className="phone-menu-section-button"
-                      aria-expanded={isOpen}
-                      aria-controls={`phone-menu-${section.id}`}
-                      onClick={() =>
-                        setUnfolded((list) =>
-                          isOpen
-                            ? list.filter((id) => id !== section.id)
-                            : [...list, section.id],
-                        )
-                      }
-                    >
-                      <Icon size={20} aria-hidden="true" />
-                      {section.label}
-                      <ChevronRight
-                        size={18}
-                        className="phone-menu-chevron"
-                        aria-hidden="true"
-                      />
-                    </button>
-                    <ul id={`phone-menu-${section.id}`} hidden={!isOpen}>
-                      {section.items.map((item) => (
-                        <li key={item.to}>
-                          <Link
-                            to={item.to}
-                            aria-current={item.current ? "page" : undefined}
-                          >
-                            <item.icon size={18} aria-hidden="true" />
-                            {item.label}
-                            {!!item.count && (
-                              <span className="phone-menu-count">
-                                {item.count > 99 ? "99+" : item.count}
-                              </span>
-                            )}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
             </div>
-            <footer className="phone-menu-footer">
-              <div className="phone-menu-account">
-                <span className="avatar" aria-hidden="true">
-                  {name.slice(0, 1).toUpperCase()}
-                </span>
-                <span>
-                  <strong>{name}</strong>
-                  <small>
-                    {admin
-                      ? "Administrator"
-                      : role === "viewer"
-                        ? "Viewer"
-                        : "Member"}
-                  </small>
-                </span>
-                <button
-                  type="button"
-                  className="phone-menu-sign-out"
-                  onClick={signOut}
-                  disabled={signingOut}
-                >
-                  <LogOut size={18} aria-hidden="true" /> Sign out
-                </button>
-              </div>
-              <ApplicationRelease />
-            </footer>
-          </nav>
-        </div>
+            <ApplicationRelease />
+          </footer>
+        </SidePanel>
       )}
     </>
   );

@@ -48,7 +48,11 @@ test("on phones the main menu is a drawer with each section's sub-menu", async (
   const button = page.getByRole("button", { name: "Menu, upgrade available" });
   await button.click();
   await expect(button).toHaveAttribute("aria-expanded", "true");
-  const menu = page.getByRole("navigation", { name: "Main navigation" });
+  const menu = page.getByRole("dialog", { name: "Main menu" });
+  await expect(menu).toHaveAttribute("aria-modal", "true");
+  await expect(
+    menu.getByRole("navigation", { name: "Main navigation" }),
+  ).toBeVisible();
   await expect(menu.getByRole("button", { name: "Close menu" })).toBeFocused();
   // The section you are in starts open, with the page marked.
   await expect(menu.getByRole("button", { name: "Library" })).toHaveAttribute(
@@ -67,7 +71,7 @@ test("on phones the main menu is a drawer with each section's sub-menu", async (
   await expect(menu).toHaveCount(0);
   await expect(button).toBeFocused();
 
-  // A press outside closes it too.
+  // A press on the dimmed page beside it closes it too.
   await button.click();
   await page.mouse.click(380, 400);
   await expect(menu).toHaveCount(0);

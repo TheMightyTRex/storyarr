@@ -1245,40 +1245,21 @@ button.release-day[aria-expanded="true"] {
   justify-self: start;
   width: fit-content;
 }
-.release-drawer {
-  position: fixed;
-  z-index: 40;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: min(520px, calc(100vw - 240px));
-  padding: 22px 18px 28px;
-  border-left: 1px solid var(--line);
-  background: var(--c-bg-slate-23);
-  box-shadow: -24px 0 48px var(--c-shadow-grey-0-a53);
-  overflow: auto;
-}
 .release-drawer-count {
   margin: 0;
 }
 .release-drawer-note {
-  margin: -8px 0 0;
+  margin: 0;
   font-size: 0.8125rem;
   line-height: 1.45;
 }
 .release-drawer-genre {
-  margin: 18px 0 8px;
+  margin: 0 0 8px;
   color: var(--muted);
   font-size: 0.6875rem;
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-.release-drawer > section:first-of-type .release-drawer-genre {
-  margin-top: 0;
 }
 .release-drawer-list {
   display: grid;
@@ -1403,14 +1384,6 @@ button.release-day[aria-expanded="true"] {
     font-size: 0.6875rem;
     font-weight: 650;
     line-height: 14px;
-  }
-  .release-drawer {
-    width: 100%;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .release-drawer {
-    scroll-behavior: auto;
   }
 }
 

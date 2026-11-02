@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, Headphones, Star, X } from "lucide-react";
+import { BookOpen, Headphones, Star } from "lucide-react";
 import type { components } from "../api/schema";
 import BookCover from "./BookCover";
 import QuickAdd from "./QuickAdd";
+import SidePanel from "./SidePanel";
 import { useLocalBookMetadata, useReaderDetails } from "./BookReaderDetails";
 import "../library-shelf.css";
 
@@ -15,7 +15,7 @@ function hours(seconds: number) {
   return h ? `${h} h ${m} min` : `${m} min`;
 }
 
-/** Basic information about a library book, sliding out from the right. */
+/** Basic information about a library book, in a slide-out from the right. */
 export default function BookSummary({
   work,
   close,
@@ -23,25 +23,6 @@ export default function BookSummary({
   work: Work;
   close: () => void;
 }) {
-  const heading = useRef<HTMLHeadingElement>(null);
-  const panel = useRef<HTMLElement>(null);
-  // Slide out from the right edge of the page, below the header.
-  const [edges, setEdges] = useState<{ top: number }>();
-  useLayoutEffect(() => {
-    const place = () => {
-      const header = document.querySelector(".topbar");
-      setEdges({
-        top: Math.max(0, header?.getBoundingClientRect().bottom || 0),
-      });
-    };
-    place();
-    window.addEventListener("resize", place);
-    window.addEventListener("scroll", place, { passive: true });
-    return () => {
-      window.removeEventListener("resize", place);
-      window.removeEventListener("scroll", place);
-    };
-  }, []);
   const metadata = useLocalBookMetadata(work.id);
   const hardcover = metadata.data?.sources?.find(
     (item) => item.provider === "hardcover",
@@ -50,32 +31,6 @@ export default function BookSummary({
   const series = (hardcover || metadata.data?.sources?.[0])?.series || [];
   const { availability } = work;
   const narrators = availability.primary_audio_narrators || [];
-  useEffect(() => {
-    heading.current?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
-    };
-    // A press outside the panel closes it. The covers toggle the panel themselves, and pop-ups
-    // opened from the panel (Get the ebook, menus) count as inside.
-    const onPointer = (event: PointerEvent) => {
-      const target = event.target as Element | null;
-      if (
-        !target ||
-        panel.current?.contains(target) ||
-        target.closest(
-          "[data-summary-trigger], dialog, [role='dialog'], [role='menu'], [role='listbox']",
-        )
-      )
-        return;
-      close();
-    };
-    document.addEventListener("keydown", onKey);
-    document.addEventListener("pointerdown", onPointer);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("pointerdown", onPointer);
-    };
-  }, [work.id, close]);
   const authorLink = (name: string) => {
     const author = details.data?.authors?.find(
       (item) => item.name.toLocaleLowerCase() === name.toLocaleLowerCase(),
@@ -93,24 +48,19 @@ export default function BookSummary({
     facts.push(["Length", hours(details.data.audio_seconds)]);
   if (details.data?.pages) facts.push(["Pages", String(details.data.pages)]);
   return (
-    <aside
-      ref={panel}
+    <SidePanel
+      title="Summary"
+      labelledBy="book-summary-title"
+      closeLabel="Close summary"
       className="book-summary"
-      aria-labelledby="book-summary-title"
-      style={edges}
+      onClose={close}
+      footer={
+        <Link className="drawer-action primary" to={`/books/${work.id}`}>
+          Open book page
+        </Link>
+      }
     >
-      <header className="side-panel-header">
-        <span className="side-panel-title">Summary</span>
-        <button
-          type="button"
-          className="icon-button"
-          aria-label="Close summary"
-          onClick={close}
-        >
-          <X size={18} aria-hidden="true" />
-        </button>
-      </header>
-      <div className="book-summary-head">
+      <div className="side-panel__lead book-summary-head">
         <BookCover
           title={work.title}
           work={work}
@@ -118,9 +68,7 @@ export default function BookSummary({
           actions={false}
         />
         <div>
-          <h2 id="book-summary-title" ref={heading} tabIndex={-1}>
-            {work.title}
-          </h2>
+          <h3 id="book-summary-title">{work.title}</h3>
           <p className="muted">
             {work.authors.length
               ? work.authors.map((name, index) => (
@@ -180,19 +128,16 @@ export default function BookSummary({
       {work.description && (
         <p className="book-summary-description">{work.description}</p>
       )}
-      <div className="book-summary-actions">
-        <Link className="button-link primary" to={`/books/${work.id}`}>
-          Open book page
-        </Link>
-        {!(availability.ebook && availability.audio) && (
+      {!(availability.ebook && availability.audio) && (
+        <div>
           <QuickAdd
             workId={work.id}
             actionLabel={
               availability.audio ? "Get the ebook" : "Get the audiobook"
             }
           />
-        )}
-      </div>
-    </aside>
+        </div>
+      )}
+    </SidePanel>
   );
 }

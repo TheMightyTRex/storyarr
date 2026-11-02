@@ -37,10 +37,6 @@
   gap: normal;
   max-width: none;
 }
-.phone-menu {
-  inset: auto;
-  z-index: auto;
-}
 .segmented {
   width: auto;
   max-width: none;

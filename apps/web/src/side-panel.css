@@ -1,7 +1,7 @@
 /*
- * The header every slide-out panel shares: its name in bold and the close button, on a white bar
- * with a grey line under it. The bar stays put while the panel scrolls. Each panel says how much
- * padding it has, so the bar can reach its edges.
+ * The header on dialogs, which matches the library's .panel-header on SidePanel: its name in bold
+ * and the close button, on a white bar with a grey line under it. The bar stays put while the
+ * dialog scrolls. Each dialog says how much padding it has, so the bar can reach its edges.
  */
 :root {
   /* The shared library's panel header colours, so Storyarr and Starboard match. */
@@ -24,14 +24,6 @@
 :root.pref-hc {
   --panel-header-line: currentColor;
 }
-.book-summary {
-  --panel-pad-top: 16px;
-  --panel-pad-x: 20px;
-}
-.book-drawer {
-  --panel-pad-top: 24px;
-  --panel-pad-x: 24px;
-}
 /* A modal's header sits outside its padded content, so it needs no pull to the edges. */
 .book-dialog > .side-panel-header {
   padding-left: 22px;
@@ -39,10 +31,6 @@
 .display-dialog {
   --panel-pad-top: 24px;
   --panel-pad-x: 24px;
-}
-.release-drawer {
-  --panel-pad-top: 22px;
-  --panel-pad-x: 18px;
 }
 .side-panel-header {
   position: sticky;
@@ -74,4 +62,56 @@
   min-width: var(--control-height-large);
   min-height: var(--control-height-large);
   color: inherit;
+}
+
+/*
+ * SidePanel (components/SidePanel.tsx) uses the shared library's slide-out. Storyarr's own button
+ * rules sit in a higher layer, so the Close button gets its 44px size back here.
+ */
+.panel-header .icon-button {
+  width: var(--control-h);
+  min-width: var(--control-h);
+  height: var(--control-h);
+  min-height: var(--control-h);
+  border-color: transparent;
+  color: inherit;
+}
+.panel-header .icon-button:focus-visible {
+  outline-offset: -3px;
+}
+.panel-header .icon-button:hover:not(:disabled) {
+  border-color: var(--color-border);
+}
+.panel-header__brand img {
+  flex-shrink: 0;
+}
+.side-panel :is(h2, h3, p, dl) {
+  margin-block: 0;
+}
+/* Buttons and links in a slide-out footer, at the 44px control height. */
+.drawer-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-height-large);
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+}
+.drawer-action.primary {
+  border-color: var(--c-text-grey-97);
+  background: var(--c-text-grey-97);
+  color: var(--c-bg-slate-21);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .side-panel,
+  .side-panel-backdrop,
+  .phone-menu {
+    animation: none;
+  }
 }

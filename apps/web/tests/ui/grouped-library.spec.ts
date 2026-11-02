@@ -118,12 +118,10 @@ test("one library card shows both formats and uses the mixed-view cover preferen
     "href",
     "/series/hardcover/hc-series",
   );
-  // A press outside the panel closes it; the cover reopens it, and the X still closes it.
-  await page.getByRole("heading", { name: "In my libraries" }).click();
-  await expect(summary).toHaveCount(0);
-  await card.click();
-  await expect(summary).toBeVisible();
-  await card.click();
+  // The summary is modal: a press on the dimmed page behind closes it, and so do Close and Escape.
+  await page
+    .locator(".side-panel-backdrop")
+    .click({ position: { x: 20, y: 300 } });
   await expect(summary).toHaveCount(0);
   await card.click();
   await summary.getByRole("button", { name: "Close summary" }).click();

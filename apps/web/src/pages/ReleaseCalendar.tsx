@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
@@ -9,6 +9,7 @@ import BookCover from "../components/BookCover";
 import { genreLabel } from "../components/DiscoveryCollections";
 import FollowRelease, { basisLabel } from "../components/FollowRelease";
 import QuickAdd from "../components/QuickAdd";
+import SidePanel from "../components/SidePanel";
 import BookLink from "../components/BookLink";
 import CalendarSettings, {
   shownOnCalendar,
@@ -302,36 +303,16 @@ function DayPanel({
   upcoming: boolean;
   onClose: () => void;
 }) {
-  const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => {
-    heading.current?.focus({ preventScroll: true });
-  }, [dayKey]);
   return (
-    <aside
+    <SidePanel
       id="release-day-panel"
+      title={title}
+      closeLabel="Close day"
       className="release-drawer"
-      role="dialog"
-      aria-modal="false"
-      aria-labelledby="release-day-heading"
+      wide
+      opener={document.getElementById(`release-day-${dayKey}`)}
+      onClose={onClose}
     >
-      <header className="side-panel-header">
-        <h2
-          id="release-day-heading"
-          className="side-panel-title"
-          tabIndex={-1}
-          ref={heading}
-        >
-          {title}
-        </h2>
-        <button
-          type="button"
-          className="icon-button"
-          aria-label="Close day"
-          onClick={onClose}
-        >
-          <X size={18} aria-hidden="true" />
-        </button>
-      </header>
       <p className="muted release-drawer-count">
         {entries.length === 1 ? "1 release" : `${entries.length} releases`}
       </p>
@@ -366,7 +347,7 @@ function DayPanel({
           </section>
         ))
       )}
-    </aside>
+    </SidePanel>
   );
 }
 
@@ -549,22 +530,6 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
     setSelectedDay(null);
     setMonth((current) => shiftMonth(current, delta));
   }
-  function closeDay() {
-    const key = selectedDay;
-    setSelectedDay(null);
-    if (!key) return;
-    document
-      .getElementById(`release-day-${key}`)
-      ?.focus({ preventScroll: true });
-  }
-  useEffect(() => {
-    if (!selectedDay) return;
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") closeDay();
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [selectedDay]);
   function toggleGenre(genre: string) {
     if (!canEdit) return;
     const current = desiredGenres.current ?? selectedGenres;
@@ -780,7 +745,7 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
           genres={settled ? data?.genres || [] : []}
           canEdit={canEdit}
           upcoming={selectedDay === "undated" || releaseIsAhead(selectedDay)}
-          onClose={closeDay}
+          onClose={() => setSelectedDay(null)}
         />
       )}
     </section>

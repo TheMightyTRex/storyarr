@@ -96,12 +96,16 @@ test("a followed series opens as a bookshelf with progress, status chips and a b
     name: "The Hunt for Reduk Topa, Wanted",
   });
   await wanted.click();
-  const drawer = page.getByRole("complementary", {
-    name: "The Hunt for Reduk Topa",
+  const drawer = page.getByRole("dialog", {
+    name: "Book The Hunt for Reduk Topa",
   });
   await expect(drawer).toBeVisible();
+  await expect(drawer).toHaveAttribute("aria-modal", "true");
   await expect(
     drawer.getByRole("heading", { name: "The Hunt for Reduk Topa" }),
+  ).toBeVisible();
+  await expect(
+    drawer.getByRole("button", { name: "Close book details" }),
   ).toBeFocused();
   await expect(drawer.getByText("Added by hand")).toBeVisible();
   await expect(
@@ -180,14 +184,17 @@ test("the book drawer can search now and exclude a book from the follow", async 
   await page.goto(`/following/${list}`);
   const wall = page.getByRole("list", { name: "Space Team books" });
   await wall.getByRole("button", { name: "Space Team, In library" }).click();
-  let drawer = page.getByRole("complementary", { name: "Space Team" });
+  let drawer = page.getByRole("dialog", { name: "Book Space Team" });
   await expect(drawer.getByText("Search now")).toHaveCount(0);
+  // The drawer is modal, so close it before opening the next book.
+  await page.keyboard.press("Escape");
+  await expect(drawer).toHaveCount(0);
 
   await wall
     .getByRole("button", { name: "The Hunt for Reduk Topa, Wanted" })
     .click();
-  drawer = page.getByRole("complementary", {
-    name: "The Hunt for Reduk Topa",
+  drawer = page.getByRole("dialog", {
+    name: "Book The Hunt for Reduk Topa",
   });
   await expect(drawer.getByText("Search now").first()).toBeVisible();
   await drawer
