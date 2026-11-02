@@ -3,6 +3,26 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.6.0 (2 November 2026)
+
+### Added
+- **Radio library:** choose an Audiobookshelf podcast library for radio in Settings, Connections. Storyarr reads
+  it every 15 minutes and shows the episodes it holds as in your library, matched by the BBC programme ID, then
+  by series and episode number, then by title. An episode in the library names its file.
+- **Filing radio** (for later versions to use): one folder per show, named like Show - S20E03 - Title, with the
+  show, series, episode, date and station written into a copy of the file. The original is never changed.
+- **Change logo has one editor** for a cover, a file you upload and a logo found online: choose the area, the
+  shape by lightness or transparency, clean up specks at four strengths, and an eraser and paintbrush with Undo.
+
+### Changed
+- **My library, Series and Authors** show the list beside the chosen one, whose pane is its own page header with
+  the logo or portrait, the facts, the actions and a fan of covers. Radio shows follow the same design.
+- **Scroll bars** are thin and square, in the border colour, on every page. High contrast uses the text colour.
+
+### Fixed
+- **Change logo previews** show for uploaded and found logos, and the Text colour and Accent colour buttons
+  change them.
+
 ## v0.5.9 (2 November 2026)
 
 ### Changed

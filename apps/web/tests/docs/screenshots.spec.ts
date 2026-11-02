@@ -971,3 +971,42 @@ test("notifications, delete asks first", async ({ page }) => {
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${OUT}/notifications-delete.png` });
 });
+
+test("settings, radio library", async ({ page }) => {
+  await setup(page, "light", false, false, (path) =>
+    path === "/api/radio/library"
+      ? {
+          current: {
+            integration_id: "abs",
+            server_name: "Home server",
+            library_id: "radio",
+            name: "Radio",
+            abs_folder: "/radio",
+            local_path: "/data/media/radio",
+            synced_at: "2026-11-02T21:40:00Z",
+            last_error: null,
+            files: 186,
+            linked: 172,
+          },
+          options: [],
+          errors: [],
+        }
+      : [
+            "/api/integrations",
+            "/api/organization/library-folders",
+            "/api/organization/destinations",
+            "/api/auth/users",
+            "/api/downloaders",
+          ].includes(path)
+        ? []
+        : undefined,
+  );
+  await page.goto("/settings#libraries");
+  const block = page.getByRole("region", { name: "Radio library" });
+  await block.getByText("186 episode files").waitFor();
+  await block.evaluate((node) =>
+    node.scrollIntoView({ block: "center", behavior: "instant" }),
+  );
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${OUT}/radio-library-setting.png` });
+});

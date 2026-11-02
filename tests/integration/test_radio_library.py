@@ -16,9 +16,12 @@ from app.adapters.abs_podcasts import PodcastEpisode, PodcastLibrary, PodcastSho
 from app.db.models import Integration, RadioEpisode, RadioLibrary, RadioSeries
 from app.domain import radio_filing, radio_library
 from app.domain.radio_filing import EpisodeFacts, FilingError
-from tests.integration.test_radio import add, bbc, finish  # noqa: F401
+from tests.integration.test_radio import add, finish
+from tests.integration.test_radio import bbc as recorded_bbc
 
 pytestmark = pytest.mark.integration
+# The recorded BBC responses from the radio tests.
+bbc = recorded_bbc
 BASE = "/api/radio/library"
 
 

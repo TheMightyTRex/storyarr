@@ -105,6 +105,9 @@ The books and covers below are invented for the screenshots.
 ### Radio show
 ![A radio show page: the name, station and first broadcast, the follow choice, Refresh, Add a logo, and the newest series with its episodes](docs/images/radio-show.png)
 
+### Radio library setting
+![Settings, Connections, Radio library: the Audiobookshelf podcast library Radio on Home server, its folder as Audiobookshelf and Storyarr see it, when it was last read, and 186 episode files with 172 matched to your shows, with Read again and Change](docs/images/radio-library-setting.png)
+
 ### Bookshelf, in the dark theme
 ![The same bookshelf in the dark theme](docs/images/bookshelf-dark.png)
 

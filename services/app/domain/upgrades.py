@@ -306,6 +306,39 @@ RELEASES = [
             "Deleting a notification channel asks first, and Users and access fits on phones.",
         ],
     ),
+    UpgradeRelease(
+        id="2026.11.02.3",
+        title="A radio library, and one look for series, authors and radio",
+        highlights=[
+            "Radio library: choose an Audiobookshelf podcast library for radio in Settings, "
+            "Connections. Storyarr reads it every 15 minutes and shows the episodes it holds as "
+            "in your library.",
+            "My library, Series and Authors show the list beside the chosen one, with its own "
+            "header. Radio shows follow the same design.",
+            "Change logo has one editor for a cover, an uploaded file and a logo found online, "
+            "with clean-up, an eraser and a paintbrush.",
+            "Scroll bars are thin and square on every page.",
+        ],
+        review=[
+            UpgradeReviewItem(
+                id="radio-library",
+                title="Radio library",
+                description="The Audiobookshelf podcast library radio is filed into. Make a "
+                "Podcasts library for radio in Audiobookshelf first.",
+                link="/settings#libraries",
+            ),
+        ],
+        database_changes=[
+            "New tables for the radio library and the episodes in it "
+            "(storyarr_0089_radio_library), and a link from each radio episode to its file. "
+            "Nothing else changes.",
+        ],
+        rollback=(
+            "To go back to v0.5.9, run python -m app.downgrade storyarr_0088_series_logos in the "
+            "Storyarr container first. Only the radio library choice and its list of episode "
+            "files are removed. No audio files are touched."
+        ),
+    ),
 ]
 CURRENT = RELEASES[-1].id
 

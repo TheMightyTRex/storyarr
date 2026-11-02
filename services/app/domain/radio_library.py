@@ -130,7 +130,7 @@ def within(path: str, folder: str) -> bool:
 
 
 async def sync(library_id: UUID) -> int:
-    """Read the radio library from Audiobookshelf, save its episodes and relink. Returns the count."""
+    """Read the radio library, save its episodes and relink them. Returns the episode count."""
     from app.api.library_folders import library_client
 
     async with session_factory()() as db:
