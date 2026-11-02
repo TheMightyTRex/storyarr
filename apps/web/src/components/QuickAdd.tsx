@@ -154,10 +154,10 @@ export default function QuickAdd({
       ? "Retry needed"
       : status.data?.status === "completed"
         ? status.data.message.startsWith("Already available")
-          ? "Available"
+          ? "In library"
           : "Queued"
         : status.data?.status === "held"
-          ? "Needs review"
+          ? "Needs attention"
           : status.data?.status === "failed"
             ? "Failed"
             : status.data?.status === "cancelled"

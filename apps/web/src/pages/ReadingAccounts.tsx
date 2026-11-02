@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
 import {
@@ -6,7 +7,6 @@ import {
   Clock3,
   Pause,
   RefreshCw,
-  AlertCircle,
   Ellipsis,
 } from "lucide-react";
 import SettingHelp from "../components/SettingHelp";
@@ -886,27 +886,30 @@ function TrackedList({
           {count ?? sub.observed_count}{" "}
           {(count ?? sub.observed_count) === 1 ? "book" : "books"}
         </span>
-        <span
-          className={`reading-status ${!sub.enabled ? "is-paused" : sub.state === "failed" ? "is-error" : ""}`}
-        >
-          {!sub.enabled ? (
-            <Pause size={13} aria-hidden="true" />
-          ) : sub.state === "failed" ? (
-            <AlertCircle size={13} aria-hidden="true" />
-          ) : ["queued", "running"].includes(sub.state) ? (
-            <Clock3 size={13} aria-hidden="true" />
-          ) : (
-            <CircleCheck size={13} aria-hidden="true" />
-          )}
-          {!sub.enabled
-            ? "Paused"
-            : {
-                idle: "Tracking",
-                queued: "Update queued",
-                running: "Updating",
-                failed: "Needs attention",
-              }[sub.state] || "Tracking"}
-        </span>
+        <StatusChip
+          className="reading-status"
+          {...(!sub.enabled
+            ? { label: "Paused", tone: "muted" as const, icon: Pause }
+            : sub.state === "failed"
+              ? { label: "Needs attention" }
+              : sub.state === "queued"
+                ? {
+                    label: "Update queued",
+                    tone: "info" as const,
+                    icon: Clock3,
+                  }
+                : sub.state === "running"
+                  ? {
+                      label: "Updating",
+                      tone: "info" as const,
+                      icon: RefreshCw,
+                    }
+                  : {
+                      label: "Tracking",
+                      tone: "success" as const,
+                      icon: CircleCheck,
+                    })}
+        />
         <div className="reading-row-actions">
           <select
             className="reading-interval"
@@ -1012,9 +1015,7 @@ function LocalLists({ subscriptions }: { subscriptions: Subscription[] }) {
       label="Local lists"
       title="Local lists"
       status={
-        <span className="connection-state">
-          {count === 1 ? "1 list" : `${count} lists`}
-        </span>
+        <span className="tag">{count === 1 ? "1 list" : `${count} lists`}</span>
       }
     >
       <p className="muted">Lists you keep in this app.</p>

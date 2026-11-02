@@ -24,7 +24,7 @@ test("recovery settings preserve source overrides and manage the release blockli
   await mam
     .getByLabel("No progress or zero seeders", { exact: false })
     .fill("168");
-  await form.getByRole("button", { name: "Save recovery settings" }).click();
+  await form.getByRole("button", { name: "Save changes" }).click();
   await expect
     .poll(
       async () =>
@@ -81,7 +81,7 @@ test("recovery settings preserve source overrides and manage the release blockli
   await mam
     .getByLabel("No progress or zero seeders", { exact: false })
     .fill("");
-  await form.getByRole("button", { name: "Save recovery settings" }).click();
+  await form.getByRole("button", { name: "Save changes" }).click();
   await expect
     .poll(
       async () =>

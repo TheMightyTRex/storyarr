@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import { ReturnLink } from "../components/NavigationContinuity";
 import ContentSkeleton from "../components/ContentSkeleton";
 import { AuthorFollows } from "../components/FollowCatalog";
@@ -8,7 +9,7 @@ import LibraryFormatBadges from "../components/LibraryFormatBadges";
 import PartSets from "../components/CombineParts";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Settings2 } from "lucide-react";
+import { Settings2 } from "lucide-react";
 import {
   Link,
   Navigate,
@@ -268,15 +269,9 @@ function BookDetailContent({
         }
       >
         <div className="status-row">
-          {work.availability.owned && (
-            <span className="status owned">
-              <Check size={15} /> In library
-            </span>
-          )}
+          {work.availability.owned && <StatusChip label="In library" />}
           {unreleased && !work.availability.owned && (
-            <span className="status">
-              {watching ? "Waiting for release" : "In your catalog"}
-            </span>
+            <StatusChip label={watching ? "Not released" : "Not requested"} />
           )}
           <LibraryFormatBadges work={work} />
           {work.availability.stale && (

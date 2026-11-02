@@ -62,3 +62,42 @@ export function statusLabel(request: StatusRequest, target: StatusTarget) {
   if (target.state === "cancelled") return "Withdrawn";
   return target.state;
 }
+
+/**
+ * The status vocabulary word a request's chip shows (guides/CONTENT-DESIGN.md, section 6). The finer
+ * label from statusLabel still decides the hint under the chip and the row's actions.
+ */
+export function statusWord(label: string) {
+  if (
+    [
+      "Needs review",
+      "Download needs attention",
+      "Check inventory",
+      "Source needs review",
+    ].includes(label)
+  )
+    return "Needs attention";
+  if (["Searching sources", "Preparing download"].includes(label))
+    return "Searching";
+  if (
+    ["Queued", "Paused", "Waiting for source", "Request queued"].includes(label)
+  )
+    return "Waiting";
+  if (label === "Download not started") return "Failed";
+  return label;
+}
+
+/** A request target's state in the status vocabulary, where only the state is known. */
+export function targetStateWord(state: string) {
+  return (
+    {
+      satisfied: "In library",
+      wanted: "Wanted",
+      pending: "Already requested",
+      "awaiting-inventory": "Needs attention",
+      unresolved: "Needs attention",
+      paused: "Waiting",
+      cancelled: "Withdrawn",
+    }[state] || state
+  );
+}

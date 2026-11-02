@@ -379,7 +379,7 @@ test("automatic series requests confirm start and lead to clear progress with ca
     .click();
   await expect(
     page.getByRole("button", {
-      name: "Searching sources: Midnight Sun audiobook request details",
+      name: "Searching: Midnight Sun audiobook request details",
     }),
   ).toBeVisible();
   await expect(page.locator(".request-cover img")).toHaveAttribute(

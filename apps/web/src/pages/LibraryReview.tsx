@@ -1,8 +1,16 @@
+import StatusChip from "../components/StatusChip";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { HeaderTabs } from "../components/HeaderSubmenu";
 import { reviewIcons } from "../navigation";
-import { CheckCircle2, ExternalLink } from "lucide-react";
+import {
+  CheckCircle2,
+  CircleCheck,
+  ExternalLink,
+  Layers,
+  OctagonX,
+  TriangleAlert,
+} from "lucide-react";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Empty, Loading, Notice } from "../components";
@@ -35,7 +43,7 @@ const KINDS: {
   },
   {
     id: "read-issue",
-    label: "Couldn't read fully",
+    label: "Could not read fully",
     count: (s) => s.read_issues,
   },
   {
@@ -331,14 +339,17 @@ function Chip({
   tone,
   children,
 }: {
-  tone: "match" | "linked" | "warn" | "error";
+  tone: "match" | "linked" | "warn" | "error" | "part";
   children: string;
 }) {
-  return (
-    <span className="review-chip" data-tone={tone}>
-      {children}
-    </span>
-  );
+  const look = {
+    match: { tone: "warning", icon: TriangleAlert },
+    warn: { tone: "warning", icon: TriangleAlert },
+    error: { tone: "danger", icon: OctagonX },
+    linked: { tone: "success", icon: CircleCheck },
+    part: { tone: "neutral", icon: Layers },
+  } as const;
+  return <StatusChip label={children} {...look[tone]} />;
 }
 
 function ReviewCard({ item, open }: { item: Item; open: () => void }) {
@@ -381,9 +392,9 @@ function ReviewCard({ item, open }: { item: Item; open: () => void }) {
             )}
             {linked && <Chip tone="linked">Matched</Chip>}
             {item.parts && (
-              <Chip tone="match">{`Part ${asset!.part_index} of ${item.parts.total}`}</Chip>
+              <Chip tone="part">{`Part ${asset!.part_index} of ${item.parts.total}`}</Chip>
             )}
-            {!asset && <Chip tone="error">Couldn't read files</Chip>}
+            {!asset && <Chip tone="error">Cannot read files</Chip>}
             {reasons.map((reason) => (
               <Chip tone={asset ? "warn" : "error"} key={reason}>
                 {reasonLabel(reason)}
@@ -501,7 +512,7 @@ function BackendReport({
         )}
         {reasons.length > 0 && (
           <div>
-            <dt>Couldn't read</dt>
+            <dt>Could not read</dt>
             <dd>
               <ul className="review-read-values">
                 {reasons.map((reason) => (

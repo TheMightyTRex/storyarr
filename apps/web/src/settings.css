@@ -63,20 +63,12 @@
 }
 .settings-section-body input:not([type="checkbox"]):not([type="radio"]),
 .settings-section-body select {
-  height: 38px;
-  min-height: 38px;
+  /* Height, padding and text size come from the shared controls (controls.css). */
   width: 100%;
   max-width: 32rem;
-  padding: 8px 10px;
-  border-radius: 0;
-  font-size: 0.8125rem;
-  line-height: 20px;
 }
 .settings-section-body input[type="number"] {
   max-width: 12rem !important;
-}
-.settings-section-body select {
-  padding-right: 28px;
 }
 .settings-section-body input[type="checkbox"],
 .settings-section-body input[type="radio"] {
@@ -116,10 +108,6 @@
 }
 .settings-section-body button,
 .onboarding-page button {
-  min-height: 36px;
-  padding: 8px 12px;
-  line-height: 18px;
-  font-size: 0.8125rem;
   border-radius: 0;
   flex-shrink: 0;
   align-self: auto;
@@ -191,43 +179,8 @@
 .settings-section-body .setting-subheading h3 {
   margin: 0;
 }
-.settings-section-body .connection-state,
-.connection-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.6875rem;
-  color: var(--muted);
-  text-transform: capitalize;
-  font-weight: 450;
-}
-.settings-section-body .connection-state[data-state="connected"],
-.connection-state[data-state="connected"] {
-  color: var(--c-text-teal-82);
-}
-.settings-section-body .connection-state[data-state="attention"],
-.connection-state[data-state="attention"] {
-  color: var(--c-text-amber-82);
-}
-.connection-state svg {
-  flex-shrink: 0;
-}
 .settings-section-body .settings-block > .connection-state {
   margin: -6px 0 12px;
-}
-.settings-form-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-top: 1px solid var(--line);
-  padding-top: 14px;
-  margin-top: 16px;
-}
-.save-state {
-  font-size: 0.6875rem;
-  color: var(--muted);
-  white-space: nowrap;
 }
 .settings-section-body details {
   margin: 0;
@@ -241,7 +194,7 @@
   list-style: none;
   cursor: pointer;
   padding: 12px 0;
-  min-height: 42px;
+  min-height: var(--control-height);
   font-size: 0.8125rem;
   font-weight: 550;
 }
@@ -323,34 +276,8 @@
   gap: 4px 8px;
   min-width: 0;
   color: var(--muted);
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   line-height: 1.45;
-}
-.connection-test-status-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.connection-test-status:not([data-state="connected"])
-  .connection-test-status-label::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  flex: 0 0 6px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.connection-test-status[data-state="connected"] .connection-test-status-label {
-  color: var(--c-text-teal-78);
-}
-.connection-test-status:is([data-state="failed"], [data-state="attention"])
-  .connection-test-status-label {
-  color: var(--c-text-amber-82);
-}
-.connection-test-status[data-state="pending"] .connection-test-status-label {
-  color: var(--accent);
 }
 .connection-test-status-detail {
   overflow-wrap: anywhere;
@@ -366,17 +293,6 @@
   position: relative;
   vertical-align: middle;
   flex-shrink: 0;
-}
-button.help-button,
-.settings-section-body button.help-button,
-.onboarding-page button.help-button {
-  width: 28px;
-  height: 28px;
-  min-height: 28px;
-  padding: 5px;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
 }
 button.help-button:hover {
   color: var(--c-text-slate-93);
@@ -668,14 +584,6 @@ button.help-button:hover {
   }
   .onboarding-card {
     padding: 18px 14px;
-  }
-  .settings-form-footer {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  .settings-section-body button,
-  .onboarding-page button {
-    min-height: 40px;
   }
   .settings-section-body .inline-form {
     flex-direction: row;
@@ -1066,9 +974,9 @@ button.help-button:hover {
   font-size: 0.8125rem;
 }
 .sortable .drag-handle {
-  min-width: 28px;
-  min-height: 28px;
-  padding: 4px;
+  min-width: var(--control-height);
+  min-height: var(--control-height);
+  padding: 0;
   border: 0;
   background: transparent;
   cursor: grab;
@@ -1076,8 +984,6 @@ button.help-button:hover {
 }
 .sortable .sort-remove {
   margin-left: auto;
-  min-height: 28px;
-  padding: 4px;
 }
 .sortable .is-dragging {
   opacity: 0.5;
@@ -1398,20 +1304,6 @@ button.help-button:hover {
   margin-left: auto;
   font-size: 0.75rem;
 }
-.reading-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.75rem;
-  color: var(--c-text-teal-82);
-  white-space: nowrap;
-}
-.reading-status.is-paused {
-  color: var(--muted);
-}
-.reading-status.is-error {
-  color: var(--c-text-orange-80);
-}
 .reading-accounts .reading-choices {
   display: grid;
   gap: 0;
@@ -1604,10 +1496,6 @@ button.help-button:hover {
     margin-left: 24px;
     margin-right: auto;
   }
-  .reading-accounts button.reading-icon-button {
-    width: 40px;
-    height: 40px;
-  }
   .reading-account > .setting-subheading {
     gap: 8px;
   }
@@ -1706,6 +1594,16 @@ button.help-button:hover {
   justify-content: flex-end;
   flex-wrap: nowrap;
   margin: 0;
+}
+/* With 44px controls, the actions take a row of their own on narrow screens instead of pushing
+   the card past the edge. */
+@media (max-width: 720px) {
+  .library-connections .button-row {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
 }
 .settings-section-body .library-page-heading {
   justify-content: flex-start;
@@ -2012,14 +1910,6 @@ button.help-button:hover {
   .import-flow small {
     font-size: 0.625rem;
   }
-  .settings-section-body .settings-form-footer {
-    align-items: start;
-    flex-wrap: wrap;
-  }
-  .settings-section-body .settings-icon-button {
-    width: 40px;
-    min-height: 40px;
-  }
 }
 .settings-section-body
   .download-defaults
@@ -2254,9 +2144,6 @@ button.help-button:hover {
   color: var(--accent);
 }
 .settings-section-body .reading-accounts {
-  --control-height: 38px;
-  --control-radius: 0;
-  --control-font-size: 0.75rem;
   max-width: 960px;
   gap: 14px;
 }
@@ -2291,10 +2178,6 @@ button.help-button:hover {
   min-width: 0;
 }
 .reading-accounts .reading-account-heading .help-button {
-  --control-height: 28px;
-  width: 28px;
-  min-height: 28px;
-  padding: 4px;
   border-color: transparent;
   background: transparent;
   color: var(--muted);
@@ -2318,13 +2201,13 @@ button.help-button:hover {
 .reading-connection-tools .reading-sign-in {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
-  padding: 7px 12px;
+  min-height: var(--control-height);
+  padding: 0 var(--space-4);
   border: 1px solid var(--line);
   border-radius: 0;
   color: var(--accent);
-  font-size: 0.75rem;
-  font-weight: 550;
+  font-size: var(--control-font-size);
+  font-weight: var(--weight-strong);
 }
 .reading-sign-in:hover {
   background: var(--surface);
@@ -2333,9 +2216,6 @@ button.help-button:hover {
   .settings-section-body .reading-connection > summary {
     padding: 12px;
     flex-wrap: wrap;
-  }
-  .reading-connection > summary > .connection-state {
-    font-size: 0.625rem;
   }
   .settings-section-body .reading-connection > .reading-connection-body {
     padding: 0 12px 14px;
@@ -2453,8 +2333,8 @@ button.help-button:hover {
     max-width: none;
   }
   .reading-more {
-    height: 40px;
-    flex-basis: 40px;
+    height: var(--control-height);
+    flex-basis: var(--control-height);
   }
 }
 .reading-local .reading-list-row {
@@ -2656,7 +2536,7 @@ button.help-button:hover {
 }
 .naming-token-lane .sortable > li {
   flex: 0 0 auto;
-  min-height: 30px;
+  min-height: var(--control-height);
   padding: 0 10px 0 0;
   background: var(--surface);
   border-color: var(--c-border-indigo-43);
@@ -2667,9 +2547,9 @@ button.help-button:hover {
   border-color: var(--accent);
 }
 .naming-token-lane .drag-handle {
-  min-height: 28px;
-  min-width: 26px;
-  padding: 4px;
+  min-height: var(--control-height);
+  min-width: var(--control-height);
+  padding: 0;
 }
 .naming-token-label {
   white-space: nowrap;
@@ -2735,10 +2615,6 @@ button.help-button:hover {
   white-space: nowrap;
   font-family: var(--font);
 }
-.settings-section-body .naming-builder .settings-form-footer {
-  margin-top: 12px;
-  padding-top: 12px;
-}
 .media-folder-card + .media-folder-card {
   border-top: 1px solid var(--line);
 }
@@ -2800,42 +2676,6 @@ button.help-button:hover {
 .settings-section-body .mam-network-title h3 {
   font-size: 0.8125rem;
   font-weight: 600;
-}
-.mam-network-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  padding: 3px 8px;
-  border-radius: 0;
-  background: color-mix(in srgb, var(--muted) 10%, transparent);
-  color: var(--muted);
-  font-size: 0.6875rem;
-  font-weight: 550;
-  line-height: 1.5;
-  text-transform: capitalize;
-}
-.mam-network-badge::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.mam-network[data-health="healthy"] .mam-network-badge {
-  color: var(--c-text-teal-78);
-  background: var(--c-bg-teal-78-a7);
-}
-.mam-network[data-health="unhealthy"] .mam-network-badge,
-.mam-network[data-health="degraded"] .mam-network-badge,
-.mam-action-status[data-health="unhealthy"] .mam-network-badge,
-.mam-action-status[data-health="degraded"] .mam-network-badge {
-  color: var(--c-text-amber-82);
-  background: var(--c-bg-amber-81-a7);
-}
-.mam-action-status[data-health="healthy"] .mam-network-badge {
-  color: var(--c-text-teal-78);
-  background: var(--c-bg-teal-78-a7);
 }
 .mam-network .mam-network-description {
   margin: 8px 0 0;
@@ -3147,35 +2987,6 @@ button.help-button:hover {
 }
 .logs-message {
   color: var(--muted);
-}
-.logs-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  text-transform: capitalize;
-  font-size: 0.6875rem;
-}
-.logs-status::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--muted);
-  flex-shrink: 0;
-}
-.logs-status[data-status="completed"]::before {
-  background: var(--c-bg-teal-78);
-}
-.logs-status[data-status="failed"]::before,
-.logs-status[data-status="blocked"]::before {
-  background: var(--c-bg-orange-76);
-}
-.logs-status[data-status="running"]::before {
-  background: var(--c-bg-indigo-72);
-}
-.logs-status[data-status="attention"]::before,
-.logs-status[data-status="retrying"]::before {
-  background: var(--c-bg-amber-82);
 }
 .operation-history .logs-expand {
   display: flex;

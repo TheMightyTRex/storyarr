@@ -43,26 +43,6 @@
 .import-review-advanced[open] > summary {
   margin-bottom: 24px;
 }
-.download-import-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  white-space: nowrap;
-  padding: 7px 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 0;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--accent);
-}
-.download-import-state.is-held {
-  color: var(--c-text-amber-82);
-  background: var(--c-bg-amber-81-a7);
-}
-.download-import-state.is-complete {
-  color: var(--c-text-teal-78-2);
-  background: var(--c-bg-teal-78-a7-2);
-}
 .import-execution-compact .library-access {
   padding: 0;
   margin: 0;

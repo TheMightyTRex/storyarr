@@ -62,7 +62,8 @@
 .toolbar-search input {
   flex: 1;
   min-width: 0;
-  min-height: 42px;
+  height: calc(var(--control-height) - 2px);
+  min-height: 0;
   border: 0;
   padding: 0;
   background: transparent;
@@ -106,7 +107,8 @@
 .toolbar-menu select {
   width: auto;
   margin: 0;
-  min-height: 42px;
+  height: calc(var(--control-height) - 2px);
+  min-height: 0;
   border: 0;
   padding: 0 4px;
   background: transparent;
@@ -127,7 +129,7 @@
   font-size: 0.875rem;
 }
 .toolbar-chip-applied {
-  min-height: 36px;
+  min-height: var(--control-height);
 }
 @media (max-width: 720px) {
   /*

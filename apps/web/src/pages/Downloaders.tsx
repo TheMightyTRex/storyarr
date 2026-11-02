@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import DeleteConfiguration from "../components/DeleteConfiguration";
 import {
   ArrowRight,
@@ -254,7 +255,7 @@ export default function Downloaders({
                       error={testError}
                     />
                   ) : (
-                    <span className="status">Disabled</span>
+                    <StatusChip label="Disabled" />
                   )}
                 </div>
                 {connection.enabled && (testError || connection.last_error) && (

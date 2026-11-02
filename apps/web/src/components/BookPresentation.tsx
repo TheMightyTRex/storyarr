@@ -223,7 +223,7 @@ export function BookOverview({
       {!!subjects.length && (
         <div className="status-row">
           {subjects.slice(0, 12).map((subject) => (
-            <span className="status" key={subject}>
+            <span className="tag" key={subject}>
               {subject}
             </span>
           ))}

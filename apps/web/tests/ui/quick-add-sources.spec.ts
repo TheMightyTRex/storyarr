@@ -340,9 +340,10 @@ test("Quick add follows defaults and format overrides; sources provide compact r
     "justify-content",
     "flex-start",
   );
+  // Menu items are 44px, the shared control height.
   await expect(menuOptions.getByRole("button").first()).toHaveCSS(
     "height",
-    "30px",
+    "44px",
   );
   await page.screenshot({
     path: testInfo.outputPath("quick-add-menu-desktop.png"),

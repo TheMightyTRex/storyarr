@@ -1,3 +1,4 @@
+import SaveBar, { countChanges } from "../components/SaveBar";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
@@ -244,12 +245,6 @@ function Editor({
       <Notice error={save.error} />
       <div className="button-row">
         <button
-          className="primary"
-          disabled={save.isPending || (!preferencesChanged && !mergeChanged)}
-        >
-          {librariesOnly ? "Save library defaults" : "Save download defaults"}
-        </button>
-        <button
           type="button"
           onClick={() => {
             onEdit();
@@ -274,6 +269,17 @@ function Editor({
           Use inherited defaults
         </button>
       </div>
+      <SaveBar
+        changes={
+          countChanges(overrides, current.overrides) + (mergeChanged ? 1 : 0)
+        }
+        saving={save.isPending}
+        onDiscard={() => {
+          onEdit();
+          setDraft(null);
+          setMerge(null);
+        }}
+      />
     </form>
   );
 }

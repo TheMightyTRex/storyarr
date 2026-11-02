@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import InfiniteScroll from "../components/InfiniteScroll";
 import BookLink from "../components/BookLink";
 import BookCover from "../components/BookCover";
@@ -8,7 +9,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Check, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
@@ -331,12 +332,9 @@ function SearchAvailability({
 }) {
   return (
     <span className="media-badges">
-      <span className={work.availability.owned ? "status owned" : "status"}>
-        {work.availability.owned ? (
-          <Check size={12} aria-hidden="true" />
-        ) : null}
-        {work.availability.owned ? "In library" : "In catalog"}
-      </span>
+      <StatusChip
+        label={work.availability.owned ? "In library" : "Not requested"}
+      />
       {work.availability.ebook ? <span>Ebook</span> : null}
       {work.availability.audio ? <span>Audio</span> : null}
       {work.availability.stale ? <span>Last known availability</span> : null}

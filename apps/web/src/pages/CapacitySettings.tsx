@@ -4,6 +4,7 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import SettingsGroup from "../components/SettingsGroup";
+import SaveBar, { countChanges } from "../components/SaveBar";
 
 type View = components["schemas"]["CapacityView"];
 
@@ -122,9 +123,11 @@ function Editor({
         media bytes; copies reserve extra space. Storage that cannot be measured
         pauses new downloads.
       </p>
-      <button className="primary" disabled={save.isPending}>
-        {save.isPending ? "Saving storage reserve…" : "Save storage reserve"}
-      </button>
+      <SaveBar
+        changes={countChanges(limits, current.limits)}
+        saving={save.isPending}
+        onDiscard={() => setLimits(current.limits)}
+      />
     </form>
   );
 }

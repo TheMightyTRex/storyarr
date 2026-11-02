@@ -1,3 +1,5 @@
+import SaveBar, { countChanges } from "../components/SaveBar";
+import StatusChip from "../components/StatusChip";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, ApiError, result, setCsrf, type Auth } from "../api/client";
@@ -125,9 +127,10 @@ function OidcSettingsPanel() {
       <summary>
         <h2>Identity provider</h2>
         {draft ? (
-          <span className="connection-state">
-            {draft.enabled ? "On" : "Off"}
-          </span>
+          <StatusChip
+            label={draft.enabled ? "On" : "Off"}
+            status={draft.enabled ? "Connected" : "Not connected"}
+          />
         ) : null}
         <a
           className="settings-inline-link"
@@ -282,9 +285,10 @@ function OidcSettingsPanel() {
             <details className="access-provider-advanced">
               <summary>
                 <span>Endpoints</span>
-                <span className="connection-state">
-                  {endpointsReady ? "Discovered" : "Not discovered"}
-                </span>
+                <StatusChip
+                  label={endpointsReady ? "Discovered" : "Not discovered"}
+                  status={endpointsReady ? "Connected" : "Not connected"}
+                />
               </summary>
               <div className="form-row">
                 <label>
@@ -340,7 +344,7 @@ function OidcSettingsPanel() {
             <details className="access-provider-advanced">
               <summary>
                 <span>Groups</span>
-                <span className="connection-state">Optional</span>
+                <span className="tag">Optional</span>
               </summary>
               <div className="form-row">
                 <label>
@@ -422,9 +426,14 @@ function OidcSettingsPanel() {
                 </label>
               </div>
             </details>
-            <button className="primary" disabled={save.isPending}>
-              {save.isPending ? "Saving…" : "Save identity provider"}
-            </button>
+            <SaveBar
+              changes={countChanges(draft, settings.data) + (secret ? 1 : 0)}
+              saving={save.isPending}
+              onDiscard={() => {
+                setDraft(settings.data ?? null);
+                setSecret("");
+              }}
+            />
           </>
         ) : null}
         <Notice error={settings.error || discover.error || save.error} />
@@ -508,9 +517,10 @@ function PlexSettingsPanel() {
       <summary>
         <h2>Plex</h2>
         {draft ? (
-          <span className="connection-state">
-            {draft.enabled ? "On" : "Off"}
-          </span>
+          <StatusChip
+            label={draft.enabled ? "On" : "Off"}
+            status={draft.enabled ? "Connected" : "Not connected"}
+          />
         ) : null}
         <a
           className="settings-inline-link"
@@ -598,9 +608,29 @@ function PlexSettingsPanel() {
                 Create accounts on first sign-in
               </label>
             </div>
-            <button className="primary" disabled={save.isPending}>
-              {save.isPending ? "Saving…" : "Save Plex sign-in"}
-            </button>
+            <SaveBar
+              changes={
+                settings.data
+                  ? countChanges(
+                      {
+                        enabled: draft.enabled,
+                        auto_register: draft.auto_register,
+                        default_role: draft.default_role,
+                      },
+                      {
+                        enabled: settings.data.enabled,
+                        auto_register: settings.data.auto_register,
+                        default_role: settings.data.default_role,
+                      },
+                    ) + (machineId !== settings.data.machine_id ? 1 : 0)
+                  : 0
+              }
+              saving={save.isPending}
+              onDiscard={() => {
+                setDraft(settings.data ?? null);
+                setMachineId(settings.data?.machine_id ?? "");
+              }}
+            />
           </>
         ) : null}
         <Notice

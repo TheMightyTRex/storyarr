@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import { Check, Image, LockKeyhole, Pencil, RefreshCw } from "lucide-react";
 import { languageName } from "../components/LanguageSelect";
 import { usePagedQuery } from "../hooks/usePagedQuery";
@@ -162,7 +163,7 @@ export default function BookMetadata({
             Keep the right match, details and cover for this book.
           </p>
         </div>
-        {!admin && <span className="status">Read-only</span>}
+        {!admin && <span className="tag">Read-only</span>}
       </header>
       {metadata.data && (
         <BookMatch
@@ -362,9 +363,7 @@ export default function BookMetadata({
                               ? "Print edition"
                               : "Format unknown"}
                       </strong>
-                      {version.owned && (
-                        <span className="status owned">In library</span>
-                      )}
+                      {version.owned && <StatusChip label="In library" />}
                     </div>
                     <h3>{version.title || work.title}</h3>
                     <p>

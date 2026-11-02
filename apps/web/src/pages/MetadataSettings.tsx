@@ -1,3 +1,4 @@
+import SaveBar, { countChanges } from "../components/SaveBar";
 import { audibleStores, suggestedAudibleStore } from "../audibleStores";
 import type { AudibleStore } from "../audibleStores";
 import ConnectionStatus from "../components/ConnectionStatus";
@@ -524,11 +525,11 @@ function PreferenceForm({ value }: { value: Preferences }) {
         </button>
       </details>
       <Notice error={save.error} />
-      <div className="button-row metadata-actions">
-        <button className="primary" disabled={save.isPending}>
-          Save metadata defaults
-        </button>
-      </div>
+      <SaveBar
+        changes={countChanges(settings, value)}
+        saving={save.isPending}
+        onDiscard={() => setSettings(value)}
+      />
       {saved && (
         <p className="success" role="status">
           Metadata defaults saved.

@@ -332,7 +332,6 @@
   width: 100%;
   min-width: 0;
   font-family: var(--font);
-  font-size: 0.75rem;
 }
 .library-custom-path > button {
   flex-shrink: 0;
@@ -410,8 +409,6 @@
 }
 .library-folder-settings .media-folder-actions > button {
   margin: 0;
-  font-size: 0.75rem;
-  padding: 7px 10px;
 }
 .library-folder-settings .media-folder-actions > button[aria-label^="Delete"] {
   color: var(--muted);
@@ -462,7 +459,6 @@
 .library-verification-next > button,
 .library-setup-link {
   flex-shrink: 0;
-  font-size: 0.75rem;
 }
 .library-setup-link {
   color: var(--accent);
@@ -493,19 +489,8 @@
   grid-row: 1 / 3;
   margin: 0;
 }
-.library-folder-settings .automatic-import-setting > .button-row button {
-  font-size: 0.75rem;
-  padding: 7px 10px;
-}
 .library-folder-settings .automatic-import-setting > .notice {
   grid-column: 1 / -1;
-}
-.library-folder-settings .automatic-import-setting .help-button {
-  width: 24px;
-  min-width: 24px;
-  height: 24px;
-  padding: 3px;
-  border-color: transparent;
 }
 @media (max-width: 600px) {
   .library-folder-settings .media-folder-row {

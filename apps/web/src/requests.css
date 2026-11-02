@@ -163,34 +163,6 @@
 .request-medium svg {
   color: var(--muted);
 }
-.request-status {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 0;
-  background: var(--c-bg-indigo-34);
-  color: var(--c-text-indigo-87);
-  font-size: 0.6875rem;
-  font-weight: 650;
-  letter-spacing: 0.01em;
-  line-height: 16px;
-}
-.request-status[data-state="downloading"] {
-  background: var(--c-bg-indigo-33);
-  color: var(--c-text-indigo-92);
-}
-.request-status[data-state="satisfied"] {
-  background: var(--c-bg-teal-34);
-  color: var(--c-text-teal-87);
-}
-.request-status[data-state="paused"] {
-  background: var(--c-bg-slate-36);
-  color: var(--c-text-amber-88);
-}
-.request-status[data-state="cancelled"] {
-  background: var(--c-bg-slate-34);
-  color: var(--c-text-slate-82);
-}
 .request-percent {
   color: var(--accent);
   font-size: 0.75rem;
@@ -555,16 +527,6 @@
   }
 }
 
-.request-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.request-status[data-state="failed"] {
-  color: var(--c-text-red-81);
-  background: color-mix(in srgb, var(--c-bg-red-81) 10%, transparent);
-}
-
 /* A quiet, aligned ledger keeps transfer activity readable at a glance. */
 .request-ledger-scroll {
   position: relative;
@@ -722,12 +684,16 @@
   outline-offset: 4px;
 }
 
+/* Activity: the status chip (the shared library's .chip) is the button that opens a request's
+   details. */
 .request-ledger button.request-status {
-  min-height: 0;
-  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2) 0 0;
   border: 0;
-  font-size: 0.6875rem;
-  line-height: 16px;
+  background: transparent;
+  color: inherit;
 }
 .request-ledger button.request-status:hover {
   text-decoration: underline;
@@ -742,9 +708,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
+  flex: 0 0 auto;
+  width: var(--control-height);
+  height: var(--control-height);
   padding: 0;
   border: 1px solid var(--line);
   border-radius: 0;
@@ -835,11 +801,6 @@
   gap: 10px;
   color: var(--muted);
   font-size: 0.6875rem;
-}
-.download-attempt-state {
-  padding: 2px 7px;
-  border-radius: 0;
-  background: var(--line);
 }
 .download-attempt-timeline p {
   margin: 6px 0 0;

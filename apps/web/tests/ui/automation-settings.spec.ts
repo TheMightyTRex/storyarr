@@ -50,10 +50,14 @@ test("Wanted books settings turn repeat searches on or off for each format", asy
     name: "Search again for wanted books",
   });
   await expect(again).toBeChecked();
-  const save = form.getByRole("button", { name: "Save wanted books settings" });
-  await expect(save).toBeDisabled();
+  // The save bar appears only while there are unsaved changes, and says how many.
+  const save = form.getByRole("button", { name: "Save changes" });
+  await expect(save).toHaveCount(0);
 
   await form.getByRole("checkbox", { name: "Ebooks" }).uncheck();
+  await expect(
+    form.getByRole("region", { name: "Unsaved changes" }),
+  ).toContainText("1 unsaved change");
   await save.click();
   await expect(form.getByRole("status")).toHaveText(
     "Wanted books settings saved.",

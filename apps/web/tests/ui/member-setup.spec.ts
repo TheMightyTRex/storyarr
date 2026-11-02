@@ -206,7 +206,7 @@ test("administrator saves all OIDC presets, group mappings, and onboarding polic
         page.getByText(/Administrator default grants full control/),
       ).toBeVisible();
     await page
-      .getByRole("button", { name: "Save identity provider", exact: true })
+      .getByRole("button", { name: "Save changes", exact: true })
       .click();
     await expect.poll(() => defaults.at(-1)).toBe(role);
     if (role === "admin") {
@@ -216,9 +216,15 @@ test("administrator saves all OIDC presets, group mappings, and onboarding polic
         .selectOption("approver");
       finishFirstSave!();
     }
-    await expect(
-      page.getByRole("button", { name: "Save identity provider", exact: true }),
-    ).toBeEnabled();
+    // The save bar stays only while an edit is unsaved: the one made during the first save.
+    if (role === "admin")
+      await expect(
+        page.getByRole("button", { name: "Save changes", exact: true }),
+      ).toBeEnabled();
+    else
+      await expect(
+        page.getByRole("button", { name: "Save changes", exact: true }),
+      ).toHaveCount(0);
     await expect(
       page.getByRole("combobox", { name: "Default access", exact: true }),
     ).toHaveValue(role === "admin" ? "approver" : role);

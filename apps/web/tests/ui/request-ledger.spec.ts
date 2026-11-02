@@ -224,7 +224,7 @@ test("requests show transfer telemetry, review actions and counts in compact row
   await page.reload();
   await expect(cover).toHaveJSProperty("naturalWidth", 200);
   expect(transientCoverAttempts).toBe(2);
-  await expect(review).toContainText("Needs review");
+  await expect(review).toContainText("Needs attention");
   await expect(
     review.getByRole("link", { name: "Review files" }),
   ).toHaveAttribute("href", "/organization/inspections?inspection=inspection");
@@ -246,10 +246,10 @@ test("requests show transfer telemetry, review actions and counts in compact row
   await expect(queueFilters.getByRole("link")).toHaveText([
     "All",
     /^Downloading/,
-    /^Needs review/,
+    /^Needs attention/,
   ]);
   await expect(
-    queueFilters.getByRole("link", { name: /^Needs review/ }),
+    queueFilters.getByRole("link", { name: /^Needs attention/ }),
   ).toContainText("1");
   for (const row of await downloading.getByRole("row").all())
     expect((await row.boundingBox())!.height).toBeLessThan(110);
@@ -278,28 +278,28 @@ test("requests show transfer telemetry, review actions and counts in compact row
   progress = 0.67;
   await expect(downloading).toContainText("67%", { timeout: 10000 });
   attemptState = "queued";
-  await expect(downloading).toContainText("Queued", { timeout: 10000 });
+  await expect(downloading).toContainText("Waiting", { timeout: 10000 });
   await expect(downloading).toContainText(
     "Waiting for free disk space after existing reservations and reserve",
   );
   await expect(downloading).not.toContainText("Connecting");
   await expect(downloading).not.toContainText("2.4 MiB/s");
   attemptState = "uncertain";
-  await expect(downloading).toContainText("Download needs attention", {
+  await expect(downloading).toContainText("Needs attention", {
     timeout: 10000,
   });
   await expect(downloading).not.toContainText("Connecting");
   await expect(downloading).not.toContainText("2.4 MiB/s");
   await downloading
     .getByRole("button", {
-      name: "Download needs attention: Project Hail Mary audiobook request details",
+      name: "Needs attention: Project Hail Mary audiobook request details",
     })
     .click();
   await expect(downloading).toContainText("Submission is not yet visible");
   await expect(downloading).not.toContainText("Ebook-only diagnostic");
   await downloading
     .getByRole("button", {
-      name: "Download needs attention: Project Hail Mary audiobook request details",
+      name: "Needs attention: Project Hail Mary audiobook request details",
     })
     .click();
   attemptState = "downloading";
@@ -310,7 +310,7 @@ test("requests show transfer telemetry, review actions and counts in compact row
   });
   await review
     .getByRole("button", {
-      name: "Needs review: The Martian audiobook request details",
+      name: "Needs attention: The Martian audiobook request details",
     })
     .click();
   await expect(review).toContainText("Files need review");

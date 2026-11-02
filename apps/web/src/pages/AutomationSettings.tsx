@@ -1,3 +1,4 @@
+import SaveBar, { countChanges } from "../components/SaveBar";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
@@ -126,13 +127,15 @@ export function WantedSearchSettings() {
             Books waiting for their release day are always searched on that day.
             Requests from lists follow their own list settings.
           </p>
-          <button
-            type="submit"
-            className="primary"
-            disabled={!draft || save.isPending}
-          >
-            Save wanted books settings
-          </button>
+          <SaveBar
+            changes={
+              draft
+                ? countChanges(draft, settings.data?.settings?.wanted_search)
+                : 0
+            }
+            saving={save.isPending}
+            onDiscard={() => setDraft(null)}
+          />
         </>
       )}
     </form>
@@ -198,13 +201,15 @@ export function DeletedRetention() {
           ? "0 keeps them until you delete them yourself."
           : `Held files older than ${value} days are deleted permanently each night.`}
       </p>
-      <button
-        type="submit"
-        className="primary"
-        disabled={!query.data || save.isPending}
-      >
-        Save retention
-      </button>
+      <SaveBar
+        changes={
+          query.data && days !== null
+            ? countChanges(days, query.data.settings.deleted_retention_days)
+            : 0
+        }
+        saving={save.isPending}
+        onDiscard={() => setDays(null)}
+      />
     </form>
   );
 }
@@ -266,15 +271,19 @@ function Editor({
     >
       <Notice error={save.error} />
       <FollowFilterFields value={filters} change={setFilters} />
-      <button type="submit" className="primary" disabled={save.isPending}>
-        Save follow defaults
-      </button>{" "}
-      <button
-        type="button"
-        onClick={() => setFilters(current.built_in.follow_filters)}
-      >
-        Use built-in defaults
-      </button>
+      <div className="button-row">
+        <button
+          type="button"
+          onClick={() => setFilters(current.built_in.follow_filters)}
+        >
+          Use built-in defaults
+        </button>
+      </div>
+      <SaveBar
+        changes={countChanges(filters, current.settings.follow_filters)}
+        saving={save.isPending}
+        onDiscard={() => setFilters(current.settings.follow_filters)}
+      />
     </form>
   );
 }

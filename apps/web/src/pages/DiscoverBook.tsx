@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import EditionFormatSelect, {
   type EditionFormat,
 } from "../components/EditionFormatSelect";
@@ -19,7 +20,7 @@ import {
 import FollowRelease, { useReleaseWatch } from "../components/FollowRelease";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Check } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -291,24 +292,18 @@ function BookPage({
             <div className="status-row">
               {work ? (
                 <>
-                  <span
-                    className={
-                      work.availability.owned ? "status owned" : "status"
+                  <StatusChip
+                    label={
+                      work.availability.owned
+                        ? "In library"
+                        : watching
+                          ? "Not released"
+                          : "Not requested"
                     }
-                  >
-                    {work.availability.owned ? (
-                      <>
-                        <Check size={16} /> In library
-                      </>
-                    ) : watching ? (
-                      "Waiting for release"
-                    ) : (
-                      "In your catalog"
-                    )}
-                  </span>
+                  />
                   <LibraryFormatBadges work={work} />
                   {work.availability.stale && (
-                    <span className="status">Last known availability</span>
+                    <span className="tag">Last known availability</span>
                   )}
                 </>
               ) : (

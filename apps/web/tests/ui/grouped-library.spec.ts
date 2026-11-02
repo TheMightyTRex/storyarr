@@ -102,7 +102,9 @@ test("one library card shows both formats and uses the mixed-view cover preferen
   await card.click();
   const summary = page.locator(".book-summary");
   await expect(summary).toBeVisible();
-  await expect(summary.getByText("Audiobook", { exact: true })).toBeVisible();
+  await expect(
+    summary.getByText("In library · Audiobook", { exact: true }),
+  ).toBeVisible();
   await expect(
     summary.getByRole("link", { name: "Open book page" }),
   ).toBeVisible();

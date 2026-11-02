@@ -1,3 +1,4 @@
+import { targetStateWord } from "./requestStatus";
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -20,14 +21,6 @@ import { currentParams } from "../currentParams";
 
 type Spec = components["schemas"]["RequestOptions"];
 type Preview = components["schemas"]["SeriesRequestView"];
-const states: Record<string, string> = {
-  satisfied: "Available",
-  wanted: "Missing",
-  pending: "Already requested",
-  "awaiting-inventory": "Check inventory",
-  paused: "Waiting for approval",
-  cancelled: "Cancelled",
-};
 
 export default function SeriesRequests({
   externalId,
@@ -597,7 +590,7 @@ export default function SeriesRequests({
                     :{" "}
                     {target.state === "pending" && value.status !== "preview"
                       ? "Requested"
-                      : states[target.state] || target.state}
+                      : targetStateWord(target.state)}
                   </p>
                 ))}
                 {!value.automatic &&

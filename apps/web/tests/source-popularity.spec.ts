@@ -84,7 +84,7 @@ test("source popularity persists as an ordered preference without rewriting save
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("ArrowUp");
   await preferences
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(
     preferences.getByText("Download defaults saved.", { exact: true }),
@@ -118,7 +118,7 @@ test("source popularity persists as an ordered preference without rewriting save
     .getByRole("checkbox", { name: "Prefer popular releases", exact: true })
     .uncheck();
   await preferences
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(
     preferences.getByText("Download defaults saved.", { exact: true }),

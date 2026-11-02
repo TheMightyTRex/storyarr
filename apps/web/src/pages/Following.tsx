@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import {
   CollectionViewSwitch,
   readSort,
@@ -25,18 +26,6 @@ type Book = components["schemas"]["FollowBook"];
 type Status = NonNullable<Book["status"]>;
 export type StatusKind = Status["kind"];
 // Same chip colours as request statuses, so a state reads the same on every page.
-export const statusChip: Record<StatusKind, string> = {
-  in_library: "satisfied",
-  downloading: "downloading",
-  importing: "downloading",
-  searching: "downloading",
-  waiting: "waiting",
-  not_released: "waiting",
-  attention: "paused",
-  wanted: "paused",
-  excluded: "cancelled",
-  not_requested: "cancelled",
-};
 export const statusNames: Record<StatusKind, string> = {
   in_library: "In library",
   downloading: "Downloading",
@@ -69,9 +58,7 @@ export function when(value: string) {
 }
 function BookStatusLine({ status }: { status: Status }) {
   const chip = (
-    <span className="request-status" data-state={statusChip[status.kind]}>
-      {status.label}
-    </span>
+    <StatusChip label={status.label} status={statusNames[status.kind]} />
   );
   const href = statusLinks[status.kind];
   const detail = [status.detail, status.at ? when(status.at) : null]
@@ -233,13 +220,7 @@ export function FollowBooks({
                     aria-pressed={status === kind}
                     onClick={() => pick(status === kind ? null : kind)}
                   >
-                    <span
-                      className="request-status"
-                      data-state={statusChip[kind]}
-                    >
-                      {statusNames[kind]}
-                    </span>{" "}
-                    {counts[kind]}
+                    <StatusChip label={statusNames[kind]} /> {counts[kind]}
                   </button>
                 ))}
             </div>

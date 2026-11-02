@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
+import SaveBar from "../components/SaveBar";
 
 type Pace = components["schemas"]["BackgroundWork"]["pace"];
 
@@ -81,9 +82,11 @@ export function BackgroundWorkForm() {
               </label>
             ))}
           </fieldset>
-          <button className="primary" disabled={save.isPending}>
-            {save.isPending ? "Saving…" : "Save background work"}
-          </button>
+          <SaveBar
+            changes={draft && draft !== setting.data.pace ? 1 : 0}
+            saving={save.isPending}
+            onDiscard={() => setDraft(null)}
+          />
           {save.isSuccess && (
             <p role="status">
               Background work saved. It applies within a minute.

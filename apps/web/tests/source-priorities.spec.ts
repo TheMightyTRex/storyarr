@@ -144,7 +144,7 @@ test("individual indexer priorities load explicitly and retain saved choices thr
     })
     .press("ArrowUp");
   await sources
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(
     sources.getByText("Download defaults saved.", { exact: true }),

@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
 import BookLink from "../components/BookLink";
@@ -687,9 +688,11 @@ function SeriesContent({
                           {entry.work.authors.join(", ") || "Author unknown"}
                         </p>
                         <p className="series-format-status">
-                          {entry.work.availability.owned
-                            ? "✓ In library"
-                            : "Not in your library"}
+                          {entry.work.availability.owned ? (
+                            <StatusChip label="In library" />
+                          ) : (
+                            "Not in your library"
+                          )}
                           {entry.work.availability.ebook && (
                             <span>
                               <BookOpen size={14} aria-hidden="true" /> Ebook

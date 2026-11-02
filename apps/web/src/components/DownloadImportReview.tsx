@@ -1,7 +1,7 @@
+import StatusChip from "./StatusChip";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Check, CircleAlert, LoaderCircle } from "lucide-react";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
@@ -102,22 +102,12 @@ export default function DownloadImportReview({
         </div>
       </header>
       <div className="download-review-status">
-        <span
-          className={`download-import-state ${done ? "is-complete" : blocked ? "is-held" : "is-active"}`}
-        >
-          {done ? (
-            <Check size={16} />
-          ) : blocked ? (
-            <CircleAlert size={16} />
-          ) : (
-            <LoaderCircle size={16} className="spin" />
-          )}
-          {done
-            ? "In library"
-            : blocked
-              ? "Needs attention"
-              : "Adding to library"}
-        </span>
+        <StatusChip
+          className="download-import-state"
+          label={
+            done ? "In library" : blocked ? "Needs attention" : "Importing"
+          }
+        />
         <span className="muted">
           Download complete
           {media.length

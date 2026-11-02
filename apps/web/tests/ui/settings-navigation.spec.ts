@@ -102,7 +102,7 @@ for (const role of ["admin", "member", "viewer"]) {
         .click();
       await page.getByText("Storage reserve", { exact: true }).click();
       await page.getByLabel("Minimum free storage (%)").fill("0");
-      await page.getByRole("button", { name: "Save storage reserve" }).click();
+      await page.getByRole("button", { name: "Save changes" }).click();
       await expect(
         page.getByText("Storage reserve saved.", { exact: true }),
       ).toBeVisible();
@@ -186,7 +186,7 @@ for (const role of ["admin", "member", "viewer"]) {
       name: "Queue filters",
     });
     await expect(
-      queueFilters.getByRole("link", { name: /^Needs review/ }),
+      queueFilters.getByRole("link", { name: /^Needs attention/ }),
     ).toHaveCount(role === "admin" ? 1 : 0);
     await page.goto("/activity#downloads");
     await expect(page).toHaveURL(/\/requests#downloads$/);

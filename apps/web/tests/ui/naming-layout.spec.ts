@@ -122,7 +122,7 @@ test("naming lanes stay on one line and preserve independent format settings", a
       .locator("li")
       .first()
       .evaluate((node) => node.getBoundingClientRect().height),
-  ).toBeLessThanOrEqual(34);
+  ).toBeLessThanOrEqual(46); // A 44px drag handle and the token's border.
   await expect(
     page.getByText("Customise filename template", { exact: true }),
   ).toHaveCount(0);
@@ -172,7 +172,7 @@ test("naming lanes stay on one line and preserve independent format settings", a
   await expect(page.getByLabel("Example destination path")).toContainText(
     "/media/ebook",
   );
-  await page.getByRole("button", { name: "Save naming settings" }).click();
+  await page.getByRole("button", { name: "Save changes" }).click();
   expect(profile.ebook_folder).toBe("{author}/{title}");
   expect(profile.audio_folder).toBe(
     `${defaults.audio_folder.replace("[ - {narrator}]", "[ {{{narrator}}}]")}[ - {language}]`,

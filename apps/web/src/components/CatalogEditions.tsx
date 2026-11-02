@@ -1,3 +1,4 @@
+import StatusChip from "./StatusChip";
 import EditionFormatSelect, { type EditionFormat } from "./EditionFormatSelect";
 import { useState } from "react";
 import BookPagination from "./BookPagination";
@@ -177,11 +178,11 @@ export default function CatalogEditions({
                       )}
                     </td>
                     <td>
-                      <span
-                        className={version.owned ? "status owned" : "muted"}
-                      >
-                        {version.owned ? "In library" : "Not owned"}
-                      </span>
+                      {version.owned ? (
+                        <StatusChip label="In library" />
+                      ) : (
+                        <span className="muted">Not in library</span>
+                      )}
                     </td>
                     {request && (
                       <td>

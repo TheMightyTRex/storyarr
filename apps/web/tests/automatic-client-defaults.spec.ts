@@ -110,10 +110,10 @@ test("client defaults are automatic per type and selectable when there are sever
     ).toBeVisible();
     await expect(
       panel.getByRole("button", {
-        name: "Save download defaults",
+        name: "Save changes",
         exact: true,
       }),
-    ).toBeDisabled();
+    ).toHaveCount(0);
     await page.reload();
     await expand();
     await expect(torrentDefault).toHaveValue(torrent.id);
@@ -158,10 +158,10 @@ test("client defaults are automatic per type and selectable when there are sever
       await expect(ebookDefault).toHaveCount(0);
       await expect(
         panel.getByRole("button", {
-          name: "Save download defaults",
+          name: "Save changes",
           exact: true,
         }),
-      ).toBeDisabled();
+      ).toHaveCount(0);
       await page.unroute("**/api/acquisition/preferences/personal");
     }
     clients = [...clients, second];
@@ -173,7 +173,7 @@ test("client defaults are automatic per type and selectable when there are sever
     await expect(nzbDefault).toBeDisabled();
     await torrentDefault.selectOption(second.id);
     await panel
-      .getByRole("button", { name: "Save download defaults", exact: true })
+      .getByRole("button", { name: "Save changes", exact: true })
       .click();
     await expect(panel.getByRole("status")).toContainText(
       "Download defaults saved",

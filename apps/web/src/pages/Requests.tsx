@@ -34,7 +34,7 @@ const filterLabels: Record<RequestFilter, { title: string; icon: LucideIcon }> =
   {
     queue: { title: "All", icon: ListOrdered },
     downloading: { title: "Downloading", icon: Download },
-    review: { title: "Needs review", icon: FileSearch },
+    review: { title: "Needs attention", icon: FileSearch },
     pending: { title: "All", icon: Clock },
     yours: { title: "Your requests", icon: UserRound },
     history: { title: "All", icon: History },
@@ -58,7 +58,7 @@ export default function Requests({
   const selected = requestFilter(hash, params.get("status"));
   const sort = params.get("sort") === "title" ? "title" : "newest";
   const counts = useRequestCounts().data;
-  // Needs review is for admins; Your requests only narrows the list for people who see everyone's.
+  // Needs attention is for admins; Your requests only narrows the list for people who see everyone's.
   const allowed = (filter: RequestFilter) =>
     (filter !== "review" || admin) && (filter !== "yours" || canApprove);
   const status = allowed(selected) ? selected : "queue";

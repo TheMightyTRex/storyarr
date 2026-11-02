@@ -506,7 +506,7 @@ test("Following shows library coverage, releases, and useful filtered books", as
     .click();
   const row = page.getByRole("row").filter({ hasText: "Ursula K. Le Guin" });
   await expect(row.getByText("1 of 2")).toBeVisible();
-  await expect(row.getByText("1 missing")).toBeVisible();
+  await expect(row.getByText("1 wanted")).toBeVisible();
   await expect(row.getByText("1 not released")).toBeVisible();
   // Sort by surname, then reverse it: the page asks the server for that order.
   const asks = (sort: string, reverse: string) =>

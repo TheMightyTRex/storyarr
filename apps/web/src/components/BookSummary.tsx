@@ -1,5 +1,6 @@
+import StatusChip from "./StatusChip";
 import { Link } from "react-router-dom";
-import { BookOpen, Headphones, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import type { components } from "../api/schema";
 import BookCover from "./BookCover";
 import QuickAdd from "./QuickAdd";
@@ -94,15 +95,9 @@ export default function BookSummary({
             </p>
           ))}
           <div className="book-summary-formats" aria-label="In your library">
-            {availability.ebook && (
-              <span className="request-status" data-state="satisfied">
-                <BookOpen size={13} aria-hidden="true" /> Ebook
-              </span>
-            )}
+            {availability.ebook && <StatusChip label="In library · Ebook" />}
             {availability.audio && (
-              <span className="request-status" data-state="satisfied">
-                <Headphones size={13} aria-hidden="true" /> Audiobook
-              </span>
+              <StatusChip label="In library · Audiobook" />
             )}
           </div>
         </div>

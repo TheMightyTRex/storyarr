@@ -1,3 +1,4 @@
+import SaveBar, { countChanges } from "../components/SaveBar";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
@@ -301,11 +302,11 @@ function Editor({
         supported for qBittorrent only; remove preserves all downloaded and
         library files. A transfer left running continues to occupy capacity.
       </p>
-      <div className="button-row">
-        <button disabled={save.isPending}>
-          {save.isPending ? "Saving…" : "Save recovery settings"}
-        </button>
-      </div>
+      <SaveBar
+        changes={countChanges(value, current)}
+        saving={save.isPending}
+        onDiscard={() => setValue(current)}
+      />
     </form>
   );
 }

@@ -123,7 +123,7 @@ test("recovery is grouped with clients, keeps collapsed drafts, and saves source
     exact: true,
   });
   await indexer.getByLabel("Failed transfer cleanup").selectOption("pause");
-  await form.getByRole("button", { name: "Save recovery settings" }).click();
+  await form.getByRole("button", { name: "Save changes" }).click();
   await expect(page.getByRole("status")).toContainText(
     "Recovery settings saved",
   );

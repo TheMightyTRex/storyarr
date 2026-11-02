@@ -103,9 +103,10 @@ for (const explicitTest of [true, false]) {
     const hardcover = page.getByRole("region", {
       name: "Hardcover connection",
     });
+    // The library's status chip: the success tone, with its icon and words.
     await expect(hardcover.locator(".connection-state")).toHaveAttribute(
-      "data-state",
-      "connected",
+      "data-tone",
+      "success",
     );
     await expect(hardcover.locator(".connection-state svg")).toBeVisible();
     await expect(
@@ -183,7 +184,11 @@ for (const explicitTest of [true, false]) {
     await page.reload();
     await hardcover.locator(".reading-connection > summary").click();
     await expect(hardcover.locator(".connection-state")).toHaveText("Disabled");
-    await expect(hardcover.locator(".connection-state svg")).toHaveCount(0);
+    // Every chip has an icon now; Disabled shows the muted tone.
+    await expect(hardcover.locator(".connection-state")).toHaveAttribute(
+      "data-tone",
+      "muted",
+    );
     await expect(
       hardcover.getByRole("link", { name: "Set up Hardcover" }),
     ).toBeVisible();

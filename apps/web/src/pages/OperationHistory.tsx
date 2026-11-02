@@ -1,3 +1,14 @@
+import StatusChip from "../components/StatusChip";
+import type { ComponentProps } from "react";
+import {
+  CircleCheck,
+  Clock,
+  LoaderCircle,
+  Minus,
+  OctagonX,
+  RefreshCw,
+  TriangleAlert,
+} from "lucide-react";
 import { Fragment, useEffect, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -287,12 +298,10 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
                           </time>
                         </td>
                         <td>
-                          <span
+                          <StatusChip
                             className="logs-status"
-                            data-status={item.status}
-                          >
-                            {item.status}
-                          </span>
+                            {...logStatus(item.status)}
+                          />
                         </td>
                         <td
                           className="logs-task"
@@ -382,4 +391,28 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
       )}
     </section>
   );
+}
+
+/** A background task's state as a status chip: the word, its tone and its icon. */
+function logStatus(status: string) {
+  const looks: Record<
+    string,
+    Omit<ComponentProps<typeof StatusChip>, "label">
+  > = {
+    completed: { tone: "success", icon: CircleCheck },
+    running: { tone: "info", icon: LoaderCircle },
+    queued: { tone: "neutral", icon: Clock },
+    retrying: { tone: "warning", icon: RefreshCw },
+    attention: { tone: "warning", icon: TriangleAlert },
+    blocked: { tone: "danger", icon: OctagonX },
+    failed: { tone: "danger", icon: OctagonX },
+  };
+  const words = status.replaceAll("_", " ").replaceAll("-", " ");
+  return {
+    label:
+      status === "attention"
+        ? "Needs attention"
+        : words.charAt(0).toUpperCase() + words.slice(1),
+    ...(looks[status] ?? { tone: "neutral", icon: Minus }),
+  } as ComponentProps<typeof StatusChip>;
 }

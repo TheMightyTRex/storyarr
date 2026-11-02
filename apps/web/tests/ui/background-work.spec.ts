@@ -68,7 +68,7 @@ test("admins choose how often background jobs run in Settings, System", async ({
   const section = page.getByRole("region", { name: "Background work" });
   await expect(section.getByRole("radio", { name: /^Normal/ })).toBeChecked();
   await section.getByRole("radio", { name: /^Minimal/ }).check();
-  await section.getByRole("button", { name: "Save background work" }).click();
+  await section.getByRole("button", { name: "Save changes" }).click();
   await expect(section.getByRole("status")).toHaveText(
     "Background work saved. It applies within a minute.",
   );
@@ -97,7 +97,7 @@ test("the upgrade wizard offers Background work as a new setting", async ({
   await page.getByText("Background work", { exact: true }).first().click();
   const form = page.getByRole("form", { name: "Background work" });
   await form.getByRole("radio", { name: /^Light/ }).check();
-  await form.getByRole("button", { name: "Save background work" }).click();
+  await form.getByRole("button", { name: "Save changes" }).click();
   await expect(form.getByRole("status")).toBeVisible();
   expect(saved).toEqual([{ pace: "light" }]);
 });

@@ -1,3 +1,4 @@
+import { targetStateWord } from "./requestStatus";
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
 import { EffectiveScope } from "./ScopeFields";
@@ -24,14 +25,7 @@ type Spec = components["schemas"]["RequestOptions"];
 export type WantedVersion = components["schemas"]["VersionView"];
 const label = (slot: string) =>
   slot === "audio" ? "Audiobook" : slot === "ebook" ? "Ebook" : "Either medium";
-const stateLabel = (state: string) =>
-  ({
-    wanted: "Wanted",
-    satisfied: "Available",
-    paused: "Paused",
-    cancelled: "Cancelled",
-    "awaiting-inventory": "Check inventory",
-  })[state] || state;
+const stateLabel = targetStateWord;
 
 export default function Wanted({
   workId,

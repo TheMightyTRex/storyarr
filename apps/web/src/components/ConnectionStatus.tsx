@@ -1,35 +1,29 @@
-import { CircleCheck, CircleAlert, LoaderCircle } from "lucide-react";
+import StatusChip from "./StatusChip";
+import { CircleX, TriangleAlert } from "lucide-react";
 import { connectionLabel } from "../pages/settingLabels";
 
-/** Shared connection feedback for settings and onboarding. */
+/** Shared connection feedback for settings and onboarding, as the library's status chip. */
 export default function ConnectionStatus({ status }: { status?: string }) {
-  const connected = status === "connected";
-  const checking = status === "checking";
-  const attention = Boolean(
-    status &&
-    ![
-      "connected",
-      "checking",
-      "not-configured",
-      "untested",
-      "disabled",
-    ].includes(status),
-  );
-  const Icon = connected
-    ? CircleCheck
-    : checking
-      ? LoaderCircle
-      : attention
-        ? CircleAlert
-        : null;
+  const label = status === "checking" ? "Checking…" : connectionLabel(status);
+  const known = [
+    "connected",
+    "checking",
+    "not-configured",
+    "untested",
+    "disabled",
+  ];
+  const look =
+    status === "stale"
+      ? { tone: "warning" as const, icon: TriangleAlert }
+      : status && !known.includes(status)
+        ? { tone: "danger" as const, icon: CircleX }
+        : {};
   return (
-    <span
+    <StatusChip
       className="connection-state"
-      data-state={connected ? "connected" : attention ? "attention" : "neutral"}
+      label={label}
       role="status"
-    >
-      {Icon && <Icon size={15} aria-hidden="true" />}
-      {checking ? "Checking…" : connectionLabel(status)}
-    </span>
+      {...look}
+    />
   );
 }

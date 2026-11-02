@@ -480,8 +480,8 @@ test("provider registration roles appear only when relevant and retain their dra
   });
   await page.goto("/settings#accounts");
   for (const [title, button] of [
-    ["Identity provider", "Save identity provider"],
-    ["Plex", "Save Plex sign-in"],
+    ["Identity provider", "Save changes"],
+    ["Plex", "Save changes"],
   ]) {
     const panel = page
       .locator("details.access-provider")

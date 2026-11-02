@@ -63,7 +63,7 @@ test("download defaults inherit per field and persist after reload", async ({
     })
     .press("ArrowUp");
   await panel
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(panel.getByRole("status")).toContainText(
     "Download defaults saved",
@@ -97,7 +97,7 @@ test("download defaults inherit per field and persist after reload", async ({
   ).toBeChecked();
   await expect(ebooks.getByRole("listitem").first()).toContainText("EPUB");
   await panel
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(panel.getByRole("alert")).toContainText(
     "Download defaults changed; reload before saving",
@@ -122,7 +122,7 @@ test("download defaults inherit per field and persist after reload", async ({
     await route.fulfill({ response });
   });
   await panel
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   // Edits made during a save belong to the next save, not the submitted snapshot.
   await panel.getByLabel("Require standalone copies", { exact: true }).check();
@@ -135,14 +135,14 @@ test("download defaults inherit per field and persist after reload", async ({
     panel.getByLabel("Require standalone copies", { exact: true }),
   ).toBeChecked();
   await panel
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(panel.getByRole("status")).toContainText(
     "Download defaults saved",
   );
   await expect(
-    panel.getByRole("button", { name: "Save download defaults", exact: true }),
-  ).toBeDisabled();
+    panel.getByRole("button", { name: "Save changes", exact: true }),
+  ).toHaveCount(0);
   await page.reload();
   await expect(
     panel.getByLabel("Require standalone copies", { exact: true }),
@@ -160,7 +160,7 @@ test("download defaults inherit per field and persist after reload", async ({
     .getByRole("button", { name: "Use inherited defaults", exact: true })
     .click();
   await panel
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(panel.getByRole("status")).toContainText(
     "Download defaults saved",
@@ -189,7 +189,7 @@ test("download defaults inherit per field and persist after reload", async ({
     .getByRole("button", { name: "Use inherited defaults", exact: true })
     .click();
   await panel
-    .getByRole("button", { name: "Save download defaults", exact: true })
+    .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(panel.getByRole("status")).toContainText(
     "Download defaults saved",

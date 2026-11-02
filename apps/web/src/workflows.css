@@ -113,10 +113,8 @@
   white-space: normal;
 }
 .request-ledger button.request-status {
-  min-height: 36px;
-  padding: 6px 8px;
+  min-height: var(--control-height);
   text-align: left;
-  white-space: normal;
 }
 .request-status[aria-expanded="true"] .request-details-chevron {
   transform: rotate(90deg);
@@ -183,7 +181,7 @@
 }
 .source-coverage summary {
   cursor: pointer;
-  min-height: 32px;
+  min-height: var(--control-height);
 }
 .source-coverage ul {
   padding-left: 20px;
@@ -286,7 +284,7 @@
   cursor: pointer;
   font-size: 0.875rem;
   color: var(--muted);
-  min-height: 36px;
+  min-height: var(--control-height);
 }
 .review-evidence .review-report {
   border: 0;
@@ -332,7 +330,7 @@
 }
 :is(.requests-page, .book-sources, .download-review, .review-dialog)
   :is(button, .button, .control-action) {
-  min-height: 36px;
+  min-height: var(--control-height);
 }
 :is(.book-sources, .download-review, .review-dialog)
   :is(a, button, input, select, summary):focus-visible {

@@ -1,3 +1,4 @@
+import { targetStateWord } from "./requestStatus";
 import ListBookPicker from "./ListBookPicker";
 import { EffectiveScope } from "./ScopeFields";
 import RequestPreferences, { type Choice } from "./RequestPreferences";
@@ -13,14 +14,6 @@ import DownloadConstraints from "./DownloadConstraints";
 import { randomUUID } from "../randomUUID";
 
 type Spec = components["schemas"]["RequestOptions"];
-const states: Record<string, string> = {
-  satisfied: "Available",
-  wanted: "Missing",
-  pending: "Already requested",
-  "awaiting-inventory": "Check inventory",
-  paused: "Waiting for approval",
-  unresolved: "Needs review",
-};
 const media: Record<string, string> = {
   ebook: "Ebook",
   audio: "Audiobook",
@@ -348,7 +341,7 @@ function ListRequestEditor({
               .filter(([, count]) => count)
               .map(
                 ([state, count]) =>
-                  `${count} ${states[state]?.toLocaleLowerCase() || state}`,
+                  `${count} ${targetStateWord(state)?.toLocaleLowerCase() || state}`,
               )
               .join(" · ")}
             . Inventory is checked again when saving.
@@ -380,7 +373,7 @@ function ListRequestEditor({
                     <p key={t.slot}>
                       {t.message === "Waiting for approval"
                         ? `${media[t.slot]}: Waiting for approval`
-                        : `${media[t.slot]}: ${states[t.state] || t.state} · ${t.message}`}
+                        : `${media[t.slot]}: ${targetStateWord(t.state)} · ${t.message}`}
                     </p>
                   ))
                 )}

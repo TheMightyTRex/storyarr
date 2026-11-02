@@ -1,3 +1,4 @@
+import StatusChip from "./StatusChip";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -15,12 +16,7 @@ import BookCover from "./BookCover";
 import { useReaderDetails } from "./BookReaderDetails";
 import AddMissingBooks from "./AddMissingBooks";
 import FollowCatalog, { useFollowing } from "./FollowCatalog";
-import {
-  FollowBooks,
-  statusChip,
-  statusNames,
-  type StatusKind,
-} from "../pages/Following";
+import { FollowBooks, statusNames, type StatusKind } from "../pages/Following";
 import { usePreferences } from "../hooks/usePreferences";
 import "../collection-views.css";
 
@@ -266,21 +262,15 @@ function StatusChips({ group }: { group: GroupState }) {
     (kind) => kind !== "in_library" && counts[kind],
   );
   if (!kinds.length)
-    return (
-      <span className="request-status" data-state="satisfied">
-        Complete
-      </span>
-    );
+    return <StatusChip label="All in library" status="In library" />;
   return (
     <>
       {kinds.map((kind) => (
-        <span
+        <StatusChip
           key={kind}
-          className="request-status"
-          data-state={statusChip[kind]}
-        >
-          {counts[kind]} {statusNames[kind].toLowerCase()}
-        </span>
+          label={`${counts[kind]} ${statusNames[kind].toLowerCase()}`}
+          status={statusNames[kind]}
+        />
       ))}
     </>
   );

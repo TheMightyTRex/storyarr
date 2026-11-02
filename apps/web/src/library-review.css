@@ -147,28 +147,6 @@
   gap: 6px;
   margin-top: 10px;
 }
-.review-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 8px;
-  border-radius: 0;
-  font-size: 0.6875rem;
-  font-weight: 650;
-  color: var(--c-text-indigo-87);
-  background: var(--c-bg-indigo-34);
-}
-.review-chip[data-tone="warn"] {
-  color: var(--c-text-amber-88);
-  background: var(--c-bg-slate-36);
-}
-.review-chip[data-tone="error"] {
-  color: var(--c-text-red-87);
-  background: var(--c-bg-red-32);
-}
-.review-chip[data-tone="linked"] {
-  color: var(--c-text-teal-92);
-  background: var(--c-bg-teal-34);
-}
 .review-card-linked {
   margin: 4px 0 0;
   overflow: hidden;

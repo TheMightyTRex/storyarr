@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import { useRef, useState } from "react";
 import {
   useInfiniteQuery,
@@ -14,13 +15,7 @@ import BookCover from "../components/BookCover";
 import AddMissingBooks from "../components/AddMissingBooks";
 import QuickAdd from "../components/QuickAdd";
 import SidePanel from "../components/SidePanel";
-import {
-  publication,
-  statusChip,
-  statusLinks,
-  statusNames,
-  when,
-} from "./Following";
+import { publication, statusLinks, statusNames, when } from "./Following";
 import type { StatusKind } from "./Following";
 
 type Book = components["schemas"]["FollowBook"];
@@ -216,13 +211,7 @@ export function FollowShelfView({
                   aria-pressed={status === kind}
                   onClick={() => setStatus(status === kind ? null : kind)}
                 >
-                  <span
-                    className="request-status"
-                    data-state={statusChip[kind]}
-                  >
-                    {statusNames[kind]}
-                  </span>{" "}
-                  {counts[kind]}
+                  <StatusChip label={statusNames[kind]} /> {counts[kind]}
                 </button>
               ))}
           </div>
@@ -259,13 +248,12 @@ export function FollowShelfView({
                       actions={false}
                     />
                     {book.status && kind && (
-                      <span
-                        className="request-status cover-wall-chip"
-                        data-state={statusChip[kind]}
+                      <StatusChip
+                        className="cover-wall-chip"
+                        label={book.status.label}
+                        status={statusNames[kind]}
                         aria-hidden="true"
-                      >
-                        {book.status.label}
-                      </span>
+                      />
                     )}
                     <span className="cover-wall-title" aria-hidden="true">
                       {book.title}
@@ -402,9 +390,7 @@ function BookDrawer({
       </div>
       {status && (
         <div className="book-drawer-status">
-          <span className="request-status" data-state={statusChip[status.kind]}>
-            {status.label}
-          </span>
+          <StatusChip label={status.label} status={statusNames[status.kind]} />
           {detail && <p>{detail}</p>}
           {canEdit && SEARCHABLE.has(status.kind) && (
             <QuickAdd workId={book.work_id} actionLabel="Search now" />

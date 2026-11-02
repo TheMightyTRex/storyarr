@@ -1,3 +1,4 @@
+import StatusChip from "../components/StatusChip";
 import { ContextLink } from "../components/NavigationContinuity";
 import ContentSkeleton from "../components/ContentSkeleton";
 import { Fragment, lazy, Suspense, useEffect, useRef, useState } from "react";
@@ -7,9 +8,6 @@ import {
   Check,
   ChevronRight,
   ClipboardCheck,
-  CircleAlert,
-  CircleCheck,
-  LoaderCircle,
   Download,
   ExternalLink,
   Eye,
@@ -38,7 +36,7 @@ import {
   requestCountLabel,
   type RequestFilter,
 } from "./requestFilters";
-import { liveDownloadStates, statusLabel } from "./requestStatus";
+import { liveDownloadStates, statusLabel, statusWord } from "./requestStatus";
 import { EffectiveScope } from "./ScopeFields";
 
 type Request = components["schemas"]["RequestView"];
@@ -63,36 +61,6 @@ function mediumLabel(slot: string) {
   if (slot === "audio") return "Audiobook";
   if (slot === "either") return "Either";
   return "Ebook";
-}
-
-function chipState(label: string) {
-  if (
-    label === "Needs review" ||
-    label === "Source needs review" ||
-    label === "Download needs attention"
-  )
-    return "paused";
-  if (label === "Download not started") return "failed";
-  if (
-    [
-      "Preparing download",
-      "Searching sources",
-      "Waiting for source",
-      "Request queued",
-    ].includes(label)
-  )
-    return "downloading";
-  if (label === "In library") return "satisfied";
-  if (label === "Downloading" || label === "Importing") return "downloading";
-  if (
-    label === "Queued" ||
-    label === "Pending" ||
-    label === "Paused" ||
-    label === "Check inventory"
-  )
-    return "paused";
-  if (label === "Declined" || label === "Withdrawn") return "cancelled";
-  return "wanted";
 }
 
 function targetNotes(label: string, target: Target) {
@@ -640,13 +608,6 @@ function RequestCard({
         const detailsId = `request-details-${request.id}-${target.slot}`;
         const label = statusLabel(request, target);
         const active = label === "Downloading";
-        const spinning = [
-          "Downloading",
-          "Importing",
-          "Preparing download",
-          "Searching sources",
-          "Request queued",
-        ].includes(label);
         const progress =
           typeof target.progress === "number"
             ? Math.max(0, Math.min(1, target.progress))
@@ -698,28 +659,13 @@ function RequestCard({
                 <button
                   type="button"
                   className="request-status"
-                  data-state={chipState(label)}
                   title={["View request details", ...notes].join(". ")}
-                  aria-label={`${label}: ${request.work_title} ${mediumLabel(target.slot).toLowerCase()} request details`}
+                  aria-label={`${statusWord(label)}: ${request.work_title} ${mediumLabel(target.slot).toLowerCase()} request details`}
                   aria-expanded={isExpanded}
                   aria-controls={detailsId}
                   onClick={() => setExpanded(isExpanded ? null : target.slot)}
                 >
-                  {spinning ? (
-                    <LoaderCircle
-                      size={14}
-                      className="source-download-spinner"
-                      aria-hidden
-                    />
-                  ) : label === "In library" ? (
-                    <CircleCheck size={14} aria-hidden />
-                  ) : label === "Needs review" ||
-                    label === "Source needs review" ||
-                    label === "Download needs attention" ||
-                    label === "Download not started" ? (
-                    <CircleAlert size={14} aria-hidden />
-                  ) : null}
-                  {label}
+                  <StatusChip label={statusWord(label)} />
                   <ChevronRight
                     size={14}
                     className="request-details-chevron"
@@ -1029,7 +975,8 @@ function RequestSources({
     >
       <section className="request-sources-summary" aria-label="Request">
         <p>
-          <strong>{label}</strong> · {mediumLabel(target.slot)} request
+          <strong>{statusWord(label)}</strong> · {mediumLabel(target.slot)}{" "}
+          request
           {request.authors?.length ? ` · ${request.authors.join(", ")}` : ""}
         </p>
         {[target.review_message || target.message, ...notes]

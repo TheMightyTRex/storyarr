@@ -128,7 +128,7 @@ test("settings use compact controls and naming presets persist with planner prev
     "Author",
     "Title",
   ]);
-  await naming.getByRole("button", { name: "Save naming settings" }).click();
+  await naming.getByRole("button", { name: "Save changes" }).click();
   await expect(naming.getByRole("status")).toHaveText("Saved");
   await page.reload();
   await naming.getByRole("button", { name: "Audiobook", exact: true }).click();
@@ -141,7 +141,7 @@ test("settings use compact controls and naming presets persist with planner prev
     .check();
   await expect(preview).toContainText("Bloomsbury");
   await naming.getByRole("button", { name: "By series", exact: true }).click();
-  await naming.getByRole("button", { name: "Save naming settings" }).click();
+  await naming.getByRole("button", { name: "Save changes" }).click();
   await expect(naming.getByRole("status")).toHaveText("Saved");
   await naming.screenshot({ path: testInfo.outputPath("naming-desktop.png") });
   await jump("sources");

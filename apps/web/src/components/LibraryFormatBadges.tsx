@@ -17,7 +17,7 @@ export default function LibraryFormatBadges({ work }: { work: Work }) {
         const name = medium === "audio" ? "Audiobook" : "Ebook";
         return (
           <span
-            className="status owned"
+            className="tag"
             key={medium}
             title={`${count} ${name.toLowerCase()} ${count === 1 ? "version" : "versions"} in your library`}
           >

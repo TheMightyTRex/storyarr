@@ -1,4 +1,13 @@
-import { CircleCheck } from "lucide-react";
+import StatusChip from "./StatusChip";
+import {
+  Ban,
+  CircleCheck,
+  CircleDashed,
+  CircleX,
+  LoaderCircle,
+  Minus,
+  TriangleAlert,
+} from "lucide-react";
 
 type ConnectionTestStatusProps = {
   configured: boolean;
@@ -39,6 +48,15 @@ export default function ConnectionTestStatus({
     attention: "Needs attention",
     "not-saved": "Not saved",
   }[state];
+  const looks = {
+    disabled: { tone: "muted", icon: Ban },
+    pending: { tone: "info", icon: LoaderCircle },
+    failed: { tone: "danger", icon: CircleX },
+    connected: { tone: "success", icon: CircleCheck },
+    saved: { tone: "neutral", icon: CircleDashed },
+    attention: { tone: "warning", icon: TriangleAlert },
+    "not-saved": { tone: "muted", icon: Minus },
+  } as const;
   const detail = disabled
     ? "Enable this connection to test it."
     : isPending
@@ -63,10 +81,11 @@ export default function ConnectionTestStatus({
       aria-label="Connection test status"
       aria-live="polite"
     >
-      <span className="connection-test-status-label">
-        {state === "connected" && <CircleCheck size={15} aria-hidden="true" />}
-        {label}
-      </span>
+      <StatusChip
+        className="connection-test-status-label"
+        label={label}
+        {...looks[state]}
+      />
       <span className="connection-test-status-detail">{detail}</span>
     </span>
   );

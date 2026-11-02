@@ -112,7 +112,7 @@ test("onboarding defers, resumes and completes once; settings show one focused s
     catalog.getByText("Hardcover catalog access verified."),
   ).toBeVisible();
   await catalog.getByLabel("Primary language").selectOption("fr");
-  await catalog.getByRole("button", { name: "Save metadata defaults" }).click();
+  await catalog.getByRole("button", { name: "Save changes" }).click();
   await expect(catalog.getByText("Metadata defaults saved.")).toBeVisible();
   await page.goto("/settings#sources");
   const mam = page.getByRole("form", { name: "MAM connection settings" });

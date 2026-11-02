@@ -170,11 +170,11 @@ test("library review links unmatched items to Storyarr and Hardcover books", asy
     fullPage: true,
   });
 
-  await filters.getByRole("link", { name: /Couldn't read fully/ }).click();
+  await filters.getByRole("link", { name: /Could not read fully/ }).click();
   await expect(page).toHaveURL(/kind=read-issue/);
   await expect(cards).toHaveCount(2);
   const broken = page.getByRole("article", { name: "Broken Rip" });
-  await expect(broken).toContainText("Couldn't read files");
+  await expect(broken).toContainText("Cannot read files");
   await expect(
     broken.getByRole("link", { name: /Open in Audiobookshelf/ }),
   ).toHaveAttribute("href", "https://abs.example.test/item/r1");

@@ -1,3 +1,14 @@
+import StatusChip from "../components/StatusChip";
+import type { ComponentProps } from "react";
+import {
+  Ban,
+  CircleCheck,
+  CircleDashed,
+  CircleX,
+  LoaderCircle,
+  Minus,
+  TriangleAlert,
+} from "lucide-react";
 import { DeleteSourceConnection } from "../components/DeleteConfiguration";
 import { useRef, useState } from "react";
 import MamControlCenter from "./MamControlCenter";
@@ -640,19 +651,23 @@ export function MamConnectionForm({ value }: { value: Connection }) {
             >
               <div className="mam-network-heading">
                 <h3>Proxy</h3>
-                <span className="mam-network-badge" role="status">
-                  {proxyTest.isPending
-                    ? "Testing…"
-                    : proxyError
-                      ? "Unavailable"
-                      : proxyStatus === "connected"
-                        ? "Healthy"
-                        : proxyStatus === "stale"
-                          ? "Check overdue"
-                          : proxy
-                            ? "Not tested"
-                            : "Direct"}
-                </span>
+                <StatusChip
+                  className="mam-network-badge"
+                  role="status"
+                  {...networkLook(
+                    proxyTest.isPending
+                      ? "Testing…"
+                      : proxyError
+                        ? "Unavailable"
+                        : proxyStatus === "connected"
+                          ? "Healthy"
+                          : proxyStatus === "stale"
+                            ? "Check overdue"
+                            : proxy
+                              ? "Not tested"
+                              : "Direct",
+                  )}
+                />
               </div>
               <label>
                 HTTP proxy URL
@@ -740,17 +755,18 @@ export function MamConnectionForm({ value }: { value: Connection }) {
             >
               <div className="mam-network-heading">
                 <h3>MAM account</h3>
-                <span
+                <StatusChip
                   className="mam-network-badge"
                   role="status"
                   aria-label="Connection test status"
-                >
-                  {cookieTest.isPending
-                    ? "Testing…"
-                    : accountError
-                      ? "Failed"
-                      : accountStatus}
-                </span>
+                  {...networkLook(
+                    cookieTest.isPending
+                      ? "Testing…"
+                      : accountError
+                        ? "Failed"
+                        : accountStatus,
+                  )}
+                />
               </div>
               <label>
                 mam_id
@@ -874,4 +890,25 @@ export function MamConnectionForm({ value }: { value: Connection }) {
       </form>
     </>
   );
+}
+
+/** MAM proxy and account checks as status chips: the word decides the tone and icon. */
+function networkLook(label: string): ComponentProps<typeof StatusChip> {
+  const looks: Record<
+    string,
+    Omit<ComponentProps<typeof StatusChip>, "label">
+  > = {
+    Healthy: { tone: "success", icon: CircleCheck },
+    Authenticated: { tone: "success", icon: CircleCheck },
+    "Testing…": { tone: "info", icon: LoaderCircle },
+    "Check overdue": { tone: "warning", icon: TriangleAlert },
+    Unavailable: { tone: "danger", icon: CircleX },
+    Rejected: { tone: "danger", icon: CircleX },
+    Failed: { tone: "danger", icon: CircleX },
+    "Not tested": { tone: "neutral", icon: CircleDashed },
+    Unverified: { tone: "neutral", icon: CircleDashed },
+    Direct: { tone: "muted", icon: Minus },
+    Disabled: { tone: "muted", icon: Ban },
+  };
+  return { label, ...looks[label] };
 }

@@ -1,3 +1,6 @@
+import type { ComponentProps } from "react";
+import { Ban, CircleCheck, Minus } from "lucide-react";
+import StatusChip from "./StatusChip";
 import { useState } from "react";
 import { ChevronRight, History } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -77,9 +80,7 @@ export default function DownloadRecoveryDetails({
                   <li key={step.attempt_id}>
                     <div className="download-attempt-heading">
                       <span>Attempt {index + 1}</span>
-                      <span className="download-attempt-state">
-                        {step.state}
-                      </span>
+                      <StatusChip {...attemptLook(step.state)} />
                     </div>
                     <p className="download-attempt-title">
                       {step.release_title}
@@ -114,4 +115,24 @@ export default function DownloadRecoveryDetails({
       )}
     </details>
   );
+}
+
+/** A download attempt's state as a status chip, in the status vocabulary where one fits. */
+function attemptLook(state: string): ComponentProps<typeof StatusChip> {
+  if (["queued", "preflight", "submitting"].includes(state))
+    return { label: "Waiting" };
+  if (state === "downloading") return { label: "Downloading" };
+  if (["uncertain", "held"].includes(state))
+    return { label: "Needs attention" };
+  if (state === "failed") return { label: "Failed" };
+  if (state === "complete")
+    return { label: "Complete", tone: "success", icon: CircleCheck };
+  if (state === "cancelled")
+    return { label: "Cancelled", tone: "muted", icon: Ban };
+  const words = state.replaceAll("-", " ");
+  return {
+    label: words.charAt(0).toUpperCase() + words.slice(1),
+    tone: "neutral",
+    icon: Minus,
+  };
 }

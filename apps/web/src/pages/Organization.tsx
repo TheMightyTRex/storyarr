@@ -1,3 +1,4 @@
+import SaveBar, { countChanges } from "../components/SaveBar";
 import { useEffect, useId, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
@@ -129,7 +130,6 @@ function Editor({
   const folder = `${medium}_folder` as const;
   const filename = `${medium}_filename` as const;
   const choices = readChoices(draft[folder], medium);
-  const changed = JSON.stringify(draft) !== JSON.stringify(settings.profile);
   const current =
     JSON.stringify(previewProfile) === JSON.stringify(draft) &&
     !preview.isFetching;
@@ -506,38 +506,33 @@ function Editor({
         exists yet.
       </p>
       <Notice error={save.error || preview.error} />
-      <div className="settings-form-footer">
-        <div className="button-row">
-          <button
-            type="button"
-            className="primary"
-            disabled={
-              !changed ||
-              save.isPending ||
-              !current ||
-              !!preview.error ||
-              !preview.data?.items.length ||
-              preview.data.items.some((item) => item.state !== "ready")
-            }
-            onClick={() => save.mutate()}
-          >
-            {save.isPending ? "Saving…" : "Save naming settings"}
-          </button>
-          <button
-            type="button"
-            disabled={save.isPending}
-            onClick={() => {
-              setShowJoins(false);
-              setDraft(defaults);
-            }}
-          >
-            Reset naming defaults
-          </button>
-        </div>
-        <span className="save-state" role="status">
-          {changed ? "Unsaved changes" : "Saved"}
-        </span>
+      <div className="button-row">
+        <button
+          type="button"
+          disabled={save.isPending}
+          onClick={() => {
+            setShowJoins(false);
+            setDraft(defaults);
+          }}
+        >
+          Reset naming defaults
+        </button>
       </div>
+      <SaveBar
+        changes={countChanges(draft, settings.profile)}
+        saving={save.isPending}
+        disabled={
+          !current ||
+          !!preview.error ||
+          !preview.data?.items.length ||
+          preview.data.items.some((item) => item.state !== "ready")
+        }
+        onSave={() => save.mutate()}
+        onDiscard={() => {
+          setShowJoins(false);
+          setDraft(settings.profile);
+        }}
+      />
     </section>
   );
 }

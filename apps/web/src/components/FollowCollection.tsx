@@ -1,6 +1,7 @@
-import { useState } from "react";
+import StatusChip from "./StatusChip";
+import { useState, type ComponentProps } from "react";
 import { Link } from "react-router-dom";
-import { UserRound } from "lucide-react";
+import { Pause, RefreshCw, UserRound } from "lucide-react";
 import type { components } from "../api/schema";
 import BookCover from "./BookCover";
 import AddMissingBooks from "./AddMissingBooks";
@@ -86,22 +87,26 @@ function FollowProgress({ follow }: { follow: Summary }) {
 
 function FollowChips({ follow }: { follow: Summary }) {
   const busy = ["queued", "running"].includes(follow.state);
-  const chips: [string, string][] = [];
-  if (!follow.enabled) chips.push(["paused", "Updates paused"]);
-  else if (busy) chips.push(["downloading", "Updating"]);
-  else if (follow.state === "failed") chips.push(["failed", "Update failed"]);
+  const chips: ComponentProps<typeof StatusChip>[] = [];
+  if (!follow.enabled)
+    chips.push({ label: "Updates paused", tone: "muted", icon: Pause });
+  else if (busy)
+    chips.push({ label: "Updating", tone: "info", icon: RefreshCw });
+  else if (follow.state === "failed")
+    chips.push({ label: "Update failed", status: "Failed" });
   if (follow.missing_books)
-    chips.push(["paused", `${follow.missing_books} missing`]);
+    chips.push({ label: `${follow.missing_books} wanted`, status: "Wanted" });
   if (follow.upcoming_books)
-    chips.push(["waiting", `${follow.upcoming_books} not released`]);
+    chips.push({
+      label: `${follow.upcoming_books} not released`,
+      status: "Not released",
+    });
   if (!chips.length && follow.total_books)
-    chips.push(["satisfied", "Complete"]);
+    chips.push({ label: "All in library", status: "In library" });
   return (
     <>
-      {chips.map(([state, label]) => (
-        <span key={label} className="request-status" data-state={state}>
-          {label}
-        </span>
+      {chips.map((chip) => (
+        <StatusChip key={chip.label} {...chip} />
       ))}
     </>
   );
