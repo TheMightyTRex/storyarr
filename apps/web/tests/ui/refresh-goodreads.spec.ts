@@ -115,8 +115,12 @@ for (const scenario of [
     await page.goto("/discover");
     // Adding and refreshing lists share one Lists menu in the header.
     const button = page
-      .locator(".topbar-actions")
+      .locator(".page-actions")
       .getByRole("button", { name: "Lists", exact: true });
+    // The header holds only the sub-menu, search and Display; Lists is in the page body.
+    await expect(
+      page.locator("header.topbar").getByRole("button", { name: "Lists" }),
+    ).toHaveCount(0);
     await button.click();
     const menu = page.getByRole("menu", { name: "Lists" });
     await expect(
@@ -128,7 +132,7 @@ for (const scenario of [
       await expect
         .poll(() => calls)
         .toEqual(["one", "two", "hardcover", "storygraph"]);
-      await expect(button).toHaveText(/Refreshing/);
+      await expect(button).toContainText("Refreshing");
       await button.click();
       await expect(
         menu.getByRole("menuitem", { name: "Refresh all lists" }),

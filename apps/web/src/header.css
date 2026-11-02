@@ -297,3 +297,16 @@
   animation: none;
   opacity: 0.6;
 }
+
+/* Page actions above the page content, on the right: the connection warning and, on Discover, Lists. */
+.page-actions {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.page-actions:empty {
+  display: none;
+}

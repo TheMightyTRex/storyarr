@@ -1,6 +1,3 @@
-.topbar:has(.connection-health) {
-  position: relative;
-}
 .connection-health {
   position: relative;
   flex-shrink: 0;

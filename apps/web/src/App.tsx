@@ -338,6 +338,7 @@ function ListsMenu({
         ref={trigger}
         type="button"
         className="topbar-action"
+        aria-label="Lists"
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
@@ -493,16 +494,6 @@ function Shell({ auth }: { auth: Auth }) {
                 <button type="submit">Search</button>
               </form>
               <div className="topbar-actions">
-                <ConnectionHealth />
-                {auth.user.role !== "viewer" &&
-                  /^\/(discover(?:\/collections\/[^/]+)?|lists(?:\/.*)?|following(?:\/.*)?)$/.test(
-                    location.pathname,
-                  ) && (
-                    <ListsMenu
-                      refresh={listsRefresh}
-                      addList={() => setAddingList(true)}
-                    />
-                  )}
                 <DisplayButton />
               </div>
             </header>
@@ -515,6 +506,19 @@ function Shell({ auth }: { auth: Auth }) {
             </Suspense>
           )}
           <main id="main" className="main-content">
+            {/* Page actions live in the body for now; the header holds only the sub-menu, search and Display. */}
+            <div className="page-actions">
+              <ConnectionHealth />
+              {auth.user.role !== "viewer" &&
+                /^\/(discover(?:\/collections\/[^/]+)?|lists(?:\/.*)?|following(?:\/.*)?)$/.test(
+                  location.pathname,
+                ) && (
+                  <ListsMenu
+                    refresh={listsRefresh}
+                    addList={() => setAddingList(true)}
+                  />
+                )}
+            </div>
             <LibraryTabs
               canEdit={canEdit}
               admin={admin}
