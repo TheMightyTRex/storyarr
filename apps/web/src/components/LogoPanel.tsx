@@ -162,6 +162,14 @@ export default function LogoPanel({
   );
   const [saved, setSaved] = useState(logo ?? null);
   const savedNone = useRef<HTMLParagraphElement>(null);
+  // After Remove, focus moves to "No logo saved" once it is on the page (the Remove button is gone).
+  const [focusNone, setFocusNone] = useState(false);
+  useEffect(() => {
+    if (focusNone && !saved && savedNone.current) {
+      savedNone.current.focus();
+      setFocusNone(false);
+    }
+  }, [focusNone, saved]);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(
@@ -199,7 +207,7 @@ export default function LogoPanel({
       setSaved(null);
       setPending(null);
       onChanged(`Logo removed. The ${noun} name is shown as a wordmark.`);
-      requestAnimationFrame(() => savedNone.current?.focus());
+      setFocusNone(true);
     },
   });
 
