@@ -1550,10 +1550,32 @@
     gap: var(--space-2);
     align-content: start;
   }
+  /* Covers in a row or grid always line up: the cover keeps its size, the title always takes two lines
+     of space (one-line titles leave the second empty) and longer titles stop at two lines with an
+     ellipsis; the full title is in the Summary. */
+  .media-card {
+    grid-template-rows: auto auto auto;
+  }
+  .media-card > .cover {
+    width: 100%;
+  }
   .media-card__title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    min-height: calc(2em * var(--leading-tight));
     font-size: var(--text-sm);
     font-weight: var(--weight-strong);
+    line-height: var(--leading-tight);
     overflow-wrap: anywhere;
+  }
+  .media-card__meta {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .media-card__title :is(a, button) {
     padding: 0;
