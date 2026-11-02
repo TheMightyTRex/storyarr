@@ -64,6 +64,7 @@ from app.api import (
     preferences,
     prowlarr,
     radio,
+    radio_library,
     reading_accounts,
     recovery,
     release_profiles,
@@ -189,6 +190,7 @@ def create_app() -> FastAPI:
     app.include_router(community_lists.router, prefix="/api")
     app.include_router(series.router, prefix="/api")
     app.include_router(series_requests.router, prefix="/api")
+    app.include_router(radio_library.router, prefix="/api")
     app.include_router(radio.router, prefix="/api")
     app.include_router(logos.router, prefix="/api")
     app.include_router(lists.router, prefix="/api")

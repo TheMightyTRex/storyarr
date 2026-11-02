@@ -1703,3 +1703,43 @@ class RadioEpisode(Identity, Base):
     first_broadcast: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     duration_seconds: Mapped[int | None] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(20), default="not_requested")
+    # The radio library file that holds this episode (storyarr_0089), set by the radio sync.
+    file_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("radio_library_files.id", ondelete="SET NULL"), index=True
+    )
+
+
+class RadioLibrary(Identity, Base):
+    """An Audiobookshelf podcast library that holds radio shows (R3), and where its folder is."""
+
+    __tablename__ = "radio_libraries"
+    __table_args__ = (UniqueConstraint("integration_id", "external_id"),)
+    integration_id: Mapped[UUID] = mapped_column(ForeignKey("integrations.id", ondelete="CASCADE"))
+    external_id: Mapped[str] = mapped_column(String(200))
+    name: Mapped[str] = mapped_column(String(200))
+    # The folder as Audiobookshelf sees it, and the same folder as Storyarr sees it.
+    abs_folder: Mapped[str] = mapped_column(String(1024))
+    local_path: Mapped[str] = mapped_column(String(1024))
+    synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error: Mapped[str | None] = mapped_column(String(500))
+
+
+class RadioLibraryFile(Identity, Base):
+    """One episode Audiobookshelf has in the radio library, as the last sync read it."""
+
+    __tablename__ = "radio_library_files"
+    __table_args__ = (UniqueConstraint("library_id", "episode_id"),)
+    library_id: Mapped[UUID] = mapped_column(ForeignKey("radio_libraries.id", ondelete="CASCADE"))
+    item_id: Mapped[str] = mapped_column(String(200))
+    episode_id: Mapped[str] = mapped_column(String(200))
+    show_title: Mapped[str] = mapped_column(String(600))
+    title: Mapped[str] = mapped_column(String(600))
+    season: Mapped[int | None] = mapped_column(Integer)
+    episode: Mapped[int | None] = mapped_column(Integer)
+    # The BBC pid from the episode's guid, link or file name, when there is one.
+    pid: Mapped[str | None] = mapped_column(String(20), index=True)
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    duration_seconds: Mapped[int | None] = mapped_column(Integer)
+    path: Mapped[str] = mapped_column(String(2048))
+    size: Mapped[int] = mapped_column(BigInteger, default=0, server_default="0")
+    seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

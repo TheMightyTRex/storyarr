@@ -46,6 +46,8 @@ async def recover_stalled_jobs() -> None:
                 "sources.prepare",
                 "catalog.series.refresh",
                 "radio.show.refresh",
+                "radio.library.sync",
+                "radio.library.schedule",
                 "series.requests",
                 "series.acquire",
                 "acquisition.auto-select",

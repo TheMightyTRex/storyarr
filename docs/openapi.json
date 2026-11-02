@@ -5969,6 +5969,83 @@
         }
       }
     },
+    "/api/radio/library": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Setup",
+        "description": "The chosen radio library, and every podcast library on the connected servers.",
+        "operationId": "setup_api_radio_library_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioLibrarySetup"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Choose",
+        "description": "Choose the radio library and its folder, then read it.",
+        "operationId": "choose_api_radio_library_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadioLibraryInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioLibraryView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/library/sync": {
+      "post": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Sync Now",
+        "description": "Read the radio library again now.",
+        "operationId": "sync_now_api_radio_library_sync_post",
+        "responses": {
+          "202": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/radio/search": {
       "get": {
         "tags": [
@@ -36571,6 +36648,43 @@
         ],
         "title": "PlexSettingsView"
       },
+      "PodcastLibraryOption": {
+        "properties": {
+          "integration_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Integration Id"
+          },
+          "server_name": {
+            "type": "string",
+            "title": "Server Name"
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "folders": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Folders"
+          }
+        },
+        "type": "object",
+        "required": [
+          "integration_id",
+          "server_name",
+          "library_id",
+          "name",
+          "folders"
+        ],
+        "title": "PodcastLibraryOption"
+      },
       "PolicyConfiguration": {
         "properties": {
           "mode": {
@@ -38401,6 +38515,16 @@
           },
           "series": {
             "$ref": "#/components/schemas/RadioEpisodeSeries"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioEpisodeFile"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -38418,6 +38542,30 @@
           "series"
         ],
         "title": "RadioEpisodeDetail"
+      },
+      "RadioEpisodeFile": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size"
+          },
+          "library": {
+            "type": "string",
+            "title": "Library"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "size",
+          "library"
+        ],
+        "title": "RadioEpisodeFile",
+        "description": "The radio library file that holds the episode: its name only, never the folder."
       },
       "RadioEpisodeSeries": {
         "properties": {
@@ -38613,6 +38761,148 @@
           "status"
         ],
         "title": "RadioEpisodeView"
+      },
+      "RadioLibraryInput": {
+        "properties": {
+          "integration_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Integration Id"
+          },
+          "library_id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Library Id"
+          },
+          "abs_folder": {
+            "type": "string",
+            "maxLength": 1024,
+            "title": "Abs Folder"
+          },
+          "local_path": {
+            "type": "string",
+            "maxLength": 1024,
+            "title": "Local Path"
+          }
+        },
+        "type": "object",
+        "required": [
+          "integration_id",
+          "library_id",
+          "abs_folder",
+          "local_path"
+        ],
+        "title": "RadioLibraryInput"
+      },
+      "RadioLibrarySetup": {
+        "properties": {
+          "current": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioLibraryView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/PodcastLibraryOption"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "current",
+          "options"
+        ],
+        "title": "RadioLibrarySetup"
+      },
+      "RadioLibraryView": {
+        "properties": {
+          "integration_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Integration Id"
+          },
+          "server_name": {
+            "type": "string",
+            "title": "Server Name"
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "abs_folder": {
+            "type": "string",
+            "title": "Abs Folder"
+          },
+          "local_path": {
+            "type": "string",
+            "title": "Local Path"
+          },
+          "synced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synced At"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "files": {
+            "type": "integer",
+            "title": "Files"
+          },
+          "linked": {
+            "type": "integer",
+            "title": "Linked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "integration_id",
+          "server_name",
+          "library_id",
+          "name",
+          "abs_folder",
+          "local_path",
+          "synced_at",
+          "last_error",
+          "files",
+          "linked"
+        ],
+        "title": "RadioLibraryView"
       },
       "RadioPreviewSeries": {
         "properties": {

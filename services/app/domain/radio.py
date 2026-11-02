@@ -351,6 +351,10 @@ async def run(operation_id):
         if not operation:
             return
         await apply(db, show, data)
+        # Episodes already in the radio library show as in your library straight away.
+        from app.domain.radio_library import relink
+
+        await relink(db, show_id=show.id)
         for service_id, path in logos.items():
             if path:
                 station = await db.get(RadioStation, service_id)

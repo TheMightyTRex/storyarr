@@ -6,6 +6,7 @@ the copies Storyarr keeps in its config folder.
 """
 
 from datetime import datetime
+from pathlib import PurePosixPath
 from typing import Literal
 from uuid import UUID
 
@@ -23,6 +24,8 @@ from app.db.models import (
     AuditEvent,
     Operation,
     RadioEpisode,
+    RadioLibrary,
+    RadioLibraryFile,
     RadioSeries,
     RadioShow,
     RadioStation,
@@ -189,9 +192,18 @@ class RadioEpisodeSeries(BaseModel):
     station: RadioStationRef | None
 
 
+class RadioEpisodeFile(BaseModel):
+    """The radio library file that holds the episode: its name only, never the folder."""
+
+    name: str
+    size: int
+    library: str
+
+
 class RadioEpisodeDetail(RadioEpisodeView):
     show: RadioEpisodeShow
     series: RadioEpisodeSeries
+    file: RadioEpisodeFile | None = None
 
 
 def station_ref(station: RadioStation | None) -> RadioStationRef | None:
@@ -549,6 +561,8 @@ async def episode_detail(episode_id: UUID, user: CurrentUser, db: Database):
         raise HTTPException(404, "Episode not found")
     episode, series, show = row
     station = await db.get(RadioStation, series.station_id) if series.station_id else None
+    file = await db.get(RadioLibraryFile, episode.file_id) if episode.file_id else None
+    library = await db.get(RadioLibrary, file.library_id) if file else None
     return RadioEpisodeDetail(
         **episode_view(episode).model_dump(),
         show=RadioEpisodeShow(id=show.id, title=show.title, artwork_url=artwork_url(show)),
@@ -559,6 +573,11 @@ async def episode_detail(episode_id: UUID, user: CurrentUser, db: Database):
             title=series.title,
             station=station_ref(station),
         ),
+        file=RadioEpisodeFile(
+            name=PurePosixPath(file.path).name, size=file.size, library=library.name
+        )
+        if file and library
+        else None,
     )
 
 

@@ -2009,6 +2009,50 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/radio/library": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Setup
+     * @description The chosen radio library, and every podcast library on the connected servers.
+     */
+    get: operations["setup_api_radio_library_get"];
+    /**
+     * Choose
+     * @description Choose the radio library and its folder, then read it.
+     */
+    put: operations["choose_api_radio_library_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/library/sync": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Sync Now
+     * @description Read the radio library again now.
+     */
+    post: operations["sync_now_api_radio_library_sync_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/radio/search": {
     parameters: {
       query?: never;
@@ -12382,6 +12426,22 @@ export interface components {
       /** Default Role */
       default_role: string;
     };
+    /** PodcastLibraryOption */
+    PodcastLibraryOption: {
+      /**
+       * Integration Id
+       * Format: uuid
+       */
+      integration_id: string;
+      /** Server Name */
+      server_name: string;
+      /** Library Id */
+      library_id: string;
+      /** Name */
+      name: string;
+      /** Folders */
+      folders: string[];
+    };
     /** PolicyConfiguration */
     PolicyConfiguration: {
       /** Mode */
@@ -13014,6 +13074,19 @@ export interface components {
       status: components["schemas"]["RadioEpisodeStatus"];
       show: components["schemas"]["RadioEpisodeShow"];
       series: components["schemas"]["RadioEpisodeSeries"];
+      file?: components["schemas"]["RadioEpisodeFile"] | null;
+    };
+    /**
+     * RadioEpisodeFile
+     * @description The radio library file that holds the episode: its name only, never the folder.
+     */
+    RadioEpisodeFile: {
+      /** Name */
+      name: string;
+      /** Size */
+      size: number;
+      /** Library */
+      library: string;
     };
     /** RadioEpisodeSeries */
     RadioEpisodeSeries: {
@@ -13092,6 +13165,57 @@ export interface components {
       /** Duration Seconds */
       duration_seconds: number | null;
       status: components["schemas"]["RadioEpisodeStatus"];
+    };
+    /** RadioLibraryInput */
+    RadioLibraryInput: {
+      /**
+       * Integration Id
+       * Format: uuid
+       */
+      integration_id: string;
+      /** Library Id */
+      library_id: string;
+      /** Abs Folder */
+      abs_folder: string;
+      /** Local Path */
+      local_path: string;
+    };
+    /** RadioLibrarySetup */
+    RadioLibrarySetup: {
+      current: components["schemas"]["RadioLibraryView"] | null;
+      /** Options */
+      options: components["schemas"]["PodcastLibraryOption"][];
+      /**
+       * Errors
+       * @default []
+       */
+      errors: string[];
+    };
+    /** RadioLibraryView */
+    RadioLibraryView: {
+      /**
+       * Integration Id
+       * Format: uuid
+       */
+      integration_id: string;
+      /** Server Name */
+      server_name: string;
+      /** Library Id */
+      library_id: string;
+      /** Name */
+      name: string;
+      /** Abs Folder */
+      abs_folder: string;
+      /** Local Path */
+      local_path: string;
+      /** Synced At */
+      synced_at: string | null;
+      /** Last Error */
+      last_error: string | null;
+      /** Files */
+      files: number;
+      /** Linked */
+      linked: number;
     };
     /** RadioPreviewSeries */
     RadioPreviewSeries: {
@@ -20573,6 +20697,77 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
         };
+      };
+    };
+  };
+  setup_api_radio_library_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioLibrarySetup"];
+        };
+      };
+    };
+  };
+  choose_api_radio_library_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RadioLibraryInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioLibraryView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  sync_now_api_radio_library_sync_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

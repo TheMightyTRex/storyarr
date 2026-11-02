@@ -1,4 +1,5 @@
 import DeleteConfiguration from "../components/DeleteConfiguration";
+import RadioLibrarySetting from "../components/RadioLibrarySetting";
 import Destinations from "./Destinations";
 import LibraryAccess from "./LibraryAccess";
 import SettingHelp from "../components/SettingHelp";
@@ -214,6 +215,7 @@ export default function Connections({
             </div>
             <Destinations embedded />
           </section>
+          <RadioLibrarySetting />
         </>
       )}
     </>

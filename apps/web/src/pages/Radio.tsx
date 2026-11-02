@@ -1172,8 +1172,41 @@ function EpisodePanel({
             {ep.pid}
           </a>
         </dd>
+        {ep.status.kind === "in_library" && <EpisodeFile episodeId={ep.id} />}
       </dl>
     </SidePanel>
+  );
+}
+
+/** The radio library file that holds an episode: its name, size and library. */
+function EpisodeFile({ episodeId }: { episodeId: string }) {
+  const detail = useQuery({
+    queryKey: ["radio", "episode", episodeId],
+    queryFn: async ({ signal }) =>
+      result(
+        await api.GET("/api/radio/episodes/{episode_id}", {
+          params: { path: { episode_id: episodeId } },
+          signal,
+        }),
+      ),
+  });
+  const file = detail.data?.file;
+  if (!file) return null;
+  return (
+    <>
+      <dt>File</dt>
+      <dd>
+        {file.name}
+        <span className="small muted">
+          {" "}
+          ·{" "}
+          {(file.size / 1_000_000).toLocaleString("en-GB", {
+            maximumFractionDigits: 1,
+          })}{" "}
+          MB in {file.library}
+        </span>
+      </dd>
+    </>
   );
 }
 

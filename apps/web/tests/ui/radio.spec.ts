@@ -213,6 +213,14 @@ async function mockApi(
       };
     else if (path === "/api/radio/shows/s1" && request.method() === "GET")
       data = detail;
+    else if (path === "/api/radio/episodes/e3")
+      data = {
+        file: {
+          name: "The Unbelievable Truth - S20E01 - Owls, Ladders and Soup.m4a",
+          size: 20_503_714,
+          library: "Radio",
+        },
+      };
     else if (path === "/api/radio/shows/s1" && request.method() === "PATCH")
       data = { ...truth, ...(request.postDataJSON() as object) };
     else if (path === "/api/radio/shows/s1/refresh")
@@ -519,6 +527,15 @@ test("a show page has the header, follow choice, refresh, series newest first an
   await expect(
     page.getByRole("button", { name: "Lighthouses, Gravy and Kites" }),
   ).toBeFocused();
+  // An episode in the radio library names its file (R3).
+  await page.getByRole("button", { name: "Owls, Ladders and Soup" }).click();
+  await expect(
+    page.getByRole("dialog", { name: /Episode S20E01/ }),
+  ).toContainText(
+    "The Unbelievable Truth - S20E01 - Owls, Ladders and Soup.m4a · 20.5 MB in Radio",
+  );
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await shots(page, info, "show", () =>
     page
       .getByRole("heading", { level: 1, name: "The Unbelievable Truth" })
