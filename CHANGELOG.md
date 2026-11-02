@@ -3,29 +3,58 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
-## Unreleased
+## v0.5.8 (2 November 2026)
+
+### Added
+- **Series header with a logo:** a series page opens with the series logo above the name, in one colour that
+  suits the theme. Without a logo, the name is set large as a wordmark. Beside it: the author, the number of
+  books, the next book, a short description, how many you have, Add missing books and Follow, with a fan of the
+  first covers (not on phones).
+- **Change logo** (admins): cut a logo out of one of the series' covers (From a cover), find one on Wikimedia
+  Commons with its licence shown (Find online), or upload a file. Logos are for everyone and are saved on the
+  server, in the config folder (`series-logos`). Radio show pages have the same logo tools.
+- **Cover actions:** every cover in a grid or shelf has Details, Ebook, Audiobook, Add to a list and More.
+  Pressing the cover or the title opens the book's Summary. Choose On the cover (shown when you point at it or tab
+  to it, and always on touch screens) or Beside the cover in Settings, General, Cover actions, in onboarding and
+  in the upgrade wizard. It is saved with your account. A format already in your library shows a tick and
+  "in library" in its name.
+- **Actions on book rows and small covers:** a series' reading order, search results and Following have the same
+  actions at the end of each row. Small tiles (series gaps, calendar days) have one More button that names each
+  action.
+- **Radio, an early feature:** add BBC radio shows by link or by name, and browse shows, stations, series and
+  episodes in My library, Radio. Artwork and station logos are saved on your server. Downloading episodes and
+  filing them in Audiobookshelf come in a later version.
 
 ### Changed
-- **Release notes window:** the header reads "Current version: v0.4.7  Available: v0.4.8", with View on GitHub
-  beside it; the release is headed by its version and date only; earlier releases moved to Settings.
+- **Header:** each page's tabs have a row of their own in the header, with icons. On phones, the menu holds search
+  as well as every section and its pages.
+- **One slide-out for every panel:** the Summary, the bookshelf drawer, the calendar day and the phone menu open
+  and close the same way: Escape, Close or a press outside closes them, and focus goes back where it was.
+- **Teal accent** in every theme.
+- **Status chips:** an icon and the same words on every page: In library, Downloading, Waiting, Wanted and the
+  rest, in Activity, Following, My library, the book page, Library review, connections, logs and imports.
+- **44px controls:** buttons, fields and menus share one height. Each Settings section has one bar to save or
+  discard changes, saying how many are unsaved.
+- **Discover shelves:** no scroll bars. The covers fade at each end, with an arrow when there are more books that
+  way. Tabbing to a book scrolls it into view.
+- **Covers line up:** titles always take two lines of space, so covers in a row stay the same size. Covers on In my
+  libraries are 10% larger.
+- **Release notes window:** the header shows Current version and Available, with View on GitHub beside it; the
+  release is headed by its version and date only; earlier releases moved to Settings.
 - **How to upgrade:** when a newer version is out, the release notes show the steps and the commands to copy, and
   **Upgrade now** when `BOOK_UPGRADE_URL` points to your own upgrade page.
 - **Releases in Settings:** System, Upgrades and backups, Releases lists every release in a fold, newest first,
   marking the current version (open) and any newer one.
-
 - **Bigger covers on My library,** with a cover size setting in Settings, General: Small, Medium (the new,
   larger default) or Large, saved with your account.
-
-- **One header row:** the page's sub-menu sits on the left of the header, with search and Display on the right,
-  so the header takes one row instead of two. Below 1100px the sub-menu drops to a row of its own; on phones it
-  stays in the menu drawer. Search and every header button share one height (44px).
-- **Lists menu:** on Discover, Add list and Refresh lists are now one Lists menu at the top right of the page:
-  Add list, Refresh all lists, and refresh Goodreads, StoryGraph or Hardcover lists only. The header holds only
-  the sub-menu, search and Display; the connection warning sits beside Lists.
+- **Header buttons:** search and every header button share one height (44px), and the header holds only the
+  page's tabs, search and Display.
+- **Lists menu:** on Discover, Add list and Refresh lists are now one Lists menu on the page: Add list, Refresh
+  all lists, and refresh Goodreads, StoryGraph or Hardcover lists only. The connection warning sits beside Lists.
 - **One header for every pop-up:** release notes, the Display dialog and every other pop-up now have the
   slide-out panels' header: the name in bold at the same size, the close button, a white bar and a grey line.
-- **One layout:** the Classic layout is retired, and everyone uses Shelf (the icon menu, with sub-menus in the
-  header, and the menu drawer on phones). The Layout choice is gone from Settings, onboarding and the upgrade
+- **One layout:** the Classic layout is retired, and everyone uses Shelf (the icon menu, with the page's tabs in
+  the header, and the menu drawer on phones). The Layout choice is gone from Settings, onboarding and the upgrade
   wizard; installs that chose Classic open in Shelf.
 
 ### Fixed
@@ -35,10 +64,19 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
   first write ([Dewarr #61](https://github.com/logabell/dewarr/issues/61)). The fix came with Dewarr v0.3.9 and
   is in every Storyarr release; earlier notes did not name Unraid or mergerfs. The download client guide now
   explains it, including what to do with an import planned before the fix.
+- In Settings, the Cover actions examples keep every button on the cover, and the first line of the Display
+  dialog no longer sits under its header.
 
 ### Documentation
 - **NZBGet:** the README and the download client guide now list NZBGet beside SABnzbd for Usenet, with setup
   steps for both. NZBGet has been supported since v0.2.0, in Settings and in the setup wizard.
+- New screenshots of cover actions, a Discover shelf, the series header, a reading order, radio and the Cover
+  actions setting.
+
+### Database
+- New tables for radio (`storyarr_0087_radio_shows`) and series logos (`storyarr_0088_series_logos`). To go back to
+  v0.4.8, run `python -m app.downgrade storyarr_0086_notification_title` in the Storyarr container first. Logo and
+  radio image files stay in the config folder.
 
 ## v0.4.8 (1 November 2026)
 
