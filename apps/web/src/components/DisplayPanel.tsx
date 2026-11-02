@@ -1,5 +1,5 @@
-import { useEffect, useId, useRef, useState } from "react";
-import { Sun, X } from "lucide-react";
+import { useId, useRef, useState } from "react";
+import { Sun } from "lucide-react";
 import {
   accessibilityKeys,
   displayDefaults,
@@ -7,11 +7,12 @@ import {
   useDisplayPreferences,
 } from "../displayPreferences";
 import type { DisplayPreferences } from "../displayPreferences";
+import SidePanel from "./SidePanel";
 
 const themes: { id: DisplayPreferences["theme"]; label: string }[] = [
+  { id: "auto", label: "Match device" },
   { id: "light", label: "Light" },
   { id: "dark", label: "Dark" },
-  { id: "auto", label: "Match device" },
 ];
 const sizes: DisplayPreferences["textSize"][] = [100, 125, 150, 175];
 const switches: {
@@ -41,19 +42,10 @@ const switches: {
   },
 ];
 
-// Theme, text size and reading aids. Used in Settings, onboarding and the Display dialog.
-export default function DisplayPanel({
-  headingLevel = 3,
-  showHeading = true,
-}: {
-  headingLevel?: 2 | 3;
-  // The Display dialog shows the name in its own header bar.
-  showHeading?: boolean;
-}) {
+/** The choices and their spoken confirmation, shared by the panel and the slide-out's Reset button. */
+function useDisplayControls() {
   const display = useDisplayPreferences();
   const [message, setMessage] = useState("");
-  const id = useId();
-  const Heading = headingLevel === 2 ? "h2" : "h3";
   function update(change: Partial<DisplayPreferences>, note: string) {
     try {
       saveDisplayPreferences({ ...display, ...change });
@@ -70,15 +62,35 @@ export default function DisplayPanel({
       Object.assign(defaults, { [name]: displayDefaults[name] });
     update(defaults, "Display settings reset.");
   }
+  return { display, message, update, reset };
+}
+
+type DisplayControls = ReturnType<typeof useDisplayControls>;
+
+// Theme, text size and reading aids. Used in Settings, onboarding and the Display slide-out.
+export default function DisplayPanel({
+  headingLevel = 3,
+  slideOut,
+}: {
+  headingLevel?: 2 | 3;
+  /** In the Display slide-out: its header names it, and Reset is in its foot. */
+  slideOut?: DisplayControls;
+}) {
+  const own = useDisplayControls();
+  const { display, message, update, reset } = slideOut ?? own;
+  const id = useId();
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <section className="display-panel" aria-labelledby={id}>
-      <Heading id={id} className={showHeading ? undefined : "sr-only"}>
+      <Heading id={id} className={slideOut ? "sr-only" : undefined}>
         Display and accessibility
       </Heading>
-      <p className="muted">
-        These settings apply to this browser only, and you can change them at
-        any time.
-      </p>
+      {!slideOut && (
+        <p className="muted">
+          These settings apply to this browser only, and you can change them at
+          any time.
+        </p>
+      )}
       <fieldset className="display-group">
         <legend>Theme</legend>
         <div className="segmented">
@@ -139,9 +151,15 @@ export default function DisplayPanel({
           </label>
         ))}
       </div>
-      <button type="button" onClick={reset}>
-        Reset display settings
-      </button>
+      {slideOut ? (
+        <p className="small muted">
+          Choices apply at once and are kept in this browser.
+        </p>
+      ) : (
+        <button type="button" onClick={reset}>
+          Reset display settings
+        </button>
+      )}
       <p role="status" className="display-status">
         {message}
       </p>
@@ -150,15 +168,13 @@ export default function DisplayPanel({
 }
 
 export function DisplayButton() {
-  const dialog = useRef<HTMLDialogElement>(null);
+  const button = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (open) dialog.current?.showModal();
-    else dialog.current?.close();
-  }, [open]);
+  const controls = useDisplayControls();
   return (
     <>
       <button
+        ref={button}
         type="button"
         className="topbar-action display-button"
         aria-haspopup="dialog"
@@ -167,34 +183,32 @@ export function DisplayButton() {
         <Sun size={20} aria-hidden="true" />
         <span className="topbar-label">Display</span>
       </button>
-      <dialog
-        ref={dialog}
-        className="display-dialog"
-        aria-label="Display and accessibility"
-        onClose={() => setOpen(false)}
-      >
-        <header className="side-panel-header">
-          <h2 className="side-panel-title">Display and accessibility</h2>
-          <button
-            type="button"
-            className="icon-button"
-            aria-label="Close display and accessibility"
-            onClick={() => setOpen(false)}
-          >
-            <X size={18} />
-          </button>
-        </header>
-        {open && <DisplayPanel headingLevel={3} showHeading={false} />}
-        <div className="display-dialog-actions">
-          <button
-            type="button"
-            className="primary"
-            onClick={() => setOpen(false)}
-          >
-            Done
-          </button>
-        </div>
-      </dialog>
+      {open && (
+        // A slide-out like the library's (gallery: Display and accessibility), so the page stays in view
+        // while the choices change it.
+        <SidePanel
+          title="Display and accessibility"
+          closeLabel="Close display and accessibility"
+          opener={button.current}
+          onClose={() => setOpen(false)}
+          footer={
+            <>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => setOpen(false)}
+              >
+                Done
+              </button>
+              <button type="button" className="btn" onClick={controls.reset}>
+                Reset
+              </button>
+            </>
+          }
+        >
+          <DisplayPanel slideOut={controls} />
+        </SidePanel>
+      )}
     </>
   );
 }

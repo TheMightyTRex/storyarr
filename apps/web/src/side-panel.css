@@ -28,10 +28,6 @@
 .book-dialog > .side-panel-header {
   padding-left: 22px;
 }
-.display-dialog {
-  --panel-pad-top: 24px;
-  --panel-pad-x: 24px;
-}
 .side-panel-header {
   position: sticky;
   top: calc(-1 * var(--panel-pad-top, 0px));

@@ -1,6 +1,6 @@
 /*
  * Shared components for Storyarr and Starboard (version 1, 2 November 2026).
- * Copied by tools/sync.py from ~/Documents/Claude/design/shared-components: change it there, not here.
+ * Copied by tools/sync.py from github.com/TheMightyTRex/design-system: change it there, not here.
  *
  * Uses only tokens.css. Everything is in the "shared" layer, so an app's own styles win without
  * !important. Class names are plain and match Starboard's; Storyarr maps its older classes to these
@@ -299,7 +299,7 @@
     width: min(340px, 86vw);
     display: flex;
     flex-direction: column;
-    background: var(--color-surface);
+    background: var(--color-surface-raised);
     border-right: 1px solid var(--color-divider);
     box-shadow: var(--shadow-raised);
     animation: slide-in-left var(--motion-panel);
@@ -791,11 +791,16 @@
     display: grid;
     gap: var(--space-2);
   }
+  /* Option cards side by side: as many as fit, each at least 200px. */
+  .option-cards--row {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  }
   .option-card {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: var(--space-1) var(--space-3);
     align-items: start;
+    align-content: start; /* cards in one row share a height; their text stays at the top */
     padding: var(--space-3);
     border: 1px solid var(--color-divider);
     cursor: pointer;
@@ -940,6 +945,56 @@
   .stat .chip,
   .cover .chip {
     background: var(--color-surface-raised);
+  }
+  /* A heading that a page moves focus to (a wizard step, a slide-out title) is not a control: no focus box.
+     Screen readers still announce it. */
+  :is(h1, h2, h3, h4)[tabindex="-1"]:focus {
+    outline: none;
+  }
+  /* Stacks: children one under another with a fixed gap (1: 4px, 2: 8px, 4: 16px). */
+  .stack-1,
+  .stack-2,
+  .stack-4 {
+    display: grid;
+    align-content: start;
+  }
+  .stack-1 {
+    gap: var(--space-1);
+  }
+  .stack-2 {
+    gap: var(--space-2);
+  }
+  .stack-4 {
+    gap: var(--space-4);
+  }
+  /* Settings helpers. Inline save: a field and its Save button on one line. Form stack: fields one under
+     another, at a readable width. Setting cost: the muted line under a setting that says what it costs. */
+  .inline-save {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: end;
+  }
+  .inline-save > .field {
+    flex: 0 1 420px;
+  }
+  .inline-save > .btn {
+    flex: none;
+  }
+  .setting__control .inline-save {
+    justify-content: end;
+    flex-wrap: nowrap;
+  }
+  .form-stack {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 420px;
+  }
+  .setting__cost {
+    display: block;
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
   }
   /* Title with status (2 November 2026): the status of the thing a heading names goes on the heading's
      line, straight after the name, centred on it; never on a line of its own under the heading. Details
@@ -2359,6 +2414,13 @@
   .pref-contrast .panel-header {
     border-bottom-color: currentColor;
   }
+  /* Slide-outs (from the right, and the phone menu from the left): the header wears the page background and
+     the body is the raised surface (white, or the dark surface), so the header reads as part of the page and
+     the body as the thing that slid out. Dialogs keep the plain header. */
+  .side-panel .panel-header,
+  .phone-menu .panel-header {
+    background: var(--color-slide-header);
+  }
 
   /* Slide-out (side panel): from the right, below nothing, over a dimmed page. For details of one
      thing and for editing it without leaving the list. Escape, the close button and a press outside
@@ -2647,7 +2709,7 @@
   .chart__axis {
     fill: var(--color-text-muted);
     font-family: var(--font);
-    font-size: 11px;
+    font-size: var(--text-xs); /* follows Text size; charts draw their viewBox at the real width */
     font-variant-numeric: tabular-nums;
   }
   .chart__line {

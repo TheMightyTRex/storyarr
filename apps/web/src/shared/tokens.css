@@ -1,6 +1,6 @@
 /*
  * Shared design tokens for Storyarr and Starboard (version 1, 2 November 2026).
- * Copied by tools/sync.py from ~/Documents/Claude/design/shared-components: change it there, not here.
+ * Copied by tools/sync.py from github.com/TheMightyTRex/design-system: change it there, not here.
  * Storyarr's copy leaves out the font (styles.css loads Atkinson Hyperlegible Next and sets --font).
  *
  * Role names only: components use these and nothing else, so both apps look like one family and a
@@ -36,6 +36,7 @@
   --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
+  --space-10: 40px;
   --space-12: 48px;
 
   /* Size. 44px is the control height and the touch target everywhere; 32px only inside dense tables,
@@ -83,6 +84,7 @@
   --color-accent-text: #ffffff;
   --color-accent-soft: #dff1ef;
   --color-panel-header: #ffffff;
+  --color-slide-header: var(--color-bg); /* slide-out headers: the page background over a white body */
   --color-control-active: color-mix(in srgb, var(--color-accent) 12%, transparent);
   --color-focus: #0b5f5a;
   --color-count: #af4e24;
@@ -92,6 +94,11 @@
   --color-logo-star: #af4e24;
   --chart-1: #4552a8;
   --chart-2: #c0602f;
+  /* Categorical series, in a fixed order that follows the thing (such as a media type); checked for colour
+     blindness and 3:1 against the surface. --series-empty (with its hatch line) is free or unused space. */
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
+  --series-5: #e87ba4; --series-6: #008300; --series-7: #6250d6;
+  --series-empty: #dfe5ef; --series-empty-line: #b9c2d1;
   --shadow-raised: 0 8px 28px rgb(16 24 40 / 0.18);
 
   /* Status: background and text pairs, always shown with words and an icon or shape too. */
@@ -127,6 +134,8 @@
     --color-accent-text: #101827;
     --color-accent-soft: #163a38;
     --color-panel-header: #232f42;
+  --color-slide-header: var(--color-bg);
+    --color-slide-header: var(--color-bg);
     --color-focus: #5ed3c6;
     --color-count: #b7562c;
     --color-backdrop: rgb(0 0 0 / 0.6);
@@ -134,6 +143,9 @@
     --color-logo-star: #ffb38a;
     --chart-1: #6f80e6;
     --chart-2: #d2733c;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+    --series-5: #d55181; --series-6: #2fa82f; --series-7: #9085e9;
+    --series-empty: #3a475c; --series-empty-line: #56647b;
     --shadow-raised: 0 8px 28px rgb(0 0 0 / 0.5);
     --status-success-bg: #12351f;
     --status-success-fg: #8fe0aa;
@@ -164,6 +176,7 @@
   --color-accent-text: #101827;
   --color-accent-soft: #163a38;
   --color-panel-header: #232f42;
+  --color-slide-header: var(--color-bg);
   --color-focus: #5ed3c6;
   --color-count: #b7562c;
   --color-backdrop: rgb(0 0 0 / 0.6);
@@ -171,6 +184,9 @@
   --color-logo-star: #ffb38a;
   --chart-1: #6f80e6;
   --chart-2: #d2733c;
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+  --series-5: #d55181; --series-6: #2fa82f; --series-7: #9085e9;
+  --series-empty: #3a475c; --series-empty-line: #56647b;
   --shadow-raised: 0 8px 28px rgb(0 0 0 / 0.5);
   --status-success-bg: #12351f;
   --status-success-fg: #8fe0aa;
@@ -202,8 +218,12 @@
   --color-accent-text: #ffffff;
   --color-accent-soft: #d6eeeb;
   --color-panel-header: #ffffff;
+  --color-slide-header: var(--color-bg); /* slide-out headers: the page background over a white body */
   --chart-1: #1f2a8a;
   --chart-2: #8a3200;
+  --series-1: #1f5fbf; --series-2: #c4471b; --series-3: #00806a; --series-4: #946000;
+  --series-5: #b8336a; --series-6: #006b00; --series-7: #5440c8;
+  --series-empty: #ffffff; --series-empty-line: #767676;
   --color-focus: #c4006a;
   --color-count: #863309;
   --color-logo-tile: #11104a;
@@ -231,8 +251,12 @@
   --color-accent-text: #000000;
   --color-accent-soft: #0b2a27;
   --color-panel-header: #000000;
+  --color-slide-header: var(--color-bg);
   --chart-1: #c2cbff;
   --chart-2: #ffb38a;
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+  --series-5: #d55181; --series-6: #2fa82f; --series-7: #9085e9;
+  --series-empty: #000000; --series-empty-line: #8a8a8a;
   --color-focus: #ffd400;
   --color-count: #a44418;
   --color-logo-tile: #e7ecff;

@@ -88,9 +88,26 @@ test("Display and accessibility settings change the theme and reading aids, and 
   await expect(html).toHaveAttribute("data-theme", "dark");
   await expect(html).toHaveClass(/pref-hc/);
 
-  await page.goto("/settings");
-  await page.getByRole("button", { name: "Reset display settings" }).click();
+  // A slide-out from the right, like every other: Done and Reset stay in its foot.
+  await page.getByRole("button", { name: "Display" }).click();
+  await expect(dialog).toHaveClass(/side-panel/);
+  await expect(dialog.getByRole("radio").first()).toHaveAccessibleName(
+    "Match device",
+  );
+  await dialog.getByRole("button", { name: "Reset", exact: true }).click();
   await expect(html).toHaveAttribute("data-theme", "light");
   await expect(html).not.toHaveClass(/pref-/);
   await expect(html).toHaveCSS("font-size", "16px");
+  await expect(dialog.getByRole("status")).toHaveText(
+    "Display settings reset.",
+  );
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("button", { name: "Display" })).toBeFocused();
+
+  // Settings shows the same choices on the page, with its own Reset.
+  await page.goto("/settings");
+  await page.getByRole("radio", { name: "Dark" }).first().check();
+  await page.getByRole("button", { name: "Reset display settings" }).click();
+  await expect(html).toHaveAttribute("data-theme", "light");
 });
