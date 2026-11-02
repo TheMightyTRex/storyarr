@@ -90,11 +90,17 @@ The books and covers below are invented for the screenshots.
 ### Series header with a logo
 ![A series page for The Glass Harbour: the series logo above the name, the author, a short description, progress, Add missing books, Follow future additions, Change logo, and a fan of covers](docs/images/series-header.png)
 
+### My library, Authors
+![My library, Authors: the list of authors on the left and, for the chosen one, the author header with their portrait, name, books in your library, a short biography, Follow author, Add missing books and a fan of covers](docs/images/library-authors.png)
+
+### My library, Series
+![My library, Series: the list of series on the left and, for the chosen one, the series header with its logo, author, books, progress, Add missing books, Follow and a fan of covers](docs/images/library-series.png)
+
 ### Reading order
 ![A series' reading order as rows, each with its number, cover, title, status and the cover actions at the end of the row](docs/images/series-books-in-order.png)
 
 ### Radio shows
-![The Radio tab of My library: six radio shows with square artwork, each with its station, series, episodes and Following](docs/images/radio-shows.png)
+![The Radio tab of My library: the radio shows on the left with their artwork, station and episodes, and the chosen show's own header on the right with its artwork, follow choice and episodes](docs/images/radio-shows.png)
 
 ### Radio show
 ![A radio show page: the name, station and first broadcast, the follow choice, Refresh, Add a logo, and the newest series with its episodes](docs/images/radio-show.png)

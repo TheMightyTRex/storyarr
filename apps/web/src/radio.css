@@ -58,6 +58,13 @@
   background: var(--color-surface);
   border: 1px solid var(--color-divider);
 }
+/* In My library's list and detail, the pane is already the panel: no second box. */
+.group-detail .radio-show-head {
+  margin-top: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
 .radio-show-head__text {
   display: grid;
   gap: var(--space-3);

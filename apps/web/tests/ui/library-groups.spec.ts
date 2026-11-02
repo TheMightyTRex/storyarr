@@ -48,6 +48,20 @@ test("My library browses owned authors and series, filters, and opens books", as
           },
         ],
       };
+    else if (url.pathname === "/api/metadata/authors/hardcover/1")
+      data = {
+        author: {
+          external_id: "1",
+          name: "Ursula Le Guin",
+          slug: "ursula-k-le-guin",
+          bio: "Ursula Le Guin wrote novels, stories and poems. She is best known for Earthsea.",
+          image_url: "/portrait.svg",
+        },
+        books: [],
+        page: 1,
+        has_more: false,
+        stale: false,
+      };
     else if (
       url.pathname.includes("/groups/") &&
       url.pathname.endsWith("/books")
@@ -111,18 +125,24 @@ test("My library browses owned authors and series, filters, and opens books", as
   await expect(
     picker.getByRole("button", { name: /Ursula Le Guin/ }),
   ).toHaveAttribute("aria-current", "true");
+  // The author page's header, on the series header's design: the portrait beside the name.
   const detail = page.getByRole("region", { name: "Ursula Le Guin" });
-  const picture = detail.locator(".group-picture img");
+  await expect(
+    detail.getByRole("heading", { level: 2, name: "Ursula Le Guin" }),
+  ).toBeVisible();
+  const picture = detail.locator(".author-head__portrait img");
   await expect(picture).toBeVisible();
   await expect
     .poll(() =>
       picture.evaluate((img) => (img as HTMLImageElement).naturalWidth),
     )
     .toBeGreaterThan(0);
-  await expect(detail.locator(".group-picture")).toHaveCSS(
-    "border-radius",
-    "50%",
-  );
+  await expect(
+    detail.getByText("She is best known for Earthsea.", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    detail.getByRole("link", { name: "Author page", exact: true }),
+  ).toHaveAttribute("href", "/authors/hardcover/1");
   await expect(detail.locator(".book-grid .cover-card")).toHaveCount(2);
   await page.screenshot({
     path: testInfo.outputPath("library-authors.png"),
@@ -375,15 +395,61 @@ test("library series show follow status, every book and a way to add missing boo
     } else if (url.pathname.endsWith("/previews/plan-1/activate")) {
       activated = true;
       data = { id: "policy" };
-    } else if (url.pathname.endsWith("/cover"))
+    } else if (url.pathname === "/api/catalog/series/hardcover/7/logo")
+      return route.fulfill({
+        contentType: "image/svg+xml",
+        body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 120"><rect x="20" y="20" width="600" height="80"/></svg>',
+      });
+    else if (url.pathname === "/api/catalog/series/hardcover/7")
+      data = {
+        external_id: "7",
+        name: "Earthsea",
+        description: "Wizards, dragons and the cost of power.",
+        authors: ["Ursula Le Guin"],
+        projection_version: 2,
+        generation: 1,
+        fetched_at: "2026-11-01T00:00:00Z",
+        status: "completed",
+        message: "",
+        books: 3,
+        total: 3,
+        raw_total: 3,
+        supplements: 0,
+        planned: 0,
+        owned: 2,
+        ebook: 2,
+        audio: 1,
+        logo: {
+          url: "/api/catalog/series/hardcover/7/logo?v=1",
+          format: "svg",
+          colour: "text",
+          source: "upload",
+          source_title: "earthsea.svg",
+          licence: null,
+          source_url: null,
+          saved_path: "config/series-logos/hardcover-7.svg",
+          updated_at: "2026-11-02T10:00:00Z",
+        },
+        items: [],
+      };
+    else if (url.pathname.endsWith("/cover"))
       return route.fulfill({ status: 404 });
     return route.fulfill({ json: data });
   });
   await page.goto("/library?view=series");
-  // List and detail: the chosen series shows its progress, statuses, actions and every book.
+  // List and detail: the chosen series shows the series page's header (UX-47, option A) with its
+  // logo, then its statuses, actions and every book.
   const card = page.getByRole("region", { name: "Earthsea" });
-  await expect(card.getByText("2 of 3")).toBeVisible();
-  await expect(card.getByText("1 waiting")).toBeVisible();
+  await expect(
+    card.getByRole("img", { name: "Earthsea", exact: true }),
+  ).toBeVisible();
+  await expect(
+    card.getByRole("heading", { name: "Earthsea", level: 2 }),
+  ).toBeVisible();
+  await expect(card.getByText("2 of 3 books in your library")).toBeVisible();
+  await expect(
+    card.getByRole("link", { name: "Series page", exact: true }),
+  ).toHaveAttribute("href", "/series/hardcover/7");
   await expect(
     card.getByRole("button", { name: "Tehanu, details", exact: true }),
   ).toBeVisible();
@@ -420,5 +486,5 @@ test("library series show follow status, every book and a way to add missing boo
   await expect(dialog.getByText("Searching for 4 missing books")).toBeVisible();
   expect(activated).toBe(true);
   await dialog.getByRole("button", { name: "Done" }).click();
-  await expect(card.getByText("1 waiting")).toBeVisible();
+  await expect(dialog).toBeHidden();
 });

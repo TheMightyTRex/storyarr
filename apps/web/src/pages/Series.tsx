@@ -2,29 +2,19 @@ import StatusChip from "../components/StatusChip";
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
 import ListChoice from "./ListChoice";
-import {
-  Fragment,
-  useEffect,
-  useRef,
-  useState,
-  type SetStateAction,
-} from "react";
+import { useEffect, useRef, useState, type SetStateAction } from "react";
 import type { components } from "../api/schema";
 import type { Choice } from "./RequestPreferences";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
-import { ArrowLeft, ExternalLink, BookOpen, Headphones } from "lucide-react";
-import LogoMask from "../components/LogoMask";
-import LogoPanel, { type LogoCover } from "../components/LogoPanel";
-import { coverImage } from "../coverImages";
+import { ArrowLeft, BookOpen, Headphones } from "lucide-react";
+import SeriesHeader from "../components/SeriesHeader";
 import { BookRow } from "../components/CoverCard";
 import DetailTabs from "../components/DetailTabs";
 import SeriesRequests from "./SeriesRequests";
 import SeriesScopeReview from "./SeriesScopeReview";
-import FollowCatalog from "../components/FollowCatalog";
-import AddMissingBooks from "../components/AddMissingBooks";
 import FollowRelease from "../components/FollowRelease";
 import { randomUUID } from "../randomUUID";
 import { currentParams } from "../currentParams";
@@ -87,32 +77,6 @@ export default function Series({
   );
 }
 
-/** A cover the cut-out canvas can read: Storyarr serves it from its own address. */
-function readableCover(url: string | null | undefined) {
-  return !!url && /^(https:\/\/|\/|data:image\/)/.test(url);
-}
-
-/** "12 March 2027". */
-function longDate(value: string) {
-  return new Date(`${value.slice(0, 10)}T12:00:00Z`).toLocaleDateString(
-    "en-GB",
-    { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" },
-  );
-}
-
-/** The first sentences, up to about 280 characters; the whole text is under About. */
-function shortDescription(text: string) {
-  const sentences = text.trim().match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [
-    text,
-  ];
-  let out = "";
-  for (const sentence of sentences) {
-    if (out && out.length + sentence.length > 280) break;
-    out += sentence;
-  }
-  return out.trim();
-}
-
 function SeriesContent({
   externalId,
   canEdit,
@@ -167,8 +131,6 @@ function SeriesContent({
     preferences.overrides?.desired_media ||
     profile?.preferences.desired_media;
   const [added, setAdded] = useState(0);
-  const [logoOpen, setLogoOpen] = useState(false);
-  const [logoMessage, setLogoMessage] = useState("");
   const section =
     params.get("section") === "all"
       ? "all"
@@ -364,21 +326,6 @@ function SeriesContent({
         e.publication === "published",
     )
     .map((e) => e.work.id);
-  const logo = data.logo ?? null;
-  const authors = data.authors ?? [];
-  const nextBook = data.items.find(
-    (entry) =>
-      entry.publication === "unreleased" && entry.category !== "collection",
-  );
-  const fan = data.items.filter((entry) => entry.work.cover_url).slice(0, 4);
-  const covers: LogoCover[] = data.items
-    .filter((entry) => readableCover(entry.work.cover_url))
-    .slice(0, 12)
-    .map((entry) => ({
-      label: entry.position ? `Book ${entry.position}` : "Book",
-      title: entry.work.title,
-      url: coverImage(entry.work.cover_url!, 640),
-    }));
   return (
     <article className="reader-page catalog-reader entity-detail series-detail">
       <div className="book-topbar">
@@ -386,149 +333,12 @@ function SeriesContent({
           <ArrowLeft size={16} /> Back to catalogue
         </Link>
       </div>
-      <header className="series-head">
-        <div className="series-head__text">
-          {logo && (
-            <LogoMask url={logo.url} label={data.name} colour={logo.colour} />
-          )}
-          <h1
-            className={
-              logo ? "series-head__name" : "series-head__name wordmark"
-            }
-          >
-            {data.name}
-          </h1>
-          <p className="series-head__meta">
-            {authors.length > 0 && (
-              <span>
-                By{" "}
-                {authors.map((author, index) => (
-                  <Fragment key={author}>
-                    {index > 0 &&
-                      (index === authors.length - 1 ? " and " : ", ")}
-                    <Link to={`/search?q=${encodeURIComponent(author)}`}>
-                      {author}
-                    </Link>
-                  </Fragment>
-                ))}
-              </span>
-            )}
-            {data.fetched_at && (
-              <span>
-                <strong>
-                  {data.books} {data.books === 1 ? "book" : "books"}
-                </strong>
-                {data.supplements > 0 &&
-                  ` and ${data.supplements} supplementary ${data.supplements === 1 ? "book" : "books"}`}
-              </span>
-            )}
-            {nextBook && (
-              <span>
-                Next: {nextBook.position ? `book ${nextBook.position}, ` : ""}
-                {nextBook.work.title},{" "}
-                {nextBook.release_date
-                  ? longDate(nextBook.release_date)
-                  : "date not announced"}
-              </span>
-            )}
-          </p>
-          {data.description && (
-            <p className="series-head__desc">
-              {shortDescription(data.description)}
-            </p>
-          )}
-          {data.fetched_at && data.books > 0 && (
-            <div className="series-head__progress series-ownership">
-              <span>
-                {data.owned} of {data.books} books in your library
-                {data.owned > 0 &&
-                  ` (${data.ebook} ${data.ebook === 1 ? "ebook" : "ebooks"}, ${data.audio} ${data.audio === 1 ? "audiobook" : "audiobooks"})`}
-              </span>
-              <div
-                className="series-ownership-track"
-                role="meter"
-                aria-label="Series books in your library"
-                aria-valuemin={0}
-                aria-valuemax={data.books}
-                aria-valuenow={Math.min(data.owned, data.books)}
-              >
-                <span
-                  style={{
-                    width: `${Math.min(100, (data.owned / data.books) * 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          {(canEdit || canManageLogo) && (
-            <div className="series-head__actions entity-follow-actions">
-              {canEdit && (
-                <>
-                  <AddMissingBooks
-                    kind="series"
-                    externalId={externalId}
-                    name={data.name}
-                  />
-                  <FollowCatalog
-                    kind="series"
-                    externalId={externalId}
-                    name={data.name}
-                  />
-                </>
-              )}
-              {canManageLogo && (
-                <button
-                  type="button"
-                  className="btn btn--quiet"
-                  aria-haspopup="dialog"
-                  onClick={() => setLogoOpen(true)}
-                >
-                  {logo ? "Change logo" : "Add a logo"}
-                </button>
-              )}
-            </div>
-          )}
-          {logoMessage && (
-            <p className="small muted" role="status">
-              {logoMessage}
-            </p>
-          )}
-          <div className="reader-outbound">
-            <a
-              href={`https://hardcover.app/series/${encodeURIComponent(externalId)}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              View on Hardcover <ExternalLink size={13} />
-            </a>
-          </div>
-        </div>
-        {fan.length > 0 && (
-          <div className="cover-fan" aria-hidden="true">
-            {fan.map((entry) => (
-              <img
-                key={entry.membership_id}
-                src={coverImage(entry.work.cover_url!, 320)}
-                alt=""
-              />
-            ))}
-          </div>
-        )}
-      </header>
-      {logoOpen && (
-        <LogoPanel
-          target={{ kind: "series", externalId }}
-          name={data.name}
-          people={authors}
-          logo={logo}
-          covers={covers}
-          onClose={() => setLogoOpen(false)}
-          onChanged={(message) => {
-            setLogoMessage(message);
-            void cache.invalidateQueries({ queryKey: ["series", externalId] });
-          }}
-        />
-      )}
+      <SeriesHeader
+        externalId={externalId}
+        data={data}
+        canEdit={canEdit}
+        canManageLogo={canManageLogo}
+      />
       {data.message &&
         (loading || !data.fetched_at || data.status === "failed") && (
           <p className="muted" role="status">

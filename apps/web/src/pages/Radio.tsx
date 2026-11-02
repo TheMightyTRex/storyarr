@@ -26,6 +26,10 @@ import SectionToolbar from "../components/SectionToolbar";
 import LogoMask from "../components/LogoMask";
 import LogoPanel from "../components/LogoPanel";
 import ShowArt from "../components/ShowArt";
+import {
+  CollectionViewSwitch,
+  useCollectionView,
+} from "../components/GroupShelf";
 import SidePanel from "../components/SidePanel";
 import StatusChip from "../components/StatusChip";
 import { usePreferences } from "../hooks/usePreferences";
@@ -248,12 +252,75 @@ export function RadioShowsShelf({ q }: { q: string }) {
   );
 }
 
+/**
+ * Shows as a list beside the chosen show, like My library, Series and Authors (David, 2 November 2026):
+ * the pane is the show page's own header (artwork on the right) with its series and episodes.
+ */
+function ShowSplit({
+  shows,
+  picked,
+  onPick,
+  canEdit,
+}: {
+  shows: Show[];
+  picked: string | null;
+  onPick: (id: string) => void;
+  canEdit: boolean;
+}) {
+  const current = shows.find((show) => show.id === picked) || shows[0];
+  return (
+    <div className="group-split">
+      <nav className="group-picker" aria-label="Radio shows">
+        <ul>
+          {shows.map((show) => (
+            <li key={show.id}>
+              <button
+                type="button"
+                className="group-pick"
+                aria-current={show.id === current.id || undefined}
+                onClick={() => onPick(show.id)}
+              >
+                <span className="group-pick-cover" aria-hidden="true">
+                  <ShowArt
+                    title={show.title}
+                    station={show.station?.name}
+                    artwork={show.artwork_url}
+                  />
+                </span>
+                <span className="group-pick-text">
+                  <span className="group-title">{show.title}</span>
+                  <span className="muted">
+                    {show.station?.name || "No station given"} ·{" "}
+                    {plural(show.episode_count, "episode")}
+                  </span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <section
+        className="group-detail group-detail--series"
+        aria-label={current.title}
+      >
+        <RadioShow
+          key={current.id}
+          canEdit={canEdit}
+          id={current.id}
+          embedded
+        />
+      </section>
+    </div>
+  );
+}
+
 function RadioShows({ canEdit }: { canEdit: boolean }) {
   const [params, setParams] = useSearchParams();
   const q = (params.get("q") || "").slice(0, 100);
   const follow = params.get("follow");
   const sort = params.get("sort") === "newest" ? "newest" : "name";
   const [adding, setAdding] = useState(false);
+  const layout = useCollectionView();
   const shows = useShows({
     followed:
       follow === "following" ? true : follow === "not" ? false : undefined,
@@ -289,6 +356,9 @@ function RadioShows({ canEdit }: { canEdit: boolean }) {
             : "Loading…"
         }
         start={<RadioSwitch current="shows" />}
+        view={
+          <CollectionViewSwitch view={layout.view} onChange={layout.setView} />
+        }
         search={{
           label: "Search your radio shows",
           placeholder: "Show name",
@@ -353,7 +423,20 @@ function RadioShows({ canEdit }: { canEdit: boolean }) {
       {shows.isPending && <Loading />}
       {shows.data &&
         (items.length ? (
-          <ShowGrid shows={items} />
+          layout.view === "detail" ? (
+            <ShowSplit
+              shows={items}
+              picked={params.get("pick")}
+              onPick={(id) => {
+                const next = currentParams();
+                next.set("pick", id);
+                setParams(next, { replace: true });
+              }}
+              canEdit={canEdit}
+            />
+          ) : (
+            <ShowGrid shows={items} />
+          )
         ) : (
           <Empty
             title={
@@ -572,8 +655,20 @@ function Progress({
   );
 }
 
-function RadioShow({ canEdit }: { canEdit: boolean }) {
-  const { showId = "" } = useParams();
+function RadioShow({
+  canEdit,
+  id,
+  embedded = false,
+}: {
+  canEdit: boolean;
+  /** The show to read, when it is not in the address (My library, Radio's list and detail). */
+  id?: string;
+  /** In the list's right-hand pane: no back link and the name as a level 2 heading. */
+  embedded?: boolean;
+}) {
+  const params = useParams();
+  const showId = id ?? params.showId ?? "";
+  const Heading = embedded ? "h2" : "h1";
   const cache = useQueryClient();
   const show = useQuery({
     queryKey: ["radio", "show", showId],
@@ -612,9 +707,11 @@ function RadioShow({ canEdit }: { canEdit: boolean }) {
   if (show.error || !show.data)
     return (
       <>
-        <Link className="back-link" to={base}>
-          <ArrowLeft size={16} aria-hidden="true" /> Back to Radio
-        </Link>
+        {!embedded && (
+          <Link className="back-link" to={base}>
+            <ArrowLeft size={16} aria-hidden="true" /> Back to Radio
+          </Link>
+        )}
         <Notice error={show.error} />
       </>
     );
@@ -636,9 +733,11 @@ function RadioShow({ canEdit }: { canEdit: boolean }) {
   const failed = data.refresh?.status === "failed";
   return (
     <article className="radio-show" aria-labelledby="show-name">
-      <Link className="back-link" to={base}>
-        <ArrowLeft size={16} aria-hidden="true" /> Back to Radio
-      </Link>
+      {!embedded && (
+        <Link className="back-link" to={base}>
+          <ArrowLeft size={16} aria-hidden="true" /> Back to Radio
+        </Link>
+      )}
       <header className="radio-show-head">
         <div className="radio-show-head__text">
           {/* The show logo in one colour (UX-43), or the name set as a wordmark. */}
@@ -649,12 +748,12 @@ function RadioShow({ canEdit }: { canEdit: boolean }) {
               colour={data.logo.colour}
             />
           )}
-          <h1
+          <Heading
             id="show-name"
             className={data.logo ? "series-head__name" : "radio-wordmark"}
           >
             {data.title}
-          </h1>
+          </Heading>
           <p className="radio-show-meta">
             {meta.map((item, index) => (
               <span key={index}>

@@ -682,7 +682,7 @@
 
 /* The series header (UX-43) is the shared library's .series-head. Storyarr's global h1, paragraph
    and old hero rules would win over the library's layer, so they step back here. */
-.series-head :is(h1, p),
+.series-head :is(h1, h2, p),
 .series-head .series-ownership,
 .radio-show-head h1.series-head__name {
   margin: revert-layer;
@@ -701,4 +701,28 @@
    and file field, so they step back to the library's look. */
 .logo-panel :is(.logo-tabs > button, label, input:not(.input), output) {
   all: revert-layer;
+}
+
+/* The author header (same design as the series header): a square portrait beside the name. */
+.author-head__name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.author-head__portrait {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+}
+.author-head__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

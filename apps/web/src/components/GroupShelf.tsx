@@ -1,3 +1,5 @@
+import { SeriesPaneHeader } from "./SeriesHeader";
+import { AuthorPaneHeader } from "./AuthorHeader";
 import StatusChip from "./StatusChip";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -498,6 +500,62 @@ function GroupDetail({
   const page = group.externalId
     ? `/${kind === "authors" ? "authors" : "series"}/hardcover/${encodeURIComponent(group.externalId)}`
     : null;
+  const bookshelf = follow && (
+    <Link className="button-link" to={"/following/" + follow.list_id}>
+      Open bookshelf
+    </Link>
+  );
+  const books = follow ? (
+    <FollowBooks
+      follow={{
+        list_id: follow.list_id,
+        last_success_at: follow.subscription.last_success_at,
+      }}
+      selection="all"
+      // My library starts with the books you have.
+      initialStatus="in_library"
+    />
+  ) : (
+    <LibraryGroupBooks
+      kind={kind}
+      item={item}
+      medium={medium}
+      libraryId={libraryId}
+    />
+  );
+  // An author from Hardcover shows the author page's header, on the series header's design.
+  if (kind === "authors" && group.externalId)
+    return (
+      <section
+        className="group-detail group-detail--series"
+        aria-label={item.name}
+      >
+        <AuthorPaneHeader
+          key={group.externalId}
+          externalId={group.externalId}
+          canEdit={canEdit}
+          owned={item.book_count}
+          extra={bookshelf}
+        />
+        {books}
+      </section>
+    );
+  // A series from Hardcover shows the series page's own header, with its logo (UX-47, option A).
+  if (kind === "series" && group.externalId)
+    return (
+      <section
+        className="group-detail group-detail--series"
+        aria-label={item.name}
+      >
+        <SeriesPaneHeader
+          key={group.externalId}
+          externalId={group.externalId}
+          canEdit={canEdit}
+          extra={bookshelf}
+        />
+        {books}
+      </section>
+    );
   return (
     <section className="group-detail" aria-labelledby="group-detail-title">
       <div className="group-detail-covers" aria-hidden="true">
@@ -531,30 +589,9 @@ function GroupDetail({
       </div>
       <div className="group-actions">
         <GroupActions item={item} group={group} canEdit={canEdit} />
-        {follow && (
-          <Link className="button-link" to={"/following/" + follow.list_id}>
-            Open bookshelf
-          </Link>
-        )}
+        {bookshelf}
       </div>
-      {follow ? (
-        <FollowBooks
-          follow={{
-            list_id: follow.list_id,
-            last_success_at: follow.subscription.last_success_at,
-          }}
-          selection="all"
-          // My library starts with the books you have.
-          initialStatus="in_library"
-        />
-      ) : (
-        <LibraryGroupBooks
-          kind={kind}
-          item={item}
-          medium={medium}
-          libraryId={libraryId}
-        />
-      )}
+      {books}
     </section>
   );
 }

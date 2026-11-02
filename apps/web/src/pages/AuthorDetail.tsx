@@ -1,16 +1,15 @@
 import { usePagedQuery } from "../hooks/usePagedQuery";
 import { browseCache, refreshPending } from "../queryPolicies";
 import InfiniteScroll from "../components/InfiniteScroll";
-import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ExternalLink, UserRound } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { api, result } from "../api/client";
 import CoverCard from "../components/CoverCard";
 import { BookCard, Loading, Notice } from "../components";
 import DetailTabs from "../components/DetailTabs";
 
-import FollowCatalog from "../components/FollowCatalog";
-import AddMissingBooks from "../components/AddMissingBooks";
+import AuthorHeader from "../components/AuthorHeader";
 
 const tabs = [
   ["books", "Books"],
@@ -31,7 +30,6 @@ function AuthorContent({
 }) {
   const [params] = useSearchParams();
   const tab = params.get("tab") === "about" ? "about" : "books";
-  const [imageFailed, setImageFailed] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const query = usePagedQuery({
     queryKey: ["author", externalId],
@@ -82,58 +80,20 @@ function AuthorContent({
           <ArrowLeft size={16} /> Back to catalogue
         </Link>
       </div>
-      <header className="entity-hero">
-        <div className="author-portrait">
-          {author.image_url && !imageFailed ? (
-            <img
-              src={author.image_url}
-              alt={author.name}
-              referrerPolicy="no-referrer"
-              onError={() => setImageFailed(true)}
-            />
-          ) : (
-            <UserRound size={72} aria-hidden="true" />
-          )}
-        </div>
-        <div className="entity-hero-copy">
-          <p className="eyebrow">THE AUTHOR</p>
-          <h1 ref={heading} tabIndex={-1}>
-            {author.name}
-          </h1>
-          <p className="entity-intro">
-            Explore the books and the person behind them.
-          </p>
-          {author.bio && <p className="entity-bio-preview">{author.bio}</p>}
-          {author.bio && (
-            <Link className="reader-action-link" to="?tab=about">
-              Read biography →
+      <AuthorHeader
+        externalId={externalId}
+        author={author}
+        books={data.items}
+        canEdit={canEdit}
+        headingRef={heading}
+        actions={
+          author.bio && (
+            <Link className="btn btn--quiet" to="?tab=about">
+              Read biography
             </Link>
-          )}
-          {canEdit && (
-            <span className="entity-follow-actions">
-              <FollowCatalog
-                kind="author"
-                externalId={externalId}
-                name={author.name}
-              />
-              <AddMissingBooks
-                kind="author"
-                externalId={externalId}
-                name={author.name}
-              />
-            </span>
-          )}
-          <div className="reader-outbound">
-            <a
-              href={`https://hardcover.app/authors/${encodeURIComponent(author.slug || externalId)}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              View on Hardcover <ExternalLink size={13} />
-            </a>
-          </div>
-        </div>
-      </header>
+          )
+        }
+      />
       {data.warning && (
         <p className="notice" role="status">
           {data.warning}

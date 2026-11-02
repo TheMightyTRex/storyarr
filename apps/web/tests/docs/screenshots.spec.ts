@@ -812,14 +812,109 @@ test("series header with a logo", async ({ page }) => {
   await page.screenshot({ path: `${OUT}/series-header.png` });
 });
 
+test("my library, series with the series header", async ({ page }) => {
+  const groups = [
+    ["The Glass Harbour", "1042", 5],
+    ["The Lantern Road", "77", 3],
+  ] as const;
+  await setup(page, "light", false, false, (path, _url, route) => {
+    if (path === "/api/library/groups/series")
+      return {
+        items: groups.map(([name, external_id, count], g) => ({
+          name,
+          key: external_id,
+          book_count: count,
+          external_id,
+          hardcover_book_id: null,
+          books: Array.from({ length: count }, (_, i) =>
+            libraryWork(g * 5 + i),
+          ),
+        })),
+        total: groups.length,
+        offset: 0,
+        limit: 24,
+      };
+    if (path === "/api/library/groups/series/books")
+      return {
+        items: Array.from({ length: 5 }, (_, i) => libraryWork(i)),
+        total: 5,
+        offset: 0,
+        limit: 40,
+      };
+    return seriesApi(path, route);
+  });
+  await page.goto("/library?view=series");
+  await page.locator(".group-detail .series-head .logo-mask").waitFor();
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}/library-series.png` });
+});
+
 test("radio shows", async ({ page }) => {
   await setup(page, "light", false, false, (path, url) => radioApi(path, url));
-  await page.goto("/library/radio");
+  // List and detail, like Series and Authors: the shows beside the chosen show's own page.
+  await page.goto("/library/radio?pick=s1");
   await expect(
-    page.getByRole("img", { name: "The Lantern Hour, BBC Radio 4" }),
+    page.getByRole("heading", { level: 2, name: "The Lantern Hour" }),
   ).toBeVisible();
   await page.waitForTimeout(800);
   await page.screenshot({ path: `${OUT}/radio-shows.png` });
+});
+
+test("my library, authors with the author header", async ({ page }) => {
+  await setup(page, "light", false, false, (path, _url, route) => {
+    if (path === "/api/library/groups/authors")
+      return {
+        items: ["Mara Ellison", "Tobias Wren"].map((name, g) => ({
+          name,
+          key: name,
+          book_count: g ? 3 : 6,
+          external_id: null,
+          hardcover_book_id: `hb-${g}`,
+          books: Array.from({ length: 3 }, (_, i) => libraryWork(g * 3 + i)),
+        })),
+        total: 2,
+        offset: 0,
+        limit: 24,
+      };
+    if (path === "/api/library/groups/authors/books")
+      return {
+        items: Array.from({ length: 6 }, (_, i) => libraryWork(i)),
+        total: 6,
+        offset: 0,
+        limit: 40,
+      };
+    if (path.endsWith("/reader-details"))
+      return {
+        external_id: "hb-0",
+        authors: [
+          { external_id: "501", name: "Mara Ellison", image_url: null },
+        ],
+      };
+    if (path === "/api/metadata/authors/hardcover/501")
+      return {
+        author: {
+          external_id: "501",
+          name: "Mara Ellison",
+          slug: "mara-ellison",
+          bio: "Mara Ellison writes quiet mysteries set in harbour towns, one each winter. She lives by the sea and keeps a lighthouse logbook of her own.",
+          image_url: null,
+        },
+        books: Array.from({ length: 6 }, (_, i) => ({
+          external_id: String(2000 + i),
+          title: titles[i],
+          cover_url: `/demo-covers/${i}.svg`,
+          publication_year: 2018 + i,
+        })),
+        page: 1,
+        has_more: false,
+        stale: false,
+      };
+    return seriesApi(path, route);
+  });
+  await page.goto("/library?view=authors");
+  await page.locator(".group-detail .author-head").waitFor();
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}/library-authors.png` });
 });
 
 test("radio show page", async ({ page }) => {

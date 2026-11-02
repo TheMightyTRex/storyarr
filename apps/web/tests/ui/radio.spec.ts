@@ -151,7 +151,12 @@ const detail = {
 const artwork = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#0f7a74"/></svg>`;
 const logo = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40"><rect width="120" height="40" fill="#222"/><text x="10" y="26" fill="#fff" font-size="16">Radio 4</text></svg>`;
 
-async function mockApi(page: Page, role = "admin") {
+async function mockApi(
+  page: Page,
+  role = "admin",
+  // The Radio tab follows the Series layout choice; most tests look at the grid.
+  view: "list" | "detail" = "list",
+) {
   const errors: string[] = [];
   const writes: { method: string; path: string; body: unknown }[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -172,7 +177,8 @@ async function mockApi(page: Page, role = "admin") {
         body: request.postDataJSON(),
       });
     let data: unknown = { items: [], total: 0 };
-    if (path === "/api/auth/me")
+    if (path === "/api/preferences") data = { collection_view: view };
+    else if (path === "/api/auth/me")
       data = {
         user: {
           id: "reader",
@@ -406,6 +412,29 @@ test("My library has a Radio tab with Shows and Stations, each with its own addr
   await shots(page, info, "station", () =>
     page.locator(".show-card").first().waitFor(),
   );
+  expect(errors).toEqual([]);
+});
+
+test("in List and detail, the shows are a list beside the chosen show's own page", async ({
+  page,
+}) => {
+  const { errors } = await mockApi(page, "admin", "detail");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // Only The Unbelievable Truth has a full show in this mock, so the page opens on it.
+  await page.goto("/library/radio?pick=s1");
+  const list = page.getByRole("navigation", { name: "Radio shows" });
+  await expect(list.getByRole("button")).toHaveCount(3);
+  const pane = page.getByRole("region", { name: "The Unbelievable Truth" });
+  // The show page's header, with the name as a level 2 heading and no back link.
+  await expect(
+    pane.getByRole("heading", { level: 2, name: "The Unbelievable Truth" }),
+  ).toBeVisible();
+  await expect(pane.getByRole("link", { name: "Back to Radio" })).toHaveCount(
+    0,
+  );
+  await expect(
+    list.getByRole("button", { name: /The Unbelievable Truth/ }),
+  ).toHaveAttribute("aria-current", "true");
   expect(errors).toEqual([]);
 });
 
