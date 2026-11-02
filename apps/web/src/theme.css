@@ -69,6 +69,10 @@ body {
 .display-panel > p {
   margin: -10px 0 0;
 }
+/* In the Display dialog the heading is for screen readers only, so the text starts the panel. */
+.display-panel > .sr-only + p {
+  margin-top: 0;
+}
 .display-group {
   border: 0;
   margin: 0;

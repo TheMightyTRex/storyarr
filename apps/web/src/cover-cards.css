@@ -93,6 +93,11 @@
   opacity: 1;
   transform: none;
 }
+/* Settings and onboarding stop their buttons shrinking (settings.css); the column's buttons must still
+   share a short cover's height, as everywhere else, so the last one never falls below the cover. */
+.cover-actions:not(.cover-actions--row) > .cover-actions__btn {
+  flex-shrink: 1;
+}
 .cover-actions-example .type-cover {
   padding: 8px;
 }

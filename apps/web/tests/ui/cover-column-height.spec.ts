@@ -8,7 +8,12 @@ const art = (width: number, height: number, fill: string) =>
   `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="${fill}"/></svg>`)}`;
 const portrait = art(200, 300, "#2b4f6e");
 const square = art(300, 300, "#7a2e3b");
-const titles = ["The Salt Road", "Half a Lantern", "Glass Harbour", "Moth Hour"];
+const titles = [
+  "The Salt Road",
+  "Half a Lantern",
+  "Glass Harbour",
+  "Moth Hour",
+];
 
 async function mockApi(page: Page, size: string) {
   // Even books are ebooks with a portrait cover; odd books are audiobooks with a square cover.
@@ -191,5 +196,30 @@ test("the action column matches square cover frames too", async ({ page }) => {
       page.locator(".entity-book-grid .book-cover").first(),
     ).toHaveClass(/cover-square/);
     await columnsMatchCovers(page, ".entity-book-grid .cover-card");
+  }
+});
+
+test("the examples in Settings, Display keep every action on the cover", async ({
+  page,
+}) => {
+  // Settings stops its buttons shrinking; the column's five actions must still fit a short example cover.
+  await mockApi(page, "medium");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/settings#display");
+  const setting = page.getByRole("group", { name: "Cover actions" });
+  const cards = setting.locator(".cover-card");
+  await expect(cards).toHaveCount(4);
+  for (let index = 0; index < 4; index++) {
+    const card = cards.nth(index);
+    const art = (await card.locator(".cover-card__art").boundingBox())!;
+    const column = (await card.locator(".cover-actions").boundingBox())!;
+    const last = (await card
+      .locator(".cover-actions__btn")
+      .last()
+      .boundingBox())!;
+    expect(
+      Math.abs(column.y + column.height - (art.y + art.height)),
+    ).toBeLessThanOrEqual(1);
+    expect(last.y + last.height).toBeLessThanOrEqual(art.y + art.height + 1);
   }
 });
