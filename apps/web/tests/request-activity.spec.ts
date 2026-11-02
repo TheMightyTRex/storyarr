@@ -295,12 +295,13 @@ async function openActivityTab(page: Page, name: RegExp) {
   }
   await page.getByRole("button", { name: /^Menu/ }).click();
   const menu = page.getByRole("dialog", { name: "Main menu" });
+  const section = menu.getByRole("button", { name: "Activity", exact: true });
   const link = menu.getByRole("link", { name });
-  // The section you are in starts open; open it only if its pages do not appear.
-  try {
-    await expect(link).toBeVisible({ timeout: 3000 });
-  } catch {
-    await menu.getByRole("button", { name: "Activity", exact: true }).click();
-  }
+  // The section you are in starts open; otherwise open it, trying again if the menu was still settling.
+  await expect(async () => {
+    if ((await section.getAttribute("aria-expanded")) !== "true")
+      await section.click();
+    await expect(link).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 10_000 });
   await link.click();
 }

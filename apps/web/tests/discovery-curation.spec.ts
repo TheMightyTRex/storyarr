@@ -172,13 +172,14 @@ test("manual list preview is bounded and mobile navigation fits", async ({
   // On phones the Discover pages are in the main menu, under Discover.
   await page.getByRole("button", { name: /^Menu/ }).click();
   const menu = page.getByRole("dialog", { name: "Main menu" });
+  const section = menu.getByRole("button", { name: "Discover", exact: true });
   const awards = menu.getByRole("link", { name: "Awards", exact: true });
-  // The section you are in starts open; open it only if its pages do not appear.
-  try {
-    await expect(awards).toBeVisible({ timeout: 3000 });
-  } catch {
-    await menu.getByRole("button", { name: "Discover", exact: true }).click();
-  }
+  // The section you are in starts open; otherwise open it, trying again if the menu was still settling.
+  await expect(async () => {
+    if ((await section.getAttribute("aria-expanded")) !== "true")
+      await section.click();
+    await expect(awards).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 10_000 });
   await awards.click();
   await expect(
     page.getByRole("heading", {
