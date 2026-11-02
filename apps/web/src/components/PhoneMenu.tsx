@@ -77,7 +77,7 @@ export default function PhoneMenu({
           to: "/library",
           label: "My library",
           icon: libraryIcons.library,
-          current: path === "/library",
+          current: path === "/library" || path.startsWith("/library/"),
         },
         ...(role !== "viewer"
           ? [

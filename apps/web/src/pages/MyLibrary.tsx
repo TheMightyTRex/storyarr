@@ -6,7 +6,8 @@ import BookDialog from "../components/BookDialog";
 import DeleteLibraryCopy from "../components/DeleteLibraryCopy";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
+import RadioLibrary from "./Radio";
 import { HeaderTabs } from "../components/HeaderSubmenu";
 import { shelfIcons as ShelfIcon } from "../navigation";
 import { api, result } from "../api/client";
@@ -48,6 +49,7 @@ export default function MyLibrary({
   canEdit?: boolean;
 }) {
   const [params, setParams] = useSearchParams();
+  const radio = useLocation().pathname.startsWith("/library/radio");
   const q = (params.get("q") || "").slice(0, 300);
   const rawLibrary = params.get("library") || "";
   const libraryId =
@@ -56,9 +58,10 @@ export default function MyLibrary({
     )
       ? rawLibrary
       : "";
-  const saved = params.get("view") === "saved";
+  const saved = !radio && params.get("view") === "saved";
   const groupView =
-    params.get("view") === "authors" || params.get("view") === "series"
+    !radio &&
+    (params.get("view") === "authors" || params.get("view") === "series")
       ? (params.get("view") as "authors" | "series")
       : null;
   const medium: Medium =
@@ -89,7 +92,7 @@ export default function MyLibrary({
           <nav className="page-tabs" aria-label="Library shelves">
             <Link
               to="/library"
-              aria-current={!saved && !groupView ? "page" : undefined}
+              aria-current={!saved && !groupView && !radio ? "page" : undefined}
             >
               <ShelfIcon.libraries size={17} aria-hidden="true" />
               In my libraries
@@ -108,6 +111,10 @@ export default function MyLibrary({
               <ShelfIcon.series size={17} aria-hidden="true" />
               Series
             </Link>
+            <Link to="/library/radio" aria-current={radio ? "page" : undefined}>
+              <ShelfIcon.radio size={17} aria-hidden="true" />
+              Radio
+            </Link>
             <Link
               to="/library?view=saved"
               aria-current={saved ? "page" : undefined}
@@ -125,7 +132,9 @@ export default function MyLibrary({
           </div>
         )}
       </div>
-      {groupView ? (
+      {radio ? (
+        <RadioLibrary canEdit={canEdit} />
+      ) : groupView ? (
         <>
           <Notice error={libraries.error} />
           <LibraryGroups

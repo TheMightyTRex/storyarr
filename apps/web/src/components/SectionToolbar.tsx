@@ -72,6 +72,7 @@ export default function SectionToolbar({
   title,
   summary,
   view,
+  start,
   search,
   chips = [],
   menus = [],
@@ -84,6 +85,8 @@ export default function SectionToolbar({
   title: string;
   summary?: ReactNode;
   view?: ReactNode;
+  /** A switch that comes first in the toolbar (Radio: Shows and Stations). */
+  start?: ReactNode;
   search?: {
     label: string;
     placeholder: string;
@@ -113,6 +116,7 @@ export default function SectionToolbar({
         aria-label="Filters"
       >
         <div className="toolbar-filters-main">
+          {start}
           {search && (
             <form
               className="toolbar-search"

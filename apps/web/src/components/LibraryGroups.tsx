@@ -15,6 +15,7 @@ import {
 } from "./GroupShelf";
 import SectionToolbar, { SaveViewButton } from "./SectionToolbar";
 import { useSavedView } from "../hooks/useSavedView";
+import { RadioShowsShelf } from "../pages/Radio";
 import { currentParams } from "../currentParams";
 
 type Kind = "authors" | "series";
@@ -44,6 +45,8 @@ export default function LibraryGroups({
       : params.get("medium") === "audio"
         ? "audio"
         : "any";
+  // Radio shows sit beside book series: the Radio chip lists them instead (FEAT-R, R2).
+  const radio = kind === "series" && params.get("medium") === "radio";
   const { sort, reverse } = readSort(params, "name");
   const rawOffset = Number(params.get("offset"));
   const offset =
@@ -52,7 +55,7 @@ export default function LibraryGroups({
   const query = usePagedQuery({
     queryKey: ["library-groups", kind, q, medium, libraryId, sort, reverse],
     initial: 0,
-    enabled: !group,
+    enabled: !group && !radio,
     queryFn: async (offset, signal) =>
       result(
         await api.GET("/api/library/groups/{kind}", {
@@ -79,7 +82,7 @@ export default function LibraryGroups({
   const books = usePagedQuery({
     queryKey: ["library-group-books", kind, group, medium, libraryId],
     initial: 0,
-    enabled: !!group,
+    enabled: !!group && !radio,
     queryFn: async (offset, signal) =>
       result(
         await api.GET("/api/library/groups/{kind}/books", {
@@ -134,19 +137,21 @@ export default function LibraryGroups({
       <SectionToolbar
         title={group || title}
         summary={
-          active.data && !active.error
-            ? `${total.toLocaleString("en-GB")} ${
-                group
-                  ? total === 1
-                    ? "book"
-                    : "books"
-                  : kind === "authors"
+          radio
+            ? "Radio shows"
+            : active.data && !active.error
+              ? `${total.toLocaleString("en-GB")} ${
+                  group
                     ? total === 1
-                      ? "author"
-                      : "authors"
-                    : "series"
-              }`
-            : "Loading…"
+                      ? "book"
+                      : "books"
+                    : kind === "authors"
+                      ? total === 1
+                        ? "author"
+                        : "authors"
+                      : "series"
+                }`
+              : "Loading…"
         }
         view={
           !group && (
@@ -170,12 +175,17 @@ export default function LibraryGroups({
           [
             ["audio", "Audiobooks"],
             ["ebook", "Ebooks"],
+            ...(kind === "series" ? ([["radio", "Radio"]] as const) : []),
           ] as const
         ).map(([key, label]) => ({
           key,
           label,
-          pressed: medium === key,
-          onToggle: () => change("medium", medium === key ? "" : key),
+          pressed: key === "radio" ? radio : medium === key && !radio,
+          onToggle: () =>
+            change(
+              "medium",
+              (key === "radio" ? radio : medium === key && !radio) ? "" : key,
+            ),
         }))}
         menus={[
           {
@@ -214,6 +224,15 @@ export default function LibraryGroups({
           ...(q
             ? [{ key: "q", label: `“${q}”`, onRemove: () => change("q", "") }]
             : []),
+          ...(radio
+            ? [
+                {
+                  key: "radio",
+                  label: "Radio",
+                  onRemove: () => change("medium", ""),
+                },
+              ]
+            : []),
           ...(medium !== "any"
             ? [
                 {
@@ -249,57 +268,68 @@ export default function LibraryGroups({
         }
         showing={active.data && `Showing ${total.toLocaleString("en-GB")}`}
       />
-      <Notice error={active.error} />
-      {active.isPending && <Loading />}
-      {active.error && (
-        <button onClick={() => active.refetch()} disabled={active.isFetching}>
-          Retry {kind}
-        </button>
-      )}
-      {!active.error && active.data && (
+      {radio ? (
+        <RadioShowsShelf q={q} />
+      ) : (
         <>
-          {group ? (
-            <div className="book-grid">
-              {books.data?.items.map((work) => (
-                <BookCard key={work.id} work={work} medium={medium} />
-              ))}
-            </div>
-          ) : layout.view === "detail" ? (
-            <GroupDetailView
-              kind={kind}
-              items={query.data?.items ?? []}
-              selected={picked}
-              onSelect={(key) => {
-                const next = current();
-                next.set("pick", key);
-                setParams(next, { replace: true });
-              }}
-              canEdit={canEdit}
-              medium={medium}
-              libraryId={libraryId}
-              more={<InfiniteScroll query={active} />}
-            />
-          ) : (
-            <GroupListView
-              kind={kind}
-              items={query.data?.items ?? []}
-              canEdit={canEdit}
-              groupLink={groupLink}
-            />
-          )}
-          {!active.data.items.length && (
-            <Empty
-              title={group ? "No books match this view" : `No ${kind} to show`}
+          <Notice error={active.error} />
+          {active.isPending && <Loading />}
+          {active.error && (
+            <button
+              onClick={() => active.refetch()}
+              disabled={active.isFetching}
             >
-              {q || medium !== "any" || libraryId || offset
-                ? "Try clearing the filters."
-                : kind === "series"
-                  ? "Series appear when books in your libraries have series metadata. You can check a book’s metadata from its detail page."
-                  : "Authors appear here when matched books are available in your libraries."}
-            </Empty>
+              Retry {kind}
+            </button>
           )}
-          {(group || layout.view !== "detail") && (
-            <InfiniteScroll query={active} />
+          {!active.error && active.data && (
+            <>
+              {group ? (
+                <div className="book-grid">
+                  {books.data?.items.map((work) => (
+                    <BookCard key={work.id} work={work} medium={medium} />
+                  ))}
+                </div>
+              ) : layout.view === "detail" ? (
+                <GroupDetailView
+                  kind={kind}
+                  items={query.data?.items ?? []}
+                  selected={picked}
+                  onSelect={(key) => {
+                    const next = current();
+                    next.set("pick", key);
+                    setParams(next, { replace: true });
+                  }}
+                  canEdit={canEdit}
+                  medium={medium}
+                  libraryId={libraryId}
+                  more={<InfiniteScroll query={active} />}
+                />
+              ) : (
+                <GroupListView
+                  kind={kind}
+                  items={query.data?.items ?? []}
+                  canEdit={canEdit}
+                  groupLink={groupLink}
+                />
+              )}
+              {!active.data.items.length && (
+                <Empty
+                  title={
+                    group ? "No books match this view" : `No ${kind} to show`
+                  }
+                >
+                  {q || medium !== "any" || libraryId || offset
+                    ? "Try clearing the filters."
+                    : kind === "series"
+                      ? "Series appear when books in your libraries have series metadata. You can check a book’s metadata from its detail page."
+                      : "Authors appear here when matched books are available in your libraries."}
+                </Empty>
+              )}
+              {(group || layout.view !== "detail") && (
+                <InfiniteScroll query={active} />
+              )}
+            </>
           )}
         </>
       )}

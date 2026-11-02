@@ -740,6 +740,15 @@ function Shell({ auth }: { auth: Auth }) {
                     }
                   />
                   <Route
+                    path="/library/radio/*"
+                    element={
+                      <MyLibrary
+                        admin={auth.user.role === "admin"}
+                        canEdit={auth.user.role !== "viewer"}
+                      />
+                    }
+                  />
+                  <Route
                     path="/review"
                     element={
                       auth.user.role === "admin" ? (

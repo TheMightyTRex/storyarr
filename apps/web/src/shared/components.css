@@ -1945,6 +1945,111 @@
     height: 18px;
   }
 
+  /* Show art (FEAT-R decision 2, fill 4, 2 November 2026): a radio show's square artwork in the 2:3
+     book shape, with the same 1px outline as book covers, so shows and books line up. The square
+     image sits at the top and is never cropped; the bottom third is a label in the image's main colour
+     with the station and the show's name as real text. The app sets --show-art-bg and --show-art-fg
+     from the image (it serves its own copy, so the browser can read it), darkened until the white text
+     passes 4.5:1; without them the label is a neutral surface. With no image the square shows the name.
+     Markup: .show-art[role="img"][aria-label="<show>, <station>"]
+               > img.show-art__img (or span.show-art__text), span.show-art__label
+                 > span.show-art__station, span.show-art__name */
+  .show-art {
+    container-type: inline-size;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    outline: 1px solid var(--color-border);
+    outline-offset: -1px;
+    background: var(--show-art-bg, var(--color-surface-sunken));
+    color: var(--show-art-fg, var(--color-text));
+  }
+  .show-art__img,
+  .show-art__text {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+  }
+  .show-art__img {
+    object-fit: contain;
+  }
+  .show-art__text {
+    display: grid;
+    place-items: center;
+    padding: var(--space-3);
+    overflow: hidden;
+    background: var(--color-surface-raised);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    line-height: var(--leading-tight);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .show-art__label {
+    display: grid;
+    align-content: center;
+    gap: 2px;
+    min-width: 0;
+    padding: var(--space-1) var(--space-3);
+    overflow: hidden;
+  }
+  .show-art__station {
+    overflow: hidden;
+    font-size: var(--text-xs);
+    font-weight: var(--weight-strong);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .show-art__name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    line-height: var(--leading-tight);
+    overflow-wrap: anywhere;
+  }
+  /* Small show art (under 120px wide): the name alone in the label. */
+  @container (max-width: 120px) {
+    .show-art__station {
+      display: none;
+    }
+    .show-art__label {
+      padding: var(--space-1) var(--space-2);
+    }
+    .show-art__name {
+      font-size: var(--text-xs);
+    }
+  }
+  /* Logo tile: a station's (or a channel's) logo on a plain tile, or its name as text when there is
+     no logo. Markup: .logo-tile > img (alt="") or span.logo-tile__text. */
+  .logo-tile {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    padding: var(--space-3);
+    overflow: hidden;
+    border: 1px solid var(--color-divider);
+    background: var(--color-surface-sunken);
+  }
+  .logo-tile > img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  .logo-tile__text {
+    font-weight: var(--weight-strong);
+    line-height: var(--leading-tight);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
   /* Shelf (UX-30, option A, 2 November 2026): one row of covers that scrolls sideways with no scroll
      bar. At each end the covers fade into the page, with a 44px arrow over the fade in the middle of
      the covers; the arrow and its fade show only when there are more books that way. Each press moves

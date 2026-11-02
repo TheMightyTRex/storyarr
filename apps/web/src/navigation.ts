@@ -30,6 +30,7 @@ import {
   ListChecks,
   ListOrdered,
   Puzzle,
+  Radio,
   Radar,
   ScrollText,
   SlidersHorizontal,
@@ -95,6 +96,7 @@ export const shelfIcons = {
   authors: Users,
   series: Library,
   saved: Archive,
+  radio: Radio,
 } as const;
 // 2nd level: Library review's filters.
 export const reviewIcons: Record<string, LucideIcon> = {

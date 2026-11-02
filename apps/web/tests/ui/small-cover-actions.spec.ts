@@ -221,7 +221,9 @@ test("a series' Books in order rows have the cover actions at the end and open t
   // The title lets presses through to the row (force skips the check that it is on top).
   await row.locator(".book-row__title").click({ force: true });
   const summary = page.getByRole("dialog", { name: /Summary/ });
-  await expect(summary.getByRole("heading", { name: "Twilight" })).toBeVisible();
+  await expect(
+    summary.getByRole("heading", { name: "Twilight" }),
+  ).toBeVisible();
   await summary.getByRole("button", { name: "Close summary" }).click();
   await expect(summary).toBeHidden();
 
@@ -273,11 +275,15 @@ test("a series gap tile has one More button with the actions in words", async ({
   ]);
   await menu.getByRole("menuitem", { name: "View details" }).click();
   const summary = page.getByRole("dialog", { name: /Summary/ });
-  await expect(summary.getByRole("heading", { name: "New Moon" })).toBeVisible();
+  await expect(
+    summary.getByRole("heading", { name: "New Moon" }),
+  ).toBeVisible();
   await summary.getByRole("button", { name: "Close summary" }).click();
   // The cover itself opens the Summary too.
   await tile.getByRole("button", { name: "New Moon, details" }).click();
-  await expect(summary.getByRole("heading", { name: "New Moon" })).toBeVisible();
+  await expect(
+    summary.getByRole("heading", { name: "New Moon" }),
+  ).toBeVisible();
   await summary.getByRole("button", { name: "Close summary" }).click();
   await shots(page, info, "series-gaps");
   expect(errors).toEqual([]);
@@ -298,7 +304,9 @@ test("a calendar day card opens the Summary and has More on its corner", async (
   expect(corner.x + corner.width).toBeGreaterThan(outer.x + outer.width - 12);
   expect(corner.y).toBeLessThan(outer.y + 12);
   await expect(more).toBeInViewport({ ratio: 1 });
-  await page.screenshot({ path: info.outputPath("calendar-day-light-1440.png") });
+  await page.screenshot({
+    path: info.outputPath("calendar-day-light-1440.png"),
+  });
   await more.click();
   const menu = page.getByRole("menu", { name: "More for Breaking Dawn" });
   await expect(

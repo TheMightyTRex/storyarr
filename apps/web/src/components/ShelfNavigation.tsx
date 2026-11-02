@@ -104,7 +104,7 @@ export function LibraryTabs({
       to: "/library",
       label: "My library",
       icon: BookOpen,
-      current: pathname === "/library",
+      current: pathname === "/library" || pathname.startsWith("/library/"),
     },
   ];
   if (canEdit)

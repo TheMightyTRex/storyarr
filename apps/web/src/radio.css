@@ -1,0 +1,268 @@
+/* Radio (FEAT-R, phase R2): My library, Radio. Shared pieces (.show-art, .logo-tile, .segmented, .cards,
+   .disclosure, .table, .progress) come from the shared library; this file only places them. */
+
+/* The Shows and Stations switch at the start of the toolbar, as tall as the other controls. */
+.radio-switch {
+  flex: none;
+  margin: 0;
+  padding: 0;
+}
+.radio-switch span {
+  min-height: calc(var(--control-h) - 2px);
+}
+.radio-add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-h);
+}
+
+/* Show cards: the Following chip sits under the meta lines, outside the two-line title space. */
+.show-card .show-card__chip {
+  position: relative;
+  z-index: 2;
+  justify-self: start;
+  pointer-events: none;
+}
+
+/* Stations: tiles like Authors, with the logo or the name as a text tile. */
+.station-cards {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  margin: var(--space-4) 0;
+  padding: 0;
+  list-style: none;
+}
+.station-card .logo-tile {
+  width: 100%;
+  max-width: 160px;
+}
+.radio-station-head {
+  margin: var(--space-4) 0 var(--space-6);
+}
+.radio-station-head h1 {
+  margin: 0;
+}
+.radio-section-title {
+  margin: var(--space-6) 0 var(--space-3);
+  font-size: var(--text-lg);
+}
+
+/* Show page: the series header (mockups-2026-11/series-header.html) with the artwork on the right. */
+.radio-show-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: var(--space-8);
+  align-items: start;
+  margin: var(--space-4) 0 var(--space-6);
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+}
+.radio-show-head__text {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.radio-wordmark {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+.radio-show-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.radio-show-synopsis {
+  max-width: 68ch;
+  margin: 0;
+}
+.radio-progress {
+  max-width: 420px;
+}
+.radio-show-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-3);
+}
+.radio-follow {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.radio-follow legend {
+  padding: 0;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-strong);
+}
+.radio-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-h);
+}
+
+/* Episodes: a toolbar, then one folding section per series, newest first. */
+.radio-episodes h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-lg);
+}
+.radio-episodes-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.radio-episodes-count {
+  margin-left: auto;
+}
+.radio-series.disclosure > summary {
+  padding: var(--space-2) var(--space-4);
+}
+.radio-series-summary {
+  display: grid;
+  gap: 2px;
+}
+.radio-code {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-strong);
+  white-space: nowrap;
+}
+.radio-episode-open {
+  min-height: var(--control-h);
+  padding: 0;
+  text-align: left;
+}
+.radio-episode-table td {
+  vertical-align: middle;
+}
+
+/* Episode details: the slide-out. */
+.radio-episode-lead {
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+.radio-episode-lead > div:last-child {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+.radio-episode-lead p {
+  margin: 0;
+}
+.radio-episode-title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.radio-episode-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.radio-episode-steps button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--control-h);
+}
+
+/* Add a show. */
+.radio-add-dialog .book-dialog-content {
+  display: grid;
+  gap: var(--space-4);
+}
+.radio-add-find {
+  display: grid;
+  gap: var(--space-2);
+}
+.radio-add-find button {
+  justify-self: start;
+}
+.radio-add-choices {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.radio-add-choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3);
+  border: 1px solid var(--color-divider);
+  cursor: pointer;
+}
+.radio-add-choice:has(input:checked) {
+  border-color: var(--color-accent);
+  box-shadow: inset 4px 0 0 var(--color-accent);
+}
+.radio-add-choice > span,
+.radio-add-follow .option-card > span {
+  display: grid;
+  gap: 2px;
+}
+.radio-add-choice input,
+.radio-add-follow input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+}
+.radio-add-preview h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-md);
+}
+.radio-add-show {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+.radio-add-follow {
+  margin: var(--space-4) 0;
+}
+.radio-add-follow legend {
+  margin-bottom: var(--space-2);
+  font-weight: var(--weight-strong);
+}
+
+/* A format filter that cannot show radio yet. */
+.radio-chip-hint {
+  margin: var(--space-2) 0 0;
+}
+
+@media (max-width: 720px) {
+  .radio-show-head {
+    grid-template-columns: minmax(0, 1fr) 96px;
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+  .radio-show-head__art {
+    grid-row: 1;
+    grid-column: 2;
+  }
+  .radio-show-head__text {
+    display: contents;
+  }
+  .radio-show-head__text > :not(.radio-wordmark) {
+    grid-column: 1 / -1;
+  }
+  .radio-wordmark {
+    grid-row: 1;
+    grid-column: 1;
+    align-self: center;
+    font-size: 1.75rem;
+  }
+  .radio-episodes-count {
+    margin-left: 0;
+    width: 100%;
+  }
+}

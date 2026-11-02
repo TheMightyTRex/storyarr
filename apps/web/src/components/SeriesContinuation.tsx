@@ -137,8 +137,15 @@ export default function SeriesContinuation({
               <option value="any">Books in either format</option>
               <option value="ebook">Ebooks</option>
               <option value="audio">Audiobooks</option>
+              <option value="radio" disabled>
+                Radio shows
+              </option>
             </select>
           </label>
+          <p className="small muted radio-chip-hint">
+            Radio shows are not in this list yet. Their episodes are in{" "}
+            <Link to="/library/radio">My library, Radio</Link>.
+          </p>
         </div>
       </div>
       <Notice error={query.error || dismiss.error} />
