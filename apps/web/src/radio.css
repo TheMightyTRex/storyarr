@@ -266,3 +266,8 @@
     width: 100%;
   }
 }
+
+/* The show logo above the name (UX-43), the same size as a series logo. */
+.radio-show-head__text > .logo-mask {
+  --logo-w: 340px;
+}

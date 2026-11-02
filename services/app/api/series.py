@@ -9,6 +9,7 @@ from sqlalchemy import select
 from app.adapters.contracts import AdapterError
 from app.api.catalog import WorkView, work_view
 from app.api.dependencies import CurrentUser, Database, Member
+from app.api.logos import LogoView, series_logo, series_view
 from app.api.metadata import adapter_http_error
 from app.api.operations import OperationView
 from app.db.models import CatalogSeries, MonitoredRelease, Operation, SeriesMembership, Work
@@ -90,6 +91,8 @@ class SeriesView(BaseModel):
     projection_version: int = 0
     authors: list[str] = []
     incomplete_entries: int = 0
+    # The series logo (UX-43), shared by everyone; None shows the name as a wordmark.
+    logo: LogoView | None = None
 
 
 def series_work_view(work, availability, snapshot):
@@ -139,6 +142,7 @@ async def detail(
         catalog_series.identifier("hardcover", external_id)
     except AdapterError:
         raise HTTPException(422, "Invalid series identifier") from None
+    logo = series_view(await series_logo(db, external_id))
     row = await db.scalar(
         select(CatalogSeries).where(
             CatalogSeries.owner_id == user.id,
@@ -154,6 +158,7 @@ async def detail(
             message="Load this series from your Hardcover account",
             offset=offset,
             limit=limit,
+            logo=logo,
         )
     operation = await db.get(Operation, row.operation_id) if row.operation_id else None
     status, message = await catalog_series.operation_status(db, operation)
@@ -284,4 +289,5 @@ async def detail(
         supplements=len(supplemental),
         planned=planned,
         projection_version=row.snapshot.get("projection_version", 0),
+        logo=logo,
     )

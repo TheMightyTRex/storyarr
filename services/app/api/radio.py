@@ -16,6 +16,7 @@ from sqlalchemy import func, or_, select
 from app.adapters.bbc_programmes import SERVICE_ID, SearchResult, ShowData
 from app.adapters.contracts import AdapterError
 from app.api.dependencies import CurrentUser, Database, Member
+from app.api.logos import LogoView, show_view
 from app.api.metadata import adapter_http_error
 from app.api.operations import OperationView
 from app.db.models import (
@@ -157,6 +158,8 @@ class RadioShowSummary(BaseModel):
     artwork_url: str | None
     logo_colour: str | None
     logo_source: str | None
+    # The saved show logo (UX-43); None shows the title as a wordmark.
+    logo: LogoView | None = None
     series_count: int
     episode_count: int
     refreshed_at: datetime | None
@@ -305,6 +308,7 @@ async def summaries(db, shows: list[RadioShow]) -> list[RadioShowSummary]:
                 artwork_url=artwork_url(show),
                 logo_colour=show.logo_colour,
                 logo_source=show.logo_source,
+                logo=show_view(show),
                 series_count=series_counts.get(show.id, 0),
                 episode_count=episode_counts.get(show.id, 0),
                 refreshed_at=show.refreshed_at,

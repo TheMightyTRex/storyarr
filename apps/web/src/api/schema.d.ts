@@ -2193,6 +2193,131 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/catalog/series/hardcover/{external_id}/logo": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Series Logo
+     * @description The saved series logo. SVG files are served cleaned, with a sandbox policy.
+     */
+    get: operations["get_series_logo_api_catalog_series_hardcover__external_id__logo_get"];
+    /**
+     * Upload Series Logo
+     * @description Save a logo for everyone: an uploaded file, or a cut-out of one of the series' covers.
+     */
+    put: operations["upload_series_logo_api_catalog_series_hardcover__external_id__logo_put"];
+    post?: never;
+    /**
+     * Remove Series Logo
+     * @description Remove the logo; the series name is shown as a wordmark again.
+     */
+    delete: operations["remove_series_logo_api_catalog_series_hardcover__external_id__logo_delete"];
+    options?: never;
+    head?: never;
+    /**
+     * Colour Series Logo
+     * @description Draw the logo in the text colour or the accent colour.
+     */
+    patch: operations["colour_series_logo_api_catalog_series_hardcover__external_id__logo_patch"];
+    trace?: never;
+  };
+  "/api/catalog/series/hardcover/{external_id}/logo/commons": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Copy Series Logo
+     * @description Download a Wikimedia Commons file once and save it, with its licence and source page.
+     */
+    post: operations["copy_series_logo_api_catalog_series_hardcover__external_id__logo_commons_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/shows/{show_id}/logo": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Show Logo
+     * @description The saved show logo.
+     */
+    get: operations["get_show_logo_api_radio_shows__show_id__logo_get"];
+    /**
+     * Upload Show Logo
+     * @description Save a logo for your show: an uploaded file, or a cut-out of the show's artwork.
+     */
+    put: operations["upload_show_logo_api_radio_shows__show_id__logo_put"];
+    post?: never;
+    /**
+     * Remove Show Logo
+     * @description Remove the show's logo; its name is shown as a wordmark again.
+     */
+    delete: operations["remove_show_logo_api_radio_shows__show_id__logo_delete"];
+    options?: never;
+    head?: never;
+    /**
+     * Colour Show Logo
+     * @description Draw the show's logo in the text colour or the accent colour.
+     */
+    patch: operations["colour_show_logo_api_radio_shows__show_id__logo_patch"];
+    trace?: never;
+  };
+  "/api/radio/shows/{show_id}/logo/commons": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Copy Show Logo
+     * @description Download a Wikimedia Commons file once and save it as the show's logo.
+     */
+    post: operations["copy_show_logo_api_radio_shows__show_id__logo_commons_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/logos/commons": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Search Commons
+     * @description Search Wikimedia Commons for logo files. A file that mentions neither the series (or show)
+     *     name nor a person's surname is flagged as a probable wrong match.
+     */
+    get: operations["search_commons_api_logos_commons_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/lists": {
     parameters: {
       query?: never;
@@ -7828,6 +7953,14 @@ export interface components {
       /** Url */
       url: string;
     };
+    /** ColourBody */
+    ColourBody: {
+      /**
+       * Colour
+       * @enum {string}
+       */
+      colour: "text" | "accent";
+    };
     /** CombineRequest */
     CombineRequest: {
       /**
@@ -7944,6 +8077,46 @@ export interface components {
       results: {
         [key: string]: unknown;
       }[];
+    };
+    /** CommonsChoice */
+    CommonsChoice: {
+      /** Title */
+      title: string;
+      /**
+       * Colour
+       * @default text
+       * @enum {string}
+       */
+      colour: "text" | "accent";
+    };
+    /** CommonsResult */
+    CommonsResult: {
+      /** Title */
+      title: string;
+      /** Thumbnail Url */
+      thumbnail_url: string | null;
+      /** Width */
+      width: number;
+      /** Height */
+      height: number;
+      /**
+       * Format
+       * @enum {string}
+       */
+      format: "png" | "webp" | "svg";
+      /** Licence */
+      licence: string | null;
+      /** Source Page */
+      source_page: string;
+      /** Description */
+      description: string;
+      /** Probable Wrong Match */
+      probable_wrong_match: boolean;
+    };
+    /** CommonsResults */
+    CommonsResults: {
+      /** Items */
+      items: components["schemas"]["CommonsResult"][];
     };
     /** CommunityListCard */
     CommunityListCard: {
@@ -10572,6 +10745,36 @@ export interface components {
       /** Settings Revision */
       settings_revision: string;
     };
+    /** LogoView */
+    LogoView: {
+      /** Url */
+      url: string;
+      /**
+       * Format
+       * @enum {string}
+       */
+      format: "png" | "webp" | "svg";
+      /**
+       * Colour
+       * @enum {string}
+       */
+      colour: "text" | "accent";
+      /**
+       * Source
+       * @enum {string}
+       */
+      source: "upload" | "cover" | "commons";
+      /** Source Title */
+      source_title?: string | null;
+      /** Licence */
+      licence?: string | null;
+      /** Source Url */
+      source_url?: string | null;
+      /** Saved Path */
+      saved_path: string;
+      /** Updated At */
+      updated_at?: string | null;
+    };
     /** MAMAccount */
     MAMAccount: {
       /**
@@ -12982,6 +13185,7 @@ export interface components {
       logo_colour: string | null;
       /** Logo Source */
       logo_source: string | null;
+      logo?: components["schemas"]["LogoView"] | null;
       /** Series Count */
       series_count: number;
       /** Episode Count */
@@ -13076,6 +13280,7 @@ export interface components {
       logo_colour: string | null;
       /** Logo Source */
       logo_source: string | null;
+      logo?: components["schemas"]["LogoView"] | null;
       /** Series Count */
       series_count: number;
       /** Episode Count */
@@ -14977,6 +15182,7 @@ export interface components {
        * @default 0
        */
       incomplete_entries: number;
+      logo?: components["schemas"]["LogoView"] | null;
     };
     /** SettingsView */
     SettingsView: {
@@ -20721,6 +20927,419 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_series_logo_api_catalog_series_hardcover__external_id__logo_get: {
+    parameters: {
+      query?: never;
+      header?: {
+        "if-none-match"?: string | null;
+      };
+      path: {
+        external_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "image/png": unknown;
+          "image/webp": unknown;
+          "image/svg+xml": unknown;
+        };
+      };
+      /** @description Not Modified */
+      304: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  upload_series_logo_api_catalog_series_hardcover__external_id__logo_put: {
+    parameters: {
+      query?: {
+        source?: "upload" | "cover";
+        title?: string | null;
+        colour?: "text" | "accent";
+      };
+      header?: never;
+      path: {
+        external_id: string;
+      };
+      cookie?: never;
+    };
+    /** @description The logo file itself: PNG, WebP or SVG, up to 1 MB. */
+    requestBody: {
+      content: {
+        "image/png": string;
+        "image/webp": string;
+        "image/svg+xml": string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LogoView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  remove_series_logo_api_catalog_series_hardcover__external_id__logo_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        external_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  colour_series_logo_api_catalog_series_hardcover__external_id__logo_patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        external_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ColourBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LogoView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  copy_series_logo_api_catalog_series_hardcover__external_id__logo_commons_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        external_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CommonsChoice"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LogoView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_show_logo_api_radio_shows__show_id__logo_get: {
+    parameters: {
+      query?: never;
+      header?: {
+        "if-none-match"?: string | null;
+      };
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "image/png": unknown;
+          "image/webp": unknown;
+          "image/svg+xml": unknown;
+        };
+      };
+      /** @description Not Modified */
+      304: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  upload_show_logo_api_radio_shows__show_id__logo_put: {
+    parameters: {
+      query?: {
+        source?: "upload" | "cover";
+        title?: string | null;
+        colour?: "text" | "accent";
+      };
+      header?: never;
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    /** @description The logo file itself: PNG, WebP or SVG, up to 1 MB. */
+    requestBody: {
+      content: {
+        "image/png": string;
+        "image/webp": string;
+        "image/svg+xml": string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LogoView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  remove_show_logo_api_radio_shows__show_id__logo_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  colour_show_logo_api_radio_shows__show_id__logo_patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ColourBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LogoView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  copy_show_logo_api_radio_shows__show_id__logo_commons_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CommonsChoice"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LogoView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  search_commons_api_logos_commons_get: {
+    parameters: {
+      query: {
+        q: string;
+        name?: string;
+        people?: string[] | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CommonsResults"];
+        };
       };
       /** @description Validation Error */
       422: {

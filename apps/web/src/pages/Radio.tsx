@@ -23,6 +23,8 @@ import type { components } from "../api/schema";
 import { Empty, Loading, Notice } from "../components";
 import BookDialog from "../components/BookDialog";
 import SectionToolbar from "../components/SectionToolbar";
+import LogoMask from "../components/LogoMask";
+import LogoPanel from "../components/LogoPanel";
 import ShowArt from "../components/ShowArt";
 import SidePanel from "../components/SidePanel";
 import StatusChip from "../components/StatusChip";
@@ -604,6 +606,8 @@ function RadioShow({ canEdit }: { canEdit: boolean }) {
     onSuccess: () => cache.invalidateQueries({ queryKey: ["radio"] }),
   });
   const [episodeId, setEpisodeId] = useState<string | null>(null);
+  const [logoOpen, setLogoOpen] = useState(false);
+  const [logoMessage, setLogoMessage] = useState("");
   if (show.isPending) return <Loading />;
   if (show.error || !show.data)
     return (
@@ -637,8 +641,18 @@ function RadioShow({ canEdit }: { canEdit: boolean }) {
       </Link>
       <header className="radio-show-head">
         <div className="radio-show-head__text">
-          {/* No logo yet (UX-43): the name is set as a wordmark. */}
-          <h1 id="show-name" className="radio-wordmark">
+          {/* The show logo in one colour (UX-43), or the name set as a wordmark. */}
+          {data.logo && (
+            <LogoMask
+              url={data.logo.url}
+              label={data.title}
+              colour={data.logo.colour}
+            />
+          )}
+          <h1
+            id="show-name"
+            className={data.logo ? "series-head__name" : "radio-wordmark"}
+          >
             {data.title}
           </h1>
           <p className="radio-show-meta">
@@ -705,6 +719,14 @@ function RadioShow({ canEdit }: { canEdit: boolean }) {
                 />
                 {pending ? "Refreshing…" : "Refresh"}
               </button>
+              <button
+                type="button"
+                className="btn btn--quiet"
+                aria-haspopup="dialog"
+                onClick={() => setLogoOpen(true)}
+              >
+                {data.logo ? "Change logo" : "Add a logo"}
+              </button>
             </div>
           )}
           <p className="small muted" role="status">
@@ -716,6 +738,7 @@ function RadioShow({ canEdit }: { canEdit: boolean }) {
                   ? `Episode list read ${day(data.refreshed_at, true)}.`
                   : ""}
             {follow.isSuccess && !follow.isPending && " Follow choice saved."}
+            {logoMessage && ` ${logoMessage}`}
           </p>
           <Notice error={follow.error || refresh.error} />
         </div>
@@ -727,6 +750,24 @@ function RadioShow({ canEdit }: { canEdit: boolean }) {
           />
         </div>
       </header>
+      {logoOpen && (
+        <LogoPanel
+          target={{ kind: "show", showId: data.id }}
+          name={data.title}
+          people={[]}
+          logo={data.logo}
+          covers={
+            data.artwork_url
+              ? [{ label: "Artwork", title: data.title, url: data.artwork_url }]
+              : []
+          }
+          onClose={() => setLogoOpen(false)}
+          onChanged={(message) => {
+            setLogoMessage(message);
+            void cache.invalidateQueries({ queryKey: ["radio"] });
+          }}
+        />
+      )}
       <ShowEpisodes data={data} open={(id) => setEpisodeId(id)} />
       {episodeId && (
         <EpisodePanel

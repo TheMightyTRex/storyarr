@@ -1607,6 +1607,12 @@ class RadioShow(Identity, Base):
     logo_path: Mapped[str | None] = mapped_column(String(300))
     logo_colour: Mapped[str | None] = mapped_column(String(20))
     logo_source: Mapped[str | None] = mapped_column(String(20))
+    # Where the logo came from in words (the artwork, a file name, a Commons file), with the
+    # licence and source page for Commons, and when it changed (storyarr_0088).
+    logo_title: Mapped[str | None] = mapped_column(String(300))
+    logo_licence: Mapped[str | None] = mapped_column(String(200))
+    logo_source_url: Mapped[str | None] = mapped_column(String(1000))
+    logo_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     follow: Mapped[str] = mapped_column(
         String(20), default="from_now_on", server_default="from_now_on"
     )
@@ -1615,6 +1621,32 @@ class RadioShow(Identity, Base):
     operation_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("operations.id", ondelete="SET NULL")
     )
+
+
+class SeriesLogo(Base):
+    """A series logo (UX-43): one per series, saved by an admin and shared by everyone."""
+
+    __tablename__ = "series_logos"
+    __table_args__ = (
+        CheckConstraint("provider = 'hardcover'", name="series_logos_provider_check"),
+        CheckConstraint("colour IN ('text', 'accent')", name="series_logos_colour_check"),
+        CheckConstraint(
+            "source IN ('upload', 'cover', 'commons')", name="series_logos_source_check"
+        ),
+    )
+    provider: Mapped[str] = mapped_column(String(20), primary_key=True)
+    external_id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    # Relative to settings.series_logos_root, such as hardcover-1042.png.
+    file: Mapped[str] = mapped_column(String(100))
+    colour: Mapped[str] = mapped_column(String(20), default="text", server_default="text")
+    source: Mapped[str] = mapped_column(String(20))
+    # In words: the cover it was cut from, the uploaded file's name or the Commons file.
+    source_title: Mapped[str | None] = mapped_column(String(300))
+    # Commons only: the licence and the file's page.
+    licence: Mapped[str | None] = mapped_column(String(200))
+    source_url: Mapped[str | None] = mapped_column(String(1000))
+    updated_by: Mapped[UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class RadioSeries(Identity, Base):

@@ -6523,6 +6523,709 @@
         }
       }
     },
+    "/api/catalog/series/hardcover/{external_id}/logo": {
+      "get": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Get Series Logo",
+        "description": "The saved series logo. SVG files are served cleaned, with a sandbox policy.",
+        "operationId": "get_series_logo_api_catalog_series_hardcover__external_id__logo_get",
+        "parameters": [
+          {
+            "name": "external_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "External Id"
+            }
+          },
+          {
+            "name": "if-none-match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-None-Match"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/png": {},
+              "image/webp": {},
+              "image/svg+xml": {}
+            }
+          },
+          "304": {
+            "description": "Not Modified"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Upload Series Logo",
+        "description": "Save a logo for everyone: an uploaded file, or a cut-out of one of the series' covers.",
+        "operationId": "upload_series_logo_api_catalog_series_hardcover__external_id__logo_put",
+        "parameters": [
+          {
+            "name": "external_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "External Id"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "upload",
+                "cover"
+              ],
+              "type": "string",
+              "default": "upload",
+              "title": "Source"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Title"
+            }
+          },
+          {
+            "name": "colour",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "text",
+                "accent"
+              ],
+              "type": "string",
+              "default": "text",
+              "title": "Colour"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "description": "The logo file itself: PNG, WebP or SVG, up to 1 MB.",
+          "content": {
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/svg+xml": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Colour Series Logo",
+        "description": "Draw the logo in the text colour or the accent colour.",
+        "operationId": "colour_series_logo_api_catalog_series_hardcover__external_id__logo_patch",
+        "parameters": [
+          {
+            "name": "external_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "External Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ColourBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Remove Series Logo",
+        "description": "Remove the logo; the series name is shown as a wordmark again.",
+        "operationId": "remove_series_logo_api_catalog_series_hardcover__external_id__logo_delete",
+        "parameters": [
+          {
+            "name": "external_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "External Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/catalog/series/hardcover/{external_id}/logo/commons": {
+      "post": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Copy Series Logo",
+        "description": "Download a Wikimedia Commons file once and save it, with its licence and source page.",
+        "operationId": "copy_series_logo_api_catalog_series_hardcover__external_id__logo_commons_post",
+        "parameters": [
+          {
+            "name": "external_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "External Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommonsChoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/shows/{show_id}/logo": {
+      "get": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Get Show Logo",
+        "description": "The saved show logo.",
+        "operationId": "get_show_logo_api_radio_shows__show_id__logo_get",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          },
+          {
+            "name": "if-none-match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-None-Match"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/png": {},
+              "image/webp": {},
+              "image/svg+xml": {}
+            }
+          },
+          "304": {
+            "description": "Not Modified"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Upload Show Logo",
+        "description": "Save a logo for your show: an uploaded file, or a cut-out of the show's artwork.",
+        "operationId": "upload_show_logo_api_radio_shows__show_id__logo_put",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "upload",
+                "cover"
+              ],
+              "type": "string",
+              "default": "upload",
+              "title": "Source"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Title"
+            }
+          },
+          {
+            "name": "colour",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "text",
+                "accent"
+              ],
+              "type": "string",
+              "default": "text",
+              "title": "Colour"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "description": "The logo file itself: PNG, WebP or SVG, up to 1 MB.",
+          "content": {
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/svg+xml": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Colour Show Logo",
+        "description": "Draw the show's logo in the text colour or the accent colour.",
+        "operationId": "colour_show_logo_api_radio_shows__show_id__logo_patch",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ColourBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Remove Show Logo",
+        "description": "Remove the show's logo; its name is shown as a wordmark again.",
+        "operationId": "remove_show_logo_api_radio_shows__show_id__logo_delete",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/shows/{show_id}/logo/commons": {
+      "post": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Copy Show Logo",
+        "description": "Download a Wikimedia Commons file once and save it as the show's logo.",
+        "operationId": "copy_show_logo_api_radio_shows__show_id__logo_commons_post",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommonsChoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logos/commons": {
+      "get": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Search Commons",
+        "description": "Search Wikimedia Commons for logo files. A file that mentions neither the series (or show)\nname nor a person's surname is flagged as a probable wrong match.",
+        "operationId": "search_commons_api_logos_commons_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Q"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 300,
+              "default": "",
+              "title": "Name"
+            }
+          },
+          {
+            "name": "people",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "People"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonsResults"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/lists": {
       "get": {
         "tags": [
@@ -24133,6 +24836,23 @@
         ],
         "title": "CollectionURL"
       },
+      "ColourBody": {
+        "properties": {
+          "colour": {
+            "type": "string",
+            "enum": [
+              "text",
+              "accent"
+            ],
+            "title": "Colour"
+          }
+        },
+        "type": "object",
+        "required": [
+          "colour"
+        ],
+        "title": "ColourBody"
+      },
       "CombineRequest": {
         "properties": {
           "library_id": {
@@ -24353,6 +25073,118 @@
           "results"
         ],
         "title": "CommandReconciliationView"
+      },
+      "CommonsChoice": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 250,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "colour": {
+            "type": "string",
+            "enum": [
+              "text",
+              "accent"
+            ],
+            "title": "Colour",
+            "default": "text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "CommonsChoice"
+      },
+      "CommonsResult": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "thumbnail_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thumbnail Url"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "png",
+              "webp",
+              "svg"
+            ],
+            "title": "Format"
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence"
+          },
+          "source_page": {
+            "type": "string",
+            "title": "Source Page"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "probable_wrong_match": {
+            "type": "boolean",
+            "title": "Probable Wrong Match"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "thumbnail_url",
+          "width",
+          "height",
+          "format",
+          "licence",
+          "source_page",
+          "description",
+          "probable_wrong_match"
+        ],
+        "title": "CommonsResult"
+      },
+      "CommonsResults": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CommonsResult"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "CommonsResults"
       },
       "CommunityListCard": {
         "properties": {
@@ -31482,6 +32314,98 @@
         ],
         "title": "ListView"
       },
+      "LogoView": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "png",
+              "webp",
+              "svg"
+            ],
+            "title": "Format"
+          },
+          "colour": {
+            "type": "string",
+            "enum": [
+              "text",
+              "accent"
+            ],
+            "title": "Colour"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "upload",
+              "cover",
+              "commons"
+            ],
+            "title": "Source"
+          },
+          "source_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Title"
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "saved_path": {
+            "type": "string",
+            "title": "Saved Path"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "format",
+          "colour",
+          "source",
+          "saved_path"
+        ],
+        "title": "LogoView"
+      },
       "MAMAccount": {
         "properties": {
           "checked_at": {
@@ -38006,6 +38930,16 @@
             ],
             "title": "Logo Source"
           },
+          "logo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LogoView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "series_count": {
             "type": "integer",
             "title": "Series Count"
@@ -38349,6 +39283,16 @@
               }
             ],
             "title": "Logo Source"
+          },
+          "logo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LogoView"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "series_count": {
             "type": "integer",
@@ -43323,6 +44267,16 @@
             "type": "integer",
             "title": "Incomplete Entries",
             "default": 0
+          },
+          "logo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LogoView"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",

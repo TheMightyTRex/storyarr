@@ -2747,6 +2747,471 @@
     flex-wrap: wrap;
     gap: var(--space-2);
   }
+  /* Solid-colour logo (UX-43, 2 November 2026): any logo image with a transparent background, drawn
+     as one solid colour through a CSS mask, so it follows the theme and High contrast. Set --logo to
+     url("…") and --logo-ratio to the image's width / height. Text colour by default;
+     data-colour="accent" for the accent colour. Markup: span.logo-mask[role="img"][aria-label]. */
+  .logo-mask {
+    --logo-colour: var(--color-text);
+    display: block;
+    width: min(100%, var(--logo-w, 520px));
+    max-height: var(--logo-max-h, 160px);
+    aspect-ratio: var(--logo-ratio, 4 / 1);
+    background: var(--logo-colour);
+    -webkit-mask: var(--logo) left center / contain no-repeat;
+    mask: var(--logo) left center / contain no-repeat;
+  }
+  .logo-mask[data-colour="accent"] {
+    --logo-colour: var(--color-accent);
+  }
+  .logo-mask[hidden] {
+    display: none;
+  }
+  /* Wordmark: a name set large in place of a logo, when there is no logo yet. */
+  .wordmark {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+  }
+
+  /* Series header (UX-43): the logo (or the name as a wordmark) above the meta line, a short
+     description, progress and the actions; a fan of the first covers on the right, hidden on
+     phones. The name stays the page's h1 under the logo.
+     Markup: header.series-head > .series-head__text (> .logo-mask, h1.series-head__name
+     (.wordmark when there is no logo), .series-head__meta, .series-head__desc,
+     .series-head__progress, .series-head__actions) + .cover-fan[aria-hidden]. */
+  .series-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-8);
+    align-items: center;
+    padding: var(--space-8);
+    border-bottom: 1px solid var(--color-divider);
+    background: var(--color-surface);
+  }
+  .series-head__text {
+    display: grid;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .series-head__text > .logo-mask {
+    --logo-w: 340px;
+  }
+  .series-head__name {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-heading);
+  }
+  .series-head__name.wordmark {
+    color: var(--color-text);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+  }
+  .series-head__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+  .series-head__meta strong {
+    color: var(--color-text);
+  }
+  .series-head__desc {
+    max-width: 68ch;
+    margin: 0;
+  }
+  .series-head__progress {
+    display: grid;
+    gap: var(--space-1);
+    max-width: 420px;
+    font-size: var(--text-sm);
+  }
+  .series-head__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  /* Fan of covers: the first four covers of a series, overlapping and turned a little. Decoration
+     only (aria-hidden): the books themselves are listed below. */
+  .cover-fan {
+    position: relative;
+    width: 300px;
+    height: 240px;
+  }
+  .cover-fan > * {
+    position: absolute;
+    bottom: 0;
+    width: 128px;
+    aspect-ratio: 2 / 3;
+    border: 2px solid var(--color-surface);
+    background: var(--color-surface-sunken);
+    box-shadow: var(--shadow-raised);
+    object-fit: cover;
+  }
+  .cover-fan > :nth-child(1) {
+    left: 0;
+    transform: rotate(-8deg);
+  }
+  .cover-fan > :nth-child(2) {
+    left: 56px;
+    transform: rotate(-3deg);
+  }
+  .cover-fan > :nth-child(3) {
+    left: 112px;
+    transform: rotate(2deg);
+  }
+  .cover-fan > :nth-child(4) {
+    left: 168px;
+    transform: rotate(7deg);
+  }
+
+  /* Logo slide-out (UX-43): the saved copy, three ways to get a logo as tabs, the colour and a
+     light and dark preview. Markup: .logo-saved (> h3, .logo-saved__row > .logo-mask +
+     .logo-saved__text), .logo-tabs[role=tablist] > button[role=tab], .logo-pane[role=tabpanel],
+     .logo-preview > .logo-preview__light + .logo-preview__dark. */
+  .logo-saved {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--color-divider);
+    background: var(--color-surface);
+  }
+  .logo-saved h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--text-md);
+  }
+  .logo-saved__row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+  }
+  .logo-saved__row > .logo-mask {
+    --logo-w: 140px;
+  }
+  .logo-saved__text {
+    display: grid;
+    gap: var(--space-1);
+    min-width: 0;
+    font-size: var(--text-sm);
+  }
+  .logo-saved__text code {
+    overflow-wrap: anywhere;
+  }
+  .logo-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .logo-tabs > button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--control-h);
+    padding: var(--space-1) var(--space-2);
+    border: 0;
+    background: none;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    text-align: center;
+    cursor: pointer;
+  }
+  .logo-tabs > button:hover {
+    background: var(--color-control-active);
+    color: var(--color-text);
+  }
+  .logo-tabs > button[aria-selected="true"] {
+    color: var(--color-text);
+  }
+  .logo-tabs > button[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 3px;
+    background: var(--color-accent);
+  }
+  .logo-tabs > button:focus-visible {
+    outline: var(--focus-w) solid var(--color-focus);
+    outline-offset: calc(-1 * var(--focus-w));
+  }
+  .logo-tabs svg {
+    flex: none;
+  }
+  .logo-pane {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    min-width: 0;
+  }
+  .logo-pane[hidden] {
+    display: none;
+  }
+  .logo-pane:focus-visible {
+    outline: var(--focus-w) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .logo-step {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: var(--weight-heading);
+  }
+  /* Find online: a form on one line, then the results with their licence and any warning. */
+  .inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .inline-form > .input {
+    flex: 1 1 200px;
+    min-width: 0;
+  }
+  .logo-candidates {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .logo-candidate {
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: var(--space-2) var(--space-3);
+    align-items: center;
+    padding: var(--space-2);
+    border: 1px solid var(--color-divider);
+  }
+  .logo-candidate[aria-current="true"] {
+    border-color: var(--color-accent);
+    box-shadow: inset 4px 0 0 var(--color-accent);
+  }
+  .logo-candidate__art {
+    display: grid;
+    place-items: center;
+    height: 64px;
+    padding: var(--space-2);
+    background: var(--color-surface-sunken);
+  }
+  .logo-candidate__art > .logo-mask {
+    width: 112px;
+    height: 48px;
+    aspect-ratio: auto;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+  .logo-candidate__text {
+    display: grid;
+    justify-items: start;
+    gap: 2px;
+    min-width: 0;
+    font-size: var(--text-sm);
+  }
+  .logo-candidate__text > * {
+    max-width: 100%;
+  }
+  .logo-candidate__text b {
+    overflow-wrap: anywhere;
+  }
+  .logo-candidate .chip {
+    height: auto;
+    min-height: 0;
+    white-space: normal;
+  }
+  .logo-candidate > .btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  /* From a cover: pick a cover, draw a box, make it one colour. */
+  .cover-pick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .cover-pick label {
+    position: relative;
+    display: grid;
+    gap: var(--space-1);
+    width: 76px;
+    font-size: var(--text-xs);
+    cursor: pointer;
+  }
+  .cover-pick input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .cover-pick img {
+    width: 76px;
+    aspect-ratio: 2 / 3;
+    border: 3px solid transparent;
+    background: var(--color-surface-sunken);
+    object-fit: cover;
+  }
+  .cover-pick input:checked + img {
+    border-color: var(--color-accent);
+  }
+  .cover-pick input:focus-visible + img {
+    outline: var(--focus-w) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .logo-crop {
+    display: grid;
+    grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+  }
+  .logo-crop__canvas {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    background: var(--color-surface-sunken);
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .logo-crop__canvas:focus-visible {
+    outline: var(--focus-w) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .logo-crop__controls {
+    display: grid;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .logo-crop__readout {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+  }
+  /* A slider (input type=range), 44px tall. */
+  .range {
+    width: 100%;
+    height: var(--control-h);
+    margin: 0;
+    accent-color: var(--color-accent);
+    cursor: pointer;
+  }
+  .range:focus-visible {
+    outline: var(--focus-w) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  /* Checks behind a cut-out show what is transparent. */
+  .checker {
+    padding: var(--space-2);
+    border: 1px solid var(--color-divider);
+    background-color: #fff;
+    background-image:
+      linear-gradient(45deg, #d6d9df 25%, transparent 25%, transparent 75%, #d6d9df 75%),
+      linear-gradient(45deg, #d6d9df 25%, transparent 25%, transparent 75%, #d6d9df 75%);
+    background-position:
+      0 0,
+      8px 8px;
+    background-size: 16px 16px;
+  }
+  .checker canvas,
+  .checker img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  /* Upload your own. */
+  .logo-drop {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-2);
+    min-width: 0;
+    padding: var(--space-4);
+    border: 2px dashed var(--color-border);
+  }
+  .logo-drop input {
+    width: 100%;
+    max-width: 100%;
+    font-size: var(--text-sm);
+  }
+  .logo-drop input::file-selector-button {
+    min-height: var(--control-h);
+    margin-right: var(--space-3);
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-weight: var(--weight-strong);
+    cursor: pointer;
+  }
+  .logo-drop input::file-selector-button:hover {
+    background: var(--color-surface-sunken);
+  }
+  /* The logo on the Light and Dark themes' surfaces, whatever theme is on. */
+  .logo-preview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+  .logo-preview > * {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: 1px solid var(--color-divider);
+  }
+  .logo-preview__light {
+    --color-text: #141416;
+    --color-accent: #0b5f5a;
+    background: #f7faff;
+    color: #141416;
+  }
+  .logo-preview__dark {
+    --color-text: #f3f4f6;
+    --color-accent: #5ed3c6;
+    background: #1c2738;
+    color: #f3f4f6;
+  }
+  .logo-preview .logo-mask {
+    --logo-w: 220px;
+    --logo-max-h: 96px;
+  }
+  .logo-preview small {
+    font-size: var(--text-xs);
+  }
+  @media (max-width: 720px) {
+    .series-head {
+      grid-template-columns: minmax(0, 1fr);
+      padding: var(--space-5) var(--space-4);
+    }
+    .cover-fan {
+      display: none;
+    }
+    .logo-crop,
+    .logo-saved__row,
+    .logo-candidate {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .logo-candidate__art {
+      justify-items: start;
+    }
+    .logo-tabs > button {
+      flex-direction: column;
+      gap: 2px;
+    }
+  }
+
   /* Back link: returns to where you came from, named for it ("Back to My library"). */
   .back-link {
     display: inline-flex;

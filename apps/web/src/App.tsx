@@ -648,7 +648,12 @@ function Shell({ auth }: { auth: Auth }) {
                   />
                   <Route
                     path="/series/hardcover/:externalId"
-                    element={<Series canEdit={auth.user.role !== "viewer"} />}
+                    element={
+                      <Series
+                        canEdit={auth.user.role !== "viewer"}
+                        canManageLogo={auth.user.role === "admin"}
+                      />
+                    }
                   />
                   <Route
                     path="/metadata"

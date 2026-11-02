@@ -569,3 +569,58 @@ test("the Series tab's Radio chip shows radio shows; Discover says what is missi
   ).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("a show's logo is cut from its artwork with the same Change logo slide-out (UX-43)", async ({
+  page,
+}) => {
+  const { errors } = await mockApi(page);
+  const uploads: { search: string; type: string; head: string }[] = [];
+  // Routes added later answer first: artwork with a light name on a dark ground, and the upload.
+  await page.route("**/api/radio/shows/s1/artwork", (route) =>
+    route.fulfill({
+      contentType: "image/svg+xml",
+      body: `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect width="300" height="300" fill="#0d1b2a"/><rect x="40" y="30" width="220" height="50" fill="#f5f5f5"/></svg>`,
+    }),
+  );
+  await page.route("**/api/radio/shows/s1/logo?*", (route) => {
+    const request = route.request();
+    uploads.push({
+      search: new URL(request.url()).search,
+      type: request.headers()["content-type"] || "",
+      head: request.postDataBuffer()?.subarray(0, 4).toString("hex") || "",
+    });
+    return route.fulfill({
+      json: {
+        url: "/api/radio/shows/s1/logo?v=1",
+        format: "png",
+        colour: "text",
+        source: "cover",
+        source_title: "the artwork",
+        licence: null,
+        source_url: null,
+        saved_path: "config/series-logos/radio-s1.png",
+        updated_at: "2026-11-02T10:00:00Z",
+      },
+    });
+  });
+  await page.goto("/library/radio/shows/s1");
+  await page.getByRole("button", { name: "Add a logo", exact: true }).click();
+  const panel = page.getByRole("dialog", { name: "Show logo" });
+  await expect(
+    panel.getByRole("tab", { name: "From the artwork" }),
+  ).toHaveAttribute("aria-selected", "true");
+  await expect(
+    panel.getByText("No logo saved. The show name is shown as a wordmark."),
+  ).toBeVisible();
+  await expect(
+    panel.locator(".logo-crop__controls [role=status]"),
+  ).toContainText("pixels");
+  await panel.getByRole("button", { name: "Save logo" }).click();
+  await expect(panel).toBeHidden();
+  expect(uploads).toHaveLength(1);
+  expect(new URLSearchParams(uploads[0].search).get("source")).toBe("cover");
+  expect(uploads[0].type).toBe("image/png");
+  expect(uploads[0].head).toBe("89504e47");
+  await expect(page.getByRole("button", { name: "Add a logo" })).toBeFocused();
+  expect(errors).toEqual([]);
+});

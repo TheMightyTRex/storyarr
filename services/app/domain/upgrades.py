@@ -252,7 +252,12 @@ RELEASES = [
         id="2026.11.02",
         title="Cover actions, shelf arrows and radio",
         highlights=[
-            # TODO(0.5.8): add the highlight for the series header with logo (UX-43).
+            "Series pages have a new header: the series logo above the name in one solid "
+            "colour, or the name set large when there is no logo, with the author, the number of "
+            "books, the next book, a short description, how many you have and the first covers.",
+            "Admins add a series logo for everyone with Change logo: cut it out of one of the "
+            "covers, find it on Wikimedia Commons with its licence, or upload a file. Storyarr "
+            "keeps a copy in its config folder. Radio show pages have Change logo too.",
             "A new header: each page's tabs have a row of their own, with icons. On phones, the "
             "menu holds search as well as every section.",
             "Every slide-out panel works the same way, and the accent colour is teal.",
@@ -278,12 +283,15 @@ RELEASES = [
             ),
         ],
         database_changes=[
-            "New tables for radio: stations, shows, series and episodes. Nothing else changes.",
+            "New tables for radio: stations, shows, series and episodes.",
+            "A new table for series logos (storyarr_0088_series_logos), and where each radio "
+            "show's logo came from. The logo files are kept in the config folder, in "
+            "series-logos. Nothing else changes.",
         ],
         rollback=(
             "To go back to v0.4.8, run python -m app.downgrade storyarr_0086_notification_title "
-            "in the Storyarr container first. Only the radio tables and the shows in them are "
-            "removed."
+            "in the Storyarr container first. Only the radio tables, the shows in them and the "
+            "series logos are removed. The logo files stay in the config folder."
         ),
     ),
 ]

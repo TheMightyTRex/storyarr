@@ -679,3 +679,26 @@
 .series-start-status p {
   margin: 0;
 }
+
+/* The series header (UX-43) is the shared library's .series-head. Storyarr's global h1, paragraph
+   and old hero rules would win over the library's layer, so they step back here. */
+.series-head :is(h1, p),
+.series-head .series-ownership,
+.radio-show-head h1.series-head__name {
+  margin: revert-layer;
+  font-size: revert-layer;
+  font-weight: revert-layer;
+  letter-spacing: revert-layer;
+  line-height: revert-layer;
+  color: revert-layer;
+}
+.series-head .series-ownership-track {
+  margin-bottom: 0;
+}
+
+/* The Change logo slide-out (UX-43) is built from the shared library's classes. Storyarr's global
+   button, label and input rules (this layer) would restyle its tabs, switches, slider, cover choice
+   and file field, so they step back to the library's look. */
+.logo-panel :is(.logo-tabs > button, label, input:not(.input), output) {
+  all: revert-layer;
+}
