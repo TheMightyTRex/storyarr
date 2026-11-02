@@ -15,7 +15,7 @@ in **Settings**.
 | **Library folders** | Choose where imported books are saved. Storyarr checks it can read and write each folder. |
 | **Sources** | Connect Goodreads, StoryGraph or Hardcover, then choose the lists to keep up with. |
 | **Automation** | Choose which kinds of books new follows include, and whether wanted books are searched again. |
-| **Layout and display** | Choose Classic or Shelf, a theme, a text size and any reading aids. |
+| **Layout and display** | Choose a theme, a text size, any reading aids, and where the buttons on book covers sit. |
 
 Members see a shorter version: Metadata, download preferences, Sources, Automation and Layout.
 

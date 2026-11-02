@@ -20,7 +20,7 @@ licence.
   series in one step.
 - **A light theme and accessibility settings:** text size up to 175%, a low-vision font, high contrast,
   reduced motion, underlined links and wider spacing. WCAG 2.2 AA contrast in every theme.
-- **Two layouts:** Classic, or Shelf with a slim icon menu.
+- **One layout:** Shelf, with a slim icon menu and the page tabs in the header.
 - **Safe upgrades:** a settings backup before every upgrade, a wizard that explains each change, and a way
   back. Automatic upgrades if you prefer.
 - **Speed:** request counts that took minutes on large libraries now take under a second.
@@ -39,7 +39,8 @@ The full list is in the [changelog](CHANGELOG.md).
 - **Auto download** — find and select eligible releases using list policies and approved import routes.
 - **Download priorities** — rank sources and formats, apply size and seed preferences, and control download capacity.
 - **Book discovery** — browse collections, awards, authors, and series.
-- **Download sources** — connect MyAnonamouse, Prowlarr, and AudiobookBay; send transfers to qBittorrent.
+- **Download sources** — connect MyAnonamouse, Prowlarr, and AudiobookBay.
+- **Download clients** — qBittorrent, Transmission and Deluge for torrents, SABnzbd and NZBGet for Usenet, and slskd for Soulseek. [Setting up each client](docs/DOWNLOAD-CLIENTS.md).
 - **Notifications** — personal and installation alerts through Discord, ntfy, Apprise, and JSON webhooks, with discovery digests. [Setup and payload documentation](docs/NOTIFICATIONS.md).
 - **Shared library** — individual accounts, reading lists, permissions, and download activity.
 - **Self-hosted** — Docker, PostgreSQL, and an MIT license.

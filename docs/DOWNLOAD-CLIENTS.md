@@ -1,7 +1,7 @@
-# Torrent download clients
+# Download clients
 
-Settings → Download clients supports qBittorrent, Transmission, and Deluge, alongside
-the existing Usenet clients. Save and test a connection, map its download folder to a
+Settings → Download clients (and the Download clients step of the setup wizard) supports qBittorrent,
+Transmission and Deluge for torrents, SABnzbd and NZBGet for Usenet, and slskd for Soulseek. Save and test a connection, map its download folder to a
 folder the worker can read. Torrent and Usenet sources use their respective default
 client; Soulseek uses slskd. A sole enabled client of a type is the automatic default.
 
@@ -89,3 +89,39 @@ tests. These tests do not certify a particular live server installation.
 Protocol references: [Transmission RPC](https://github.com/transmission/transmission/blob/4.0.6/docs/rpc-spec.md),
 [Deluge Web API](https://deluge.readthedocs.io/en/latest/reference/webapi.html), and
 [Deluge core API](https://deluge.readthedocs.io/en/latest/reference/api.html).
+
+## Usenet: SABnzbd and NZBGet
+
+NZB releases from Prowlarr need a Usenet client. Connect one in Settings → Download clients, or in the
+Download clients step of the setup wizard.
+
+**SABnzbd**
+1. Choose **Connect SABnzbd**.
+2. Enter the address Storyarr can reach, for example `http://sabnzbd:8080`.
+3. Paste the **API key** from SABnzbd's Config → General.
+4. Enter the **category** Storyarr should use (for example `books`). Create that category in SABnzbd first
+   (Config → Categories) and give it its own folder.
+5. Save, then test. Map SABnzbd's download folder to the folder the Storyarr worker can read.
+
+**NZBGet**
+1. Choose **Connect NZBGet**.
+2. Enter the address Storyarr can reach, for example `http://nzbget:6789`.
+3. Enter the **username** and **password** from NZBGet's Settings → Security (`ControlUsername` and
+   `ControlPassword`). A restricted user (`RestrictedUsername`) also works if it may add and read downloads.
+4. Enter the **category** Storyarr should use. Create it first in NZBGet's Settings → Categories, with its own
+   destination folder.
+5. Save, then test. Testing reads the category folder. Map NZBGet's download folder to the folder the
+   Storyarr worker can read.
+
+With both connected, choose which one is the default for Usenet. A client that is the only enabled one of its
+type is the default automatically.
+
+## Libraries on Unraid user shares or mergerfs
+
+Imports work when the library is an Unraid user share with a cache pool, or a mergerfs pool. These
+filesystems can report a new identity for the library folder after the first file is written, which used to
+stop imports with "Destination mount changed before publication"
+([Dewarr #61](https://github.com/logabell/dewarr/issues/61)). Storyarr places a small hidden file,
+`.book-search-root`, in each library folder and recognises the folder by it. Leave that file in place; it holds
+no personal data. An import planned before this fix may still be held: use **Cancel import**, then import
+again. Details are in [storage compatibility](STORAGE-COMPATIBILITY.md).

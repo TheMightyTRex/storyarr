@@ -25,7 +25,7 @@ export default function QuickAddStatus({
   ].join(" ");
   const routeProblem =
     held &&
-    /download route|download client|downloader|qBittorrent|SABnzbd|import destination|library destination/i.test(
+    /download route|download client|downloader|qBittorrent|Transmission|Deluge|SABnzbd|NZBGet|import destination|library destination/i.test(
       failure,
     );
   const noMatch =

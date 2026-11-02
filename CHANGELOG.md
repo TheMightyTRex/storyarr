@@ -30,6 +30,15 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 
 ### Fixed
 - Release dates show in British style (1 Nov 2026) whatever the browser's language.
+- **Libraries on Unraid user shares with a cache pool, and on mergerfs pools:** imports no longer stop with
+  "Destination mount changed before publication" when the library folder reports a new identity after the
+  first write ([Dewarr #61](https://github.com/logabell/dewarr/issues/61)). The fix came with Dewarr v0.3.9 and
+  is in every Storyarr release; earlier notes did not name Unraid or mergerfs. The download client guide now
+  explains it, including what to do with an import planned before the fix.
+
+### Documentation
+- **NZBGet:** the README and the download client guide now list NZBGet beside SABnzbd for Usenet, with setup
+  steps for both. NZBGet has been supported since v0.2.0, in Settings and in the setup wizard.
 
 ## v0.4.8 (1 November 2026)
 
