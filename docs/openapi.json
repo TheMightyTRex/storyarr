@@ -6590,7 +6590,7 @@
           "logos"
         ],
         "summary": "Upload Series Logo",
-        "description": "Save a logo for everyone: an uploaded file, or a cut-out of one of the series' covers.",
+        "description": "Save a logo for everyone: an uploaded file or a cut-out of a cover, an uploaded file, or a\nCommons file edited in the logo editor (with its licence and source page).",
         "operationId": "upload_series_logo_api_catalog_series_hardcover__external_id__logo_put",
         "parameters": [
           {
@@ -6609,7 +6609,8 @@
             "schema": {
               "enum": [
                 "upload",
-                "cover"
+                "cover",
+                "commons"
               ],
               "type": "string",
               "default": "upload",
@@ -6902,7 +6903,7 @@
           "logos"
         ],
         "summary": "Upload Show Logo",
-        "description": "Save a logo for your show: an uploaded file, or a cut-out of the show's artwork.",
+        "description": "Save a logo for your show: an uploaded file, a cut-out of the show's artwork, or a Commons\nfile edited in the logo editor (with its licence and source page).",
         "operationId": "upload_show_logo_api_radio_shows__show_id__logo_put",
         "parameters": [
           {
@@ -6922,7 +6923,8 @@
             "schema": {
               "enum": [
                 "upload",
-                "cover"
+                "cover",
+                "commons"
               ],
               "type": "string",
               "default": "upload",
@@ -7136,6 +7138,55 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logos/commons/file": {
+      "get": {
+        "tags": [
+          "logos"
+        ],
+        "summary": "Commons File",
+        "description": "One Commons file, fetched by the server and checked like an upload, so the logo editor can\nshow and edit it from Storyarr's own address. Nothing is saved.",
+        "operationId": "commons_file_api_logos_commons_file_get",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "title": "Title"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/png": {},
+              "image/webp": {},
+              "image/svg+xml": {}
+            }
+          },
+          "304": {
+            "description": "Not Modified"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "422": {
             "description": "Validation Error",

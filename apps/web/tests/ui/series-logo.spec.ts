@@ -56,6 +56,8 @@ async function mockSeries(
       request.method() === "GET"
     )
       return route.fulfill({ contentType: "image/svg+xml", body: LOGO });
+    if (path === "/api/logos/commons/file")
+      return route.fulfill({ contentType: "image/svg+xml", body: LOGO });
     if (request.method() !== "GET")
       writes.push({
         method: request.method(),
@@ -375,16 +377,65 @@ test("Find online shows the licence, warns about a wrong match and copies the ch
     .getByRole("button", { name: "Use this logo", exact: true })
     .click();
   await expect(results.nth(1)).toHaveAttribute("aria-current", "true");
+  // The chosen file opens in the same editor, read through Storyarr; a logo file with no background
+  // keeps its own shape.
+  await expect(
+    panel.getByRole("radio", { name: "Transparency" }),
+  ).toBeChecked();
+  await expect(panel.getByText(/^\d+ by \d+ pixels/)).toBeVisible();
+  await expect(panel.getByRole("radio", { name: "Most" })).toBeVisible();
   await panel
     .getByRole("radio", { name: "Accent colour" })
     .check({ force: true });
   await panel.getByRole("button", { name: "Save logo" }).click();
   await expect(panel).toBeHidden();
-  const post = writes.find((write) => write.path.endsWith("/logo/commons"));
-  expect(JSON.parse(post!.body!.toString())).toEqual({
-    title: "Glass Harbour wordmark.svg",
-    colour: "accent",
+  // Saved as the edited PNG; the server reads the licence from Commons for the file name.
+  const put = writes.find(
+    (write) => write.method === "PUT" && write.path.endsWith("/logo"),
+  );
+  expect(put!.type).toBe("image/png");
+  expect(new URLSearchParams(put!.search).get("source")).toBe("commons");
+  expect(new URLSearchParams(put!.search).get("title")).toBe(
+    "Glass Harbour wordmark.svg",
+  );
+  expect(new URLSearchParams(put!.search).get("colour")).toBe("accent");
+});
+
+test("the eraser and paintbrush change the cut-out, and Undo takes an edit back", async ({
+  page,
+}) => {
+  await mockSeries(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/series/hardcover/1042");
+  const panel = await openPanel(page);
+  await panel.getByRole("tab", { name: "Upload your own" }).click();
+  await panel.locator('input[type="file"]').setInputFiles({
+    name: "harbour.svg",
+    mimeType: "image/svg+xml",
+    buffer: Buffer.from(LOGO),
   });
+  const status = panel.getByText(/^\d+ by \d+ pixels/);
+  await expect(status).toBeVisible();
+  const before = await status.textContent();
+  await panel.getByRole("radio", { name: "Eraser" }).check({ force: true });
+  await panel.getByRole("radio", { name: "Medium" }).check({ force: true });
+  const cut = panel.getByRole("img", { name: /^Cut-out/ });
+  const box = (await cut.boundingBox())!;
+  // Rub out a stripe across the middle of the long bar.
+  await page.mouse.move(box.x + box.width * 0.3, box.y + box.height * 0.6);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.9, box.y + box.height * 0.6, {
+    steps: 8,
+  });
+  await page.mouse.up();
+  await expect(status).toContainText("1 edit");
+  await panel.getByRole("button", { name: "Undo last edit" }).click();
+  await expect(status).toHaveText(before!);
+  await panel.getByRole("radio", { name: "Paintbrush" }).check({ force: true });
+  await page.mouse.click(box.x + 4, box.y + 4);
+  await expect(status).toContainText("1 edit");
+  await panel.getByRole("button", { name: "Clear edits" }).click();
+  await expect(status).toHaveText(before!);
 });
 
 test("Remove takes the logo away and focus stays in the panel", async ({
@@ -403,4 +454,41 @@ test("Remove takes the logo away and focus stays in the panel", async ({
   await expect(
     page.getByRole("heading", { level: 1, name: "The Glass Harbour" }),
   ).toHaveClass(/wordmark/);
+});
+
+test("the preview follows the colour choice and shows an uploaded file", async ({
+  page,
+}) => {
+  const { errors } = await mockSeries(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/series/hardcover/1042");
+  const panel = await openPanel(page);
+  const light = panel.getByRole("img", { name: "Logo on the light theme" });
+  const dark = panel.getByRole("img", { name: "Logo on the dark theme" });
+  const paint = (mask: typeof light) =>
+    mask.evaluate((element) => getComputedStyle(element).backgroundColor);
+  // Text colour: near black on the light preview, near white on the dark one.
+  await expect.poll(() => paint(light)).toBe("rgb(20, 20, 22)");
+  await expect.poll(() => paint(dark)).toBe("rgb(243, 244, 246)");
+  await panel
+    .getByRole("radio", { name: "Accent colour" })
+    .check({ force: true });
+  await expect.poll(() => paint(light)).toBe("rgb(11, 95, 90)");
+  await expect.poll(() => paint(dark)).toBe("rgb(94, 211, 198)");
+  // An uploaded file is previewed straight away, from an address the page may show.
+  await panel.getByRole("tab", { name: "Upload your own" }).click();
+  await panel.locator('input[type="file"]').setInputFiles({
+    name: "harbour.svg",
+    mimeType: "image/svg+xml",
+    buffer: Buffer.from(LOGO),
+  });
+  await expect(
+    panel.getByText("(harbour.svg)", { exact: false }),
+  ).toBeVisible();
+  const shown = await light.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return (style.maskImage || style.webkitMaskImage).slice(0, 15);
+  });
+  expect(shown).toMatch(/^url\("data:image/);
+  expect(errors).toEqual([]);
 });

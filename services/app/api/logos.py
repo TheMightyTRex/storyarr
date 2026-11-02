@@ -170,6 +170,22 @@ async def _commons_copy(title: str) -> logos.CommonsCopy:
         raise HTTPException(502, str(error)) from None
 
 
+async def _upload_fields(source: str, title: str | None) -> dict:
+    """Where an uploaded logo came from. An edited Commons file keeps its licence and source page,
+    read from Commons by the server rather than taken from the browser."""
+    if source != "commons":
+        return {"source": source, "source_title": title}
+    if not title:
+        raise HTTPException(422, "A Commons file needs its file name")
+    copy = await _commons_copy(title)
+    return {
+        "source": "commons",
+        "source_title": copy.title,
+        "licence": copy.licence,
+        "source_url": copy.source_page or None,
+    }
+
+
 def _audit(db, user, action: str, **detail) -> None:
     db.add(AuditEvent(actor_id=user.id, action=action, detail=detail))
 
@@ -221,16 +237,16 @@ async def upload_series_logo(
     request: Request,
     user: Admin,
     db: Database,
-    source: Literal["upload", "cover"] = Query(default="upload"),
+    source: Annotated[Source, Query()] = "upload",
     title: str | None = Query(default=None, max_length=300),
     colour: Annotated[Colour, Query()] = "text",
 ):
-    """Save a logo for everyone: an uploaded file, or a cut-out of one of the series' covers."""
+    """Save a logo for everyone: an uploaded file or a cut-out of a cover, an uploaded file, or a
+    Commons file edited in the logo editor (with its licence and source page)."""
     _series_key(external_id)
     found, data = _checked(await _body(request))
-    return await _save_series(
-        db, user, external_id, found, data, source=source, colour=colour, source_title=title
-    )
+    fields = await _upload_fields(source, title)
+    return await _save_series(db, user, external_id, found, data, colour=colour, **fields)
 
 
 @router.post("/catalog/series/hardcover/{external_id}/logo/commons", response_model=LogoView)
@@ -314,16 +330,16 @@ async def upload_show_logo(
     request: Request,
     user: Member,
     db: Database,
-    source: Literal["upload", "cover"] = Query(default="upload"),
+    source: Annotated[Source, Query()] = "upload",
     title: str | None = Query(default=None, max_length=300),
     colour: Annotated[Colour, Query()] = "text",
 ):
-    """Save a logo for your show: an uploaded file, or a cut-out of the show's artwork."""
+    """Save a logo for your show: an uploaded file, a cut-out of the show's artwork, or a Commons
+    file edited in the logo editor (with its licence and source page)."""
     await radio.owned_show(db, user, show_id)
     found, data = _checked(await _body(request))
-    return await _save_show(
-        db, user, show_id, found, data, source=source, colour=colour, source_title=title
-    )
+    fields = await _upload_fields(source, title)
+    return await _save_show(db, user, show_id, found, data, colour=colour, **fields)
 
 
 @router.post("/radio/shows/{show_id}/logo/commons", response_model=LogoView)
@@ -372,6 +388,18 @@ async def remove_show_logo(show_id: UUID, user: Member, db: Database):
 
 
 # Wikimedia Commons ---------------------------------------------------------------------------
+
+
+@router.get("/logos/commons/file", response_class=Response, responses=IMAGE)
+async def commons_file(user: Member, title: str = Query(min_length=1, max_length=240)):
+    """One Commons file, fetched by the server and checked like an upload, so the logo editor can
+    show and edit it from Storyarr's own address. Nothing is saved."""
+    copy = await _commons_copy(title)
+    return Response(
+        copy.data,
+        media_type=logos.KINDS[copy.found],
+        headers={"Cache-Control": "private, max-age=3600", **logos.HEADERS},
+    )
 
 
 @router.get("/logos/commons", response_model=CommonsResults)

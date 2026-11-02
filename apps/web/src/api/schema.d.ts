@@ -2207,7 +2207,8 @@ export interface paths {
     get: operations["get_series_logo_api_catalog_series_hardcover__external_id__logo_get"];
     /**
      * Upload Series Logo
-     * @description Save a logo for everyone: an uploaded file, or a cut-out of one of the series' covers.
+     * @description Save a logo for everyone: an uploaded file or a cut-out of a cover, an uploaded file, or a
+     *     Commons file edited in the logo editor (with its licence and source page).
      */
     put: operations["upload_series_logo_api_catalog_series_hardcover__external_id__logo_put"];
     post?: never;
@@ -2259,7 +2260,8 @@ export interface paths {
     get: operations["get_show_logo_api_radio_shows__show_id__logo_get"];
     /**
      * Upload Show Logo
-     * @description Save a logo for your show: an uploaded file, or a cut-out of the show's artwork.
+     * @description Save a logo for your show: an uploaded file, a cut-out of the show's artwork, or a Commons
+     *     file edited in the logo editor (with its licence and source page).
      */
     put: operations["upload_show_logo_api_radio_shows__show_id__logo_put"];
     post?: never;
@@ -2291,6 +2293,27 @@ export interface paths {
      * @description Download a Wikimedia Commons file once and save it as the show's logo.
      */
     post: operations["copy_show_logo_api_radio_shows__show_id__logo_commons_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/logos/commons/file": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Commons File
+     * @description One Commons file, fetched by the server and checked like an upload, so the logo editor can
+     *     show and edit it from Storyarr's own address. Nothing is saved.
+     */
+    get: operations["commons_file_api_logos_commons_file_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -20991,7 +21014,7 @@ export interface operations {
   upload_series_logo_api_catalog_series_hardcover__external_id__logo_put: {
     parameters: {
       query?: {
-        source?: "upload" | "cover";
+        source?: "upload" | "cover" | "commons";
         title?: string | null;
         colour?: "text" | "accent";
       };
@@ -21181,7 +21204,7 @@ export interface operations {
   upload_show_logo_api_radio_shows__show_id__logo_put: {
     parameters: {
       query?: {
-        source?: "upload" | "cover";
+        source?: "upload" | "cover" | "commons";
         title?: string | null;
         colour?: "text" | "accent";
       };
@@ -21307,6 +21330,53 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["LogoView"];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  commons_file_api_logos_commons_file_get: {
+    parameters: {
+      query: {
+        title: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "image/png": unknown;
+          "image/webp": unknown;
+          "image/svg+xml": unknown;
+        };
+      };
+      /** @description Not Modified */
+      304: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {

@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type KeyboardEvent,
-  type PointerEvent,
-} from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { BookOpen, Globe, HardDrive, Image, Upload } from "lucide-react";
 import type { components } from "../api/schema";
@@ -13,15 +6,8 @@ import { api, ApiError, result } from "../api/client";
 import { Notice } from "../components";
 import SidePanel from "./SidePanel";
 import LogoMask from "./LogoMask";
-import {
-  START_BOX,
-  cutOut,
-  describeBox,
-  fromCorners,
-  moveBox,
-  suggest,
-  type Box,
-} from "../logoCutout";
+import LogoEditor, { type EditorSource } from "./LogoEditor";
+import { START_BOX, WHOLE } from "../logoCutout";
 
 export type Logo = components["schemas"]["LogoView"];
 type Colour = "text" | "accent";
@@ -31,16 +17,14 @@ export type LogoTarget =
   { kind: "series"; externalId: string } | { kind: "show"; showId: string };
 /** A cover (or a show's artwork) the logo can be cut from, served by Storyarr itself. */
 export type LogoCover = { label: string; title: string; url: string };
-type Pending =
-  | {
-      kind: "file";
-      blob: Blob;
-      url: string;
-      source: "upload" | "cover";
-      title: string;
-      label: string;
-    }
-  | { kind: "commons"; title: string; url: string | null; label: string };
+/** The edited logo, waiting for Save logo: always a PNG from the logo editor, shown from a data: address. */
+type Pending = {
+  blob: Blob;
+  url: string;
+  source: "upload" | "cover" | "commons";
+  title: string;
+  label: string;
+};
 
 const MAX_BYTES = 1024 * 1024;
 
@@ -56,7 +40,11 @@ export function logoSource(logo: Logo) {
 async function upload(
   target: LogoTarget,
   blob: Blob,
-  query: { source: "upload" | "cover"; title: string; colour: Colour },
+  query: {
+    source: "upload" | "cover" | "commons";
+    title: string;
+    colour: Colour;
+  },
 ) {
   const options = {
     body: blob as unknown as string,
@@ -74,25 +62,6 @@ async function upload(
         await api.PUT("/api/radio/shows/{show_id}/logo", {
           ...options,
           params: { path: { show_id: target.showId }, query },
-        }),
-      );
-}
-
-async function fromCommons(target: LogoTarget, title: string, colour: Colour) {
-  return target.kind === "series"
-    ? result(
-        await api.POST(
-          "/api/catalog/series/hardcover/{external_id}/logo/commons",
-          {
-            params: { path: { external_id: target.externalId } },
-            body: { title, colour },
-          },
-        ),
-      )
-    : result(
-        await api.POST("/api/radio/shows/{show_id}/logo/commons", {
-          params: { path: { show_id: target.showId } },
-          body: { title, colour },
         }),
       );
 }
@@ -172,23 +141,19 @@ export default function LogoPanel({
   }, [focusNone, saved]);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  useEffect(
-    () => () => {
-      if (pending?.kind === "file") URL.revokeObjectURL(pending.url);
-    },
-    [pending],
-  );
+  // What the editor works on in Upload your own and Find online.
+  const [uploaded, setUploaded] = useState<EditorSource | null>(null);
+  const [found, setFound] = useState<EditorSource | null>(null);
 
   const save = useMutation({
     mutationFn: async () => {
-      if (pending?.kind === "file")
+      // Commons files keep their licence: the server reads it from Commons for the title.
+      if (pending)
         return upload(target, pending.blob, {
           source: pending.source,
           title: pending.title,
           colour,
         });
-      if (pending?.kind === "commons")
-        return fromCommons(target, pending.title, colour);
       if (saved && colour !== saved.colour) return recolour(target, colour);
       return saved;
     },
@@ -342,42 +307,80 @@ export default function LogoPanel({
           tabIndex={0}
           hidden={tab !== item.key}
         >
-          {item.key === "cover" && tab === "cover" && (
-            <CoverCutout
-              covers={covers}
-              show={show}
-              onCut={(cut) => setPending(cut)}
-            />
-          )}
+          {item.key === "cover" &&
+            tab === "cover" &&
+            (covers.length ? (
+              <LogoEditor
+                sources={covers}
+                chooseLegend={show ? undefined : "Choose a cover"}
+                startBox={START_BOX}
+                picture={show ? "picture" : "cover"}
+                describe={(cover) => ({
+                  title: (show
+                    ? "the artwork"
+                    : `the cover of ${cover.title}${cover.label ? `, ${cover.label.toLowerCase()}` : ""}`
+                  ).slice(0, 300),
+                  label: show
+                    ? "cut from the artwork"
+                    : `cut from ${cover.label.toLowerCase()}`,
+                })}
+                onCut={(cut) => setPending({ ...cut, source: "cover" })}
+              />
+            ) : (
+              <p className="muted">
+                {show
+                  ? "This show has no artwork saved. Upload a logo instead."
+                  : "This series has no covers yet. Upload a logo instead."}
+              </p>
+            ))}
           {item.key === "find" && (
-            <FindOnline
-              name={name}
-              people={people}
-              noun={noun}
-              chosen={pending?.kind === "commons" ? pending.title : null}
-              onChoose={(found) =>
-                setPending({
-                  kind: "commons",
-                  title: found.title,
-                  url: found.thumbnail_url ?? null,
-                  label: found.title,
-                })
-              }
-            />
+            <>
+              <FindOnline
+                name={name}
+                people={people}
+                noun={noun}
+                chosen={found?.title ?? null}
+                onChoose={(item) =>
+                  setFound({
+                    label: item.title,
+                    title: item.title,
+                    // Read through Storyarr, so the editor can show and change it.
+                    url: `/api/logos/commons/file?title=${encodeURIComponent(item.title)}`,
+                  })
+                }
+              />
+              {found && tab === "find" && (
+                <LogoEditor
+                  key={found.url}
+                  sources={[found]}
+                  startBox={WHOLE}
+                  picture="file"
+                  describe={(file) => ({
+                    title: file.title,
+                    label: `${file.title}, from Wikimedia Commons`,
+                  })}
+                  onCut={(cut) => setPending({ ...cut, source: "commons" })}
+                />
+              )}
+            </>
           )}
           {item.key === "upload" && (
-            <UploadOwn
-              onFile={(file) =>
-                setPending({
-                  kind: "file",
-                  blob: file,
-                  url: URL.createObjectURL(file),
-                  source: "upload",
-                  title: file.name.slice(0, 300),
-                  label: file.name,
-                })
-              }
-            />
+            <>
+              <UploadOwn onFile={setUploaded} />
+              {uploaded && tab === "upload" && (
+                <LogoEditor
+                  key={uploaded.url}
+                  sources={[uploaded]}
+                  startBox={WHOLE}
+                  picture="file"
+                  describe={(file) => ({
+                    title: file.title,
+                    label: file.label,
+                  })}
+                  onCut={(cut) => setPending({ ...cut, source: "upload" })}
+                />
+              )}
+            </>
           )}
         </div>
       ))}
@@ -437,7 +440,7 @@ export default function LogoPanel({
   );
 }
 
-function UploadOwn({ onFile }: { onFile: (file: File) => void }) {
+function UploadOwn({ onFile }: { onFile: (file: EditorSource) => void }) {
   const id = useId();
   const [message, setMessage] = useState("");
   return (
@@ -461,10 +464,21 @@ function UploadOwn({ onFile }: { onFile: (file: File) => void }) {
             setMessage("This file is larger than 1 MB. Choose a smaller one.");
             return;
           }
-          setMessage(
-            `${file.name} is ready. Select Save logo to keep it. Storyarr checks the file when it is saved.`,
-          );
-          onFile(file);
+          // Read as a data: address: the page may show it, and the editor's canvas can read it.
+          const reader = new FileReader();
+          reader.onload = () => {
+            setMessage(
+              `${file.name} is in the editor below. Adjust it if you need to, then select Save logo.`,
+            );
+            onFile({
+              label: file.name,
+              title: file.name.slice(0, 300),
+              url: String(reader.result),
+            });
+          };
+          reader.onerror = () =>
+            setMessage("This file could not be read. Choose another.");
+          reader.readAsDataURL(file);
         }}
       />
       <span className="hint" id={`${id}-message`} role="status">
@@ -554,9 +568,11 @@ function FindOnline({
             >
               <span className="logo-candidate__art">
                 {item.thumbnail_url && (
-                  <LogoMask
-                    url={item.thumbnail_url}
-                    label={`Preview of ${item.title}`}
+                  <img
+                    src={item.thumbnail_url}
+                    alt={`Preview of ${item.title}`}
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                 )}
               </span>
@@ -586,369 +602,14 @@ function FindOnline({
                 aria-describedby={`${id}-c${index}`}
                 onClick={() => onChoose(item)}
               >
-                {chosen === item.title ? "Chosen" : "Use this logo"}
+                {chosen === item.title
+                  ? "Chosen: edit it below"
+                  : "Use this logo"}
               </button>
             </li>
           ))}
         </ul>
       )}
-    </>
-  );
-}
-
-function CoverCutout({
-  covers,
-  show,
-  onCut,
-}: {
-  covers: LogoCover[];
-  show: boolean;
-  onCut: (cut: Pending) => void;
-}) {
-  const id = useId();
-  const crop = useRef<HTMLCanvasElement>(null);
-  const cutCanvas = useRef<HTMLCanvasElement>(null);
-  const [current, setCurrent] = useState(0);
-  const [image, setImage] = useState<HTMLImageElement | null>(null);
-  const [box, setBox] = useState<Box>(START_BOX);
-  const [threshold, setThreshold] = useState(50);
-  const [invert, setInvert] = useState(false);
-  const [clean, setClean] = useState(true);
-  const [status, setStatus] = useState("");
-  const [corner, setCorner] = useState<{ x: number; y: number } | null>(null);
-  const drag = useRef<{
-    start: { x: number; y: number };
-    moved: boolean;
-  } | null>(null);
-  const cover = covers[current];
-
-  // Load the chosen cover. Covers come from Storyarr's own address, so the canvas can read them.
-  useEffect(() => {
-    if (!cover) return;
-    let live = true;
-    setImage(null);
-    setStatus(show ? "Loading the artwork." : "Loading the cover.");
-    const next = new window.Image();
-    next.onload = () => {
-      if (!live) return;
-      setImage(next);
-      setBox(START_BOX);
-      setCorner(null);
-      suggestFor(next, START_BOX);
-    };
-    next.onerror = () =>
-      live &&
-      setStatus(
-        show
-          ? "The artwork did not load. Upload a logo instead."
-          : "The cover did not load. Choose another cover, or upload a logo.",
-      );
-    next.src = cover.url;
-    return () => {
-      live = false;
-    };
-  }, [cover?.url]);
-
-  function pixels(source: HTMLImageElement, area: Box) {
-    const W = source.naturalWidth;
-    const H = source.naturalHeight;
-    const b = {
-      x: Math.round(area.x * W),
-      y: Math.round(area.y * H),
-      w: Math.max(4, Math.round(area.w * W)),
-      h: Math.max(4, Math.round(area.h * H)),
-    };
-    // Scaled up, so the edges of the cut-out are smoother.
-    const scale = Math.min(3, 1200 / b.w);
-    const w = Math.max(1, Math.round(b.w * scale));
-    const h = Math.max(1, Math.round(b.h * scale));
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-    const context = canvas.getContext("2d", { willReadFrequently: true })!;
-    context.imageSmoothingQuality = "high";
-    context.drawImage(source, b.x, b.y, b.w, b.h, 0, 0, w, h);
-    return { width: w, height: h, data: context.getImageData(0, 0, w, h).data };
-  }
-
-  function suggestFor(source: HTMLImageElement, area: Box) {
-    try {
-      const found = suggest(pixels(source, area));
-      setThreshold(found.threshold);
-      setInvert(found.invert);
-    } catch {
-      setStatus(
-        "This picture cannot be read here. Choose another, or upload a logo.",
-      );
-    }
-  }
-
-  // Draw the cover with the box, then cut the logo out of the box.
-  useEffect(() => {
-    const canvas = crop.current;
-    if (!image || !canvas) return;
-    const W = image.naturalWidth;
-    const H = image.naturalHeight;
-    canvas.width = W;
-    canvas.height = H;
-    const context = canvas.getContext("2d")!;
-    const b = {
-      x: box.x * W,
-      y: box.y * H,
-      w: Math.max(4, box.w * W),
-      h: Math.max(4, box.h * H),
-    };
-    context.drawImage(image, 0, 0, W, H);
-    context.fillStyle = "rgba(0,0,0,.6)";
-    context.fillRect(0, 0, W, b.y);
-    context.fillRect(0, b.y + b.h, W, H - b.y - b.h);
-    context.fillRect(0, b.y, b.x, b.h);
-    context.fillRect(b.x + b.w, b.y, W - b.x - b.w, b.h);
-    const line = Math.max(2, W / 200);
-    context.lineWidth = line;
-    context.strokeStyle = "#fff";
-    context.strokeRect(b.x + line / 2, b.y + line / 2, b.w - line, b.h - line);
-    context.setLineDash([line * 2, line * 2]);
-    context.strokeStyle = "#000";
-    context.strokeRect(b.x + line / 2, b.y + line / 2, b.w - line, b.h - line);
-    context.setLineDash([]);
-    if (corner) {
-      context.fillStyle = "#fff";
-      context.fillRect(corner.x * W - 6, corner.y * H - 6, 12, 12);
-    }
-
-    let source;
-    try {
-      source = pixels(image, box);
-    } catch {
-      setStatus(
-        "This picture cannot be read here. Choose another, or upload a logo.",
-      );
-      return;
-    }
-    const cut = cutOut(source, threshold, invert, clean);
-    const out = cutCanvas.current;
-    if (!out) return;
-    if (!cut.width) {
-      out.width = 10;
-      out.height = 10;
-      setStatus(
-        "Nothing is left. Move the threshold, or turn Invert on or off.",
-      );
-      return;
-    }
-    out.width = cut.width;
-    out.height = cut.height;
-    out
-      .getContext("2d")!
-      .putImageData(new ImageData(cut.alpha, cut.width, cut.height), 0, 0);
-    setStatus(
-      `${cut.width} by ${cut.height} pixels${cut.removed ? `, ${cut.removed} ${cut.removed === 1 ? "speck" : "specks"} removed` : ""}.`,
-    );
-    const what = show
-      ? "the artwork"
-      : `the cover of ${cover.title}${cover.label ? `, ${cover.label.toLowerCase()}` : ""}`;
-    let live = true;
-    out.toBlob((blob) => {
-      if (!live || !blob) return;
-      onCut({
-        kind: "file",
-        blob,
-        url: URL.createObjectURL(blob),
-        source: "cover",
-        title: what.slice(0, 300),
-        label: show
-          ? "cut from the artwork"
-          : `cut from ${cover.label.toLowerCase()}`,
-      });
-    }, "image/png");
-    return () => {
-      live = false;
-    };
-  }, [image, box, threshold, invert, clean, corner]);
-
-  function at(event: PointerEvent<HTMLCanvasElement>) {
-    const r = event.currentTarget.getBoundingClientRect();
-    return {
-      x: Math.min(1, Math.max(0, (event.clientX - r.left) / r.width)),
-      y: Math.min(1, Math.max(0, (event.clientY - r.top) / r.height)),
-    };
-  }
-  function settle(next: Box) {
-    setBox(next);
-    if (image) suggestFor(image, next);
-  }
-
-  if (!covers.length)
-    return (
-      <p className="muted">
-        {show
-          ? "This show has no artwork saved. Upload a logo instead."
-          : "This series has no covers yet. Upload a logo instead."}
-      </p>
-    );
-  return (
-    <>
-      {!show && (
-        <fieldset className="field">
-          <legend className="logo-step">1. Choose a cover</legend>
-          <div className="cover-pick">
-            {covers.map((item, index) => (
-              <label key={item.url}>
-                <input
-                  type="radio"
-                  name={`${id}-cover`}
-                  checked={current === index}
-                  onChange={() => setCurrent(index)}
-                />
-                <img src={item.url} alt="" />
-                <span>
-                  {item.label}
-                  <span className="sr-only">, {item.title}</span>
-                </span>
-              </label>
-            ))}
-          </div>
-          <span className="hint">
-            The covers come from Storyarr, so any of them can be used.
-          </span>
-        </fieldset>
-      )}
-      <div className="logo-crop">
-        <div className="field">
-          <span className="logo-step" id={`${id}-crop`}>
-            {show ? "1." : "2."} Draw a box around the logo
-          </span>
-          <span className="hint" id={`${id}-crop-hint`}>
-            Drag across the logo, or select two opposite corners. With a
-            keyboard: arrow keys move the box, Shift and arrow keys change its
-            size.
-          </span>
-          <canvas
-            ref={crop}
-            className="logo-crop__canvas"
-            width={348}
-            height={500}
-            tabIndex={0}
-            role="img"
-            aria-labelledby={`${id}-crop`}
-            aria-describedby={`${id}-crop-hint ${id}-readout`}
-            onPointerDown={(event) => {
-              if (!image) return;
-              drag.current = { start: at(event), moved: false };
-              event.currentTarget.setPointerCapture?.(event.pointerId);
-            }}
-            onPointerMove={(event) => {
-              const now = drag.current;
-              if (!now) return;
-              const p = at(event);
-              if (Math.hypot(p.x - now.start.x, p.y - now.start.y) > 0.015) {
-                now.moved = true;
-                setCorner(null);
-                setBox(fromCorners(now.start, p));
-              }
-            }}
-            onPointerUp={(event) => {
-              const now = drag.current;
-              if (!now) return;
-              const p = at(event);
-              drag.current = null;
-              if (now.moved) settle(fromCorners(now.start, p));
-              else if (!corner) setCorner(p);
-              else {
-                setCorner(null);
-                settle(fromCorners(corner, p));
-              }
-            }}
-            onKeyDown={(event) => {
-              const next = moveBox(box, event.key, event.shiftKey);
-              if (!next || !image) return;
-              event.preventDefault();
-              setBox(next);
-            }}
-          />
-          <span
-            className="logo-crop__readout"
-            id={`${id}-readout`}
-            aria-live="polite"
-          >
-            {corner
-              ? "First corner set. Select the opposite corner."
-              : describeBox(box)}
-          </span>
-        </div>
-        <div className="logo-crop__controls">
-          <span className="logo-step">
-            {show ? "2." : "3."} Make it one colour
-          </span>
-          <div className="field">
-            <label className="field__label" htmlFor={`${id}-threshold`}>
-              Threshold:{" "}
-              <output htmlFor={`${id}-threshold`}>{threshold}%</output>
-            </label>
-            <span className="hint" id={`${id}-threshold-hint`}>
-              Parts darker than this become the logo (lighter, with Invert on).
-              Move it until the letters are solid and the background has gone.
-            </span>
-            <input
-              className="range"
-              type="range"
-              id={`${id}-threshold`}
-              min={1}
-              max={99}
-              value={threshold}
-              aria-describedby={`${id}-threshold-hint`}
-              onChange={(event) => setThreshold(Number(event.target.value))}
-            />
-            <button
-              type="button"
-              className="btn btn--quiet"
-              style={{ justifySelf: "start" }}
-              disabled={!image}
-              onClick={() => image && suggestFor(image, box)}
-            >
-              Use the suggested threshold
-            </button>
-          </div>
-          <label className="switch">
-            <span>
-              Invert: for a light logo on a dark {show ? "picture" : "cover"}
-            </span>
-            <input
-              type="checkbox"
-              role="switch"
-              checked={invert}
-              onChange={(event) => setInvert(event.target.checked)}
-            />
-          </label>
-          <label className="switch">
-            <span>Clean up specks and small holes</span>
-            <input
-              type="checkbox"
-              role="switch"
-              checked={clean}
-              onChange={(event) => setClean(event.target.checked)}
-            />
-          </label>
-          <div className="field">
-            <span className="field__label">
-              Cut-out (the checks show what is transparent)
-            </span>
-            <div className="checker">
-              <canvas
-                ref={cutCanvas}
-                width={10}
-                height={10}
-                role="img"
-                aria-label="Cut-out of the logo"
-              />
-            </div>
-            <span className="hint" role="status">
-              {status}
-            </span>
-          </div>
-        </div>
-      </div>
     </>
   );
 }

@@ -191,6 +191,24 @@ async def test_a_commons_file_is_copied_once_with_its_licence(
     assert calls[-1] == "https://upload.wikimedia.org/a/Glass_Harbour.svg"
     assert b"script" not in (logos_root / "hardcover-1042.svg").read_bytes()
 
+    # The logo editor reads the same file from Storyarr's own address (checked, nothing saved)...
+    preview = await client.get("/api/logos/commons/file", params={"title": "Glass Harbour.svg"})
+    assert preview.status_code == 200, preview.text
+    assert preview.headers["content-type"].startswith("image/svg+xml")
+    assert "sandbox" in preview.headers["content-security-policy"]
+    assert b"script" not in preview.content
+    # ...and an edited copy is uploaded as a PNG that keeps the Commons licence and source page,
+    # which the server reads from Commons rather than from the browser.
+    edited = await upload(
+        client, SERIES + "/logo", png(), source="commons", title="Glass Harbour.svg"
+    )
+    assert edited.status_code == 200, edited.text
+    view = edited.json()
+    assert (view["source"], view["format"], view["licence"]) == ("commons", "png", "CC BY-SA 4.0")
+    assert view["source_url"] == "https://commons.wikimedia.org/wiki/File:Glass_Harbour.svg"
+    nameless = await upload(client, SERIES + "/logo", png(), source="commons")
+    assert nameless.status_code == 422
+
 
 async def test_radio_show_owners_change_their_show_logo(client, admin, database, logos_root):
     async with database() as db:

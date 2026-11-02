@@ -1,7 +1,7 @@
 /**
- * "From a cover" (UX-43): turn a box drawn on a cover into a one-colour logo with a transparent
- * background. Everything runs in the browser on the pixels of the box; the result is uploaded as a PNG.
- * These are the pure steps, so they can be tested without a canvas.
+ * The logo editor (UX-43, UX-48): turn a box drawn on a cover, an uploaded file or a Commons file into
+ * a one-colour logo with a transparent background. Everything runs in the browser on the pixels of the
+ * box; the result is uploaded as a PNG. These are the pure steps, so they can be tested without a canvas.
  */
 
 export type Box = { x: number; y: number; w: number; h: number };
@@ -9,6 +9,26 @@ export type Pixels = { width: number; height: number; data: Uint8ClampedArray };
 
 /** The top quarter, where series names usually sit. */
 export const START_BOX: Box = { x: 0.06, y: 0.04, w: 0.88, h: 0.24 };
+/** The whole picture, for an uploaded or found logo. */
+export const WHOLE: Box = { x: 0, y: 0, w: 1, h: 1 };
+
+/** Where the shape comes from: dark or light parts, or the picture's own transparency. */
+export type Shape = "lightness" | "transparency";
+/** How hard to clean: off, small specks, more, most. */
+export type Clean = 0 | 1 | 2 | 3;
+/** One stroke of the eraser or paintbrush, in fractions of the box; size is a fraction of its width. */
+export type Stroke = {
+  mode: "erase" | "paint";
+  size: number;
+  points: { x: number; y: number }[];
+};
+
+/** True when more than 2% of the picture is see-through, as a logo file with no background is. */
+export function hasTransparency({ data }: Pixels) {
+  let clear = 0;
+  for (let i = 3; i < data.length; i += 4) if (data[i] < 128) clear++;
+  return clear > (data.length / 4) * 0.02;
+}
 const MIN = 0.02;
 const STEP = 0.01;
 
@@ -66,24 +86,38 @@ export function suggest({ width, height, data }: Pixels) {
 }
 
 /**
- * Which pixels belong to the logo: darker than the threshold (lighter with invert). With clean on,
- * small separate pieces (stars, dust) go, then small holes inside the letters are filled.
+ * Which pixels belong to the logo: darker than the threshold (lighter with invert), or, with the shape
+ * from transparency, everything that is not see-through. See-through pixels are never the logo.
+ * Cleaning removes small separate pieces (stars, dust) and fills small holes inside the letters; the
+ * level sets how small. Then the eraser and paintbrush strokes are applied, and the result is trimmed.
  */
 export function cutOut(
   { width: w, height: h, data }: Pixels,
   thresholdPercent: number,
   invert: boolean,
-  clean: boolean,
+  clean: boolean | Clean,
+  { shape = "lightness", edits = [] }: { shape?: Shape; edits?: Stroke[] } = {},
 ) {
   const t = thresholdPercent / 100;
   const on = new Uint8Array(w * h);
   for (let p = 0, i = 0; p < on.length; p++, i += 4) {
+    if (data[i + 3] < 128) continue;
+    if (shape === "transparency") {
+      on[p] = 1;
+      continue;
+    }
     const l = lightness(data, i);
     on[p] = (invert ? l > t : l < t) ? 1 : 0;
   }
   let removed = 0;
-  if (clean) {
-    const min = Math.max(40, w * h * 0.0008);
+  const level = clean === true ? 1 : clean === false ? 0 : clean;
+  if (level) {
+    const min = [
+      0,
+      Math.max(40, w * h * 0.0008),
+      Math.max(80, w * h * 0.003),
+      Math.max(160, w * h * 0.01),
+    ][level];
     const sweep = (value: number, onlyInside: boolean) => {
       const seen = new Uint8Array(w * h);
       const stack: number[] = [];
@@ -119,6 +153,33 @@ export function cutOut(
     sweep(1, false);
     sweep(0, true);
   }
+  for (const stroke of edits) {
+    const r = Math.max(1, stroke.size * w);
+    const value = stroke.mode === "paint" ? 1 : 0;
+    const stamp = (cx: number, cy: number) => {
+      for (
+        let y = Math.max(0, Math.floor(cy - r));
+        y <= Math.min(h - 1, cy + r);
+        y++
+      )
+        for (
+          let x = Math.max(0, Math.floor(cx - r));
+          x <= Math.min(w - 1, cx + r);
+          x++
+        )
+          if ((x - cx) ** 2 + (y - cy) ** 2 <= r * r) on[y * w + x] = value;
+    };
+    const points = stroke.points.map((p) => ({ x: p.x * w, y: p.y * h }));
+    points.forEach((p, i) => {
+      const q = points[i - 1] ?? p;
+      const steps = Math.max(
+        1,
+        Math.ceil(Math.hypot(p.x - q.x, p.y - q.y) / (r / 2)),
+      );
+      for (let s = 0; s <= steps; s++)
+        stamp(q.x + ((p.x - q.x) * s) / steps, q.y + ((p.y - q.y) * s) / steps);
+    });
+  }
   let x0 = w;
   let y0 = h;
   let x1 = -1;
@@ -133,7 +194,16 @@ export function cutOut(
       if (y > y1) y1 = y;
     }
   if (x1 < 0)
-    return { width: 0, height: 0, alpha: new Uint8ClampedArray(), removed };
+    return {
+      width: 0,
+      height: 0,
+      alpha: new Uint8ClampedArray(),
+      removed,
+      x0: 0,
+      y0: 0,
+      fullWidth: w,
+      fullHeight: h,
+    };
   const width = x1 - x0 + 1;
   const height = y1 - y0 + 1;
   // Black with full opacity where the logo is, transparent elsewhere, trimmed to the logo.
@@ -141,7 +211,8 @@ export function cutOut(
   for (let y = 0; y < height; y++)
     for (let x = 0; x < width; x++)
       if (on[(y + y0) * w + x + x0]) alpha[(y * width + x) * 4 + 3] = 255;
-  return { width, height, alpha, removed };
+  // Where the trimmed logo sits in the box, so strokes drawn on the cut-out map back to the box.
+  return { width, height, alpha, removed, x0, y0, fullWidth: w, fullHeight: h };
 }
 
 /** Arrow keys move the box; Shift and arrow keys change its size. It stays on the cover. */
