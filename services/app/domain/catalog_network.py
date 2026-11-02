@@ -47,6 +47,9 @@ def catalog_endpoint(provider):
         "audnexus": "https://api.audnex.us",
         "nyt": "https://api.nytimes.com",
         "custom": settings.custom_metadata_url,
+        # Radio: the public BBC programmes feed and BBC Sounds search (no key).
+        "bbc": "https://www.bbc.co.uk",
+        "bbc-sounds": "https://rms.api.bbc.co.uk",
     }
     endpoint = endpoints.get(provider)
     if not endpoint:

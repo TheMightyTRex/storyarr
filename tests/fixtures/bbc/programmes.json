@@ -1,0 +1,812 @@
+{
+ "_about": "Recorded from www.bbc.co.uk/programmes and rms.api.bbc.co.uk on 2 November 2026, trimmed: The Unbelievable Truth (b007mf4f) keeps series 20 and two specials; Sandi Toksvig's Hygge (m0012qgy) is whole. Keyed by request path.",
+ "programmes/b007mf4f.json": {
+  "programme": {
+   "type": "brand",
+   "pid": "b007mf4f",
+   "expected_child_count": null,
+   "position": null,
+   "image": {
+    "pid": "p0m1qg1t"
+   },
+   "media_type": null,
+   "title": "The Unbelievable Truth",
+   "short_synopsis": "Game show in which panellists are encouraged to tell lies.",
+   "medium_synopsis": "Game show in which panellists compete to see how many nuggets of truth they are able to hide amongst their lies.",
+   "long_synopsis": null,
+   "first_broadcast_date": "2007-04-23T18:30:00+01:00",
+   "display_title": {
+    "title": "The Unbelievable Truth",
+    "subtitle": ""
+   },
+   "aggregated_episode_count": 210,
+   "ownership": {
+    "service": {
+     "type": "radio",
+     "id": "bbc_radio_four",
+     "key": "radio4",
+     "title": "BBC Radio 4"
+    }
+   }
+  }
+ },
+ "programmes/b007mf4f/children.json": {
+  "children": {
+   "page": 1,
+   "total": 3,
+   "limit": 50,
+   "offset": 0,
+   "programmes": [
+    {
+     "type": "series",
+     "pid": "b09ysnw5",
+     "media_type": null,
+     "title": "Series 20",
+     "short_synopsis": "David Mitchell hosts the game show in which panellists are encouraged to tell lies",
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "position": 20,
+     "expected_child_count": 6,
+     "first_broadcast_date": "2018-04-02T18:30:00+01:00",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false
+    },
+    {
+     "type": "episode",
+     "pid": "b00pfr4w",
+     "media_type": "audio",
+     "title": "New Year Special",
+     "short_synopsis": "David Mitchell chairs. The panel includes Rob Brydon, John Lloyd and Stephen Fry.",
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "position": null,
+     "expected_child_count": null,
+     "first_broadcast_date": "2009-12-28T18:30:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "b00fz863",
+     "media_type": "audio",
+     "title": "Christmas Special",
+     "short_synopsis": "The panel are Graeme Garden, Jack Dee, Armando Iannucci and Sean Lock.",
+     "image": {
+      "pid": "p01gcmvm"
+     },
+     "position": null,
+     "expected_child_count": null,
+     "first_broadcast_date": "2008-12-15T18:30:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    }
+   ]
+  }
+ },
+ "programmes/b09ysnw5.json": {
+  "programme": {
+   "type": "series",
+   "pid": "b09ysnw5",
+   "expected_child_count": 6,
+   "position": 20,
+   "image": {
+    "pid": "p0m1qg1t"
+   },
+   "media_type": null,
+   "title": "Series 20",
+   "short_synopsis": "David Mitchell hosts the game show in which panellists are encouraged to tell lies",
+   "medium_synopsis": "David Mitchell hosts the game show in which panellists are encouraged to tell lies and compete to see how many items of truth they are able to smuggle past their opponents",
+   "long_synopsis": null,
+   "first_broadcast_date": "2018-04-02T18:30:00+01:00",
+   "display_title": {
+    "title": "Series 20",
+    "subtitle": ""
+   },
+   "aggregated_episode_count": 6,
+   "ownership": {
+    "service": {
+     "type": "radio",
+     "id": "bbc_radio_four",
+     "key": "radio4",
+     "title": "BBC Radio 4"
+    }
+   },
+   "parent": {
+    "programme": {
+     "type": "brand",
+     "pid": "b007mf4f",
+     "title": "The Unbelievable Truth",
+     "short_synopsis": "Game show in which panellists are encouraged to tell lies.",
+     "media_type": null,
+     "position": null,
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "expected_child_count": null,
+     "first_broadcast_date": "2007-04-23T18:30:00+01:00",
+     "aggregated_episode_count": 210,
+     "ownership": {
+      "service": {
+       "type": "radio",
+       "id": "bbc_radio_four",
+       "key": "radio4",
+       "title": "BBC Radio 4"
+      }
+     }
+    }
+   }
+  }
+ },
+ "programmes/b09ysnw5/children.json": {
+  "children": {
+   "page": 1,
+   "total": 6,
+   "limit": 50,
+   "offset": 0,
+   "programmes": [
+    {
+     "type": "episode",
+     "pid": "b0b1qdds",
+     "media_type": "audio",
+     "title": "Episode 6",
+     "short_synopsis": "Comedians try to smuggle truths past their opponents in David Mitchell's panel game.",
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "position": 6,
+     "expected_child_count": null,
+     "first_broadcast_date": "2018-05-07T18:30:00+01:00",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "b0b0ptm5",
+     "media_type": "audio",
+     "title": "Episode 5",
+     "short_synopsis": "Comedians try to smuggle truths past their opponents in David Mitchell's panel game.",
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "position": 5,
+     "expected_child_count": null,
+     "first_broadcast_date": "2018-04-30T18:30:00+01:00",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "b09zv5m0",
+     "media_type": "audio",
+     "title": "Episode 4",
+     "short_synopsis": "Comedians try to smuggle truths past their opponents in David Mitchell's panel game.",
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "position": 4,
+     "expected_child_count": null,
+     "first_broadcast_date": "2018-04-23T18:30:00+01:00",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "b09z4fyz",
+     "media_type": "audio",
+     "title": "Episode 3",
+     "short_synopsis": "Comedians try to smuggle truths past their opponents in David Mitchell's panel game.",
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "position": 3,
+     "expected_child_count": null,
+     "first_broadcast_date": "2018-04-16T18:30:00+01:00",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "b09yd065",
+     "media_type": "audio",
+     "title": "Episode 2",
+     "short_synopsis": "Comedians try to smuggle truths past their opponents in David Mitchell's panel game.",
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "position": 2,
+     "expected_child_count": null,
+     "first_broadcast_date": "2018-04-09T18:30:00+01:00",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "b09xjg3w",
+     "media_type": "audio",
+     "title": "Episode 1",
+     "short_synopsis": "Comedians try to smuggle truths past their opponents in David Mitchell's panel game.",
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "position": 1,
+     "expected_child_count": null,
+     "first_broadcast_date": "2018-04-02T18:30:00+01:00",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    }
+   ]
+  }
+ },
+ "programmes/b0b1qdds.json": {
+  "programme": {
+   "type": "episode",
+   "pid": "b0b1qdds",
+   "expected_child_count": null,
+   "position": 6,
+   "image": {
+    "pid": "p0m1qg1t"
+   },
+   "media_type": "audio",
+   "title": "Episode 6",
+   "short_synopsis": "Comedians try to smuggle truths past their opponents in David Mitchell's panel game.",
+   "medium_synopsis": "David Mitchell gets Arthur Smith, Jack Dee, Lucy Porter and Lloyd Langford to lie with some truths. From May 2018.",
+   "long_synopsis": "David Mitchell hosts the panel game where four comedians are encouraged to tell lies.\n\nThey must compete against one another to see how many items of truth they're able to smuggle past their opponents.\n\nThe panellists are obliged to talk with deliberate inaccuracy on subjects as varied as walking, NASA, soap operas and poets: \n\nArthur Smith\nJack Dee\nLloyd Langford\nLucy Porter\n\nProducer: Richard Turner\n\nA Random Entertainment production for BBC Radio 4, first broadcast in May 2018.",
+   "first_broadcast_date": "2018-05-07T18:30:00+01:00",
+   "display_title": {
+    "title": "The Unbelievable Truth",
+    "subtitle": "Series 20, Episode 6"
+   },
+   "ownership": {
+    "service": {
+     "type": "radio",
+     "id": "bbc_radio_four",
+     "key": "radio4",
+     "title": "BBC Radio 4"
+    }
+   },
+   "parent": {
+    "programme": {
+     "type": "series",
+     "pid": "b09ysnw5",
+     "title": "Series 20",
+     "short_synopsis": "David Mitchell hosts the game show in which panellists are encouraged to tell lies",
+     "media_type": null,
+     "position": 20,
+     "image": {
+      "pid": "p0m1qg1t"
+     },
+     "expected_child_count": 6,
+     "first_broadcast_date": "2018-04-02T18:30:00+01:00",
+     "aggregated_episode_count": 6,
+     "ownership": {
+      "service": {
+       "type": "radio",
+       "id": "bbc_radio_four",
+       "key": "radio4",
+       "title": "BBC Radio 4"
+      }
+     },
+     "parent": {
+      "programme": {
+       "type": "brand",
+       "pid": "b007mf4f",
+       "title": "The Unbelievable Truth",
+       "short_synopsis": "Game show in which panellists are encouraged to tell lies.",
+       "media_type": null,
+       "position": null,
+       "image": {
+        "pid": "p0m1qg1t"
+       },
+       "expected_child_count": null,
+       "first_broadcast_date": "2007-04-23T18:30:00+01:00",
+       "aggregated_episode_count": 210,
+       "ownership": {
+        "service": {
+         "type": "radio",
+         "id": "bbc_radio_four",
+         "key": "radio4",
+         "title": "BBC Radio 4"
+        }
+       }
+      }
+     }
+    }
+   },
+   "versions": [
+    {
+     "canonical": 1,
+     "pid": "b0b1qd1v",
+     "duration": 1800,
+     "types": [
+      "Original version"
+     ]
+    }
+   ]
+  }
+ },
+ "programmes/m0012qgy.json": {
+  "programme": {
+   "type": "brand",
+   "pid": "m0012qgy",
+   "expected_child_count": null,
+   "position": null,
+   "image": {
+    "pid": "p0pkg8mt"
+   },
+   "media_type": null,
+   "title": "Sandi Toksvig's Hygge",
+   "short_synopsis": "Celebrity conversations on the idea of 'hygge' hosted by Sandi Tokvig via her Danish cabin",
+   "medium_synopsis": "As the nights draw in we want some comfort, Sandi and her guests will aim to bring it as they explore the Danish notion of 'hygge'.",
+   "long_synopsis": null,
+   "first_broadcast_date": "2020-12-02T18:30:00Z",
+   "display_title": {
+    "title": "Sandi Toksvig's Hygge",
+    "subtitle": ""
+   },
+   "aggregated_episode_count": 10,
+   "ownership": {
+    "service": {
+     "type": "radio",
+     "id": "bbc_radio_four",
+     "key": "radio4",
+     "title": "BBC Radio 4"
+    }
+   }
+  }
+ },
+ "programmes/m0012qgy/children.json": {
+  "children": {
+   "page": 1,
+   "total": 2,
+   "limit": 50,
+   "offset": 0,
+   "programmes": [
+    {
+     "type": "series",
+     "pid": "m0012qgx",
+     "media_type": null,
+     "title": "Series 2",
+     "short_synopsis": "Sandi and her celebrity guests continue to explore the Danish notion of 'hygge'.",
+     "image": {
+      "pid": "p0pkg8mt"
+     },
+     "position": 2,
+     "expected_child_count": 5,
+     "first_broadcast_date": "2021-12-27T18:15:00Z",
+     "has_medium_or_long_synopsis": false,
+     "has_related_links": false,
+     "has_clips": false
+    },
+    {
+     "type": "series",
+     "pid": "m000py9t",
+     "media_type": null,
+     "title": "Series 1",
+     "short_synopsis": "Sandi Toksvig and her guests explore the Danish notion of 'hygge'.",
+     "image": {
+      "pid": "p08ybh0v"
+     },
+     "position": 1,
+     "expected_child_count": 5,
+     "first_broadcast_date": "2020-12-02T18:30:00Z",
+     "has_medium_or_long_synopsis": false,
+     "has_related_links": false,
+     "has_clips": false
+    }
+   ]
+  }
+ },
+ "programmes/m0012qgx.json": {
+  "programme": {
+   "type": "series",
+   "pid": "m0012qgx",
+   "expected_child_count": 5,
+   "position": 2,
+   "image": {
+    "pid": "p0pkg8mt"
+   },
+   "media_type": null,
+   "title": "Series 2",
+   "short_synopsis": "Sandi and her celebrity guests continue to explore the Danish notion of 'hygge'.",
+   "medium_synopsis": null,
+   "long_synopsis": null,
+   "first_broadcast_date": "2021-12-27T18:15:00Z",
+   "display_title": {
+    "title": "Series 2",
+    "subtitle": ""
+   },
+   "aggregated_episode_count": 5,
+   "ownership": {
+    "service": {
+     "type": "radio",
+     "id": "bbc_radio_four",
+     "key": "radio4",
+     "title": "BBC Radio 4"
+    }
+   },
+   "parent": {
+    "programme": {
+     "type": "brand",
+     "pid": "m0012qgy",
+     "title": "Sandi Toksvig's Hygge",
+     "short_synopsis": "Celebrity conversations on the idea of 'hygge' hosted by Sandi Tokvig via her Danish cabin",
+     "media_type": null,
+     "position": null,
+     "image": {
+      "pid": "p0pkg8mt"
+     },
+     "expected_child_count": null,
+     "first_broadcast_date": "2020-12-02T18:30:00Z",
+     "aggregated_episode_count": 10,
+     "ownership": {
+      "service": {
+       "type": "radio",
+       "id": "bbc_radio_four",
+       "key": "radio4",
+       "title": "BBC Radio 4"
+      }
+     }
+    }
+   }
+  }
+ },
+ "programmes/m0012qgx/children.json": {
+  "children": {
+   "page": 1,
+   "total": 5,
+   "limit": 50,
+   "offset": 0,
+   "programmes": [
+    {
+     "type": "episode",
+     "pid": "m0012sx2",
+     "media_type": "audio",
+     "title": "David Blunkett",
+     "short_synopsis": "Sandi explores the Danish concept of Hygge with Lord Blunkett.",
+     "image": {
+      "pid": "p0pkg8mt"
+     },
+     "position": 5,
+     "expected_child_count": null,
+     "first_broadcast_date": "2021-12-31T18:15:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "actual_start": "2025-11-11T10:47:18Z",
+     "is_available_mediaset_pc_sd": true,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "m0012sb7",
+     "media_type": "audio",
+     "title": "Lyse Doucet",
+     "short_synopsis": "Sandi explores the Danish concept of Hygge with correspondent Lyse Doucet.",
+     "image": {
+      "pid": "p0pkg8mt"
+     },
+     "position": 4,
+     "expected_child_count": null,
+     "first_broadcast_date": "2021-12-30T18:15:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "actual_start": "2025-11-11T10:47:45Z",
+     "is_available_mediaset_pc_sd": true,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "m0012qgw",
+     "media_type": "audio",
+     "title": "Andy Hamilton",
+     "short_synopsis": "Sandi explores the Danish concept of Hygge with writer Andy Hamilton",
+     "image": {
+      "pid": "p0pkg8mt"
+     },
+     "position": 3,
+     "expected_child_count": null,
+     "first_broadcast_date": "2021-12-29T18:15:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "actual_start": "2025-11-11T10:48:16Z",
+     "is_available_mediaset_pc_sd": true,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "m0012s8c",
+     "media_type": "audio",
+     "title": "Gina Miller",
+     "short_synopsis": "Sandi explores the Danish concept of Hygge with campaigner Gina Miller.",
+     "image": {
+      "pid": "p0pkg8mt"
+     },
+     "position": 2,
+     "expected_child_count": null,
+     "first_broadcast_date": "2021-12-28T18:15:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "actual_start": "2025-11-11T10:48:55Z",
+     "is_available_mediaset_pc_sd": true,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "m0012sdb",
+     "media_type": "audio",
+     "title": "Krishnan Guru-Murthy",
+     "short_synopsis": "Sandi explores the Danish concept of Hygge with broadcaster Krishnan Guru-Murthy.",
+     "image": {
+      "pid": "p0pkg8mt"
+     },
+     "position": 1,
+     "expected_child_count": null,
+     "first_broadcast_date": "2021-12-27T18:15:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "actual_start": "2025-11-11T10:49:09Z",
+     "is_available_mediaset_pc_sd": true,
+     "is_legacy_media": false
+    }
+   ]
+  }
+ },
+ "programmes/m000py9t.json": {
+  "programme": {
+   "type": "series",
+   "pid": "m000py9t",
+   "expected_child_count": 5,
+   "position": 1,
+   "image": {
+    "pid": "p08ybh0v"
+   },
+   "media_type": null,
+   "title": "Series 1",
+   "short_synopsis": "Sandi Toksvig and her guests explore the Danish notion of 'hygge'.",
+   "medium_synopsis": null,
+   "long_synopsis": null,
+   "first_broadcast_date": "2020-12-02T18:30:00Z",
+   "display_title": {
+    "title": "Series 1",
+    "subtitle": ""
+   },
+   "aggregated_episode_count": 5,
+   "ownership": {
+    "service": {
+     "type": "radio",
+     "id": "bbc_radio_four",
+     "key": "radio4",
+     "title": "BBC Radio 4"
+    }
+   },
+   "parent": {
+    "programme": {
+     "type": "brand",
+     "pid": "m0012qgy",
+     "title": "Sandi Toksvig's Hygge",
+     "short_synopsis": "Celebrity conversations on the idea of 'hygge' hosted by Sandi Tokvig via her Danish cabin",
+     "media_type": null,
+     "position": null,
+     "image": {
+      "pid": "p0pkg8mt"
+     },
+     "expected_child_count": null,
+     "first_broadcast_date": "2020-12-02T18:30:00Z",
+     "aggregated_episode_count": 10,
+     "ownership": {
+      "service": {
+       "type": "radio",
+       "id": "bbc_radio_four",
+       "key": "radio4",
+       "title": "BBC Radio 4"
+      }
+     }
+    }
+   }
+  }
+ },
+ "programmes/m000py9t/children.json": {
+  "children": {
+   "page": 1,
+   "total": 5,
+   "limit": 50,
+   "offset": 0,
+   "programmes": [
+    {
+     "type": "episode",
+     "pid": "m000qnb7",
+     "media_type": "audio",
+     "title": "Alan Davies",
+     "short_synopsis": "Alan Davies joins Sandi in her wood cabin to discuss simple pleasures.",
+     "image": {
+      "pid": "p08ybh0v"
+     },
+     "position": 5,
+     "expected_child_count": null,
+     "first_broadcast_date": "2020-12-31T23:30:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "m000qknw",
+     "media_type": "audio",
+     "title": "Prof Brian Cox and Zoe Lyons",
+     "short_synopsis": "Professor Brian Cox and Zoe Lyons join Sandi Toksvig to explore 'hygge'.",
+     "image": {
+      "pid": "p08ybh0v"
+     },
+     "position": 4,
+     "expected_child_count": null,
+     "first_broadcast_date": "2020-12-23T18:30:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "m000q8zk",
+     "media_type": "audio",
+     "title": "Dr Maggie Aderin-Pocock and Rose & Rosie",
+     "short_synopsis": "Dr Maggie Aderin-Pocock and Rose & Rosie join Sandi Toksvig to explore 'hygge'.",
+     "image": {
+      "pid": "p08ybh0v"
+     },
+     "position": 3,
+     "expected_child_count": null,
+     "first_broadcast_date": "2020-12-16T18:30:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "m000q3tm",
+     "media_type": "audio",
+     "title": "Bridget Christie and Clive Myrie",
+     "short_synopsis": "Bridget Christie and Clive Myrie join Sandi Toksvig to explore the Danish notion 'hygge'.",
+     "image": {
+      "pid": "p08ybh0v"
+     },
+     "position": 2,
+     "expected_child_count": null,
+     "first_broadcast_date": "2020-12-09T18:30:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    },
+    {
+     "type": "episode",
+     "pid": "m000py9s",
+     "media_type": "audio",
+     "title": "Grayson Perry and Sindhu Vee",
+     "short_synopsis": "Grayson Perry and Sindhu Vee join Sandi Toksvig to explore the Danish notion of 'hygge'.",
+     "image": {
+      "pid": "p08ybh0v"
+     },
+     "position": 1,
+     "expected_child_count": null,
+     "first_broadcast_date": "2020-12-02T18:30:00Z",
+     "has_medium_or_long_synopsis": true,
+     "has_related_links": false,
+     "has_clips": false,
+     "has_segment_events": false,
+     "is_available_mediaset_pc_sd": false,
+     "is_legacy_media": false
+    }
+   ]
+  }
+ },
+ "v2/programmes/search/container": {
+  "$schema": "https://rms.api.bbc.co.uk/docs/swagger.json#/definitions/ContainerItems",
+  "data": [
+   {
+    "type": "container_item",
+    "id": "b007mf4f",
+    "urn": "urn:bbc:radio:brand:b007mf4f",
+    "tlec_urn": "urn:bbc:radio:brand:b007mf4f",
+    "network": {
+     "id": "bbc_radio_four",
+     "key": "radio4",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}",
+     "network_type": "master_brand"
+    },
+    "titles": {
+     "primary": "The Unbelievable Truth",
+     "secondary": null,
+     "tertiary": null
+    },
+    "synopses": {
+     "short": "Game show in which panellists are encouraged to tell lies.",
+     "medium": "Game show in which panellists compete to see how many nuggets of truth they are able to hide amongst their lies.",
+     "long": null
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m1qg1t.jpg",
+    "playable_count": null
+   },
+   {
+    "type": "container_item",
+    "id": "p0cf9vkv",
+    "urn": "urn:bbc:radio:brand:p0cf9vkv",
+    "tlec_urn": "urn:bbc:radio:brand:p0cf9vkv",
+    "network": {
+     "id": "bbc_radio_five_live",
+     "key": "5live",
+     "short_title": "Radio 5 Live",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_five_live/{type}_{size}.{format}",
+     "network_type": "master_brand"
+    },
+    "titles": {
+     "primary": "Moment of Truth",
+     "secondary": null,
+     "tertiary": null
+    },
+    "synopses": {
+     "short": "Three months in the life of a manager. This podcast goes where others don't.",
+     "medium": "A raw, tense and illuminating deep dive into the real lives of football managers. Intimate and unfiltered, this podcast reinvents fly-on-the-wall to take you where cameras can't.",
+     "long": "What does it take to be a football manager? We all think we can do it: pick a team to win a game, sign a couple of players who looked good on FIFA....I mean, we've all played Championship Manager right? The reality is very few people can ever truly master it, can deal with the torment, the anguish, the pain of defeat or even the blessed relief of victory. And what about putting their families and friends in the firing line of fans, the media and everyone else who has an opinion on how you do your job?\n\nFor the last three months of the 2021/22 League One season, this podcast had unparalleled access to the life of a football manager as two teams battled to change their collective stories forever and win promotion to the Championship. From the dressing room to the training ground, the team bus to the technical area, Rotherham's Paul Warne and Oxford's Karl Robinson have worn microphones to record every single critical moment of the job during the tense and eventful run-in.\n\nYou'll get to eavesdrop on how the personal reality of football management is a constant gnaw of sleepless nights, skipping meals and missing out on family life. You'll hear how the wives and children have to tiptoe around their disillusioned husbands following losses and you'll listen in to how they rarely enjoy those hard-fought victories.\n\nNarrated by Jimmy Nesbitt, Moment of Truth is an audio experience unlike any other that will give you an answer as to what it takes to manage a professional football club. This podcast is a love letter to our greatest game spread across 15 episodes. It's a rollercoaster ride through the footballing cauldron of League One where you get to sit on the bench of both teams as they battle to reach their Moment of Truth."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0d7q38x.jpg",
+    "playable_count": null
+   }
+  ]
+ }
+}

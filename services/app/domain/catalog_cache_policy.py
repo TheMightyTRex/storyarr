@@ -8,6 +8,11 @@ def lifetime(provider, path, document):
     query = (document or {}).get("query", "")
     name = re.search(r"\bquery\s+(\w+)", query)
     name = name[1] if name else ""
+    if provider == "bbc-sounds":
+        return timedelta(minutes=5)
+    if provider == "bbc":
+        # Radio show data changes weekly at most; an hour is the shortest refresh interval.
+        return timedelta(hours=1)
     if path == "search.json" or name in {
         "CatalogSearch",
         "LibraryTitleMatch",

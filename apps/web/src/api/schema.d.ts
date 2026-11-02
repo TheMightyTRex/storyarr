@@ -2009,6 +2009,190 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/radio/search": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Search
+     * @description Find shows by name through BBC Sounds search.
+     */
+    get: operations["search_api_radio_search_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Preview
+     * @description What a BBC link points to, without saving anything.
+     */
+    get: operations["preview_api_radio_preview_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/shows": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Shows */
+    get: operations["list_shows_api_radio_shows_get"];
+    put?: never;
+    /**
+     * Add Show
+     * @description Save a show with a follow choice; a background refresh then reads every series.
+     */
+    post: operations["add_show_api_radio_shows_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/stations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List Stations
+     * @description Stations of the person's shows, with how many shows each has (any series counts).
+     */
+    get: operations["list_stations_api_radio_stations_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/shows/{show_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Show Detail */
+    get: operations["show_detail_api_radio_shows__show_id__get"];
+    put?: never;
+    post?: never;
+    /**
+     * Remove Show
+     * @description Remove the show with its series and episodes. Saved images stay (other people may share
+     *     them); stations stay.
+     */
+    delete: operations["remove_show_api_radio_shows__show_id__delete"];
+    options?: never;
+    head?: never;
+    /**
+     * Edit Show
+     * @description Change the follow choice; episode statuses follow it.
+     */
+    patch: operations["edit_show_api_radio_shows__show_id__patch"];
+    trace?: never;
+  };
+  "/api/radio/shows/{show_id}/refresh": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Refresh Show
+     * @description Read the show from the BBC again, and fetch its images again.
+     */
+    post: operations["refresh_show_api_radio_shows__show_id__refresh_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/episodes/{episode_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Episode Detail */
+    get: operations["episode_detail_api_radio_episodes__episode_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/shows/{show_id}/artwork": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Show Artwork
+     * @description The saved copy of the show's BBC artwork (640 by 640 JPEG).
+     */
+    get: operations["show_artwork_api_radio_shows__show_id__artwork_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/stations/{station_id}/logo": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Station Logo
+     * @description The saved, cleaned copy of the station's BBC Sounds logo (SVG).
+     */
+    get: operations["station_logo_api_radio_stations__station_id__logo_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/lists": {
     parameters: {
       query?: never;
@@ -12577,6 +12761,354 @@ export interface components {
       /** Source Checks */
       source_checks?: components["schemas"]["QuickAddSourceCheck"][];
     };
+    /** RadioEpisodeDetail */
+    RadioEpisodeDetail: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Pid */
+      pid: string;
+      /** Number */
+      number: number;
+      /**
+       * Number Source
+       * @enum {string}
+       */
+      number_source: "bbc" | "broadcast_order";
+      /** Title */
+      title: string;
+      /** Synopsis */
+      synopsis: string | null;
+      /** First Broadcast */
+      first_broadcast: string | null;
+      /** Duration Seconds */
+      duration_seconds: number | null;
+      status: components["schemas"]["RadioEpisodeStatus"];
+      show: components["schemas"]["RadioEpisodeShow"];
+      series: components["schemas"]["RadioEpisodeSeries"];
+    };
+    /** RadioEpisodeSeries */
+    RadioEpisodeSeries: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "series" | "specials";
+      /** Number */
+      number: number;
+      /** Title */
+      title: string;
+      station: components["schemas"]["RadioStationRef"] | null;
+    };
+    /** RadioEpisodeShow */
+    RadioEpisodeShow: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Title */
+      title: string;
+      /** Artwork Url */
+      artwork_url: string | null;
+    };
+    /** RadioEpisodeStatus */
+    RadioEpisodeStatus: {
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind:
+        | "in_library"
+        | "downloading"
+        | "importing"
+        | "searching"
+        | "waiting"
+        | "not_released"
+        | "attention"
+        | "wanted"
+        | "excluded"
+        | "not_requested";
+      /** Label */
+      label: string;
+      /** Detail */
+      detail?: string | null;
+    };
+    /** RadioEpisodeView */
+    RadioEpisodeView: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Pid */
+      pid: string;
+      /** Number */
+      number: number;
+      /**
+       * Number Source
+       * @enum {string}
+       */
+      number_source: "bbc" | "broadcast_order";
+      /** Title */
+      title: string;
+      /** Synopsis */
+      synopsis: string | null;
+      /** First Broadcast */
+      first_broadcast: string | null;
+      /** Duration Seconds */
+      duration_seconds: number | null;
+      status: components["schemas"]["RadioEpisodeStatus"];
+    };
+    /** RadioPreviewSeries */
+    RadioPreviewSeries: {
+      /** Pid */
+      pid: string;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "series" | "specials";
+      /** Number */
+      number: number;
+      /** Title */
+      title: string;
+      /** Expected Episodes */
+      expected_episodes: number | null;
+      /** First Broadcast */
+      first_broadcast: string | null;
+    };
+    /** RadioSearchItem */
+    RadioSearchItem: {
+      /** Pid */
+      pid: string;
+      /** Title */
+      title: string;
+      /** Synopsis */
+      synopsis: string | null;
+      /** Station Id */
+      station_id: string | null;
+      /** Station Name */
+      station_name: string | null;
+      /** Image Pid */
+      image_pid: string | null;
+    };
+    /** RadioSearchView */
+    RadioSearchView: {
+      /**
+       * Source
+       * @default bbc_sounds
+       * @constant
+       */
+      source: "bbc_sounds";
+      /** Items */
+      items: components["schemas"]["RadioSearchItem"][];
+    };
+    /** RadioSeriesView */
+    RadioSeriesView: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Pid */
+      pid: string;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "series" | "specials";
+      /** Number */
+      number: number;
+      /**
+       * Number Source
+       * @enum {string}
+       */
+      number_source: "bbc" | "broadcast_order";
+      /** Title */
+      title: string;
+      /** Synopsis */
+      synopsis: string | null;
+      station: components["schemas"]["RadioStationRef"] | null;
+      /** Expected Episodes */
+      expected_episodes: number | null;
+      /** First Broadcast */
+      first_broadcast: string | null;
+      /** Episode Count */
+      episode_count: number;
+      /** Episodes */
+      episodes: components["schemas"]["RadioEpisodeView"][];
+    };
+    /** RadioShowDetail */
+    RadioShowDetail: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Provider
+       * @constant
+       */
+      provider: "bbc";
+      /** External Id */
+      external_id: string;
+      /** Title */
+      title: string;
+      /** Synopsis */
+      synopsis: string | null;
+      /** First Broadcast */
+      first_broadcast: string | null;
+      station: components["schemas"]["RadioStationRef"] | null;
+      /** Stations */
+      stations: components["schemas"]["RadioStationRef"][];
+      /**
+       * Follow
+       * @enum {string}
+       */
+      follow: "all" | "from_now_on" | "none";
+      /** Followed At */
+      followed_at: string | null;
+      /** Artwork Url */
+      artwork_url: string | null;
+      /** Logo Colour */
+      logo_colour: string | null;
+      /** Logo Source */
+      logo_source: string | null;
+      /** Series Count */
+      series_count: number;
+      /** Episode Count */
+      episode_count: number;
+      /** Refreshed At */
+      refreshed_at: string | null;
+      refresh: components["schemas"]["OperationView"] | null;
+      /** Series */
+      series: components["schemas"]["RadioSeriesView"][];
+    };
+    /** RadioShowEdit */
+    RadioShowEdit: {
+      /**
+       * Follow
+       * @enum {string}
+       */
+      follow: "all" | "from_now_on" | "none";
+    };
+    /** RadioShowInput */
+    RadioShowInput: {
+      /** Link */
+      link: string;
+      /**
+       * Follow
+       * @default from_now_on
+       * @enum {string}
+       */
+      follow: "all" | "from_now_on" | "none";
+    };
+    /** RadioShowList */
+    RadioShowList: {
+      /** Items */
+      items: components["schemas"]["RadioShowSummary"][];
+      /** Total */
+      total: number;
+    };
+    /** RadioShowPreview */
+    RadioShowPreview: {
+      /** Pid */
+      pid: string;
+      /** Title */
+      title: string;
+      /** Synopsis */
+      synopsis: string | null;
+      /** First Broadcast */
+      first_broadcast: string | null;
+      station: components["schemas"]["RadioStationRef"] | null;
+      /** Image Pid */
+      image_pid: string | null;
+      /** Series Count */
+      series_count: number;
+      /** Episode Count */
+      episode_count: number | null;
+      /** Series */
+      series: components["schemas"]["RadioPreviewSeries"][];
+      /** Existing Show Id */
+      existing_show_id?: string | null;
+    };
+    /** RadioShowSummary */
+    RadioShowSummary: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Provider
+       * @constant
+       */
+      provider: "bbc";
+      /** External Id */
+      external_id: string;
+      /** Title */
+      title: string;
+      /** Synopsis */
+      synopsis: string | null;
+      /** First Broadcast */
+      first_broadcast: string | null;
+      station: components["schemas"]["RadioStationRef"] | null;
+      /** Stations */
+      stations: components["schemas"]["RadioStationRef"][];
+      /**
+       * Follow
+       * @enum {string}
+       */
+      follow: "all" | "from_now_on" | "none";
+      /** Followed At */
+      followed_at: string | null;
+      /** Artwork Url */
+      artwork_url: string | null;
+      /** Logo Colour */
+      logo_colour: string | null;
+      /** Logo Source */
+      logo_source: string | null;
+      /** Series Count */
+      series_count: number;
+      /** Episode Count */
+      episode_count: number;
+      /** Refreshed At */
+      refreshed_at: string | null;
+      refresh: components["schemas"]["OperationView"] | null;
+    };
+    /** RadioStationList */
+    RadioStationList: {
+      /** Items */
+      items: components["schemas"]["RadioStationView"][];
+    };
+    /** RadioStationRef */
+    RadioStationRef: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Logo Url */
+      logo_url?: string | null;
+    };
+    /** RadioStationView */
+    RadioStationView: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Logo Url */
+      logo_url?: string | null;
+      /** Show Count */
+      show_count: number;
+    };
     /** RankedReleaseView */
     RankedReleaseView: {
       /**
@@ -19803,6 +20335,392 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["SeriesRequestView"];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  search_api_radio_search_get: {
+    parameters: {
+      query: {
+        q: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioSearchView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  preview_api_radio_preview_get: {
+    parameters: {
+      query: {
+        link: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioShowPreview"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_shows_api_radio_shows_get: {
+    parameters: {
+      query?: {
+        station?: string | null;
+        followed?: boolean | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioShowList"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  add_show_api_radio_shows_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RadioShowInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioShowSummary"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_stations_api_radio_stations_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioStationList"];
+        };
+      };
+    };
+  };
+  show_detail_api_radio_shows__show_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioShowDetail"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  remove_show_api_radio_shows__show_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  edit_show_api_radio_shows__show_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RadioShowEdit"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioShowSummary"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  refresh_show_api_radio_shows__show_id__refresh_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OperationView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  episode_detail_api_radio_episodes__episode_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        episode_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioEpisodeDetail"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  show_artwork_api_radio_shows__show_id__artwork_get: {
+    parameters: {
+      query?: never;
+      header?: {
+        "if-none-match"?: string | null;
+      };
+      path: {
+        show_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "image/jpeg": unknown;
+          "image/svg+xml": unknown;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  station_logo_api_radio_stations__station_id__logo_get: {
+    parameters: {
+      query?: never;
+      header?: {
+        "if-none-match"?: string | null;
+      };
+      path: {
+        station_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "image/jpeg": unknown;
+          "image/svg+xml": unknown;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {

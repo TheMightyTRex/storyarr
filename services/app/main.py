@@ -62,6 +62,7 @@ from app.api import (
     plex,
     preferences,
     prowlarr,
+    radio,
     reading_accounts,
     recovery,
     release_profiles,
@@ -139,10 +140,12 @@ def create_app() -> FastAPI:
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Content-Security-Policy"] = (
+        # A route may set a stricter policy, such as the radio station logos (SVG).
+        response.headers.setdefault(
+            "Content-Security-Policy",
             "default-src 'self'; img-src 'self' https: data:; "
             "style-src 'self'; script-src 'self'; connect-src 'self'; "
-            "frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+            "frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
         )
         if request.url.path.startswith("/api"):
             response.headers.setdefault("Cache-Control", "no-store")
@@ -185,6 +188,7 @@ def create_app() -> FastAPI:
     app.include_router(community_lists.router, prefix="/api")
     app.include_router(series.router, prefix="/api")
     app.include_router(series_requests.router, prefix="/api")
+    app.include_router(radio.router, prefix="/api")
     app.include_router(lists.router, prefix="/api")
     app.include_router(follows.router, prefix="/api")
     app.include_router(list_subscriptions.router, prefix="/api")

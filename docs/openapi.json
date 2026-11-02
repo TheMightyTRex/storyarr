@@ -5969,6 +5969,560 @@
         }
       }
     },
+    "/api/radio/search": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Search",
+        "description": "Find shows by name through BBC Sounds search.",
+        "operationId": "search_api_radio_search_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100,
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioSearchView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/preview": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Preview",
+        "description": "What a BBC link points to, without saving anything.",
+        "operationId": "preview_api_radio_preview_get",
+        "parameters": [
+          {
+            "name": "link",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 500,
+              "title": "Link"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioShowPreview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/shows": {
+      "post": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Add Show",
+        "description": "Save a show with a follow choice; a background refresh then reads every series.",
+        "operationId": "add_show_api_radio_shows_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadioShowInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioShowSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "List Shows",
+        "operationId": "list_shows_api_radio_shows_get",
+        "parameters": [
+          {
+            "name": "station",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Station"
+            }
+          },
+          {
+            "name": "followed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Followed"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioShowList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/stations": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "List Stations",
+        "description": "Stations of the person's shows, with how many shows each has (any series counts).",
+        "operationId": "list_stations_api_radio_stations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioStationList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/shows/{show_id}": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Show Detail",
+        "operationId": "show_detail_api_radio_shows__show_id__get",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioShowDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Edit Show",
+        "description": "Change the follow choice; episode statuses follow it.",
+        "operationId": "edit_show_api_radio_shows__show_id__patch",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadioShowEdit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioShowSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Remove Show",
+        "description": "Remove the show with its series and episodes. Saved images stay (other people may share\nthem); stations stay.",
+        "operationId": "remove_show_api_radio_shows__show_id__delete",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/shows/{show_id}/refresh": {
+      "post": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Refresh Show",
+        "description": "Read the show from the BBC again, and fetch its images again.",
+        "operationId": "refresh_show_api_radio_shows__show_id__refresh_post",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/episodes/{episode_id}": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Episode Detail",
+        "operationId": "episode_detail_api_radio_episodes__episode_id__get",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Episode Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioEpisodeDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/shows/{show_id}/artwork": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Show Artwork",
+        "description": "The saved copy of the show's BBC artwork (640 by 640 JPEG).",
+        "operationId": "show_artwork_api_radio_shows__show_id__artwork_get",
+        "parameters": [
+          {
+            "name": "show_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Show Id"
+            }
+          },
+          {
+            "name": "if-none-match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-None-Match"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/jpeg": {},
+              "image/svg+xml": {}
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/stations/{station_id}/logo": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Station Logo",
+        "description": "The saved, cleaned copy of the station's BBC Sounds logo (SVG).",
+        "operationId": "station_logo_api_radio_stations__station_id__logo_get",
+        "parameters": [
+          {
+            "name": "station_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Station Id"
+            }
+          },
+          {
+            "name": "if-none-match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-None-Match"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/jpeg": {},
+              "image/svg+xml": {}
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/lists": {
       "get": {
         "tags": [
@@ -36802,6 +37356,1131 @@
           "updated_at"
         ],
         "title": "QuickAddView"
+      },
+      "RadioEpisodeDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "pid": {
+            "type": "string",
+            "title": "Pid"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "number_source": {
+            "type": "string",
+            "enum": [
+              "bbc",
+              "broadcast_order"
+            ],
+            "title": "Number Source"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "synopsis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synopsis"
+          },
+          "first_broadcast": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Broadcast"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RadioEpisodeStatus"
+          },
+          "show": {
+            "$ref": "#/components/schemas/RadioEpisodeShow"
+          },
+          "series": {
+            "$ref": "#/components/schemas/RadioEpisodeSeries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pid",
+          "number",
+          "number_source",
+          "title",
+          "synopsis",
+          "first_broadcast",
+          "duration_seconds",
+          "status",
+          "show",
+          "series"
+        ],
+        "title": "RadioEpisodeDetail"
+      },
+      "RadioEpisodeSeries": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "series",
+              "specials"
+            ],
+            "title": "Kind"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "station": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioStationRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "number",
+          "title",
+          "station"
+        ],
+        "title": "RadioEpisodeSeries"
+      },
+      "RadioEpisodeShow": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "artwork_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artwork Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "artwork_url"
+        ],
+        "title": "RadioEpisodeShow"
+      },
+      "RadioEpisodeStatus": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "in_library",
+              "downloading",
+              "importing",
+              "searching",
+              "waiting",
+              "not_released",
+              "attention",
+              "wanted",
+              "excluded",
+              "not_requested"
+            ],
+            "title": "Kind"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "label"
+        ],
+        "title": "RadioEpisodeStatus"
+      },
+      "RadioEpisodeView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "pid": {
+            "type": "string",
+            "title": "Pid"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "number_source": {
+            "type": "string",
+            "enum": [
+              "bbc",
+              "broadcast_order"
+            ],
+            "title": "Number Source"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "synopsis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synopsis"
+          },
+          "first_broadcast": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Broadcast"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RadioEpisodeStatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pid",
+          "number",
+          "number_source",
+          "title",
+          "synopsis",
+          "first_broadcast",
+          "duration_seconds",
+          "status"
+        ],
+        "title": "RadioEpisodeView"
+      },
+      "RadioPreviewSeries": {
+        "properties": {
+          "pid": {
+            "type": "string",
+            "title": "Pid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "series",
+              "specials"
+            ],
+            "title": "Kind"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "expected_episodes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Episodes"
+          },
+          "first_broadcast": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Broadcast"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pid",
+          "kind",
+          "number",
+          "title",
+          "expected_episodes",
+          "first_broadcast"
+        ],
+        "title": "RadioPreviewSeries"
+      },
+      "RadioSearchItem": {
+        "properties": {
+          "pid": {
+            "type": "string",
+            "title": "Pid"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "synopsis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synopsis"
+          },
+          "station_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Station Id"
+          },
+          "station_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Station Name"
+          },
+          "image_pid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Pid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pid",
+          "title",
+          "synopsis",
+          "station_id",
+          "station_name",
+          "image_pid"
+        ],
+        "title": "RadioSearchItem"
+      },
+      "RadioSearchView": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "const": "bbc_sounds",
+            "title": "Source",
+            "default": "bbc_sounds"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RadioSearchItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "RadioSearchView"
+      },
+      "RadioSeriesView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "pid": {
+            "type": "string",
+            "title": "Pid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "series",
+              "specials"
+            ],
+            "title": "Kind"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "number_source": {
+            "type": "string",
+            "enum": [
+              "bbc",
+              "broadcast_order"
+            ],
+            "title": "Number Source"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "synopsis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synopsis"
+          },
+          "station": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioStationRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expected_episodes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Episodes"
+          },
+          "first_broadcast": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Broadcast"
+          },
+          "episode_count": {
+            "type": "integer",
+            "title": "Episode Count"
+          },
+          "episodes": {
+            "items": {
+              "$ref": "#/components/schemas/RadioEpisodeView"
+            },
+            "type": "array",
+            "title": "Episodes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pid",
+          "kind",
+          "number",
+          "number_source",
+          "title",
+          "synopsis",
+          "station",
+          "expected_episodes",
+          "first_broadcast",
+          "episode_count",
+          "episodes"
+        ],
+        "title": "RadioSeriesView"
+      },
+      "RadioShowDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "provider": {
+            "type": "string",
+            "const": "bbc",
+            "title": "Provider"
+          },
+          "external_id": {
+            "type": "string",
+            "title": "External Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "synopsis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synopsis"
+          },
+          "first_broadcast": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Broadcast"
+          },
+          "station": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioStationRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stations": {
+            "items": {
+              "$ref": "#/components/schemas/RadioStationRef"
+            },
+            "type": "array",
+            "title": "Stations"
+          },
+          "follow": {
+            "type": "string",
+            "enum": [
+              "all",
+              "from_now_on",
+              "none"
+            ],
+            "title": "Follow"
+          },
+          "followed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followed At"
+          },
+          "artwork_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artwork Url"
+          },
+          "logo_colour": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Colour"
+          },
+          "logo_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Source"
+          },
+          "series_count": {
+            "type": "integer",
+            "title": "Series Count"
+          },
+          "episode_count": {
+            "type": "integer",
+            "title": "Episode Count"
+          },
+          "refreshed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refreshed At"
+          },
+          "refresh": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/RadioSeriesView"
+            },
+            "type": "array",
+            "title": "Series"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "provider",
+          "external_id",
+          "title",
+          "synopsis",
+          "first_broadcast",
+          "station",
+          "stations",
+          "follow",
+          "followed_at",
+          "artwork_url",
+          "logo_colour",
+          "logo_source",
+          "series_count",
+          "episode_count",
+          "refreshed_at",
+          "refresh",
+          "series"
+        ],
+        "title": "RadioShowDetail"
+      },
+      "RadioShowEdit": {
+        "properties": {
+          "follow": {
+            "type": "string",
+            "enum": [
+              "all",
+              "from_now_on",
+              "none"
+            ],
+            "title": "Follow"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "follow"
+        ],
+        "title": "RadioShowEdit"
+      },
+      "RadioShowInput": {
+        "properties": {
+          "link": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 8,
+            "title": "Link"
+          },
+          "follow": {
+            "type": "string",
+            "enum": [
+              "all",
+              "from_now_on",
+              "none"
+            ],
+            "title": "Follow",
+            "default": "from_now_on"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "link"
+        ],
+        "title": "RadioShowInput"
+      },
+      "RadioShowList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RadioShowSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "RadioShowList"
+      },
+      "RadioShowPreview": {
+        "properties": {
+          "pid": {
+            "type": "string",
+            "title": "Pid"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "synopsis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synopsis"
+          },
+          "first_broadcast": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Broadcast"
+          },
+          "station": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioStationRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "image_pid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Pid"
+          },
+          "series_count": {
+            "type": "integer",
+            "title": "Series Count"
+          },
+          "episode_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Episode Count"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/RadioPreviewSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "existing_show_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Existing Show Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pid",
+          "title",
+          "synopsis",
+          "first_broadcast",
+          "station",
+          "image_pid",
+          "series_count",
+          "episode_count",
+          "series"
+        ],
+        "title": "RadioShowPreview"
+      },
+      "RadioShowSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "provider": {
+            "type": "string",
+            "const": "bbc",
+            "title": "Provider"
+          },
+          "external_id": {
+            "type": "string",
+            "title": "External Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "synopsis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synopsis"
+          },
+          "first_broadcast": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Broadcast"
+          },
+          "station": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioStationRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stations": {
+            "items": {
+              "$ref": "#/components/schemas/RadioStationRef"
+            },
+            "type": "array",
+            "title": "Stations"
+          },
+          "follow": {
+            "type": "string",
+            "enum": [
+              "all",
+              "from_now_on",
+              "none"
+            ],
+            "title": "Follow"
+          },
+          "followed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followed At"
+          },
+          "artwork_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artwork Url"
+          },
+          "logo_colour": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Colour"
+          },
+          "logo_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Source"
+          },
+          "series_count": {
+            "type": "integer",
+            "title": "Series Count"
+          },
+          "episode_count": {
+            "type": "integer",
+            "title": "Episode Count"
+          },
+          "refreshed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refreshed At"
+          },
+          "refresh": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "provider",
+          "external_id",
+          "title",
+          "synopsis",
+          "first_broadcast",
+          "station",
+          "stations",
+          "follow",
+          "followed_at",
+          "artwork_url",
+          "logo_colour",
+          "logo_source",
+          "series_count",
+          "episode_count",
+          "refreshed_at",
+          "refresh"
+        ],
+        "title": "RadioShowSummary"
+      },
+      "RadioStationList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RadioStationView"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "RadioStationList"
+      },
+      "RadioStationRef": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "RadioStationRef"
+      },
+      "RadioStationView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Url"
+          },
+          "show_count": {
+            "type": "integer",
+            "title": "Show Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "show_count"
+        ],
+        "title": "RadioStationView"
       },
       "RankedReleaseView": {
         "properties": {

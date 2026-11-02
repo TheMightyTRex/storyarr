@@ -1547,3 +1547,127 @@ class RequestQuotaCharge(Base):
     size_bytes: Mapped[int] = mapped_column(BigInteger, default=0)
     size_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     exempt: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+# Radio (FEAT-R). Shows, their series and episodes are kept apart from Work and Version; later
+# phases link episodes to the audio pipeline. Stations are shared by everyone, shows are owned.
+RADIO_FOLLOW = ("all", "from_now_on", "none")
+# The status words of app.domain.follow_status.StatusKind (a unit test keeps them in step).
+RADIO_EPISODE_STATUS = (
+    "in_library",
+    "downloading",
+    "importing",
+    "searching",
+    "waiting",
+    "not_released",
+    "attention",
+    "wanted",
+    "excluded",
+    "not_requested",
+)
+
+
+def _in(column: str, values) -> str:
+    return f"{column} IN ({', '.join(repr(value) for value in values)})"
+
+
+class RadioStation(Base):
+    __tablename__ = "radio_stations"
+    # The BBC service id, such as bbc_radio_four.
+    id: Mapped[str] = mapped_column(String(60), primary_key=True)
+    name: Mapped[str] = mapped_column(String(200))
+    # Relative to settings.radio_images_root, such as stations/bbc_radio_four.svg.
+    logo_path: Mapped[str | None] = mapped_column(String(300))
+    logo_fetched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class RadioShow(Identity, Base):
+    __tablename__ = "radio_shows"
+    __table_args__ = (
+        UniqueConstraint("owner_id", "provider", "external_id"),
+        CheckConstraint("provider = 'bbc'", name="radio_shows_provider_check"),
+        CheckConstraint(_in("follow", RADIO_FOLLOW), name="radio_shows_follow_check"),
+    )
+    owner_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    provider: Mapped[str] = mapped_column(String(20), default="bbc")
+    # The BBC brand pid (or a top-level series pid when a series has no brand).
+    external_id: Mapped[str] = mapped_column(String(20))
+    title: Mapped[str] = mapped_column(String(600))
+    synopsis: Mapped[str | None] = mapped_column(Text)
+    first_broadcast: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    station_id: Mapped[str | None] = mapped_column(
+        ForeignKey("radio_stations.id", ondelete="SET NULL"), index=True
+    )
+    image_pid: Mapped[str | None] = mapped_column(String(20))
+    # Relative to settings.radio_images_root, such as shows/b007mf4f.jpg.
+    artwork_path: Mapped[str | None] = mapped_column(String(300))
+    artwork_fetched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # The show logo (UX-43): a saved copy, the colour choice and where it came from.
+    logo_path: Mapped[str | None] = mapped_column(String(300))
+    logo_colour: Mapped[str | None] = mapped_column(String(20))
+    logo_source: Mapped[str | None] = mapped_column(String(20))
+    follow: Mapped[str] = mapped_column(
+        String(20), default="from_now_on", server_default="from_now_on"
+    )
+    followed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    refreshed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    operation_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("operations.id", ondelete="SET NULL")
+    )
+
+
+class RadioSeries(Identity, Base):
+    __tablename__ = "radio_series"
+    __table_args__ = (
+        UniqueConstraint("show_id", "pid"),
+        CheckConstraint("kind IN ('series', 'specials')", name="radio_series_kind_check"),
+        CheckConstraint(
+            "number_source IN ('bbc', 'broadcast_order')", name="radio_series_number_source_check"
+        ),
+    )
+    show_id: Mapped[UUID] = mapped_column(
+        ForeignKey("radio_shows.id", ondelete="CASCADE"), index=True
+    )
+    # The BBC series pid. Episodes listed straight under the brand form a "specials" series,
+    # number 0, keyed by the brand pid.
+    pid: Mapped[str] = mapped_column(String(20))
+    kind: Mapped[str] = mapped_column(String(20), default="series")
+    number: Mapped[int] = mapped_column(Integer)
+    number_source: Mapped[str] = mapped_column(String(20), default="bbc")
+    title: Mapped[str] = mapped_column(String(600))
+    synopsis: Mapped[str | None] = mapped_column(Text)
+    # Per series, so a show that moved station appears under both.
+    station_id: Mapped[str | None] = mapped_column(
+        ForeignKey("radio_stations.id", ondelete="SET NULL"), index=True
+    )
+    expected_episodes: Mapped[int | None] = mapped_column(Integer)
+    first_broadcast: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # When the BBC episode list was last read; settled series are not read again.
+    walked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class RadioEpisode(Identity, Base):
+    __tablename__ = "radio_episodes"
+    __table_args__ = (
+        UniqueConstraint("show_id", "pid"),
+        CheckConstraint(_in("status", RADIO_EPISODE_STATUS), name="radio_episodes_status_check"),
+        CheckConstraint(
+            "number_source IN ('bbc', 'broadcast_order')",
+            name="radio_episodes_number_source_check",
+        ),
+    )
+    show_id: Mapped[UUID] = mapped_column(
+        ForeignKey("radio_shows.id", ondelete="CASCADE"), index=True
+    )
+    series_id: Mapped[UUID] = mapped_column(
+        ForeignKey("radio_series.id", ondelete="CASCADE"), index=True
+    )
+    pid: Mapped[str] = mapped_column(String(20))
+    number: Mapped[int] = mapped_column(Integer)
+    number_source: Mapped[str] = mapped_column(String(20), default="bbc")
+    title: Mapped[str] = mapped_column(String(600))
+    synopsis: Mapped[str | None] = mapped_column(Text)
+    first_broadcast: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    duration_seconds: Mapped[int | None] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20), default="not_requested")

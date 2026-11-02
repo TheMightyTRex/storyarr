@@ -54,6 +54,7 @@ def configure_environment() -> Path:
     os.environ.setdefault("BOOK_COOKIE_SECURE", str(parse_origin(public_url)[0] == "https").lower())
     os.environ.setdefault("BOOK_ENV_FILE", "")
     os.environ.setdefault("BOOK_IMPORT_JOURNAL_ROOT", str(config / "import-journals"))
+    os.environ.setdefault("BOOK_RADIO_IMAGES_ROOT", str(config / "radio-images"))
     os.environ["HOME"] = str(config)
     if not os.environ.get("BOOK_SECRET_KEY"):
         os.environ.setdefault("BOOK_SECRET_KEY_FILE", str(config / "app_key"))

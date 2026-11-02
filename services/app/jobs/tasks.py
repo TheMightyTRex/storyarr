@@ -240,6 +240,17 @@ async def refresh_series(operation_id: str) -> None:
 
 
 @tasks.task(
+    name="radio.show.refresh",
+    queue="metadata",
+    retry=CatalogRetryStrategy(max_attempts=5, wait=60),
+)
+async def refresh_radio_show(operation_id: str) -> None:
+    from app.domain.radio import run
+
+    await run(UUID(operation_id))
+
+
+@tasks.task(
     name="metadata.resolve-import",
     queue="metadata",
     retry=CatalogRetryStrategy(max_attempts=5, wait=60),

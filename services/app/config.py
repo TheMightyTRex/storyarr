@@ -61,6 +61,8 @@ class Settings(BaseSettings):
         default_factory=lambda: Path(".local/import-journals").absolute()
     )
     import_storage_routes: dict[str, ImportStorageRoute] = {}
+    # Station logos and show artwork fetched once from the BBC and served from here (radio).
+    radio_images_root: Path = Field(default_factory=lambda: Path(".local/radio-images").absolute())
 
     @field_validator("audible_region")
     @classmethod
