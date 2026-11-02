@@ -129,7 +129,10 @@ test("settings use compact controls and naming presets persist with planner prev
     "Title",
   ]);
   await naming.getByRole("button", { name: "Save changes" }).click();
-  await expect(naming.getByRole("status")).toHaveText("Saved");
+  // The save bar shows only while there are unsaved changes, so a good save removes it.
+  await expect(
+    naming.getByRole("region", { name: "Unsaved changes", exact: true }),
+  ).toHaveCount(0);
   await page.reload();
   await naming.getByRole("button", { name: "Audiobook", exact: true }).click();
   await expect(
@@ -142,7 +145,10 @@ test("settings use compact controls and naming presets persist with planner prev
   await expect(preview).toContainText("Bloomsbury");
   await naming.getByRole("button", { name: "By series", exact: true }).click();
   await naming.getByRole("button", { name: "Save changes" }).click();
-  await expect(naming.getByRole("status")).toHaveText("Saved");
+  // The save bar shows only while there are unsaved changes, so a good save removes it.
+  await expect(
+    naming.getByRole("region", { name: "Unsaved changes", exact: true }),
+  ).toHaveCount(0);
   await naming.screenshot({ path: testInfo.outputPath("naming-desktop.png") });
   await jump("sources");
   const sources = page.getByRole("region", {

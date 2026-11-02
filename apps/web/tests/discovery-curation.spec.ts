@@ -42,7 +42,8 @@ test("awards, filtering, pinning and persisted layout form one discovery flow", 
   await expect(
     page.getByRole("button", { name: "My Friends, details", exact: true }),
   ).toBeVisible();
-  const nav = await page.locator(".page-tabs").boundingBox();
+  // The Discover pages are tabs in the header's second row.
+  const nav = await page.locator(".header-submenu").boundingBox();
   expect(nav!.height).toBeLessThan(70);
   const covers = page
     .getByRole("region", { name: "Fiction", exact: true })
@@ -120,8 +121,13 @@ test("awards, filtering, pinning and persisted layout form one discovery flow", 
     .getByRole("link", { name: "Open book page" })
     .click();
   await expect(page).toHaveURL(/\/discover\/books\/goodreads\/\d+/);
+  // The book page's own title; the Summary and the cover leave as the page loads.
   await expect(
-    page.getByRole("heading", { name: "Wild Dark Shore", exact: true }),
+    page.getByRole("heading", {
+      name: "Wild Dark Shore",
+      exact: true,
+      level: 1,
+    }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Connect Hardcover", exact: true }),
@@ -163,7 +169,13 @@ test("manual list preview is bounded and mobile navigation fits", async ({
     path: info.outputPath("collection-mobile.png"),
     fullPage: true,
   });
-  await page.getByRole("link", { name: "Awards", exact: true }).click();
+  // On phones the Discover pages are in the main menu, under Discover.
+  await page.getByRole("button", { name: /^Menu/ }).click();
+  const menu = page.getByRole("dialog", { name: "Main menu" });
+  const discover = menu.getByRole("button", { name: "Discover", exact: true });
+  if ((await discover.getAttribute("aria-expanded")) !== "true")
+    await discover.click();
+  await menu.getByRole("link", { name: "Awards", exact: true }).click();
   await expect(
     page.getByRole("heading", {
       name: "Stories worth celebrating",
@@ -250,8 +262,9 @@ test("Goodreads cards open verified Hardcover details and lists navigation is co
     .getByRole("link", { name: "Open book page" })
     .click();
   await expect(page).toHaveURL(/\/discover\/books\/hardcover\/42$/);
+  // The book page's own title; the Summary and the cover leave as the page loads.
   await expect(
-    page.getByRole("heading", { name: "Ender's Game", exact: true }),
+    page.getByRole("heading", { name: "Ender's Game", exact: true, level: 1 }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: /^Quick add · / }),
@@ -299,11 +312,10 @@ test("visible Goodreads cards replace thumbnails with Hardcover art", async ({
       }),
   );
   await page.goto("/discover/collections/gr-list-19341");
+  // The Goodreads title until the Hardcover match arrives, then Hardcover's.
   const open = page.getByRole("button", {
-    name: "Ender’s Game (Ender's Saga, #1), details",
-    exact: true,
+    name: /^Ender’s Game \(Ender's Saga, #1\), details$|^Ender's Game, details$/,
   });
-  const card = page.locator(".cover-card").filter({ has: open });
   await open.click();
   await expect(
     page
@@ -311,7 +323,14 @@ test("visible Goodreads cards replace thumbnails with Hardcover art", async ({
       .getByRole("link", { name: "Open book page" }),
   ).toHaveAttribute("href", "/discover/books/hardcover/42");
   await page.keyboard.press("Escape");
-  await expect(card.locator(".book-cover img")).toHaveAttribute(
+  // Once matched, the card shows Hardcover's title, so its details button is renamed.
+  const matched = page.locator(".cover-card").filter({
+    has: page.getByRole("button", {
+      name: "Ender's Game, details",
+      exact: true,
+    }),
+  });
+  await expect(matched.locator(".book-cover img")).toHaveAttribute(
     "src",
     "/api/catalog/cover-image?size=320&url=" +
       encodeURIComponent(

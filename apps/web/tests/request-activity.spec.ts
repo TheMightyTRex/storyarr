@@ -1,4 +1,4 @@
-import { expect, test } from "./fixtures";
+import { expect, test, type Page } from "./fixtures";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -111,7 +111,8 @@ test("activity requests preserve independent reasons and route missing media to 
     if (!["GET", "HEAD", "OPTIONS"].includes(request.method()))
       writes.push(request.url());
   });
-  await page.getByRole("link", { name: "Requests", exact: true }).click();
+  // The main menu calls it Activity; its first tab lists the requests.
+  await page.getByRole("link", { name: "Activity", exact: true }).click();
   const requests = page.getByRole("region", {
     name: "Requests",
     exact: true,
@@ -153,7 +154,8 @@ test("activity requests preserve independent reasons and route missing media to 
   await expect(
     page.getByRole("region", { name: "Book download sources" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Requests", exact: true }).click();
+  // The main menu calls it Activity; its first tab lists the requests.
+  await page.getByRole("link", { name: "Activity", exact: true }).click();
   await requests.locator("tbody").last().scrollIntoViewIfNeeded();
   await expect(card).toBeVisible();
   await page.screenshot({
@@ -201,10 +203,7 @@ test("activity requests preserve independent reasons and route missing media to 
     .click();
   await expect(card).toHaveCount(0);
   // Withdrawn is a filter on the History tab.
-  await page
-    .getByRole("navigation", { name: "Activity" })
-    .getByRole("link", { name: /^History/ })
-    .click();
+  await openActivityTab(page, /^History/);
   const withdrawn = page
     .getByRole("navigation", { name: "History filters" })
     .getByRole("link", { name: /^Withdrawn/ });
@@ -225,12 +224,7 @@ test("activity requests preserve independent reasons and route missing media to 
   await expect(
     page.getByRole("region", { name: "Quick add progress" }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Menu", exact: true }).click();
-  await page.getByRole("link", { name: "Requests", exact: true }).click();
-  await page
-    .getByRole("navigation", { name: "Activity" })
-    .getByRole("link", { name: /^History/ })
-    .click();
+  await openActivityTab(page, /^History/);
   await page
     .getByRole("navigation", { name: "History filters" })
     .getByRole("link", { name: /^Withdrawn/ })
@@ -263,14 +257,14 @@ test("activity requests preserve independent reasons and route missing media to 
     (await (await page.request.get("/api/library/assets")).json()).total,
   ).toBe(inventory.total);
   await page.setViewportSize({ width: 1440, height: 1000 });
-  // Downloading and Needs review (the old Download review tab) are filters on the Queue tab.
+  // Downloading and Needs attention (the old Download review tab) are filters on the Queue tab.
   await page
     .getByRole("navigation", { name: "Activity" })
     .getByRole("link", { name: /^Queue/ })
     .click();
   const filters = page.getByRole("navigation", { name: "Queue filters" });
   await expect(
-    filters.getByRole("link", { name: /^Needs review/ }),
+    filters.getByRole("link", { name: /^Needs attention/ }),
   ).toBeVisible();
   const filterPositions = await filters
     .getByRole("link")
@@ -282,12 +276,27 @@ test("activity requests preserve independent reasons and route missing media to 
   await expect(
     filters.getByRole("link", { name: /^Downloading/ }),
   ).toHaveAttribute("aria-current", "page");
-  await filters.getByRole("link", { name: /^Needs review/ }).click();
+  await filters.getByRole("link", { name: /^Needs attention/ }).click();
   await expect(
-    filters.getByRole("link", { name: /^Needs review/ }),
+    filters.getByRole("link", { name: /^Needs attention/ }),
   ).toHaveAttribute("aria-current", "page");
   await expect(
     page.getByRole("region", { name: "Requests", exact: true }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+// Activity's tabs are in the header's second row; on phones they are in the main menu, under Activity.
+async function openActivityTab(page: Page, name: RegExp) {
+  const header = page.getByRole("navigation", { name: "Activity" });
+  if (await header.isVisible()) {
+    await header.getByRole("link", { name }).click();
+    return;
+  }
+  await page.getByRole("button", { name: /^Menu/ }).click();
+  const menu = page.getByRole("dialog", { name: "Main menu" });
+  const section = menu.getByRole("button", { name: "Activity", exact: true });
+  if ((await section.getAttribute("aria-expanded")) !== "true")
+    await section.click();
+  await menu.getByRole("link", { name }).click();
+}

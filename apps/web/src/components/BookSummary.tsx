@@ -23,6 +23,8 @@ export type SummaryBook = {
   workId?: string;
   /** The book's own page, for "Open book page". */
   to: string;
+  /** What the book's own page reads on arrival (see CoverCard). */
+  toState?: Record<string, unknown>;
   rating?: number | null;
   providerBook?: { provider: string; external_id: string };
 };
@@ -87,7 +89,11 @@ function CatalogSummary({
       className="book-summary"
       onClose={close}
       footer={
-        <ContextLink className="drawer-action primary" to={book.to}>
+        <ContextLink
+          className="drawer-action primary"
+          to={book.to}
+          state={book.toState}
+        >
           Open book page
         </ContextLink>
       }

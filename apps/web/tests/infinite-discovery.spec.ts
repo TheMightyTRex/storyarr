@@ -306,7 +306,10 @@ test("followed shelves append at the horizontal end without replacing books", as
     route.fulfill({ json: { enabled: false } }),
   );
   await page.goto("/discover?view=yours");
-  const shelf = page.getByRole("list", { name: "Reading shelf book preview" });
+  const shelf = page.getByRole("list", {
+    name: "Reading shelf",
+    exact: true,
+  });
   await expect(shelf.locator("li")).toHaveCount(16);
   await shelf.evaluate((el) => {
     el.scrollLeft = el.scrollWidth;

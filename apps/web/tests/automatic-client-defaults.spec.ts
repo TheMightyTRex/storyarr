@@ -175,9 +175,9 @@ test("client defaults are automatic per type and selectable when there are sever
     await panel
       .getByRole("button", { name: "Save changes", exact: true })
       .click();
-    await expect(panel.getByRole("status")).toContainText(
-      "Download defaults saved",
-    );
+    await expect(
+      panel.getByRole("status").filter({ hasText: "Download defaults saved" }),
+    ).toContainText("Download defaults saved");
     await page.reload();
     await expand();
     await expect(torrentDefault).toHaveValue(second.id);

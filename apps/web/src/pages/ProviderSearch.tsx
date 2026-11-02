@@ -264,6 +264,8 @@ export default function ProviderSearch({
                     work={known}
                     providerBook={book}
                     to={page}
+                    // The book page offers a way back to these results.
+                    toState={{ search: `/search?${params.toString()}` }}
                   >
                     {text}
                   </BookRow>

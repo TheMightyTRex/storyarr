@@ -96,6 +96,8 @@ export function GoodreadsCard({ book }: { book: Entry }) {
           authors={match?.authors || book.authors || []}
           rating={match?.rating ?? book.rating}
           cover={cover}
+          // If Hardcover cannot be reached, the book page shows this entry instead.
+          toState={{ goodreads: book }}
           to={
             match
               ? `/discover/books/hardcover/${match.external_id}`

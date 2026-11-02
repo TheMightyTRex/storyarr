@@ -76,13 +76,13 @@ test("unified search keeps local ownership usable during a provider outage and o
   );
   await search("The First Harbor");
   const local = page.getByRole("region", { name: "Matches in your catalog" });
-  // A catalog match is a cover; a format in the library has "in library" in its action's name.
+  // A catalog match is a cover with its format actions, whether or not the book is in the library now.
   const owned = local
     .locator(".cover-card")
     .filter({ hasText: "The First Harbor" });
   try {
     await expect(
-      owned.getByRole("button", { name: / in library$/ }).first(),
+      owned.getByRole("button", { name: /^(Get the e|E)book of / }).first(),
     ).toBeAttached();
     await expect(
       page.getByText("Synthetic metadata outage", { exact: true }),
@@ -95,7 +95,7 @@ test("unified search keeps local ownership usable during a provider outage and o
     page.getByText("Synthetic metadata outage", { exact: true }),
   ).toBeVisible();
   await expect(
-    owned.getByRole("button", { name: / in library$/ }).first(),
+    owned.getByRole("button", { name: /^(Get the e|E)book of / }).first(),
   ).toBeAttached();
   await page.screenshot({
     path: testInfo.outputPath("local-during-outage.png"),
@@ -106,9 +106,10 @@ test("unified search keeps local ownership usable during a provider outage and o
   // The provider's original title maps to the protected local title through
   // an accepted provider identity, even when a title-text match is absent.
   await search("The Catalog Journey");
-  // A provider result row opens the Summary; a known book's page is the local one.
-  const row = page.getByRole("button", {
-    name: "The Catalog Journey, details",
+  // The result is shown once, as the known catalog book under its local title; its Summary leads to
+  // the local book page.
+  const row = local.getByRole("button", {
+    name: "My protected catalog title, details",
     exact: true,
   });
   await row.click();
@@ -200,9 +201,10 @@ test("unified search keeps local ownership usable during a provider outage and o
   await expect(
     page.getByRole("heading", { name: "My protected catalog title", level: 1 }),
   ).toBeVisible();
+  // The page knows the book is in the catalog: it links to the catalog book.
   await expect(
-    page.getByText("In your catalog", { exact: true }),
-  ).toBeVisible();
+    page.getByRole("link", { name: "Manage book", exact: true }),
+  ).toHaveAttribute("href", `/books/${work.id}`);
   await expect(
     page.getByRole("button", { name: "Add to catalog", exact: true }),
   ).toHaveCount(0);

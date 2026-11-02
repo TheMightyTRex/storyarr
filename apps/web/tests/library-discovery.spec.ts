@@ -66,7 +66,13 @@ test("recent library additions show confirmed holdings and recover from shelf fa
   await expect(
     shelf
       .locator(".cover-card")
-      .filter({ has: book })
+      // A filter's inner locator is read inside each card, so it cannot start from the shelf.
+      .filter({
+        has: page.getByRole("button", {
+          name: `${first.title}, details`,
+          exact: true,
+        }),
+      })
       .getByRole("button", { name: / in library$/ })
       .first(),
   ).toBeAttached();

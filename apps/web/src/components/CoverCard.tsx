@@ -48,6 +48,8 @@ export type CoverCardProps = {
   rating?: number | null;
   /** The book's own page, opened from the Summary and from More. */
   to: string;
+  /** What the book's own page reads on arrival, such as a Goodreads entry to show if Hardcover is down. */
+  toState?: Record<string, unknown>;
   /**
    * The action column (true), none (false; the cover still opens the Summary), or one More button on
    * the cover's corner with the actions in words ("more", for small tiles: UX-44 B).
@@ -79,6 +81,7 @@ export default function CoverCard({
   medium = "any",
   rating,
   to,
+  toState,
   actions = true,
   caption = true,
   layout,
@@ -97,6 +100,7 @@ export default function CoverCard({
       cover: cover ?? work?.cover_url,
       work,
       to,
+      toState,
       rating,
       providerBook,
     });
@@ -130,6 +134,7 @@ export default function CoverCard({
             work={work}
             providerBook={providerBook}
             to={to}
+            toState={toState}
             engaged={engaged}
             openSummary={open}
           />
@@ -140,6 +145,7 @@ export default function CoverCard({
               work={work}
               providerBook={providerBook}
               to={to}
+              toState={toState}
               engaged={engaged}
               example={example}
               openSummary={open}
@@ -179,6 +185,7 @@ export function BookRow({
   medium = "any",
   rating,
   to,
+  toState,
   lead,
   className = "",
   children,
@@ -193,6 +200,7 @@ export function BookRow({
   medium?: "any" | "ebook" | "audio";
   rating?: number | null;
   to: string;
+  toState?: Record<string, unknown>;
   lead?: ReactNode;
   className?: string;
   children: ReactNode;
@@ -207,6 +215,7 @@ export function BookRow({
       work,
       workId,
       to,
+      toState,
       rating,
       providerBook,
     });
@@ -243,6 +252,7 @@ export function BookRow({
         owned={owned}
         providerBook={providerBook}
         to={to}
+        toState={toState}
         engaged={engaged}
         openSummary={open}
       />
@@ -306,6 +316,8 @@ type CoverBook = {
   owned?: { ebook?: boolean; audio?: boolean };
   providerBook?: ProviderBook;
   to: string;
+  /** What the book's own page reads on arrival, such as a Goodreads entry to show if Hardcover is down. */
+  toState?: Record<string, unknown>;
   engaged: boolean;
   example?: boolean;
   openSummary: () => void;
@@ -487,7 +499,7 @@ export function CoverActions({
   row?: boolean;
   example?: boolean;
 }) {
-  const { title, to } = book;
+  const { title, to, toState } = book;
   const cover = useCoverBook({ ...book, example });
   const skip = example ? -1 : undefined;
   const { menuOpen, setMenuOpen, more, menuId } = cover;
@@ -536,7 +548,7 @@ export function CoverActions({
           button={more}
           close={() => setMenuOpen(false)}
         >
-          <ContextLink role="menuitem" to={to}>
+          <ContextLink role="menuitem" to={to} state={toState}>
             <ExternalLink size={18} aria-hidden="true" />
             Open the book page
           </ContextLink>
@@ -553,7 +565,7 @@ export function CoverActions({
  * details, Get the ebook, Get the audiobook, Add to a list, Open the book page).
  */
 export function CoverMore(book: Omit<CoverBook, "example">) {
-  const { title, to } = book;
+  const { title, to, toState } = book;
   const cover = useCoverBook(book);
   const { menuOpen, setMenuOpen, more, menuId } = cover;
   return (
@@ -609,7 +621,7 @@ export function CoverMore(book: Omit<CoverBook, "example">) {
               Add to a list
             </button>
           )}
-          <ContextLink role="menuitem" to={to}>
+          <ContextLink role="menuitem" to={to} state={toState}>
             <ExternalLink size={18} aria-hidden="true" />
             Open the book page
           </ContextLink>
