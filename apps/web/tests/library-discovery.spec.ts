@@ -58,12 +58,18 @@ test("recent library additions show confirmed holdings and recover from shelf fa
     name: "Recent library additions",
     exact: true,
   });
-  const book = shelf.getByRole("link", {
-    name: new RegExp(first.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+  // Pressing a cover opens the book's Summary; a format in the library has "in library" in its action.
+  const book = shelf.getByRole("button", {
+    name: `${first.title}, details`,
+    exact: true,
   });
   await expect(
-    book.locator("..").getByRole("img", { name: "In library", exact: true }),
-  ).toBeVisible();
+    shelf
+      .locator(".cover-card")
+      .filter({ has: book })
+      .getByRole("button", { name: / in library$/ })
+      .first(),
+  ).toBeAttached();
   await expect(shelf.getByText(/Library copy first observed/)).toHaveCount(0);
   await shelf.locator(".discovery-shelf").evaluate((element) => {
     element.scrollLeft = element.scrollWidth;
@@ -78,19 +84,19 @@ test("recent library additions show confirmed holdings and recover from shelf fa
     .selectOption("audio");
   await expect.poll(() => queries.at(-1)?.get("medium")).toBe("audio");
   expect(queries.at(-1)?.get("medium")).toBe("audio");
-  for (const item of await shelf.locator(".book-card").all())
+  for (const item of await shelf.locator(".cover-card").all())
     await expect(
-      item.getByRole("img", { name: /Audiobook: in library/ }),
-    ).toBeVisible();
+      item.getByRole("button", { name: /^Audiobook of .* in library$/ }),
+    ).toBeAttached();
   await shelf
     .getByRole("combobox", { name: "Show library additions" })
     .selectOption("ebook");
   await expect.poll(() => queries.at(-1)?.get("medium")).toBe("ebook");
   expect(queries.at(-1)?.get("medium")).toBe("ebook");
-  for (const item of await shelf.locator(".book-card").all())
+  for (const item of await shelf.locator(".cover-card").all())
     await expect(
-      item.getByRole("img", { name: /Ebook: in library/ }),
-    ).toBeVisible();
+      item.getByRole("button", { name: /^Ebook of .* in library$/ }),
+    ).toBeAttached();
   await shelf.screenshot({
     path: testInfo.outputPath("recent-library-desktop.png"),
   });
@@ -110,11 +116,16 @@ test("recent library additions show confirmed holdings and recover from shelf fa
   await expect(
     shelf.getByText("Synthetic library shelf outage", { exact: true }),
   ).toBeVisible();
-  await expect(shelf.locator(".book-card")).toHaveCount(0);
+  await expect(shelf.locator(".cover-card")).toHaveCount(0);
   outage = false;
   await shelf.getByRole("button", { name: "Retry library shelf" }).click();
   await expect(book).toBeVisible();
   await book.focus();
+  await page.keyboard.press("Enter");
+  const bookPage = page
+    .getByRole("dialog", { name: /Summary/ })
+    .getByRole("link", { name: "Open book page" });
+  await bookPage.focus();
   await page.keyboard.press("Enter");
   await expect(
     page.getByRole("heading", { name: first.title, exact: true, level: 1 }),

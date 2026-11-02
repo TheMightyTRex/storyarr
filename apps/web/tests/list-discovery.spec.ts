@@ -92,9 +92,10 @@ test("followed lists expose saved books and ownership without starting acquisiti
     exact: true,
   });
   await expect(card).toContainText("3 books");
-  await expect(card.locator(".book-card:not(.shelf-view-all)")).toHaveCount(3);
+  await expect(card.locator(".cover-card")).toHaveCount(3);
+  // A format in the library shows a tick on the cover's actions.
   await expect(
-    card.getByRole("img", { name: "In library", exact: true }),
+    card.locator(".cover-card:has(.cover-actions__tick)"),
   ).toHaveCount(1);
   await expect(
     card.getByRole("button", { name: `Refresh ${latest!.name}`, exact: true }),

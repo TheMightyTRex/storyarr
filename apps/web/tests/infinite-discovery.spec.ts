@@ -257,12 +257,12 @@ test("library appends books and changing format starts a fresh result set", asyn
     name: "Library books",
     exact: true,
   });
-  await expect(books.locator(".shelf-book")).toHaveCount(40);
+  await expect(books.locator(".cover-card")).toHaveCount(40);
   await books.locator(".infinite-scroll").scrollIntoViewIfNeeded();
-  await expect(books.locator(".shelf-book")).toHaveCount(41);
+  await expect(books.locator(".cover-card")).toHaveCount(41);
   expect(offsets).toContain(40);
   await page.getByRole("button", { name: "Audiobooks", exact: true }).click();
-  await expect(books.locator(".shelf-book")).toHaveCount(1);
+  await expect(books.locator(".cover-card")).toHaveCount(1);
   await expect(
     page.getByRole("heading", { name: "Audio title 0" }),
   ).toBeVisible();
@@ -391,12 +391,12 @@ test("Discover previews stop at 100 and View all continues scrolling", async ({
   const action = await row
     .getByRole("link", { name: "View all", exact: true })
     .boundingBox();
-  const arrow = await row
-    .getByRole("button", { name: "Scroll Collection 1 forward" })
-    .boundingBox();
+  // The shelf's arrows sit over the covers now; the shelf's own actions share one height.
+  await expect(
+    row.getByRole("button", { name: "More books in Collection 1" }),
+  ).toBeVisible();
   const download = await row.locator(".quick-add-split").boundingBox();
-  expect(action!.height).toBe(30);
-  expect(download!.height).toBe(arrow!.height);
+  expect(download!.height).toBe(action!.height);
   await shelf.locator(".shelf-view-all").scrollIntoViewIfNeeded();
   await page.screenshot({ path: info.outputPath("discover-compact.png") });
   await shelf.locator(".shelf-view-all").click();

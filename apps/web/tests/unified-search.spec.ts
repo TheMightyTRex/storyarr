@@ -76,14 +76,14 @@ test("unified search keeps local ownership usable during a provider outage and o
   );
   await search("The First Harbor");
   const local = page.getByRole("region", { name: "Matches in your catalog" });
-  const owned = local.getByRole("link", { name: /The First Harbor/ });
+  // A catalog match is a cover; a format in the library has "in library" in its action's name.
+  const owned = local
+    .locator(".cover-card")
+    .filter({ hasText: "The First Harbor" });
   try {
     await expect(
-      owned
-        .locator("..")
-        .getByRole("img", { name: /in library/ })
-        .first(),
-    ).toBeVisible();
+      owned.getByRole("button", { name: / in library$/ }).first(),
+    ).toBeAttached();
     await expect(
       page.getByText("Synthetic metadata outage", { exact: true }),
     ).toHaveCount(0);
@@ -95,11 +95,8 @@ test("unified search keeps local ownership usable during a provider outage and o
     page.getByText("Synthetic metadata outage", { exact: true }),
   ).toBeVisible();
   await expect(
-    owned
-      .locator("..")
-      .getByRole("img", { name: /in library/ })
-      .first(),
-  ).toBeVisible();
+    owned.getByRole("button", { name: / in library$/ }).first(),
+  ).toBeAttached();
   await page.screenshot({
     path: testInfo.outputPath("local-during-outage.png"),
     fullPage: true,
@@ -109,9 +106,15 @@ test("unified search keeps local ownership usable during a provider outage and o
   // The provider's original title maps to the protected local title through
   // an accepted provider identity, even when a title-text match is absent.
   await search("The Catalog Journey");
-  const known = page.getByRole("link", {
-    name: /View My protected catalog title/,
+  // A provider result row opens the Summary; a known book's page is the local one.
+  const row = page.getByRole("button", {
+    name: "The Catalog Journey, details",
+    exact: true,
   });
+  await row.click();
+  const known = page
+    .getByRole("dialog", { name: /Summary/ })
+    .getByRole("link", { name: "Open book page" });
   await expect(known).toHaveAttribute("href", `/books/${work.id}`);
   await expect(
     page.getByRole("button", { name: "Add to catalog", exact: true }),
@@ -144,7 +147,9 @@ test("unified search keeps local ownership usable during a provider outage and o
   );
   await search("My protected catalog title");
   await expect(
-    local.getByRole("link", { name: /My protected catalog title/ }),
+    local.getByRole("button", {
+      name: /^My protected catalog title.*, details$/,
+    }),
   ).toBeVisible();
   await expect(
     page.getByText(
@@ -152,7 +157,10 @@ test("unified search keeps local ownership usable during a provider outage and o
     ),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: /View The Catalog Journey/ }),
+    page.getByRole("button", {
+      name: "The Catalog Journey, details",
+      exact: true,
+    }),
   ).toHaveCount(0);
   await page.goBack();
   await expect(page.getByLabel("Title, author or identifier")).toHaveValue(
@@ -162,7 +170,7 @@ test("unified search keeps local ownership usable during a provider outage and o
   await expect(
     page.getByLabel("Search books or authors", { exact: true }),
   ).toHaveValue("The Catalog Journey");
-  await expect(known).toBeVisible();
+  await expect(row).toBeVisible();
   await page.screenshot({
     path: testInfo.outputPath("known-provider-mobile.png"),
     fullPage: true,
@@ -182,7 +190,13 @@ test("unified search keeps local ownership usable during a provider outage and o
     });
   });
   await page.reload();
-  await page.getByRole("link", { name: /View The Catalog Journey/ }).click();
+  await page
+    .getByRole("button", { name: "The Catalog Journey, details", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: /Summary/ })
+    .getByRole("link", { name: "Open book page" })
+    .click();
   await expect(
     page.getByRole("heading", { name: "My protected catalog title", level: 1 }),
   ).toBeVisible();

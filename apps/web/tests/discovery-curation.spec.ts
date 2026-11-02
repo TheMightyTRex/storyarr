@@ -40,7 +40,7 @@ test("awards, filtering, pinning and persisted layout form one discovery flow", 
     page.getByRole("navigation", { name: "Discover navigation" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "View My Friends", exact: true }),
+    page.getByRole("button", { name: "My Friends, details", exact: true }),
   ).toBeVisible();
   const nav = await page.locator(".page-tabs").boundingBox();
   expect(nav!.height).toBeLessThan(70);
@@ -67,7 +67,7 @@ test("awards, filtering, pinning and persisted layout form one discovery flow", 
   await expect(page.locator(".explore-collection")).toHaveCount(1);
   await page.locator(".explore-collection").click();
   await expect(
-    page.getByRole("link", { name: "View My Friends", exact: true }),
+    page.getByRole("button", { name: "My Friends, details", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Winner", exact: true }).click();
   await expect(page.locator(".explore-books > li")).toHaveCount(1);
@@ -108,11 +108,16 @@ test("awards, filtering, pinning and persisted layout form one discovery flow", 
   await page
     .getByRole("button", { name: "Search discovery books", exact: true })
     .click();
-  await expect(
-    page.getByRole("link", { name: "View Wild Dark Shore", exact: true }),
-  ).toBeVisible();
+  const wild = page.getByRole("button", {
+    name: "Wild Dark Shore, details",
+    exact: true,
+  });
+  await expect(wild).toBeVisible();
+  // The cover opens the Summary, which leads to the book page.
+  await wild.click();
   await page
-    .getByRole("link", { name: "View Wild Dark Shore", exact: true })
+    .getByRole("dialog", { name: /Summary/ })
+    .getByRole("link", { name: "Open book page" })
     .click();
   await expect(page).toHaveURL(/\/discover\/books\/goodreads\/\d+/);
   await expect(
@@ -229,12 +234,21 @@ test("Goodreads cards open verified Hardcover details and lists navigation is co
       .getByRole("navigation", { name: "Discover navigation" })
       .getByRole("link", { name: "Your lists", exact: true }),
   ).toBeVisible();
-  const link = page.getByRole("link", {
-    name: "View Ender’s Game (Ender's Saga, #1)",
+  const open = page.getByRole("button", {
+    name: "Ender’s Game (Ender's Saga, #1), details",
     exact: true,
   });
-  await expect(link.locator("..").locator(".book-cover img")).toBeVisible();
-  await link.click();
+  await expect(
+    page
+      .locator(".cover-card")
+      .filter({ has: open })
+      .locator(".book-cover img"),
+  ).toBeVisible();
+  await open.click();
+  await page
+    .getByRole("dialog", { name: /Summary/ })
+    .getByRole("link", { name: "Open book page" })
+    .click();
   await expect(page).toHaveURL(/\/discover\/books\/hardcover\/42$/);
   await expect(
     page.getByRole("heading", { name: "Ender's Game", exact: true }),
@@ -285,12 +299,19 @@ test("visible Goodreads cards replace thumbnails with Hardcover art", async ({
       }),
   );
   await page.goto("/discover/collections/gr-list-19341");
-  const card = page.getByRole("link", {
-    name: "View Ender’s Game (Ender's Saga, #1)",
+  const open = page.getByRole("button", {
+    name: "Ender’s Game (Ender's Saga, #1), details",
     exact: true,
   });
-  await expect(card).toHaveAttribute("href", "/discover/books/hardcover/42");
-  await expect(card.locator("..").locator(".book-cover img")).toHaveAttribute(
+  const card = page.locator(".cover-card").filter({ has: open });
+  await open.click();
+  await expect(
+    page
+      .getByRole("dialog", { name: /Summary/ })
+      .getByRole("link", { name: "Open book page" }),
+  ).toHaveAttribute("href", "/discover/books/hardcover/42");
+  await page.keyboard.press("Escape");
+  await expect(card.locator(".book-cover img")).toHaveAttribute(
     "src",
     "/api/catalog/cover-image?size=320&url=" +
       encodeURIComponent(

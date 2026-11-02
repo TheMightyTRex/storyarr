@@ -110,10 +110,16 @@ test("Discover opens a full book page with safe reviews and explicit actions", a
     name: "Trending books",
     exact: true,
   });
-  const link = trending.getByRole("link", {
-    name: "View The Discovered Harbor",
+  // The cover opens the Summary; its Open book page link leads to the book page.
+  const cover = trending.getByRole("button", {
+    name: "The Discovered Harbor, details",
     exact: true,
   });
+  await cover.focus();
+  await page.keyboard.press("Enter");
+  const link = page
+    .getByRole("dialog", { name: /Summary/ })
+    .getByRole("link", { name: "Open book page" });
   await link.focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/discover\/books\/hardcover\/9010$/);
