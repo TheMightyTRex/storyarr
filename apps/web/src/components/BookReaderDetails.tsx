@@ -37,7 +37,8 @@ export function HardcoverRating({ details }: { details?: Details }) {
       <Star size={20} aria-hidden="true" />
       <strong>{details.rating.toFixed(2)}</strong>
       <span>
-        / 5 · {details.ratings_count.toLocaleString()} ratings on Hardcover
+        / 5 · {details.ratings_count.toLocaleString("en-GB")} ratings on
+        Hardcover
       </span>
     </span>
   );
@@ -208,7 +209,7 @@ function ReaderReview({
           </a>
           {review.reviewed_at && (
             <time dateTime={review.reviewed_at}>
-              {new Date(review.reviewed_at).toLocaleDateString(undefined, {
+              {new Date(review.reviewed_at).toLocaleDateString("en-GB", {
                 month: "short",
                 day: "numeric",
                 year: "numeric",

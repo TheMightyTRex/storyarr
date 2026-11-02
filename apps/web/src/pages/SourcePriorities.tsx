@@ -139,8 +139,9 @@ export default function SourcePriorities({
         {indexers.data && (
           <>
             <p className="muted">
-              Last loaded {new Date(indexers.dataUpdatedAt).toLocaleString()}.
-              Reload to check current names and availability.
+              Last loaded{" "}
+              {new Date(indexers.dataUpdatedAt).toLocaleString("en-GB")}. Reload
+              to check current names and availability.
             </p>
             <div className="indexer-add-row">
               <label>
@@ -159,7 +160,7 @@ export default function SourcePriorities({
                     return (
                       <option key={key} value={key} disabled={!!reason}>
                         {names[key]}
-                        {reason ? ` — ${reason}` : ""}
+                        {reason ? `: ${reason}` : ""}
                       </option>
                     );
                   })}

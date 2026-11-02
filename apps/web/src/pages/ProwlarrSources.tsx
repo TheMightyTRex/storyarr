@@ -214,7 +214,7 @@ export default function ProwlarrSources({
         </button>
       </form>
       <p className="muted">
-        Catalog identity, narrator, language and file format stay unknown when
+        Catalogue identity, narrator, language and file format stay unknown when
         an indexer does not supply them. Torrent files go to qBittorrent and NZB
         files go to SABnzbd or NZBGet. Magnet-only and direct links are not
         supported.

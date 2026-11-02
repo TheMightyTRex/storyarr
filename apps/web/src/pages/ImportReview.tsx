@@ -436,10 +436,10 @@ function Review({ inspection }: { inspection: Inspection }) {
             </p>
           ) : null}
           {!editingGroups && grouping.data && (
-            <section aria-label="Catalog matching">
+            <section aria-label="Catalogue matching">
               <Notice error={matches.error} />
               {matches.isFetching && (
-                <p role="status">Checking catalog matches…</p>
+                <p role="status">Checking catalogue matches…</p>
               )}
               <div className="actions">
                 {clearMatches.length > 0 && (
@@ -467,7 +467,7 @@ function Review({ inspection }: { inspection: Inspection }) {
                   disabled={save.isPending || matches.isFetching}
                   onClick={() => matches.refetch()}
                 >
-                  Refresh catalog matches
+                  Refresh catalogue matches
                 </button>
               </div>
             </section>
@@ -584,7 +584,7 @@ function Review({ inspection }: { inspection: Inspection }) {
               disabled={save.isPending}
               onChange={(event) => setIncludeCovers(event.target.checked)}
             />
-            Include selected catalog covers in new imports
+            Include selected catalogue covers in new imports
           </label>
           {Object.values(selections).some(
             (selection) => !selection.full_content,
@@ -880,7 +880,7 @@ function GroupMatch({
       setEditionNote(
         edition.created
           ? "Added an edition from this file. Confirm these files contain the complete book, then save the import plan."
-          : "Using the catalog edition that already matches this file. Confirm these files contain the complete book, then save the import plan.",
+          : "Using the catalogue edition that already matches this file. Confirm these files contain the complete book, then save the import plan.",
       );
       onChange({
         group_key: group.key,
@@ -989,9 +989,9 @@ function GroupMatch({
           )}
           {selection?.match_revision && (
             <p className="muted">
-              Selected from catalog evidence:{" "}
-              {selectedCandidate?.title || "catalog edition"}. The evidence will
-              be rechecked when you save.
+              Selected from catalogue evidence:{" "}
+              {selectedCandidate?.title || "catalogue edition"}. The evidence
+              will be rechecked when you save.
             </p>
           )}
           <details>
@@ -1035,7 +1035,7 @@ function GroupMatch({
         }}
       >
         <label>
-          Find catalog book
+          Find catalogue book
           <input
             value={input}
             onChange={(event) => setInput(event.target.value)}
@@ -1048,7 +1048,7 @@ function GroupMatch({
       {books.data && (
         <>
           <label>
-            Catalog book
+            Catalogue book
             <select
               value={workId}
               disabled={disabled}
@@ -1096,7 +1096,7 @@ function GroupMatch({
             onCreate={() => createEdition.mutate()}
           />
           <label>
-            Catalog version
+            Catalogue version
             <select
               value={versionId}
               disabled={disabled}
@@ -1109,7 +1109,7 @@ function GroupMatch({
                 ) && (
                   <option value={versionId}>
                     {selectedCandidate?.version_title ||
-                      "Selected catalog version"}{" "}
+                      "Selected catalogue version"}{" "}
                     · outside this page
                   </option>
                 )}

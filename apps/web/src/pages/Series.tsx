@@ -383,7 +383,7 @@ function SeriesContent({
     <article className="reader-page catalog-reader entity-detail series-detail">
       <div className="book-topbar">
         <Link to="/" className="back-link">
-          <ArrowLeft size={16} /> Back to catalog
+          <ArrowLeft size={16} /> Back to catalogue
         </Link>
       </div>
       <header className="series-head">
@@ -601,7 +601,7 @@ function SeriesContent({
                 <dd>{data.authors?.join(", ") || "Not provided"}</dd>
               </div>
               <div>
-                <dt>Catalog language</dt>
+                <dt>Catalogue language</dt>
                 <dd>English</dd>
               </div>
               <div>
@@ -618,24 +618,25 @@ function SeriesContent({
             )}
             {!!data.incomplete_entries && (
               <p className="muted">
-                {data.incomplete_entries} incomplete catalog{" "}
+                {data.incomplete_entries} incomplete catalogue{" "}
                 {data.incomplete_entries === 1 ? "record is" : "records are"}{" "}
-                available under All catalog entries.
+                available under All catalogue entries.
               </p>
             )}
             <details className="editor">
-              <summary>About this series catalog</summary>
+              <summary>About this series catalogue</summary>
               {data.fetched_at && (
                 <p className="muted">
-                  Last verified {new Date(data.fetched_at).toLocaleString()} ·{" "}
-                  {data.raw_total} catalog entries.
+                  Last verified{" "}
+                  {new Date(data.fetched_at).toLocaleString("en-GB")} ·{" "}
+                  {data.raw_total} catalogue entries.
                 </p>
               )}
               <p className="muted">
-                Main books show one English catalog representative per
+                Main books show one English catalogue representative per
                 whole-number position. Supplements, editions and collections
-                remain available under All catalog entries. These suggestions do
-                not merge records or authorise downloads.
+                remain available under All catalogue entries. These suggestions
+                do not merge records or authorise downloads.
               </p>
             </details>
           </section>
@@ -680,7 +681,7 @@ function SeriesContent({
                     Supplementary reading · English
                   </option>
                   <option value="all">
-                    All catalog entries ({data.raw_total})
+                    All catalogue entries ({data.raw_total})
                   </option>
                 </select>
               </label>
@@ -738,7 +739,7 @@ function SeriesContent({
                       to={`/books/${entry.work.id}`}
                       lead={
                         <div className="series-position">
-                          <span>{entry.position ?? "—"}</span>
+                          <span>{entry.position ?? "None"}</span>
                           <small>
                             {entry.category === "collection"
                               ? "collection"

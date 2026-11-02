@@ -278,7 +278,7 @@ for (const scenario of [
       reviewAvailable = true;
       await review.getByRole("button", { name: "Refresh review" }).click();
     }
-    await expect(page.getByLabel("Find catalog book")).not.toBeVisible();
+    await expect(page.getByLabel("Find catalogue book")).not.toBeVisible();
     await expect(
       page.getByText("Inspection details", { exact: true }),
     ).toHaveCount(0);

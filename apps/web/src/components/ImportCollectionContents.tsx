@@ -43,7 +43,7 @@ export default function ImportCollectionContents({
     <details onToggle={(event) => setOpen(event.currentTarget.open)}>
       <summary>Books contained in this collection (optional)</summary>
       <p className="muted">
-        Use the catalog edition of the whole omnibus above. Select only the
+        Use the catalogue edition of the whole omnibus above. Select only the
         complete books inside these files. The library will have one item; no
         child files or editions will be created.
       </p>
@@ -71,7 +71,7 @@ export default function ImportCollectionContents({
                   checked={ids.includes(book.id)}
                   onChange={() => toggle(book.id, book.title)}
                 />
-                {book.title} — {book.authors.join(", ") || "Unknown author"}
+                {book.title}, {book.authors.join(", ") || "unknown author"}
               </label>
             ))}
           {books.data.total > 50 && (

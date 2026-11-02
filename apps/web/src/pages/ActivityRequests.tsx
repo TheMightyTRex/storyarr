@@ -99,7 +99,7 @@ function shortDate(value?: string | null) {
   if (!value) return "";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString("en-GB", {
     month: "short",
     day: "numeric",
   });
@@ -714,15 +714,15 @@ function RequestCard({
                   ) : active ? (
                     <span className="muted">Connecting…</span>
                   ) : (
-                    <span className="muted">—</span>
+                    <span className="muted">Not started</span>
                   )}
                 </div>
               </td>
               <td className="request-metric">
-                {active ? transferSpeed(target.download_speed) : "—"}
+                {active ? transferSpeed(target.download_speed) : "None"}
               </td>
               <td className="request-metric">
-                {active ? transferTime(target.eta_seconds) : "—"}
+                {active ? transferTime(target.eta_seconds) : "None"}
               </td>
               <td>
                 <div className="request-row-tools">
@@ -893,14 +893,14 @@ function RequestCard({
 }
 
 function transferSpeed(value?: number | null) {
-  if (value == null) return "—";
+  if (value == null) return "Not known";
   if (value >= 1048576) return `${(value / 1048576).toFixed(1)} MiB/s`;
   if (value >= 1024) return `${Math.round(value / 1024)} KiB/s`;
   return `${value} B/s`;
 }
 
 function transferTime(value?: number | null) {
-  if (value == null || value >= 8640000) return "—";
+  if (value == null || value >= 8640000) return "Not known";
   if (value < 60) return "< 1m";
   if (value < 3600) return `${Math.ceil(value / 60)}m`;
   return `${Math.floor(value / 3600)}h ${Math.ceil((value % 3600) / 60)}m`;

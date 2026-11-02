@@ -307,7 +307,7 @@ function BookPage({
                   )}
                 </>
               ) : (
-                <span className="muted">Not added to your catalog</span>
+                <span className="muted">Not added to your catalogue</span>
               )}
             </div>
             <div className="reader-actions">
@@ -374,7 +374,7 @@ function BookPage({
                       disabled={save.isPending}
                       onClick={() => choose("catalog")}
                     >
-                      Save catalog entry
+                      Save catalogue entry
                     </button>
                   )}
                 </>
@@ -400,7 +400,7 @@ function BookPage({
               </div>
             </div>
             {save.isPending && (
-              <p role="status">Adding book to your catalog…</p>
+              <p role="status">Adding book to your catalogue…</p>
             )}
             {canEdit && unreleased && (
               <p className="muted reader-action-note">
@@ -414,7 +414,7 @@ function BookPage({
                   </>
                 ) : work ? (
                   <>
-                    This book is saved in your catalog, but no release request
+                    This book is saved in your catalogue, but no release request
                     was created. Request on release day adds that request. Saved
                     titles are under{" "}
                     <Link to="/library?view=saved">All saved titles</Link>.
@@ -611,7 +611,7 @@ function BookPage({
                     : format === "audio"
                       ? "audiobook "
                       : `${format} `}
-                  editions are in the loaded catalog results.
+                  editions are in the loaded catalogue results.
                 </p>
               )}
               <BookPagination

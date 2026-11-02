@@ -278,15 +278,17 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
                         <td className="logs-time">
                           <time
                             dateTime={item.created_at}
-                            title={new Date(item.created_at).toLocaleString()}
+                            title={new Date(item.created_at).toLocaleString(
+                              "en-GB",
+                            )}
                           >
                             {new Date(item.created_at).toLocaleDateString(
-                              undefined,
+                              "en-GB",
                               { month: "short", day: "numeric" },
                             )}{" "}
                             <span>
                               {new Date(item.created_at).toLocaleTimeString(
-                                undefined,
+                                "en-GB",
                                 {
                                   hour: "2-digit",
                                   minute: "2-digit",
@@ -313,7 +315,7 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
                           className="logs-message"
                           title={item.message || undefined}
                         >
-                          {item.message || "—"}
+                          {item.message || "No message"}
                         </td>
                       </tr>
                       <tr
@@ -336,13 +338,17 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
                             <p>
                               Created:{" "}
                               <time dateTime={item.created_at}>
-                                {new Date(item.created_at).toLocaleString()}
+                                {new Date(item.created_at).toLocaleString(
+                                  "en-GB",
+                                )}
                               </time>
                             </p>
                             <p>
                               Last updated:{" "}
                               <time dateTime={item.updated_at}>
-                                {new Date(item.updated_at).toLocaleString()}
+                                {new Date(item.updated_at).toLocaleString(
+                                  "en-GB",
+                                )}
                               </time>
                             </p>
                           </div>

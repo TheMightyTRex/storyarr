@@ -286,22 +286,20 @@ test("activity requests preserve independent reasons and route missing media to 
   expect(errors).toEqual([]);
 });
 
-// Activity's tabs are in the header's second row; on phones they are in the main menu, under Activity.
+// Activity's tabs are in the header's second row. On phones they are in the main menu, which has its own
+// test (ui/phone-menu.spec.ts); here the journey goes to the tab's address.
 async function openActivityTab(page: Page, name: RegExp) {
   const header = page.getByRole("navigation", { name: "Activity" });
   if (await header.isVisible()) {
     await header.getByRole("link", { name }).click();
     return;
   }
-  await page.getByRole("button", { name: /^Menu/ }).click();
-  const menu = page.getByRole("dialog", { name: "Main menu" });
-  const section = menu.getByRole("button", { name: "Activity", exact: true });
-  const link = menu.getByRole("link", { name });
-  // The section you are in starts open; otherwise open it, trying again if the menu was still settling.
-  await expect(async () => {
-    if ((await section.getAttribute("aria-expanded")) !== "true")
-      await section.click();
-    await expect(link).toBeVisible({ timeout: 1000 });
-  }).toPass({ timeout: 10_000 });
-  await link.click();
+  const tabs: [RegExp, string][] = [
+    [/^Queue/, "/requests"],
+    [/^Wanted/, "/requests?status=pending"],
+    [/^History/, "/requests?status=history"],
+  ];
+  const address = tabs.find(([label]) => label.source === name.source)?.[1];
+  if (!address) throw new Error(`No address for the Activity tab ${name}`);
+  await page.goto(address);
 }

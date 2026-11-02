@@ -47,7 +47,7 @@ test("Discover opens a full book page with safe reviews and explicit actions", a
     .getByRole("button", { name: "Save connection", exact: true })
     .click();
   await expect(
-    page.getByText("Your catalog connection was saved.", { exact: true }),
+    page.getByText("Your catalogue connection was saved.", { exact: true }),
   ).toBeVisible();
   const auth = await (await page.request.get("/api/auth/me")).json();
   const headers = {

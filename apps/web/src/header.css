@@ -184,10 +184,11 @@
 .activity-filters a:hover {
   color: var(--c-text-grey-97);
 }
+/* The chosen filter looks like the library's chosen segment: teal fill, as well as aria-current. */
 .activity-filters a[aria-current="page"] {
-  border-color: var(--c-text-grey-97);
-  background: var(--c-text-grey-97);
-  color: var(--c-bg-slate-21);
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* Audible results in the library match form. */

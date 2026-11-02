@@ -71,7 +71,7 @@ export default function MetadataSettings({
       client.removeQueries({ queryKey: ["discovery"] });
       client.resetQueries({ queryKey: ["reading-hardcover-lists"] });
       setToken("");
-      setMessage("Your catalog connection was saved.");
+      setMessage("Your catalogue connection was saved.");
     },
   });
   const suggestions = useMutation({
@@ -104,7 +104,7 @@ export default function MetadataSettings({
       }
       setMessage(
         value.status === "connected"
-          ? "Hardcover catalog access verified."
+          ? "Hardcover catalogue access verified."
           : "",
       );
     },
@@ -245,7 +245,7 @@ export default function MetadataSettings({
           <PreferenceForm value={preferences.data} />
         ) : (
           <p className="muted">
-            Catalog defaults are managed by your administrator. Your token and
+            Catalogue defaults are managed by your administrator. Your token and
             lists remain private.
           </p>
         ))}
@@ -277,7 +277,7 @@ function PreferenceForm({ value }: { value: Preferences }) {
         save.mutate();
       }}
     >
-      <h3>Catalog defaults</h3>
+      <h3>Catalogue defaults</h3>
       <p className="muted">
         Hardcover supplies book identity. Additional catalogs fill gaps; Audible
         and Audnexus supply details for verified recordings. Your edits stay
@@ -285,7 +285,7 @@ function PreferenceForm({ value }: { value: Preferences }) {
       </p>
       <div className="settings-fields">
         <label>
-          Primary catalog
+          Primary catalogue
           <select
             value={settings.primary}
             onChange={(e) => {
@@ -471,7 +471,7 @@ function PreferenceForm({ value }: { value: Preferences }) {
                 });
               }}
             >
-              <option value="automatic">Use primary catalog</option>
+              <option value="automatic">Use primary catalogue</option>
               <option value="hardcover">Hardcover</option>
               <option value="openlibrary">Open Library</option>
             </select>
@@ -480,8 +480,8 @@ function PreferenceForm({ value }: { value: Preferences }) {
         <div className="setting-subheading">
           <h3>Field overrides</h3>
           <SettingHelp label="field overrides">
-            Override the primary catalog for individual details. Fields without
-            an override use the primary catalog.
+            Override the primary catalogue for individual details. Fields
+            without an override use the primary catalog.
           </SettingHelp>
         </div>
         <div className="settings-fields metadata-provider-grid">
@@ -498,7 +498,7 @@ function PreferenceForm({ value }: { value: Preferences }) {
                   setSettings({ ...settings, field_providers: next });
                 }}
               >
-                <option value="">Primary catalog</option>
+                <option value="">Primary catalogue</option>
                 <option value="hardcover">Hardcover</option>
                 <option value="openlibrary">Open Library</option>
               </select>

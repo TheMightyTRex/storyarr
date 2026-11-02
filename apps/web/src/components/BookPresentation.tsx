@@ -150,7 +150,7 @@ export function BookHero({
                 {published.showDate && details?.release_date ? (
                   <time dateTime={details.release_date}>
                     {new Date(details.release_date).toLocaleDateString(
-                      undefined,
+                      "en-GB",
                       {
                         month: "short",
                         day: "numeric",
@@ -168,7 +168,7 @@ export function BookHero({
           {!!details?.pages && (
             <div>
               <dt>Pages</dt>
-              <dd>{details.pages.toLocaleString()}</dd>
+              <dd>{details.pages.toLocaleString("en-GB")}</dd>
             </div>
           )}
           {!!details?.audio_seconds && (

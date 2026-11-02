@@ -106,10 +106,13 @@ The books and covers below are invented for the screenshots.
 ![A month of audiobook release days with small covers, and the Genres and Show menus](docs/images/calendar.png)
 
 ### Display and accessibility
-![Display and accessibility settings: theme, text size, high contrast, reduced motion and more](docs/images/display.png)
+![Display and accessibility as a slide-out from the right: theme, text size, high contrast, reduced motion and more, with Done and Reset at the bottom](docs/images/display.png)
 
 ### Cover actions setting
 ![Settings, General, Cover actions: On the cover or Beside the cover, each with two example covers and their buttons](docs/images/cover-actions-setting.png)
+
+### Deleting a notification channel
+![Settings, Notifications: Delete asks first and says the delivery history goes too, with Keep channel and Delete channel](docs/images/notifications-delete.png)
 
 ### Settings
 ![Settings in six groups: General, Accounts, Sources, Library, Downloads and System](docs/images/settings.png)

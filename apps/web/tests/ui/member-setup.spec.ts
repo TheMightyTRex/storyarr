@@ -59,7 +59,7 @@ for (const role of ["member", "viewer"]) {
       .click();
     await expect(page).toHaveURL(/\/onboarding$/);
     await expect(
-      page.getByRole("heading", { name: "Let’s set up your library" }),
+      page.getByRole("heading", { name: "Set up your library" }),
     ).toBeVisible();
     expect(errors).toEqual([]);
   });
@@ -77,7 +77,7 @@ for (const role of ["member", "admin"]) {
     await page.goto("/discover");
     await expect(page).toHaveURL(/\/onboarding$/);
     await expect(
-      page.getByRole("heading", { name: "Let’s set up your library" }),
+      page.getByRole("heading", { name: "Set up your library" }),
     ).toBeVisible();
     expect(errors).toEqual([]);
   });

@@ -39,7 +39,7 @@ test("onboarding defers, resumes and completes once; settings show one focused s
   }
   await expect(page).toHaveURL(/\/onboarding$/);
   await expect(
-    page.getByRole("heading", { name: "Let’s set up your library" }),
+    page.getByRole("heading", { name: "Set up your library" }),
   ).toBeVisible();
   await expect(
     page.getByRole("navigation", { name: "Main navigation" }),
@@ -103,13 +103,13 @@ test("onboarding defers, resumes and completes once; settings show one focused s
     .getByRole("button", { name: "Save connection", exact: true })
     .click();
   await expect(
-    catalog.getByText("Your catalog connection was saved."),
+    catalog.getByText("Your catalogue connection was saved."),
   ).toBeVisible();
   await catalog
     .getByRole("button", { name: "Test connection", exact: true })
     .click();
   await expect(
-    catalog.getByText("Hardcover catalog access verified."),
+    catalog.getByText("Hardcover catalogue access verified."),
   ).toBeVisible();
   await catalog.getByLabel("Primary language").selectOption("fr");
   await catalog.getByRole("button", { name: "Save changes" }).click();

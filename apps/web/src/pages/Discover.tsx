@@ -752,7 +752,7 @@ function Browse() {
       {query.data && (
         <>
           <p className="explore-result-count">
-            {query.data.total.toLocaleString()} books
+            {query.data.total.toLocaleString("en-GB")} books
           </p>
           <CollectionBooks items={query.data.items} />
           {!query.data.items.length && (
@@ -841,9 +841,9 @@ function CollectionPage({ id, canEdit }: { id: string; canEdit: boolean }) {
                 <p className="curation-note">List edition: {c.edition_date}</p>
               )}
               <p className="muted">
-                {total.toLocaleString()} {total === 1 ? "book" : "books"}
+                {total.toLocaleString("en-GB")} {total === 1 ? "book" : "books"}
                 {query.hasNextPage
-                  ? ` · ${items.length.toLocaleString()} loaded`
+                  ? ` · ${items.length.toLocaleString("en-GB")} loaded`
                   : ""}
               </p>
             </div>
@@ -887,7 +887,7 @@ function CollectionPage({ id, canEdit }: { id: string; canEdit: boolean }) {
           <p className="explore-footnote">
             {c.kind === "listopia"
               ? "Books load from Goodreads as you scroll."
-              : `Verified ${new Date(c.updated_at).toLocaleDateString()} · ${c.refresh_mode === "app-update" ? "Official award facts are updated with Storyarr releases." : "Collections refresh daily while followed."}`}
+              : `Verified ${new Date(c.updated_at).toLocaleDateString("en-GB")} · ${c.refresh_mode === "app-update" ? "Official award facts are updated with Storyarr releases." : "Collections refresh daily while followed."}`}
           </p>
         </>
       )}

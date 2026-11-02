@@ -713,7 +713,7 @@ test("upgrade wizard", async ({ page }) => {
   await setup(page, "light", true);
   await page.goto("/upgrade");
   await expect(
-    page.getByRole("heading", { name: "Welcome to version 0.5.8" }),
+    page.getByRole("heading", { name: /^Welcome to version / }),
   ).toBeVisible();
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${OUT}/upgrade-wizard.png` });
@@ -842,4 +842,37 @@ test("settings, cover actions", async ({ page }) => {
   );
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${OUT}/cover-actions-setting.png` });
+});
+
+test("notifications, delete asks first", async ({ page }) => {
+  await setup(page, "light", false, false, (path) =>
+    path === "/api/notifications"
+      ? {
+          channels: [
+            {
+              id: "channel-1",
+              name: "Phone",
+              kind: "ntfy",
+              installation: false,
+              events: ["request.completed"],
+              enabled: true,
+              digest_minutes: 0,
+              configured: true,
+              last_status: "sent",
+              last_delivery_at: "2026-11-02T17:30:00Z",
+            },
+          ],
+          event_labels: { "request.completed": "Book ready" },
+          allowed_events: ["request.completed"],
+          member_events: ["request.completed"],
+        }
+      : undefined,
+  );
+  await page.goto("/settings#notifications");
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Delete notification channel" }),
+  ).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${OUT}/notifications-delete.png` });
 });

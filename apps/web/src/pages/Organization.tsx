@@ -390,7 +390,7 @@ function Editor({
               )}
               {medium === "audio" && draft[folder].includes("{narrator}") && (
                 <p className="naming-section-note">
-                  Narrator names use file or catalog metadata. Enable the MAM
+                  Narrator names use file or catalogue metadata. Enable the MAM
                   source to use its release narrators when file tags are
                   missing.
                 </p>

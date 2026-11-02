@@ -88,7 +88,9 @@ export default function BookDownloads({ workId }: { workId: string }) {
                       </td>
                       <td>
                         <time dateTime={item.created_at}>
-                          {new Date(item.created_at).toLocaleDateString()}
+                          {new Date(item.created_at).toLocaleDateString(
+                            "en-GB",
+                          )}
                         </time>
                       </td>
                       <td>

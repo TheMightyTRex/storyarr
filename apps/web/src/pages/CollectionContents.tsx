@@ -79,7 +79,7 @@ export default function CollectionContents({
       </p>
       <Notice error={books.error || save.error} />
       <label>
-        Find a book in your catalog
+        Find a book in your catalogue
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
@@ -95,10 +95,10 @@ export default function CollectionContents({
                 checked={selected.has(book.id)}
                 onChange={() => toggle(book.id, book.title)}
               />
-              {book.title} — {book.authors.join(", ") || "Unknown author"}
+              {book.title}, {book.authors.join(", ") || "unknown author"}
             </label>
           ))}
-          {!books.data.items.length && <p>No matching catalog books.</p>}
+          {!books.data.items.length && <p>No matching catalogue books.</p>}
           {books.data.total > 50 && (
             <p>Narrow the search to see more matches.</p>
           )}

@@ -30,7 +30,7 @@ function emptyCopy(shelf: SeriesGapShelf, medium: Medium) {
       detail:
         "Open a book you own, follow its series link and load the catalog. New or refreshed series can then appear here. This shelf describes your library, not your reading progress.",
       to: "/",
-      label: "Browse your catalog →",
+      label: "Browse your catalogue →",
     };
   if (!shelf.monitored_series)
     return {
@@ -43,7 +43,7 @@ function emptyCopy(shelf: SeriesGapShelf, medium: Medium) {
   return {
     title: `No missing ${mediumLabel[medium]} yet.`,
     detail:
-      "Storyarr is checking series linked to books you own. Missing books appear here after each catalog loads.",
+      "Storyarr is checking series linked to books you own. Missing books appear here after each catalogue loads.",
     to: "/settings#catalog",
     label: "Manage series suggestions →",
   };
@@ -231,7 +231,7 @@ function SeriesCard({
         </p>
         {(series.catalog_stale || series.inventory_stale) && (
           <p className="series-gap-note">
-            {series.catalog_stale && "Catalog needs a refresh. "}
+            {series.catalog_stale && "Catalogue needs a refresh. "}
             {series.inventory_stale && "Using last known library availability."}
           </p>
         )}
@@ -316,7 +316,7 @@ function SeriesCard({
           </button>
         </div>
         <p className="series-gap-note">
-          Updated {new Date(series.fetched_at).toLocaleDateString()}
+          Updated {new Date(series.fetched_at).toLocaleDateString("en-GB")}
         </p>
       </footer>
     </article>

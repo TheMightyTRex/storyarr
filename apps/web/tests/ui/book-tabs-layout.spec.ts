@@ -135,7 +135,7 @@ test("editions paginate and reviews expand, sort and protect spoilers", async ({
   ).toBeVisible();
   const actions = page.locator(".reader-actions");
   const add = await actions
-    .getByRole("button", { name: "Save catalog entry" })
+    .getByRole("button", { name: "Save catalogue entry" })
     .boundingBox();
   const icon = await actions
     .getByRole("link", { name: "View on Hardcover" })

@@ -101,7 +101,7 @@ export default function ListCuration({
         <>
           <div className="button-row list-curation-toolbar">
             <button onClick={() => setAdding(!adding)} aria-expanded={adding}>
-              {adding ? "Close catalog picker" : "Add books from catalog"}
+              {adding ? "Close catalogue picker" : "Add books from catalogue"}
             </button>
             {list.items.length > 0 && (
               <>
@@ -265,7 +265,7 @@ export default function ListCuration({
               : "This list is ready for a story"
           }
         >
-          Add books from your catalog, or find new titles in Discover.
+          Add books from your catalogue, or find new titles in Discover.
         </Empty>
       )}
       {filtered && editable && (
@@ -341,8 +341,8 @@ function CatalogPicker({
     },
   });
   return (
-    <section className="panel editor" aria-label="Add catalog books">
-      <h2>Add books from your catalog</h2>
+    <section className="panel editor" aria-label="Add catalogue books">
+      <h2>Add books from your catalogue</h2>
       <p className="muted">
         Adding books to a list with an active automatic policy can acquire
         missing media under that policy.
@@ -356,14 +356,14 @@ function CatalogPicker({
         }}
       >
         <label className="grow">
-          Find catalog books
+          Find catalogue books
           <input
             value={text}
             onChange={(event) => setText(event.target.value)}
             maxLength={200}
           />
         </label>
-        <button>Search catalog</button>
+        <button>Search catalogue</button>
       </form>
       <Notice error={query.error || save.error} />
       {query.isPending && <Loading />}
@@ -407,7 +407,7 @@ function CatalogPicker({
               ))}
             </ul>
           ) : (
-            <p>No matching catalog books. Try another title or author.</p>
+            <p>No matching catalogue books. Try another title or author.</p>
           )}
           {query.data.total > 20 && (
             <div className="pagination">
@@ -415,7 +415,7 @@ function CatalogPicker({
                 disabled={offset === 0}
                 onClick={() => setOffset(offset - 20)}
               >
-                Previous catalog books
+                Previous catalogue books
               </button>
               <span>
                 {offset + 1}–{offset + query.data.items.length} of{" "}
@@ -425,7 +425,7 @@ function CatalogPicker({
                 disabled={offset + 20 >= query.data.total}
                 onClick={() => setOffset(offset + 20)}
               >
-                Next catalog books
+                Next catalogue books
               </button>
             </div>
           )}
@@ -442,13 +442,13 @@ function CatalogPicker({
             })
           }
         >
-          Add selected catalog books ({selected.length})
+          Add selected catalogue books ({selected.length})
         </button>
         <button
           disabled={!selected.length || save.isPending}
           onClick={() => setSelected([])}
         >
-          Clear catalog selection
+          Clear catalogue selection
         </button>
         {save.error && (
           <>

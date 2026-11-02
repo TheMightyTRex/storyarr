@@ -56,7 +56,7 @@ const isKind = (value: string | null): value is Kind =>
   KINDS.some((kind) => kind.id === value);
 
 const SOURCES = [
-  ["dewarr", "In your catalog"],
+  ["dewarr", "In your catalogue"],
   ["hardcover", "On Hardcover"],
 ] as const;
 

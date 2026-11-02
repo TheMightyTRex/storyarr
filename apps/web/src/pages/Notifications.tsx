@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
+import BookDialog from "../components/BookDialog";
 
 type Channel = components["schemas"]["NotificationChannelView"];
 type Input = components["schemas"]["NotificationChannelInput"];
@@ -24,6 +25,8 @@ export default function Notifications({ admin }: { admin: boolean }) {
   const [token, setToken] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [historyId, setHistoryId] = useState<string | null>(null);
+  // Deleting a channel cannot be undone, so it is confirmed first.
+  const [deleting, setDeleting] = useState<Channel | null>(null);
   const [notice, setNotice] = useState("");
   const settings = useQuery({
     queryKey: ["notifications"],
@@ -376,7 +379,7 @@ export default function Notifications({ admin }: { admin: boolean }) {
                 Last delivery:{" "}
                 <strong>{channel.last_status ?? "Not tested"}</strong>
                 {channel.last_delivery_at &&
-                  ` · ${new Date(channel.last_delivery_at).toLocaleString()}`}
+                  ` · ${new Date(channel.last_delivery_at).toLocaleString("en-GB")}`}
               </p>
               {channel.last_message && <p>{channel.last_message}</p>}
               <div className="actions">
@@ -408,8 +411,9 @@ export default function Notifications({ admin }: { admin: boolean }) {
                   Delivery history
                 </button>
                 <button
+                  className="danger"
                   disabled={action.isPending}
-                  onClick={() => action.mutate({ channel, type: "delete" })}
+                  onClick={() => setDeleting(channel)}
                 >
                   Delete
                 </button>
@@ -418,7 +422,7 @@ export default function Notifications({ admin }: { admin: boolean }) {
                 <ul>
                   {history.data?.map((delivery) => (
                     <li key={delivery.id}>
-                      {labels[delivery.event_type] ?? "Test"} — {delivery.state}
+                      {labels[delivery.event_type] ?? "Test"}: {delivery.state}
                       {delivery.message ? `: ${delivery.message}` : ""}
                     </li>
                   ))}
@@ -459,6 +463,33 @@ export default function Notifications({ admin }: { admin: boolean }) {
             </details>
           )}
         </>
+      )}
+      {deleting && (
+        <BookDialog
+          title="Delete notification channel"
+          close={() => setDeleting(null)}
+        >
+          <p>
+            Delete <strong>{deleting.name}</strong>?
+          </p>
+          <p className="muted">
+            Storyarr stops sending notifications to it, and its delivery history
+            is removed. You cannot undo this.
+          </p>
+          <div className="actions">
+            <button onClick={() => setDeleting(null)}>Keep channel</button>
+            <button
+              className="danger"
+              disabled={action.isPending}
+              onClick={() => {
+                action.mutate({ channel: deleting, type: "delete" });
+                setDeleting(null);
+              }}
+            >
+              Delete channel
+            </button>
+          </div>
+        </BookDialog>
       )}
     </section>
   );

@@ -521,7 +521,7 @@ export default function SeriesRequests({
               </strong>
               <p>
                 {value.acquisition_message ||
-                  "We’ll search sources, download matching releases, and import each book automatically."}
+                  "Storyarr will search sources, download matching releases and import each book automatically."}
               </p>
               {value.status !== "preview" && (
                 <Link className="primary reader-action-link" to="/requests">
@@ -539,7 +539,7 @@ export default function SeriesRequests({
           </p>
           {value.main_membership === "user-confirmed" && (
             <p>
-              These are your reviewed main books, saved from catalog revision{" "}
+              These are your reviewed main books, saved from catalogue revision{" "}
               {value.catalog_generation}.
               {value.scope_review_revision &&
                 ` Reused main-book review ${value.scope_review_revision}.`}
@@ -572,7 +572,8 @@ export default function SeriesRequests({
                 {book.acquisition_message && <p>{book.acquisition_message}</p>}
                 {book.next_check_at && (
                   <small>
-                    Next check: {new Date(book.next_check_at).toLocaleString()}
+                    Next check:{" "}
+                    {new Date(book.next_check_at).toLocaleString("en-GB")}
                   </small>
                 )}
                 {book.warnings.map((warning) => (
@@ -671,7 +672,7 @@ export default function SeriesRequests({
             <div className="button-row" key={item.id}>
               <button disabled={busy} onClick={() => setId(item.id)}>
                 Open {item.count}-book request ·{" "}
-                {new Date(item.created_at).toLocaleString()}
+                {new Date(item.created_at).toLocaleString("en-GB")}
               </button>
               <span>{item.status}</span>
             </div>

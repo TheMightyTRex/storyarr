@@ -189,7 +189,7 @@ test("editable ratio drafts, valid purchase presets, and invalid fields block sa
     .getByRole("combobox", { name: "Ratio rule purchase", exact: true })
     .selectOption("custom");
   await settings
-    .getByLabel("Ratio rule purchase — custom GiB", { exact: true })
+    .getByLabel("Ratio rule purchase: custom GiB", { exact: true })
     .fill("49");
   await settings
     .getByRole("button", { name: "Test network", exact: true })
@@ -217,7 +217,7 @@ test("invalid and unaffordable purchases, unknown outcomes and connection edits"
     .getByRole("combobox", { name: "Upload credit amount", exact: true })
     .selectOption("custom");
   await panel
-    .getByLabel("Upload credit amount — custom GiB", { exact: true })
+    .getByLabel("Upload credit amount: custom GiB", { exact: true })
     .fill("49");
   await expect(
     panel.getByRole("button", { name: "Review purchase" }),

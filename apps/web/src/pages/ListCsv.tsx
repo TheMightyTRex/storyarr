@@ -314,7 +314,7 @@ export default function ListCsv({ listId }: { listId: string }) {
                       ) : row.work_id ? (
                         <p>
                           <Link to={`/books/${row.work_id}`}>
-                            Matched catalog book
+                            Matched catalogue book
                           </Link>{" "}
                           ·{" "}
                           {row.availability?.owned
@@ -323,7 +323,7 @@ export default function ListCsv({ listId }: { listId: string }) {
                         </p>
                       ) : (
                         <p className="muted">
-                          New provisional catalog book; no library ownership
+                          New provisional catalogue book; no library ownership
                           assumed.
                         </p>
                       )}

@@ -251,9 +251,9 @@ test("Goodreads cards open verified Hardcover details and lists navigation is co
       .getByRole("navigation", { name: "Discover navigation" })
       .getByRole("link", { name: "Your lists", exact: true }),
   ).toBeVisible();
+  // The Goodreads title until the Hardcover match arrives, then Hardcover's.
   const open = page.getByRole("button", {
-    name: "Ender’s Game (Ender's Saga, #1), details",
-    exact: true,
+    name: /^Ender’s Game \(Ender's Saga, #1\), details$|^Ender's Game, details$/,
   });
   await expect(
     page

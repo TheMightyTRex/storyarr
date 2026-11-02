@@ -112,21 +112,6 @@ button:disabled {
   opacity: 0.45;
   cursor: default;
 }
-:is(
-  button,
-  select,
-  input,
-  summary,
-  .control-action,
-  .shelf-action,
-  .reader-action-link,
-  .source-search-action,
-  .book-manage-link,
-  .button-link
-):focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
 
 /* Icon-only actions use the same circular frame as the shelf arrows. */
 .shelf-pagination button,

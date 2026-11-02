@@ -130,7 +130,7 @@ test("linked downloads resume their saved import instead of asking for catalog m
     page.getByRole("button", { name: "Retry import", exact: true }),
   ).toBeVisible();
   await expect(page.getByText("Download complete · 1 file")).toBeVisible();
-  await expect(page.getByLabel("Find catalog book")).not.toBeVisible();
+  await expect(page.getByLabel("Find catalogue book")).not.toBeVisible();
   await expect(
     page.getByRole("button", { name: "Inspect files", exact: true }),
   ).not.toBeVisible();
@@ -177,5 +177,5 @@ test("linked downloads resume their saved import instead of asking for catalog m
   await expect(
     page.getByRole("link", { name: "View library book" }),
   ).toBeVisible();
-  await expect(page.getByLabel("Find catalog book")).not.toBeVisible();
+  await expect(page.getByLabel("Find catalogue book")).not.toBeVisible();
 });

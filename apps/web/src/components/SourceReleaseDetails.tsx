@@ -215,14 +215,15 @@ export default function SourceReleaseDetails({
                     release.size_bytes == null
                       ? "Unknown"
                       : transferSize(release.size_bytes),
-                  Seeds: release.seeders?.toLocaleString() ?? "Unknown",
+                  Seeds: release.seeders?.toLocaleString("en-GB") ?? "Unknown",
                   Narrators: release.narrators?.join(", ") || "Not supplied",
                   Language: release.language || "Not supplied",
                   ...(mam
                     ? {
-                        Leechers: mam.leechers?.toLocaleString() ?? "Unknown",
+                        Leechers:
+                          mam.leechers?.toLocaleString("en-GB") ?? "Unknown",
                         "Completed downloads":
-                          mam.snatches?.toLocaleString() ?? "Unknown",
+                          mam.snatches?.toLocaleString("en-GB") ?? "Unknown",
                         Uploaded: mam.uploaded_at || "Not supplied",
                         Category: mam.category || "Not supplied",
                         ISBN: mam.isbn || "Not supplied",

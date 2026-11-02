@@ -194,10 +194,10 @@ test("library review links unmatched items to Storyarr and Hardcover books", asy
     .getByRole("button", { name: "Find the book" })
     .click();
   await expect(detail).toContainText("Missing title");
-  await detail.getByLabel("Search catalog", { exact: true }).fill("A");
-  await detail.getByLabel("Search catalog", { exact: true }).fill("A Closed");
+  await detail.getByLabel("Search catalogue", { exact: true }).fill("A");
+  await detail.getByLabel("Search catalogue", { exact: true }).fill("A Closed");
   await detail
-    .getByLabel("Search catalog", { exact: true })
+    .getByLabel("Search catalogue", { exact: true })
     .fill("A Closed and Common Orbit");
   await expect
     .poll(() => matchSearches.includes("A Closed and Common Orbit"))
@@ -221,7 +221,7 @@ test("library review links unmatched items to Storyarr and Hardcover books", asy
   });
   try {
     // Saving and continuing can announce success while the next lookup is pending.
-    await expect(detail.getByRole("status")).toHaveText("Searching catalog…");
+    await expect(detail.getByRole("status")).toHaveText("Searching catalogue…");
     await expect(
       page.getByRole("status").filter({ hasText: "Linked “Untagged Folder”" }),
     ).toBeVisible();

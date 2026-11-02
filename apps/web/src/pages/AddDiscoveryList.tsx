@@ -198,7 +198,7 @@ export default function AddDiscoveryList({ close }: { close: () => void }) {
           {preview.type === "collection" ? (
             <>
               <p className="muted">
-                {preview.data.collection.count.toLocaleString()} books
+                {preview.data.collection.count.toLocaleString("en-GB")} books
                 {preview.data.collection.coverage === "partial"
                   ? " · Partial preview"
                   : ""}

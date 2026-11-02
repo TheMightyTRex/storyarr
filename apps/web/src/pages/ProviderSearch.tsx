@@ -141,7 +141,7 @@ export default function ProviderSearch({
           <Link to="/settings#catalog">Metadata settings</Link>
         </div>
       )}
-      {embedded && <h3>Find the correct catalog record</h3>}
+      {embedded && <h3>Find the correct catalogue record</h3>}
       <form
         className="panel library-filters catalog-search-form"
         onSubmit={(event) => {
@@ -166,7 +166,7 @@ export default function ProviderSearch({
           )}
         </label>
         <label>
-          Catalog provider
+          Catalogue provider
           <select
             value={provider}
             onChange={(e) => {
@@ -179,7 +179,7 @@ export default function ProviderSearch({
             <option value="openlibrary">Open Library</option>
             <option value="audible">Audiobook recordings</option>
             {capabilities.data?.custom_metadata && (
-              <option value="custom">Regional / custom catalog</option>
+              <option value="custom">Regional / custom catalogue</option>
             )}
           </select>
         </label>
@@ -189,12 +189,15 @@ export default function ProviderSearch({
         </button>
       </form>
       {!embedded && q.trim() ? (
-        <section className="search-local" aria-label="Matches in your catalog">
+        <section
+          className="search-local"
+          aria-label="Matches in your catalogue"
+        >
           <div className="section-heading">
-            <h2>In your catalog</h2>
+            <h2>In your catalogue</h2>
             {local.data?.total ? (
               <Link to={`/?q=${encodeURIComponent(q)}`}>
-                View all {local.data.total} catalog matches →
+                View all {local.data.total} catalogue matches →
               </Link>
             ) : null}
           </div>
@@ -222,8 +225,8 @@ export default function ProviderSearch({
       {q && query.isFetching && <Loading />}
       {!q && (
         <Empty title="A title is just the beginning">
-          Search by book, author or ISBN. Automatic uses your connected catalog
-          with a fallback when needed.
+          Search by book, author or ISBN. Automatic uses your connected
+          catalogue with a fallback when needed.
         </Empty>
       )}
       {query.data && (
@@ -296,7 +299,7 @@ export default function ProviderSearch({
             </div>
           ) : query.data.items.length ? (
             <p className="muted">
-              These results are already shown in your catalog matches above.
+              These results are already shown in your catalogue matches above.
             </p>
           ) : (
             <Empty title="No matching books">
@@ -412,7 +415,7 @@ export function Preview({
       ref={previewElement}
       tabIndex={-1}
       className="panel catalog-preview"
-      aria-label="Catalog preview"
+      aria-label="Catalogue preview"
     >
       <div className="section-heading">
         <p className="eyebrow">{providerName(provider)} · PREVIEW</p>
@@ -441,14 +444,14 @@ export function Preview({
             </p>
           )}
           <p>
-            {(book.editions || []).length} catalog editions loaded
+            {(book.editions || []).length} catalogue editions loaded
             {book.editions_more ? " · More editions exist at the provider" : ""}
             .
           </p>
           <p className="muted">
             {matchWorkId
               ? "Use this book for its description, authors and reviews. Your library copies stay in place."
-              : "Adding a catalog title does not download it or mark it as owned."}
+              : "Adding a catalogue title does not download it or mark it as owned."}
           </p>
           {existing && !matchWorkId ? (
             <>
@@ -477,7 +480,7 @@ export function Preview({
                 ? "Saving…"
                 : matchWorkId || onImported
                   ? "Use this book"
-                  : "Add to catalog"}
+                  : "Add to catalogue"}
             </button>
           )}
         </>

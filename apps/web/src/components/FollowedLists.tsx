@@ -336,7 +336,9 @@ export function PersonalListPage({
           <header className="explore-detail-heading">
             <div>
               <h2>{query.data.name}</h2>
-              <p className="muted">{query.data.count.toLocaleString()} books</p>
+              <p className="muted">
+                {query.data.count.toLocaleString("en-GB")} books
+              </p>
             </div>
             {canEdit && query.data.editable && (
               <ListDownloads

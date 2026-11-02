@@ -93,7 +93,7 @@ export default function CatalogEditions({
       <Notice error={query.error || group.error || primary.error} />
       {query.data?.sources.some((source) => source.editions_more) && (
         <p className="muted">
-          Some catalog editions have not been loaded. More formats may be
+          Some catalogue editions have not been loaded. More formats may be
           available; use Book metadata to load more editions.
         </p>
       )}
@@ -172,7 +172,7 @@ export default function CatalogEditions({
                             : "Unabridged",
                       ]
                         .filter(Boolean)
-                        .join(" · ") || "—"}
+                        .join(" · ") || "Not known"}
                       {version.needs_review && (
                         <small>Metadata needs review</small>
                       )}
@@ -214,7 +214,7 @@ export default function CatalogEditions({
             {format === "all"
               ? "No editions are linked yet."
               : "No linked editions match this format."}{" "}
-            Use Book metadata to match or refresh a catalog source.
+            Use Book metadata to match or refresh a catalogue source.
           </p>
         ))}
       {query.data && (
@@ -290,9 +290,9 @@ export default function CatalogEditions({
                           languageName(edition.language),
                         ]
                           .filter(Boolean)
-                          .join(" · ") || "—"}
+                          .join(" · ") || "Not known"}
                       </td>
-                      <td>{edition.publisher || "—"}</td>
+                      <td>{edition.publisher || "Not known"}</td>
                     </tr>
                   ))}
               </tbody>

@@ -448,7 +448,8 @@ function ListRequestEditor({
                 }}
               >
                 {item.count} {item.count === 1 ? "book" : "books"} ·{" "}
-                {item.status} · {new Date(item.created_at).toLocaleString()}
+                {item.status} ·{" "}
+                {new Date(item.created_at).toLocaleString("en-GB")}
               </button>
             </p>
           ))}

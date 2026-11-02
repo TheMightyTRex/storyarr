@@ -3,6 +3,24 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## v0.5.9 (2 November 2026)
+
+### Changed
+- **Display and accessibility** opens as a slide-out from the right, with Done and Reset at the bottom and Match
+  device as the first theme.
+- **Slide-out headers** match the page behind them; the panel body is the raised surface. The phone menu too.
+- **The chosen option** is teal everywhere (main menu, onboarding steps, switches, Activity filters and Settings
+  boxes), with a tick or a bar as well as the colour.
+- **Buttons** such as Save changes keep the library's size and weight.
+- **One focus ring** of 3px on every control, in the High contrast colour when High contrast is on.
+- **High contrast** uses the shared library's colours for panels, muted text and dividers.
+- **Dates, times and numbers** are British on every page, whatever the browser's language.
+- **Wording:** "catalogue", no dashes in empty cells (Not known or None), and plainer headings and messages.
+
+### Fixed
+- **Notifications:** Delete asks first, and says the delivery history goes too.
+- **Users and access** stacks on phones and at large text sizes, with compact 32px buttons.
+
 ## v0.5.8 (2 November 2026)
 
 ### Added

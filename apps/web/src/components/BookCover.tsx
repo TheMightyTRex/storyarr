@@ -34,7 +34,7 @@ export async function resolveBookWork(providerBook: {
     book.provider !== "openlibrary" &&
     book.provider !== "custom"
   )
-    throw new Error("Open this book to choose a supported catalog edition.");
+    throw new Error("Open this book to choose a supported catalogue edition.");
   return result(
     await api.POST("/api/metadata/books/{provider}/{external_id}/import", {
       params: {

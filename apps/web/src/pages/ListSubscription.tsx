@@ -149,7 +149,7 @@ export default function ListSubscription({
           <p className="muted">
             Last success:{" "}
             {data.last_success_at
-              ? new Date(data.last_success_at).toLocaleString()
+              ? new Date(data.last_success_at).toLocaleString("en-GB")
               : "Not yet observed"}
             .{" "}
             {hardcover

@@ -87,15 +87,15 @@ export default function SourceArtifact() {
         <h2>{descriptor.name}</h2>
         <p>
           {descriptor.files.length} files ·{" "}
-          {descriptor.content_bytes.toLocaleString()} bytes of content
+          {descriptor.content_bytes.toLocaleString("en-GB")} bytes of content
           {isNzb(descriptor)
-            ? ` · ${descriptor.nzb_bytes.toLocaleString()} byte NZB`
+            ? ` · ${descriptor.nzb_bytes.toLocaleString("en-GB")} byte NZB`
             : descriptor.private
               ? " · Private tracker"
               : " · Public torrent"}
         </p>
         <p className="muted">
-          Inspected {new Date(created_at).toLocaleString()}.{" "}
+          Inspected {new Date(created_at).toLocaleString("en-GB")}.{" "}
           {usenet
             ? "These are the file names from the NZB. The Usenet client unpacks the download, and book matches are reviewed after it finishes."
             : "These are torrent file entries; book and edition matches are reviewed after download."}
@@ -112,7 +112,7 @@ export default function SourceArtifact() {
             <li key={file.index}>
               <span className="break-text">{file.path}</span>
               <span className="muted">
-                {file.size_bytes.toLocaleString()} B
+                {file.size_bytes.toLocaleString("en-GB")} B
               </span>
             </li>
           ))}
@@ -147,8 +147,8 @@ export default function SourceArtifact() {
                 <dd className="break-text">{descriptor.artifact_sha256}</dd>
                 <dt>Padding</dt>
                 <dd>
-                  {descriptor.padding_bytes.toLocaleString()} B (not library
-                  content)
+                  {descriptor.padding_bytes.toLocaleString("en-GB")} B (not
+                  library content)
                 </dd>
               </>
             )}

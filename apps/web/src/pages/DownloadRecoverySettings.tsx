@@ -137,7 +137,7 @@ export default function DownloadRecoverySettings() {
                   {block.reason} ·{" "}
                   {block.automatic ? "Automatic detection for" : "Reported by"}{" "}
                   {block.actor_name} ·{" "}
-                  {new Date(block.created_at).toLocaleString()}
+                  {new Date(block.created_at).toLocaleString("en-GB")}
                 </p>
                 <button
                   disabled={remove.isPending}
@@ -256,8 +256,8 @@ function Editor({
                 value={source}
                 onChange={(event) => setSource(event.target.value)}
               >
-                <option value="prowlarr">Prowlarr — all indexers</option>
-                <option value="indexer">Prowlarr — specific indexer</option>
+                <option value="prowlarr">Prowlarr: all indexers</option>
+                <option value="indexer">Prowlarr: one indexer</option>
                 <option value="mam">MyAnonamouse</option>
                 <option value="audiobookbay">AudiobookBay</option>
                 <option value="slskd">Soulseek</option>
@@ -394,14 +394,14 @@ function PolicyFields({
 function sourceName(source: string) {
   const names: Record<string, string> = {
     mam: "MyAnonamouse",
-    prowlarr: "Prowlarr — all indexers",
+    prowlarr: "Prowlarr: all indexers",
     audiobookbay: "AudiobookBay",
     slskd: "Soulseek",
   };
   return (
     names[source] ??
     (source.startsWith("prowlarr:")
-      ? `Prowlarr — indexer ${source.split(":")[1]}`
+      ? `Prowlarr: indexer ${source.split(":")[1]}`
       : source)
   );
 }

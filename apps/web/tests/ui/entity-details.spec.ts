@@ -417,7 +417,7 @@ test("series with no synopsis still shows authors, language and a separate reque
   });
   await page.goto("/series/hardcover/7?tab=about");
   await expect(page.getByRole("tabpanel")).toContainText("Ursula K. Le Guin");
-  await expect(page.getByRole("tabpanel")).toContainText("Catalog language");
+  await expect(page.getByRole("tabpanel")).toContainText("Catalogue language");
   await expect(page.getByRole("tabpanel")).toContainText(
     "Hardcover has not provided a series synopsis",
   );

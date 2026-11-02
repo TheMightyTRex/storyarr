@@ -218,7 +218,7 @@ function OidcSettingsPanel() {
                   autoComplete="new-password"
                   placeholder={
                     draft.secret_set
-                      ? "Saved — leave blank to keep it"
+                      ? "Saved. Leave blank to keep it"
                       : "From the identity provider"
                   }
                   onChange={(event) => setSecret(event.target.value)}
@@ -912,7 +912,7 @@ function UsersTable({
                 </span>
               </td>
               <td className="access-username">{user.username}</td>
-              <td>
+              <td data-label="Role">
                 <span>{user.access_label}</span>
                 {canManageAdmins && (
                   <span

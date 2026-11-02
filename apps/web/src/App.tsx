@@ -208,7 +208,7 @@ function SignIn({ onSuccess }: { onSuccess: (auth: Auth) => void }) {
         <p className="muted">
           {setup.data?.needs_setup
             ? "Create the administrator account for this installation."
-            : "Sign in to browse your catalog and lists."}
+            : "Sign in to browse your catalogue and lists."}
         </p>
         <Notice
           error={

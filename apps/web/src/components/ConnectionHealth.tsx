@@ -51,7 +51,7 @@ export default function ConnectionHealth() {
               <p>{issue.message}</p>
               <small>
                 {issue.checked_at
-                  ? `Last checked ${new Date(issue.checked_at).toLocaleString()}`
+                  ? `Last checked ${new Date(issue.checked_at).toLocaleString("en-GB")}`
                   : "Not checked yet"}
               </small>
               {issue.settings_url ? (

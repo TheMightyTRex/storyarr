@@ -176,7 +176,7 @@ test("add and edit a person with their role and libraries in one save", async ({
     .getByRole("combobox", { name: "Role", exact: true })
     .selectOption(custom.id);
   await expect(
-    add.getByText("No library access —", { exact: false }),
+    add.getByText("No library access.", { exact: false }),
   ).toBeVisible();
   await add.getByRole("checkbox", { name: "Ebooks", exact: true }).check();
   await add.getByRole("checkbox", { name: "Audiobooks", exact: true }).check();

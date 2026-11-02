@@ -245,7 +245,7 @@ export function UserLibraries({
               >
                 {selected.length
                   ? `${selected.length} ${selected.length === 1 ? "library" : "libraries"} selected`
-                  : "No library access — select a library to complete access setup."}
+                  : "No library access. Select a library to complete access setup."}
               </p>
               {query.data.length === 0 && (
                 <p className="muted">

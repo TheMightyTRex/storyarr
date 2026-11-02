@@ -425,7 +425,7 @@ export function LibraryAssets({
                   <span className="muted">
                     {file.format.toUpperCase()}
                     {file.size != null
-                      ? ` · ${(file.size / 1024 / 1024).toLocaleString(undefined, { maximumFractionDigits: 1 })} MB`
+                      ? ` · ${(file.size / 1024 / 1024).toLocaleString("en-GB", { maximumFractionDigits: 1 })} MB`
                       : ""}
                   </span>
                 </li>
@@ -438,7 +438,8 @@ export function LibraryAssets({
           )}
           {fileDetails.last_seen_at && (
             <p className="muted">
-              Last seen {new Date(fileDetails.last_seen_at).toLocaleString()}
+              Last seen{" "}
+              {new Date(fileDetails.last_seen_at).toLocaleString("en-GB")}
             </p>
           )}
           <a href={fileDetails.open_url} target="_blank" rel="noreferrer">
@@ -632,7 +633,7 @@ export function LibraryAssets({
                               <span className="muted">
                                 {file.format.toUpperCase()}
                                 {file.size != null
-                                  ? ` · ${(file.size / 1024 / 1024).toLocaleString(undefined, { maximumFractionDigits: 1 })} MB`
+                                  ? ` · ${(file.size / 1024 / 1024).toLocaleString("en-GB", { maximumFractionDigits: 1 })} MB`
                                   : ""}
                               </span>
                             </li>
@@ -648,7 +649,9 @@ export function LibraryAssets({
                         <p className="muted">
                           Last seen{" "}
                           <time dateTime={asset.last_seen_at}>
-                            {new Date(asset.last_seen_at).toLocaleString()}
+                            {new Date(asset.last_seen_at).toLocaleString(
+                              "en-GB",
+                            )}
                           </time>
                         </p>
                       )}

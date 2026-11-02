@@ -105,11 +105,11 @@ test("an audiobook can be matched to an Audible recording, with narrator and len
     .click();
   const detail = page.getByRole("dialog", { name: "Review library item" });
   await detail
-    .getByLabel("Search catalog", { exact: true })
+    .getByLabel("Search catalogue", { exact: true })
     .fill("All Systems Red");
   // Audible is searched only when asked, to keep requests to Audible low.
   await expect(
-    detail.getByText("No catalog matches.", { exact: false }),
+    detail.getByText("No catalogue matches.", { exact: false }),
   ).toBeVisible();
   expect(searches).toEqual([]);
   await detail.getByRole("button", { name: "Search Audible" }).click();

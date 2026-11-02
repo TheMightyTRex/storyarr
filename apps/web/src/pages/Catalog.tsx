@@ -137,7 +137,7 @@ export default function Catalog({ canEdit }: { canEdit: boolean }) {
         >
           <h2>Add a title</h2>
           <p className="muted">
-            Creates a catalog entry. It does not mark a book as downloaded.
+            Creates a catalogue entry. It does not mark a book as downloaded.
           </p>
           <div className="form-row">
             <label>

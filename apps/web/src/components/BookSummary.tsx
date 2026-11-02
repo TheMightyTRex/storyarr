@@ -121,7 +121,7 @@ function CatalogSummary({
           <Star size={14} aria-hidden="true" />
           {rating.toFixed(1)}
           {details.data?.ratings_count
-            ? ` from ${details.data.ratings_count.toLocaleString()} ratings on Hardcover`
+            ? ` from ${details.data.ratings_count.toLocaleString("en-GB")} ratings on Hardcover`
             : " average rating"}
         </p>
       )}
@@ -239,7 +239,7 @@ function WorkSummary({
         <p className="book-summary-rating">
           <Star size={14} aria-hidden="true" />
           {details.data.rating.toFixed(1)} from{" "}
-          {(details.data.ratings_count || 0).toLocaleString()} ratings on
+          {(details.data.ratings_count || 0).toLocaleString("en-GB")} ratings on
           Hardcover
         </p>
       )}

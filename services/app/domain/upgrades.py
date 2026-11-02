@@ -294,6 +294,18 @@ RELEASES = [
             "series logos are removed. The logo files stay in the config folder."
         ),
     ),
+    UpgradeRelease(
+        id="2026.11.02.2",
+        title="A tidier, more consistent look",
+        highlights=[
+            "Display and accessibility opens as a slide-out from the right, with Done and Reset at "
+            "the bottom.",
+            "The chosen option is teal everywhere, with a tick or a bar as well, and every control "
+            "has the same focus ring.",
+            "Dates, times and numbers are written the British way on every page.",
+            "Deleting a notification channel asks first, and Users and access fits on phones.",
+        ],
+    ),
 ]
 CURRENT = RELEASES[-1].id
 

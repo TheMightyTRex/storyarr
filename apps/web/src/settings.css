@@ -76,7 +76,7 @@
   height: 16px;
   min-width: 16px;
   margin: 0;
-  accent-color: var(--c-text-indigo-64);
+  accent-color: var(--color-accent);
 }
 .settings-section-body label:has(> input[type="checkbox"]),
 .settings-section-body .check-label {
@@ -807,8 +807,9 @@ button.help-button:hover {
   font-weight: 650;
   vertical-align: 1px;
 }
+/* A dense table: its buttons use the library's compact height. */
 .settings-section-body .access-table button {
-  min-height: 30px;
+  min-height: var(--control-h-compact);
   padding: 4px 10px;
 }
 .book-dialog.access-dialog {
@@ -941,6 +942,49 @@ button.help-button:hover {
   .access-table th,
   .access-table td {
     padding: 10px;
+  }
+  /* Users stack, as the library's tables do (data-stack): each person is a block with the name and
+     username, then the role, and the actions beside them. The column headings move into the cells. */
+  .access-table-users,
+  .access-table-users tbody {
+    display: block;
+  }
+  .access-table-users thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .access-table-users tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    border-top: 1px solid var(--line);
+  }
+  .access-table-users tbody tr:first-child {
+    border-top: 0;
+  }
+  .access-table-users td {
+    border-top: 0;
+  }
+  .access-table-users td:first-child {
+    padding-bottom: 2px;
+  }
+  .access-table-users td[data-label] {
+    grid-column: 1;
+    padding-top: 2px;
+  }
+  .access-table-users td[data-label]::before {
+    content: attr(data-label) ": ";
+    color: var(--muted);
+  }
+  .access-table-users td:last-child {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
   }
 }
 @container (max-width: 520px) {
@@ -3086,8 +3130,8 @@ button.help-button:hover {
   height: 1px;
 }
 .shape-option:focus-within {
-  outline: 2px solid var(--c-border-indigo-76);
-  outline-offset: 3px;
+  outline: var(--focus-w) solid var(--color-focus);
+  outline-offset: 2px;
 }
 .shape-stage {
   display: flex;

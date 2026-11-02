@@ -75,7 +75,7 @@ test("unified search keeps local ownership usable during a provider outage and o
     response.url().includes("/api/metadata/search?"),
   );
   await search("The First Harbor");
-  const local = page.getByRole("region", { name: "Matches in your catalog" });
+  const local = page.getByRole("region", { name: "Matches in your catalogue" });
   // A catalog match is a cover with its format actions, whether or not the book is in the library now.
   const owned = local
     .locator(".cover-card")
@@ -118,7 +118,7 @@ test("unified search keeps local ownership usable during a provider outage and o
     .getByRole("link", { name: "Open book page" });
   await expect(known).toHaveAttribute("href", `/books/${work.id}`);
   await expect(
-    page.getByRole("button", { name: "Add to catalog", exact: true }),
+    page.getByRole("button", { name: "Add to catalogue", exact: true }),
   ).toHaveCount(0);
   await page.screenshot({
     path: testInfo.outputPath("known-provider-book.png"),
@@ -154,7 +154,7 @@ test("unified search keeps local ownership usable during a provider outage and o
   ).toBeVisible();
   await expect(
     page.getByText(
-      "These results are already shown in your catalog matches above.",
+      "These results are already shown in your catalogue matches above.",
     ),
   ).toBeVisible();
   await expect(
@@ -206,7 +206,7 @@ test("unified search keeps local ownership usable during a provider outage and o
     page.getByRole("link", { name: "Manage book", exact: true }),
   ).toHaveAttribute("href", `/books/${work.id}`);
   await expect(
-    page.getByRole("button", { name: "Add to catalog", exact: true }),
+    page.getByRole("button", { name: "Add to catalogue", exact: true }),
   ).toHaveCount(0);
   expect(writes).toEqual([]);
   expect(errors).toEqual([]);

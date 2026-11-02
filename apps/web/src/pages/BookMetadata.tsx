@@ -184,7 +184,7 @@ export default function BookMetadata({
           <div>
             <h3 id="metadata-details-heading">Book details</h3>
             <p className="muted">
-              Your edits stay protected when catalog details refresh.
+              Your edits stay protected when catalogue details refresh.
             </p>
           </div>
           {admin && (
@@ -281,7 +281,7 @@ export default function BookMetadata({
       )}
       {refresh.isSuccess && (
         <p className="metadata-feedback success" role="status">
-          <Check size={16} /> Catalog details refreshed.
+          <Check size={16} /> Catalogue details refreshed.
         </p>
       )}
       <Notice
@@ -295,7 +295,7 @@ export default function BookMetadata({
         }
       />
       {unmatching && (
-        <section className="panel editor" aria-label="Remove catalog source">
+        <section className="panel editor" aria-label="Remove catalogue source">
           <h3>
             Stop using {providerName(unmatching.provider)} for this match?
           </h3>
@@ -311,7 +311,7 @@ export default function BookMetadata({
               disabled={unmatch.isPending}
               onClick={() => unmatch.mutate()}
             >
-              Remove catalog match
+              Remove catalogue match
             </button>
             <button type="button" onClick={() => setUnmatching(null)}>
               Cancel removal
@@ -346,7 +346,7 @@ export default function BookMetadata({
             <>
               {metadata.data.items.length === 0 && (
                 <p className="muted">
-                  No catalog editions have been linked yet. Library copies
+                  No catalogue editions have been linked yet. Library copies
                   appear below.
                 </p>
               )}
@@ -403,7 +403,7 @@ export default function BookMetadata({
               <InfiniteScroll query={metadata} />
               {metadata.data.sources.some((source) => source.editions_more) && (
                 <p className="muted">
-                  This catalog contains more editions than have been loaded.
+                  This catalogue contains more editions than have been loaded.
                   Listed editions are not a complete catalog.
                 </p>
               )}
@@ -459,7 +459,7 @@ export default function BookMetadata({
               ))}
               {!work.cover_url && !metadata.data.cover_choices.length && (
                 <p className="muted">
-                  No covers available. Connect a catalog match or refresh its
+                  No covers available. Connect a catalogue match or refresh its
                   details to look for a cover.
                 </p>
               )}
@@ -494,7 +494,8 @@ export default function BookMetadata({
                   <strong>{providerName(source.provider)}</strong> ·{" "}
                   {source.title}
                   <small>
-                    Fetched {new Date(source.fetched_at).toLocaleString()}
+                    Fetched{" "}
+                    {new Date(source.fetched_at).toLocaleString("en-GB")}
                   </small>
                   {source.series.map((series) => (
                     <small key={series.external_id}>

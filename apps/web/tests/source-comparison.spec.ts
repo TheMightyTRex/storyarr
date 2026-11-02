@@ -188,7 +188,7 @@ test("release view sorting and filters compare every loaded result without chang
   staleIdentity = true;
   await page.reload();
   await expect(
-    sources.getByText(/The catalog identity or series evidence changed/),
+    sources.getByText(/The catalogue identity or series evidence changed/),
   ).toBeVisible();
   await cards
     .first()

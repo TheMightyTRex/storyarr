@@ -45,7 +45,7 @@ export default function VersionReviews({ workId }: { workId: string }) {
           <p className="eyebrow">
             {providerName(review.provider)} · EDITION CHANGED
           </p>
-          <h3>Review this catalog version</h3>
+          <h3>Review this catalogue version</h3>
           <div className="form-row">
             <div>
               <strong>Current version</strong>

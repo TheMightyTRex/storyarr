@@ -118,7 +118,7 @@ export function CollectionTile({ collection }: { collection: Collection }) {
       <h3>{collection.title}</h3>
       <p>
         {collection.count
-          ? `${collection.count.toLocaleString()} ${collection.count === 1 ? "book" : "books"}`
+          ? `${collection.count.toLocaleString("en-GB")} ${collection.count === 1 ? "book" : "books"}`
           : "Explore current selection"}
         <ArrowRight size={16} />
       </p>

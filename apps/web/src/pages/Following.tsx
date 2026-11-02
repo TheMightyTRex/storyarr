@@ -46,13 +46,13 @@ export const statusLinks: Partial<Record<StatusKind, string>> = {
 };
 export function when(value: string) {
   const at = new Date(value);
-  const time = at.toLocaleTimeString(undefined, {
+  const time = at.toLocaleTimeString("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
   });
   return at.toDateString() === new Date().toDateString()
     ? time
-    : at.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+    : at.toLocaleDateString("en-GB", { month: "short", day: "numeric" }) +
         " " +
         time;
 }
@@ -88,7 +88,7 @@ function choice<T extends string>(
 }
 export function publication(book: Book) {
   return book.release_date
-    ? new Date(book.release_date + "T12:00:00Z").toLocaleDateString(undefined, {
+    ? new Date(book.release_date + "T12:00:00Z").toLocaleDateString("en-GB", {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -364,7 +364,7 @@ function FollowingReleases({
                   {month === "undated"
                     ? "Announced · Date to be confirmed"
                     : new Date(month + "-01T12:00:00Z").toLocaleDateString(
-                        undefined,
+                        "en-GB",
                         { month: "long", year: "numeric", timeZone: "UTC" },
                       )}
                 </h3>
@@ -382,7 +382,7 @@ function FollowingReleases({
               {selection === "upcoming"
                 ? "announced releases"
                 : "recent publications"}{" "}
-              from your follows. New catalog updates will appear here.
+              from your follows. New catalogue updates will appear here.
             </p>
           )}
           {!shelf && query.hasNextPage && (

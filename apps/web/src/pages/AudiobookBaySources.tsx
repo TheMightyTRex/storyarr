@@ -137,7 +137,7 @@ export default function AudiobookBaySources({
                 ·{" "}
                 {item.release.size_bytes == null
                   ? "Size unknown"
-                  : `${item.release.size_bytes.toLocaleString()} bytes`}
+                  : `${item.release.size_bytes.toLocaleString("en-GB")} bytes`}
               </p>
               <p className="muted">
                 Seed count unknown · Raw posting title: {item.release.raw_title}
@@ -183,7 +183,7 @@ export default function AudiobookBaySources({
                                 <span>
                                   {file.size_bytes == null
                                     ? "Unknown size"
-                                    : `${file.size_bytes.toLocaleString()} B`}
+                                    : `${file.size_bytes.toLocaleString("en-GB")} B`}
                                 </span>
                               </li>
                             ))}
@@ -314,7 +314,7 @@ export function AudiobookBayConnectionForm({ value }: { value: Connection }) {
           value={downloader}
           onChange={(event) => setDownloader(event.target.value)}
         >
-          <option value="">Browsing only — no default resolver</option>
+          <option value="">Browsing only, no default resolver</option>
           {clients.data
             ?.filter(
               (client) => client.enabled && client.kind === "qbittorrent",

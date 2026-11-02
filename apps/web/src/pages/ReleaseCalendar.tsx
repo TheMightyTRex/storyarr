@@ -35,7 +35,7 @@ function shiftMonth(month: string, delta: number) {
 
 function monthTitle(month: string) {
   const [year, mon] = month.split("-").map(Number);
-  return new Date(year, mon - 1, 1).toLocaleDateString(undefined, {
+  return new Date(year, mon - 1, 1).toLocaleDateString("en-GB", {
     month: "long",
     year: "numeric",
   });
@@ -127,7 +127,7 @@ function GenreMenu({
 
 function dayTitle(day: string) {
   const [year, mon, date] = day.split("-").map(Number);
-  return new Date(year, mon - 1, date).toLocaleDateString(undefined, {
+  return new Date(year, mon - 1, date).toLocaleDateString("en-GB", {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -146,7 +146,7 @@ function entryStatus(entry: Entry) {
   if (entry.state === "available") return "Available";
   if (entry.state === "wanted") return "Searching";
   if (entry.state === "waiting" || entry.followed) return "Waiting for release";
-  if (entry.work_id) return "In your catalog";
+  if (entry.work_id) return "In your catalogue";
   return "";
 }
 

@@ -6,7 +6,7 @@ export function transferSize(bytes: number) {
     Math.floor(Math.log(Math.max(bytes, 1)) / Math.log(1024)),
     4,
   );
-  return `${(bytes / 1024 ** index).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${units[index]}`;
+  return `${(bytes / 1024 ** index).toLocaleString("en-GB", { maximumFractionDigits: 2 })} ${units[index]}`;
 }
 
 export default function DownloadConstraints({

@@ -80,7 +80,7 @@ export default function Connections({
             <p className="eyebrow">CONNECTED LIBRARIES</p>
             <h1>Connections</h1>
             <p className="muted">
-              Keep your catalog in sync with Audiobookshelf or Grimmory.
+              Keep your catalogue in sync with Audiobookshelf or Grimmory.
             </p>
             <Link to="/settings#downloaders">Downloaders</Link>
           </div>
@@ -133,7 +133,7 @@ export default function Connections({
               <p className="muted connection-detail">
                 {connection.version ? `v${connection.version} · ` : ""}
                 {connection.last_success_at
-                  ? `Synced ${new Date(connection.last_success_at).toLocaleString()}`
+                  ? `Synced ${new Date(connection.last_success_at).toLocaleString("en-GB")}`
                   : "Not synced yet"}
               </p>
               {connection.last_error && (

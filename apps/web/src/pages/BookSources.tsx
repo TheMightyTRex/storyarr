@@ -508,7 +508,7 @@ function Results({
         )}
       {data.stale_identity && (
         <p className="notice error">
-          The catalog identity or series evidence changed. Refresh the search
+          The catalogue identity or series evidence changed. Refresh the search
           before inspecting a result.
         </p>
       )}
@@ -702,10 +702,10 @@ function Results({
                     </small>
                   </td>
                   <td data-label="Authors">
-                    {item.release.authors?.join(", ") || "—"}
+                    {item.release.authors?.join(", ") || "Not known"}
                   </td>
                   <td data-label="Narrators">
-                    {item.release.narrators?.join(", ") || "—"}
+                    {item.release.narrators?.join(", ") || "Not known"}
                   </td>
                   <td data-label="Size" className="release-numeric">
                     {item.release.size_bytes == null
@@ -731,13 +731,14 @@ function Results({
                   >
                     {item.release.protocol === "soulseek"
                       ? "Peer online"
-                      : (item.release.seeders?.toLocaleString() ?? "Unknown")}
+                      : (item.release.seeders?.toLocaleString("en-GB") ??
+                        "Unknown")}
                   </td>
                   <td data-label="Tags">
                     <ReleaseTags release={item.release} />
                     {item.release.source === "mam" &&
                       !item.release.freeleech &&
-                      !item.release.vip && <span className="muted">—</span>}
+                      !item.release.vip && <span className="muted">None</span>}
                   </td>
                   <td className="source-actions-cell">
                     <div className="source-row-actions">

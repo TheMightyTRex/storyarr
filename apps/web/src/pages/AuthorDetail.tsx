@@ -60,14 +60,14 @@ function AuthorContent({
     return (
       <section className="reader-page">
         <Link to="/" className="back-link">
-          <ArrowLeft size={16} /> Back to catalog
+          <ArrowLeft size={16} /> Back to catalogue
         </Link>
         <h1>Author details unavailable</h1>
         <Notice error={query.error} />
         <button onClick={() => query.refetch()} disabled={query.isFetching}>
           Try again
         </button>
-        <Link to="/metadata">Catalog connection settings</Link>
+        <Link to="/metadata">Catalogue connection settings</Link>
       </section>
     );
   const data = query.data;
@@ -79,7 +79,7 @@ function AuthorContent({
     <article className="reader-page catalog-reader entity-detail">
       <div className="book-topbar">
         <Link to="/" className="back-link">
-          <ArrowLeft size={16} /> Back to catalog
+          <ArrowLeft size={16} /> Back to catalogue
         </Link>
       </div>
       <header className="entity-hero">
@@ -189,7 +189,7 @@ function AuthorContent({
             </div>
             {!data.items.length && (
               <p className="notice">
-                No books are available on this page. Check back as the catalog
+                No books are available on this page. Check back as the catalogue
                 grows.
               </p>
             )}

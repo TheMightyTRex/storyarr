@@ -101,7 +101,7 @@ export function ReleaseMediaInfo({ text }: { text?: string | null }) {
             {group.fields.map((field, i) => (
               <div key={i}>
                 <dt>{field.label}</dt>
-                <dd>{field.value || "—"}</dd>
+                <dd>{field.value || "Not known"}</dd>
               </div>
             ))}
           </dl>

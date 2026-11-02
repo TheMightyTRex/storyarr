@@ -272,9 +272,10 @@ button.discovery-book:hover {
   color: var(--c-text-grey-97);
   background: var(--c-bg-slate-21);
   font-synthesis: none;
-  --surface: var(--c-bg-indigo-27);
-  --muted: var(--c-text-slate-75);
-  --line: var(--c-border-indigo-35);
+  /* Older names for the shared library's roles, so every theme (High contrast too) follows the library. */
+  --surface: var(--color-surface);
+  --muted: var(--color-text-muted);
+  --line: var(--color-divider);
   /* The accent and focus colours come from the shared library (teal, UX-02 option B). */
   --accent: var(--color-accent);
 }
@@ -299,11 +300,11 @@ body {
   margin: 0;
   min-width: 320px;
 }
-button,
-input,
-select,
-textarea {
-  font: inherit;
+/* Buttons, inputs, selects and text areas inherit the font in the shared library's reset (a lower layer),
+   so library classes such as .btn keep their own size and weight. */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--color-accent);
 }
 button,
 a {
@@ -2541,9 +2542,9 @@ img.detail-cover {
   font-size: 0.8125rem;
 }
 .onboarding-steps button[aria-current] {
-  color: var(--c-text-slate-96);
-  background: var(--c-bg-indigo-31);
-  border-color: var(--c-border-indigo-41);
+  color: var(--color-accent);
+  background: var(--color-control-active);
+  border-color: var(--color-accent);
 }
 .onboarding-step-number {
   flex-shrink: 0;

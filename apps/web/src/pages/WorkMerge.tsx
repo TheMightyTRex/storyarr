@@ -116,7 +116,7 @@ function MergeForm({
           Find duplicate
         </button>
       </form>
-      {search.isFetching && <p className="muted">Searching your catalog…</p>}
+      {search.isFetching && <p className="muted">Searching your catalogue…</p>}
       {search.data && (
         <div className="activity-list">
           {search.data.items

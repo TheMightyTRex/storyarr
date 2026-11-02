@@ -24,7 +24,7 @@ test("settings use compact controls and naming presets persist with planner prev
     await page.getByLabel("Your name").fill("Test Reader");
     await page.getByRole("button", { name: "Create administrator" }).click();
     await expect(
-      page.getByRole("heading", { name: "Let’s set up your library" }),
+      page.getByRole("heading", { name: "Set up your library" }),
     ).toBeVisible();
     await page.screenshot({
       path: testInfo.outputPath("onboarding-desktop.png"),

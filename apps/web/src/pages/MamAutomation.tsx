@@ -91,7 +91,7 @@ export function UploadSelect({
         >
           {amounts.map((amount) => (
             <option key={amount} value={amount}>
-              {amount} GiB · {(amount * 500).toLocaleString()} points
+              {amount} GiB · {(amount * 500).toLocaleString("en-GB")} points
             </option>
           ))}
           <option value="max">All I can afford · all available points</option>
@@ -100,7 +100,7 @@ export function UploadSelect({
       </label>
       {custom && (
         <NumberSetting
-          label={`${label} — custom GiB`}
+          label={`${label}: custom GiB`}
           value={typeof value === "number" ? value : 50}
           min={50}
           onChange={onChange}
@@ -187,7 +187,7 @@ export function AccountAutomation({
             </dt>
             <dd>
               {checks?.[key]
-                ? `Last checked ${new Date(checks[key]!).toLocaleString()}`
+                ? `Last checked ${new Date(checks[key]!).toLocaleString("en-GB")}`
                 : "Not checked yet"}
             </dd>
           </div>

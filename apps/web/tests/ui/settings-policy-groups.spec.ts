@@ -119,7 +119,7 @@ test("recovery is grouped with clients, keeps collapsed drafts, and saves source
   await form.getByLabel("Prowlarr indexer ID").fill("12");
   await form.getByRole("button", { name: "Add source override" }).click();
   const indexer = form.getByRole("group", {
-    name: "Prowlarr — indexer 12",
+    name: "Prowlarr: indexer 12",
     exact: true,
   });
   await indexer.getByLabel("Failed transfer cleanup").selectOption("pause");

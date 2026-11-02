@@ -88,9 +88,9 @@ export default function BookGrouping({
           ))}
           {admin && (
             <p className="muted">
-              Separation applies to this catalog record for everyone. Confirming
-              the same book uses a merge preview; editions and files stay
-              intact.
+              Separation applies to this catalogue record for everyone.
+              Confirming the same book uses a merge preview; editions and files
+              stay intact.
             </p>
           )}
         </>

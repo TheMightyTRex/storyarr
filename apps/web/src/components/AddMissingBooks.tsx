@@ -113,13 +113,13 @@ function AddMissingForm({
       if (current && state !== "queued" && state !== "running") {
         if (state === "failed")
           throw new Error(
-            current.subscription.message || "Catalog check failed",
+            current.subscription.message || "Catalogue check failed",
           );
         return current;
       }
       await new Promise((resolve) => setTimeout(resolve, 1500));
     }
-    throw new Error("The catalog is still being checked. Try again shortly.");
+    throw new Error("The catalogue is still being checked. Try again shortly.");
   }
 
   const find = useMutation({
@@ -151,7 +151,7 @@ function AddMissingForm({
           }),
         );
       }
-      setStep("Checking the full catalog…");
+      setStep("Checking the full catalogue…");
       current = await waitForCatalog(current.list_id);
       setStep("Finding missing books…");
       const policy = result(

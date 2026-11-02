@@ -138,9 +138,9 @@ function ListPreview({
             <p className="eyebrow">PUBLIC LIST · HARDCOVER</p>
             <h1>{data.info.name}</h1>
             <p className="muted">
-              {data.info.count.toLocaleString()} books
+              {data.info.count.toLocaleString("en-GB")} books
               {data.info.followers != null
-                ? ` · ${data.info.followers.toLocaleString()} followers`
+                ? ` · ${data.info.followers.toLocaleString("en-GB")} followers`
                 : ""}
             </p>
             {data.info.description && (
@@ -264,7 +264,7 @@ export function HardcoverCollections({ term }: { term: string }) {
               <span>Hardcover · Community</span>
             </div>
             <h3>{list.name}</h3>
-            <p>{list.count.toLocaleString()} books</p>
+            <p>{list.count.toLocaleString("en-GB")} books</p>
           </Link>
         ))}
       </div>

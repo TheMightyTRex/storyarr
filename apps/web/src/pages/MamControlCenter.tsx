@@ -9,7 +9,7 @@ import "./mam-control-center.css";
 type Connection = components["schemas"]["MAMConnectionView"];
 type Purchase = components["schemas"]["MAMPurchase"];
 const fmt = (value: number) =>
-  value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  value.toLocaleString("en-GB", { maximumFractionDigits: 2 });
 
 export default function MamControlCenter({
   connection,
@@ -163,10 +163,10 @@ export default function MamControlCenter({
         <p className="mam-account-timestamp">
           Last refreshed{" "}
           {data.checked_at
-            ? new Date(data.checked_at).toLocaleString()
+            ? new Date(data.checked_at).toLocaleString("en-GB")
             : "Unknown"}
           {data.vip_until
-            ? ` · VIP expires ${new Date(data.vip_until).toLocaleDateString()}`
+            ? ` · VIP expires ${new Date(data.vip_until).toLocaleDateString("en-GB")}`
             : " · VIP expiry unavailable"}
         </p>
       )}

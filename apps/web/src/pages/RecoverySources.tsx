@@ -306,7 +306,7 @@ function SourceEditor({
           new Date(evidence.blocked_until).getTime() > Date.now() && (
             <p>
               Source cooldown until{" "}
-              {new Date(evidence.blocked_until).toLocaleString()}. Saving
+              {new Date(evidence.blocked_until).toLocaleString("en-GB")}. Saving
               settings does not bypass it.
             </p>
           )}
@@ -436,7 +436,8 @@ export function SourceRecoveryReview({
       {prepared && (
         <>
           <p className="muted">
-            Review expires {new Date(review.expires_at).toLocaleString()}.
+            Review expires {new Date(review.expires_at).toLocaleString("en-GB")}
+            .
           </p>
           {review.scan_id !== currentScan && (
             <p>A newer observation exists. Prepare a new review from it.</p>

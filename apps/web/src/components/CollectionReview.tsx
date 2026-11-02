@@ -274,7 +274,7 @@ export default function CollectionReview({
           {expanded === entry.id && (
             <div className="collection-match-editor">
               <label>
-                Search library / author catalog
+                Search library / author catalogue
                 <input
                   aria-label={`Search matches for ${entry.title}`}
                   value={matchSearch}

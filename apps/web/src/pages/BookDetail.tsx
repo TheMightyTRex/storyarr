@@ -233,7 +233,7 @@ function BookDetailContent({
             ? "In your library"
             : watching
               ? "Waiting for release"
-              : "Saved in your catalog"
+              : "Saved in your catalogue"
         }
         eyebrow={work.availability.owned ? "YOUR LIBRARY" : "YOUR CATALOG"}
         details={community.data}
@@ -375,9 +375,9 @@ function BookDetailContent({
               </>
             ) : (
               <>
-                Saved in your catalog only. It is not in your library, and it is
-                not in Requests until you request the release day. Find it under{" "}
-                <Link to="/library?view=saved">All saved titles</Link>.
+                Saved in your catalogue only. It is not in your library, and it
+                is not in Requests until you request the release day. Find it
+                under <Link to="/library?view=saved">All saved titles</Link>.
               </>
             )}
           </p>

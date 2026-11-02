@@ -138,7 +138,8 @@ export default function ListPolicy({
                 )}
                 {book.next_check_at && (
                   <small>
-                    Next check: {new Date(book.next_check_at).toLocaleString()}
+                    Next check:{" "}
+                    {new Date(book.next_check_at).toLocaleString("en-GB")}
                   </small>
                 )}
               </div>

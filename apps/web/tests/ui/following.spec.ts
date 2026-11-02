@@ -443,7 +443,7 @@ test("Following is usable at a narrow viewport", async ({ page }, testInfo) => {
     page.getByRole("heading", { name: "Follow Earthsea" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Follow and preview catalog" }),
+    page.getByRole("button", { name: "Follow and preview catalogue" }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),

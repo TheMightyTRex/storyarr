@@ -94,7 +94,7 @@ export default function IdentityHistory({
                 <strong>{change.summary}</strong>
                 <small>
                   {change.actor_name} ·{" "}
-                  {new Date(change.created_at).toLocaleString()}
+                  {new Date(change.created_at).toLocaleString("en-GB")}
                 </small>
                 <small>
                   {change.undone_at

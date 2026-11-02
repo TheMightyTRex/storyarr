@@ -16,9 +16,9 @@ body {
   color: var(--c-text-grey-97);
 }
 
-/* A visible focus ring on every control, in every theme. */
+/* A visible focus ring on every control, in every theme: the library's width and focus colour. */
 :focus-visible {
-  outline: 3px solid var(--accent);
+  outline: var(--focus-w) solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -112,10 +112,6 @@ body {
   padding: 0 16px;
   border-radius: 0;
   font-weight: 600;
-}
-.segmented input:checked + span {
-  background: var(--c-text-grey-97);
-  color: var(--c-bg-slate-21);
 }
 .segmented input:checked + span::before {
   /* A tick, so the choice does not rely on colour alone. */

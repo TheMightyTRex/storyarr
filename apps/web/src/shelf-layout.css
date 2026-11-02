@@ -41,12 +41,12 @@
   text-align: center;
 }
 .shelf-rail .shelf-nav a:hover {
-  background: var(--c-bg-indigo-27);
-  color: var(--c-text-grey-100);
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 .shelf-rail .shelf-nav a.active {
-  background: var(--c-bg-indigo-31);
-  color: var(--c-text-slate-93-2);
+  background: var(--color-control-active);
+  color: var(--color-accent);
 }
 .shelf-rail .shelf-nav a.active::before {
   /* A bar beside the current page, so the state does not rely on colour alone. */
@@ -57,7 +57,7 @@
   bottom: 14px;
   width: 4px;
   border-radius: 0;
-  background: var(--c-bg-indigo-79);
+  background: var(--color-accent);
 }
 .shelf-count {
   min-width: 1.15rem;

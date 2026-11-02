@@ -335,9 +335,9 @@ export default function Destinations({
                                 {route.checked_at && (
                                   <small>
                                     Checked{" "}
-                                    {new Date(
-                                      route.checked_at,
-                                    ).toLocaleString()}
+                                    {new Date(route.checked_at).toLocaleString(
+                                      "en-GB",
+                                    )}
                                   </small>
                                 )}
                               </li>
@@ -757,7 +757,7 @@ function FolderPicker({
                               .map((folder) => (
                                 <option key={folder.key} value={folder.key}>
                                   {folder.library_name} · {folder.server_name}
-                                  {folder.path ? ` — ${folder.path}` : ""}
+                                  {folder.path ? `: ${folder.path}` : ""}
                                 </option>
                               ))}
                           </optgroup>

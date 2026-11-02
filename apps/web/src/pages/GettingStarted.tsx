@@ -156,7 +156,7 @@ export default function GettingStarted({ role }: { role: string }) {
         </button>
       </header>
       <div className="onboarding-intro">
-        <h1>Let’s set up your library</h1>
+        <h1>Set up your library</h1>
         <p>Every step is optional.</p>
       </div>
       <Notice error={progress.error || update.error} />
@@ -209,8 +209,11 @@ export default function GettingStarted({ role }: { role: string }) {
                     <Check size={18} />
                   </span>
                   <div>
-                    <h3>You’re ready to explore</h3>
-                    <p>Your setup is saved. Change it anytime in Settings.</p>
+                    <h3>You are ready to explore</h3>
+                    <p>
+                      Your setup is saved. You can change it at any time in
+                      Settings.
+                    </p>
                   </div>
                 </div>
                 {admin && (
@@ -224,7 +227,7 @@ export default function GettingStarted({ role }: { role: string }) {
                     {readiness.data && (
                       <dl className="onboarding-summary">
                         <div>
-                          <dt>Catalog</dt>
+                          <dt>Catalogue</dt>
                           <dd>
                             {readiness.data.catalog?.enabled
                               ? "Hardcover"

@@ -135,7 +135,8 @@ export function ListBaselineRecoveryReview({
       {prepared && (
         <>
           <p className="muted">
-            Review expires {new Date(review.expires_at).toLocaleString()}.
+            Review expires {new Date(review.expires_at).toLocaleString("en-GB")}
+            .
           </p>
           {review.scan_id !== currentScan && (
             <p>A newer observation exists. Prepare a new review from it.</p>

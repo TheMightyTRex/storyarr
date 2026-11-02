@@ -116,7 +116,7 @@ export default function DownloadMatchReview({
       : !group
         ? "These files may contain several books. Choose a download containing only the requested book."
         : identified.length > 1
-          ? "The files point to more than one catalog edition. We need a clearer release to avoid importing the wrong edition."
+          ? "The files point to more than one catalogue edition. We need a clearer release to avoid importing the wrong edition."
           : download.file_conflicts?.length
             ? download.file_conflicts[0]
             : issues.length
@@ -287,7 +287,7 @@ export default function DownloadMatchReview({
                 <dt>Match evidence</dt>
                 <dd>
                   {candidate?.reasons?.join(" · ") ||
-                    "No catalog edition was confidently identified. Your confirmation will use the inspected file edition."}
+                    "No catalogue edition was confidently identified. Your confirmation will use the inspected file edition."}
                 </dd>
               </div>
               <div>

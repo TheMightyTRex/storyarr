@@ -328,7 +328,7 @@ function ReleaseDetail({
         </details>
       )}
       <p className="muted">
-        Source metadata describes this release; it does not confirm a catalog
+        Source metadata describes this release; it does not confirm a catalogue
         edition, collection coverage or library ownership.
       </p>
       {canAcquire && !loading && (
@@ -730,7 +730,7 @@ export function MamConnectionForm({ value }: { value: Connection }) {
                   <p className="mam-network-checked">
                     Last checked{" "}
                     <time dateTime={proxyCheckedAt}>
-                      {new Date(proxyCheckedAt).toLocaleTimeString()}
+                      {new Date(proxyCheckedAt).toLocaleTimeString("en-GB")}
                     </time>
                   </p>
                 )}

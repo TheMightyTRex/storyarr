@@ -91,11 +91,11 @@ export default function FollowSettings() {
           )}
           <p>
             First we verify the complete catalog. Then choose Browse, Manual or
-            Automatic, media, and a download profile. Include back catalog by
+            Automatic, media, and a download profile. Include back catalogue by
             selecting up to 25 current books in the policy preview.
           </p>
           <button className="primary" disabled={create.isPending || !filters}>
-            Follow and preview catalog
+            Follow and preview catalogue
           </button>
         </form>
       ) : null}
@@ -214,7 +214,7 @@ function FollowEditor({ follow }: { follow: Follow }) {
         }
       />
       <p className="muted">
-        Pausing or resuming catalog updates pauses downloads. Review download
+        Pausing or resuming catalogue updates pauses downloads. Review download
         settings before activating them again.
       </p>
       <div className="button-row">
@@ -228,7 +228,7 @@ function FollowEditor({ follow }: { follow: Follow }) {
           disabled={sync.isPending || !follow.subscription.enabled}
           onClick={() => sync.mutate()}
         >
-          Refresh catalog
+          Refresh catalogue
         </button>
         <button disabled={unfollow.isPending} onClick={() => unfollow.mutate()}>
           Unfollow
@@ -268,8 +268,8 @@ function FollowEditor({ follow }: { follow: Follow }) {
         </>
       ) : (
         <p>
-          Acquisition stays paused until a complete catalog is verified and you
-          activate a policy.
+          Acquisition stays paused until a complete catalogue is verified and
+          you activate a policy.
         </p>
       )}
       <section className="panel editor">

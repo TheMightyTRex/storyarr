@@ -120,7 +120,7 @@ export default function AssetMatchForm({
         </p>
       )}
       <label>
-        Search catalog
+        Search catalogue
         <input
           value={search}
           maxLength={300}
@@ -135,7 +135,7 @@ export default function AssetMatchForm({
         disabled={match.isPending || query !== search.trim()}
       >
         <legend>Choose the correct book</legend>
-        {works.isFetching && <p role="status">Searching catalog…</p>}
+        {works.isFetching && <p role="status">Searching catalogue…</p>}
         {works.data?.items.map((work) => (
           <label key={work.id} className="match-candidate">
             <input
@@ -159,7 +159,7 @@ export default function AssetMatchForm({
           </p>
         )}
         {works.isSuccess && !works.data.items.length && (
-          <p>No catalog matches. Try another title or search Audible.</p>
+          <p>No catalogue matches. Try another title or search Audible.</p>
         )}
         {asset.medium !== "ebook" && (
           <AudibleCandidates
@@ -350,7 +350,9 @@ function AudibleCandidates({
                 {sameVoice && (
                   <span className="audible-tag">Narrator matches</span>
                 )}
-                {known && <span className="audible-tag">In your catalog</span>}
+                {known && (
+                  <span className="audible-tag">In your catalogue</span>
+                )}
               </span>
             </span>
           </label>

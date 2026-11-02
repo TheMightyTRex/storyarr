@@ -64,7 +64,7 @@ export default function ConnectionTestStatus({
       : error
         ? "Saved credentials were kept."
         : connected && lastSuccessAt
-          ? `Verified ${new Date(lastSuccessAt).toLocaleString()}`
+          ? `Verified ${new Date(lastSuccessAt).toLocaleString("en-GB")}`
           : connected
             ? "Connection verified successfully."
             : configured && status === "untested"

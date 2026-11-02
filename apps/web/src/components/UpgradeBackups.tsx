@@ -24,7 +24,7 @@ const reasons: Record<string, string> = {
 
 function when(value?: string | null) {
   return value
-    ? new Date(value).toLocaleString(undefined, {
+    ? new Date(value).toLocaleString("en-GB", {
         day: "numeric",
         month: "long",
         year: "numeric",
