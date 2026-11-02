@@ -248,6 +248,44 @@ RELEASES = [
             "On phones, a menu button in the header opens every section and its pages.",
         ],
     ),
+    UpgradeRelease(
+        id="2026.11.02",
+        title="Cover actions, shelf arrows and radio",
+        highlights=[
+            # TODO(0.5.8): add the highlight for the series header with logo (UX-43).
+            "A new header: each page's tabs have a row of their own, with icons. On phones, the "
+            "menu holds search as well as every section.",
+            "Every slide-out panel works the same way, and the accent colour is teal.",
+            "Status chips have an icon and the same words on every page. Buttons and fields are "
+            "44px high, and each Settings section has one bar to save or discard changes.",
+            "Every cover has its actions: Details, Ebook, Audiobook, Add to a list and More, on "
+            "the cover or beside it. Book rows have them at the end, and small covers have a More "
+            "button.",
+            "Discover shelves have no scroll bars: the covers fade at each end, with an arrow "
+            "when there are more books that way.",
+            "Covers always line up, and covers on In my libraries are 10% larger.",
+            "Radio, an early feature: add BBC radio shows by link or name, and browse shows, "
+            "stations, series and episodes. Downloading episodes and filing them in "
+            "Audiobookshelf come in a later version.",
+        ],
+        review=[
+            UpgradeReviewItem(
+                id="cover-actions",
+                title="Cover actions",
+                description="Whether a book's buttons sit on the cover or beside it. Saved with "
+                "your account.",
+                link="/settings#display",
+            ),
+        ],
+        database_changes=[
+            "New tables for radio: stations, shows, series and episodes. Nothing else changes.",
+        ],
+        rollback=(
+            "To go back to v0.4.8, run python -m app.downgrade storyarr_0086_notification_title "
+            "in the Storyarr container first. Only the radio tables and the shows in them are "
+            "removed."
+        ),
+    ),
 ]
 CURRENT = RELEASES[-1].id
 

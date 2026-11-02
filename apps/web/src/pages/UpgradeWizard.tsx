@@ -180,7 +180,11 @@ export default function UpgradeWizard() {
               <CoverActionsSetting />
               <div className="settings-section-body upgrade-settings">
                 {review
-                  .filter((item) => item.id !== "layout")
+                  // Display and Cover actions are always shown above.
+                  .filter(
+                    (item) =>
+                      item.id !== "layout" && item.id !== "cover-actions",
+                  )
                   .map((item) =>
                     settingsFor[item.id] ? (
                       <SettingsGroup
