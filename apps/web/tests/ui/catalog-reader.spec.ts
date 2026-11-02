@@ -226,7 +226,7 @@ for (const unlinked of [false, true]) {
     ).toBeVisible();
     await expect(page.locator(".reader-hero")).toContainText("4.35");
     await expect(page.locator(".reader-facts")).toContainText("352");
-    await expect(page.locator(".reader-facts")).toContainText("May 21, 2024");
+    await expect(page.locator(".reader-facts")).toContainText("21 May 2024");
     await expect(page.getByText(synopsis, { exact: true })).toBeVisible();
     await expect(
       page.getByRole("link", { name: "View on Goodreads" }),
