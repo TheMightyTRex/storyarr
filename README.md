@@ -20,7 +20,11 @@ licence.
   series in one step.
 - **A light theme and accessibility settings:** text size up to 175%, a low-vision font, high contrast,
   reduced motion, underlined links and wider spacing. WCAG 2.2 AA contrast in every theme.
-- **One layout:** Shelf, with a slim icon menu and the page tabs in the header.
+- **One layout:** Shelf, with a slim icon menu and each page's tabs in the header.
+- **Actions on every cover:** details, ebook, audiobook, add to a list and more, on the cover or beside it.
+- **Series headers with logos:** the series logo above the name, which admins can cut out of a cover, find on
+  Wikimedia Commons or upload.
+- **Radio (early):** add BBC radio shows and browse their series and episodes. Downloading comes later.
 - **Safe upgrades:** a settings backup before every upgrade, a wizard that explains each change, and a way
   back. Automatic upgrades if you prefer.
 - **Speed:** request counts that took minutes on large libraries now take under a second.
@@ -77,6 +81,24 @@ The books and covers below are invented for the screenshots.
 ### My library, with a book's summary
 ![My library as a cover wall, with a summary panel for one book and a red dot on the version number for an available upgrade](docs/images/my-library.png)
 
+### In my libraries, with a cover's actions
+![In my libraries as a grid of larger covers, with one cover showing its column of actions: details, ebook, audiobook, add to a list and more](docs/images/library-covers.png)
+
+### Discover shelf
+![A Discover shelf scrolled part way, with the covers fading at each end under the previous and next arrows, and one cover showing its actions](docs/images/discover-shelf.png)
+
+### Series header with a logo
+![A series page for The Glass Harbour: the series logo above the name, the author, a short description, progress, Add missing books, Follow future additions, Change logo, and a fan of covers](docs/images/series-header.png)
+
+### Reading order
+![A series' reading order as rows, each with its number, cover, title, status and the cover actions at the end of the row](docs/images/series-books-in-order.png)
+
+### Radio shows
+![The Radio tab of My library: six radio shows with square artwork, each with its station, series, episodes and Following](docs/images/radio-shows.png)
+
+### Radio show
+![A radio show page: the name, station and first broadcast, the follow choice, Refresh, Add a logo, and the newest series with its episodes](docs/images/radio-show.png)
+
 ### Bookshelf, in the dark theme
 ![The same bookshelf in the dark theme](docs/images/bookshelf-dark.png)
 
@@ -85,6 +107,9 @@ The books and covers below are invented for the screenshots.
 
 ### Display and accessibility
 ![Display and accessibility settings: theme, text size, high contrast, reduced motion and more](docs/images/display.png)
+
+### Cover actions setting
+![Settings, General, Cover actions: On the cover or Beside the cover, each with two example covers and their buttons](docs/images/cover-actions-setting.png)
 
 ### Settings
 ![Settings in six groups: General, Accounts, Sources, Library, Downloads and System](docs/images/settings.png)

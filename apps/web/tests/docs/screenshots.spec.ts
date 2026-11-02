@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
-import type { Page } from "@playwright/test";
+import type { Page, Route } from "@playwright/test";
+import { emptyDiscoveryHome } from "../fixtures";
 
 // Documentation screenshots, not a regression test. Every book, author and cover here is invented, so the
 // images show the interface without anyone's library or real cover art. Run with:
@@ -34,6 +35,16 @@ const titles = [
   "The Paper Kingdom",
   "Letters from the Tideline",
 ];
+// More invented books, only for the Discover shelf, so it is long enough to scroll both ways.
+const shelfTitles = [
+  ...titles,
+  "The Weaver of Brightwater",
+  "A Season of Small Lamps",
+  "The Orchard Keeper",
+  "North by Lantern Light",
+  "The Hollow Tide",
+  "Songs for a Slow River",
+];
 const statuses: [string, string, string | null][] = [
   ["in_library", "In library", "Audiobook"],
   ["in_library", "In library", "Audiobook"],
@@ -49,9 +60,12 @@ const statuses: [string, string, string | null][] = [
   ["not_requested", "Not requested", null],
 ];
 
-function cover(index: number) {
+const authors = ["Mara Ellison", "Tobias Wren", "June Okafor"];
+
+// A cover's author can be chosen with a suffix: /demo-covers/3-1.svg is book 3 by Tobias Wren.
+function cover(index: number, author = 0) {
   const [background, ink] = palette[index % palette.length];
-  const words = titles[index].split(" ");
+  const words = shelfTitles[index].split(" ");
   const lines: string[] = [];
   for (const word of words) {
     const last = lines.at(-1);
@@ -70,7 +84,7 @@ function cover(index: number) {
     <rect x="12" y="12" width="176" height="276" fill="none" stroke="${ink}" stroke-opacity="0.5"/>
     <circle cx="100" cy="58" r="16" fill="none" stroke="${ink}" stroke-width="2"/>
     ${text}
-    <text x="100" y="226" font-family="Helvetica, sans-serif" font-size="13" letter-spacing="2" fill="${ink}" text-anchor="middle">MARA ELLISON</text>
+    <text x="100" y="226" font-family="Helvetica, sans-serif" font-size="13" letter-spacing="2" fill="${ink}" text-anchor="middle">${authors[author].toUpperCase()}</text>
   </svg>`;
 }
 
@@ -132,39 +146,358 @@ function libraryWork(index: number) {
   };
 }
 
+// Invented radio shows, with square artwork drawn here: no real programme or its artwork appears.
+const radioShows = [
+  ["s1", "The Lantern Hour", "#0f5f73", "#f2c14e"],
+  ["s2", "Quiet Carriage", "#5b2a3c", "#f4d6c6"],
+  ["s3", "Small Hours", "#23443a", "#e8d7a9"],
+  ["s4", "The Copper Kettle Quiz", "#6b3a1f", "#f7e3c3"],
+  ["s5", "Tideline Tales", "#2d4f6b", "#cfe8ef"],
+  ["s6", "Night Ferry", "#3b2f63", "#f0b67f"],
+] as const;
+const station4 = { id: "bbc_radio_four", name: "BBC Radio 4", logo_url: null };
+const station4x = {
+  id: "bbc_radio_four_extra",
+  name: "BBC Radio 4 Extra",
+  logo_url: null,
+};
+
+function showArt(id: string) {
+  const found = radioShows.find((item) => item[0] === id) ?? radioShows[0];
+  const [, title, background, ink] = found;
+  const words = title.split(" ");
+  const lines =
+    words.length > 2
+      ? [words.slice(0, 2).join(" "), words.slice(2).join(" ")]
+      : words;
+  const text = lines
+    .map(
+      (line, n) =>
+        `<text x="150" y="${150 + n * 36 - (lines.length - 1) * 18}" font-family="Georgia, serif" font-size="30" fill="${ink}" text-anchor="middle">${line}</text>`,
+    )
+    .join("");
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <rect width="300" height="300" fill="${background}"/>
+    <circle cx="150" cy="150" r="118" fill="none" stroke="${ink}" stroke-opacity="0.45" stroke-width="3"/>
+    ${text}
+  </svg>`;
+}
+
+function radioShow(index: number) {
+  const [id, title] = radioShows[index];
+  const station = index % 3 === 2 ? station4x : station4;
+  return {
+    id,
+    provider: "bbc",
+    external_id: `b0docs${index}`,
+    title,
+    synopsis: `${title} is an invented radio show for the screenshots.`,
+    first_broadcast: `${2012 + index}-04-03T18:30:00Z`,
+    station,
+    stations: index === 0 ? [station4, station4x] : [station],
+    follow: index === 1 ? "none" : index === 0 ? "all" : "from_now_on",
+    followed_at: "2026-11-02T10:00:00Z",
+    artwork_url: `/api/radio/shows/${id}/artwork`,
+    logo_colour: null,
+    logo_source: null,
+    series_count: 2 + (index % 3),
+    episode_count: 8 + index * 3,
+    refreshed_at: "2026-11-02T10:00:00Z",
+    refresh: null,
+  };
+}
+
+function episode(
+  id: string,
+  number: number,
+  title: string,
+  first: string,
+  status: { kind: string; label: string; detail?: string | null },
+  seconds: number | null = 1680,
+) {
+  return {
+    id,
+    pid: `m0docs${id}`,
+    number,
+    number_source: "bbc",
+    title,
+    synopsis: `${title}: four guests tell the story behind an old lantern.`,
+    first_broadcast: first,
+    duration_seconds: seconds,
+    status,
+  };
+}
+
+const radioDetail = {
+  ...radioShow(0),
+  series: [
+    {
+      id: "series-6",
+      pid: "b0docsseries6",
+      kind: "series",
+      number: 6,
+      number_source: "bbc",
+      title: "Series 6",
+      synopsis: null,
+      station: station4,
+      expected_episodes: 4,
+      first_broadcast: "2026-10-19T18:30:00Z",
+      episode_count: 4,
+      episodes: [
+        episode("e1", 1, "The Harbour Light", "2026-10-19T18:30:00Z", {
+          kind: "in_library",
+          label: "In library",
+        }),
+        episode("e2", 2, "Lamps of the Long Pier", "2026-10-26T18:30:00Z", {
+          kind: "in_library",
+          label: "In library",
+        }),
+        episode("e3", 3, "A Wick in the Wind", "2026-11-02T18:30:00Z", {
+          kind: "wanted",
+          label: "Wanted",
+          detail: "Broadcast while you follow this show",
+        }),
+        episode(
+          "e4",
+          4,
+          "The Keeper's Last Night",
+          "2026-11-09T18:30:00Z",
+          {
+            kind: "not_released",
+            label: "Not released yet",
+            detail: "First broadcast 9 November 2026",
+          },
+          null,
+        ),
+      ],
+    },
+    {
+      id: "series-5",
+      pid: "b0docsseries5",
+      kind: "series",
+      number: 5,
+      number_source: "bbc",
+      title: "Series 5",
+      synopsis: null,
+      station: station4,
+      expected_episodes: 2,
+      first_broadcast: "2025-03-03T18:30:00Z",
+      episode_count: 2,
+      episodes: [
+        episode("e5", 1, "Oil and Brass", "2025-03-03T18:30:00Z", {
+          kind: "in_library",
+          label: "In library",
+        }),
+        episode("e6", 2, "The Fog Bell", "2025-03-10T18:30:00Z", {
+          kind: "not_requested",
+          label: "Not requested",
+        }),
+      ],
+    },
+  ],
+};
+
+function radioApi(path: string, url: URL) {
+  if (path === "/api/radio/shows") {
+    const station = url.searchParams.get("station");
+    let items = radioShows.map((_, index) => radioShow(index));
+    if (station)
+      items = items.filter((item) =>
+        item.stations.some((s) => s.id === station),
+      );
+    return { items, total: items.length };
+  }
+  if (path === "/api/radio/stations")
+    return {
+      items: [
+        { ...station4, show_count: 5 },
+        { ...station4x, show_count: 3 },
+      ],
+    };
+  if (path === "/api/radio/shows/s1") return radioDetail;
+  if (path.startsWith("/api/library/groups/")) return { items: [], total: 0 };
+  return undefined;
+}
+
+// A Discover shelf of invented books: some formats already in the library, so the ticks show.
+function discoverApi(path: string) {
+  if (path === "/api/discovery/hardcover/trending")
+    return {
+      title: "Trending on Hardcover",
+      status: "ready",
+      has_more: false,
+      items: shelfTitles.map((title, index) => ({
+        book: {
+          provider: "hardcover",
+          external_id: `docs-${index}`,
+          title,
+          authors: [authors[index % 3]],
+          cover_url: `/demo-covers/${index}-${index % 3}.svg`,
+          rating: 4.1,
+        },
+        work: {
+          ...libraryWork(index % titles.length),
+          id: `00000000-0000-0000-0000-0000000005${String(index).padStart(2, "0")}`,
+          title,
+          authors: [authors[index % 3]],
+          cover_url: `/demo-covers/${index}-${index % 3}.svg`,
+          availability: {
+            owned: index % 4 === 0,
+            ebook: index % 4 === 0,
+            audio: index % 8 === 0,
+          },
+        },
+      })),
+    };
+  if (path.startsWith("/api/discovery/"))
+    return { title: "Other books", status: "ready", items: [], total: 0 };
+  return undefined;
+}
+
+// A series page with every book in order: the actions sit at the end of each row.
+// A made-up series logo (a lighthouse and a wordmark), drawn for these screenshots.
+const glassHarbourLogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 120">
+  <g fill="#000">
+    <path d="M38 18h14l3 10h-20z"/><path d="M36 30h18l6 74H30z"/><rect x="24" y="104" width="42" height="8"/>
+    <path d="M45 6l9 10H36z"/>
+    <path d="M60 22l40-10v4l-40 9zM30 22l-28-9v4l28 8z" opacity=".55"/>
+    <text x="84" y="58" font-family="Georgia, 'Times New Roman', serif" font-size="30" letter-spacing="6">THE</text>
+    <text x="80" y="104" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700" letter-spacing="2">GLASS HARBOUR</text>
+    <rect x="186" y="46" width="430" height="3"/>
+  </g>
+</svg>`;
+
+// Series 77 has no logo, so its name is set as a wordmark; series 1042 has the made-up logo.
+function seriesApi(path: string, route: Route) {
+  if (path === "/api/catalog/series/hardcover/1042/logo")
+    return route.fulfill({
+      contentType: "image/svg+xml",
+      body: glassHarbourLogo,
+    });
+  const id = path.match(/^\/api\/catalog\/series\/hardcover\/(77|1042)$/)?.[1];
+  if (id)
+    return {
+      external_id: id,
+      name: id === "77" ? "The Lantern Road" : "The Glass Harbour",
+      description:
+        "A harbour town where the lighthouse keeper keeps more than the light. Quiet mysteries, one each winter, told by the people who stay when the boats leave.",
+      logo:
+        id === "1042"
+          ? {
+              url: "/api/catalog/series/hardcover/1042/logo?v=1",
+              format: "svg",
+              colour: "text",
+              source: "cover",
+              source_title: "the cover of book 1",
+              licence: null,
+              source_url: null,
+              saved_path: "config/series-logos/hardcover-1042.svg",
+              updated_at: "2026-11-02T10:00:00Z",
+            }
+          : null,
+      authors: ["Mara Ellison"],
+      projection_version: 2,
+      generation: 1,
+      fetched_at: "2026-10-28T00:00:00Z",
+      status: "completed",
+      message: "",
+      books: 8,
+      total: 8,
+      raw_total: 8,
+      supplements: 0,
+      planned: 0,
+      owned: 5,
+      ebook: 2,
+      audio: 5,
+      items: titles.slice(0, 8).map((title, index) => ({
+        membership_id: `member-${index}`,
+        external_id: String(1000 + index),
+        position: String(index + 1),
+        publication: "published",
+        category: "main",
+        compilation: false,
+        partial: false,
+        merged_record: false,
+        ambiguous_position: false,
+        work: {
+          ...libraryWork(index),
+          versions: [],
+          description: null,
+          availability: {
+            owned: index < 5,
+            ebook: index < 5 && index % 2 === 0,
+            audio: index < 5,
+            stale: false,
+          },
+        },
+      })),
+    };
+  if (path.endsWith("/main-books")) return null;
+  if (path === "/api/acquisition/profiles" || path === "/api/following")
+    return [];
+  return undefined;
+}
+
+// Extra mocked answers for one screenshot: return data for the path, or undefined to fall through.
+type Extra = (path: string, url: URL, route: Route) => unknown;
+
 async function setup(
   page: Page,
   theme: "light" | "dark" = "light",
   upgrading = false,
   newerRelease = false,
+  extra?: Extra,
 ) {
+  page.on("pageerror", (error) => console.log(`Page error: ${error.message}`));
   await page.addInitScript((value) => {
     localStorage.setItem(
       "book-search:display:v1",
-      JSON.stringify({ layout: "shelf", theme: value }),
+      JSON.stringify({ theme: value }),
     );
   }, theme);
   await page.route("**/demo-covers/*.svg", (route) => {
-    const index = Number(
+    const [, index, author] =
       route
         .request()
         .url()
-        .match(/(\d+)\.svg$/)?.[1] ?? 0,
-    );
-    return route.fulfill({ contentType: "image/svg+xml", body: cover(index) });
+        .match(/(\d+)(?:-(\d))?\.svg$/) ?? [];
+    return route.fulfill({
+      contentType: "image/svg+xml",
+      body: cover(Number(index ?? 0), Number(author ?? 0)),
+    });
   });
   await page.route("**/api/**", (route) => {
     const url = new URL(route.request().url());
     const path = url.pathname;
+    if (path === "/api/discovery/home")
+      return route.fulfill({ json: emptyDiscoveryHome() });
+    if (path.startsWith("/api/radio/") && path.endsWith("/artwork"))
+      return route.fulfill({
+        contentType: "image/svg+xml",
+        body: showArt(path.split("/")[4]),
+      });
+    const special = extra?.(path, url, route);
+    if (special instanceof Promise) return special;
     let data: unknown = { items: [], total: 0, offset: 0, limit: 40 };
-    if (path === "/api/auth/me") data = admin;
+    if (special !== undefined) data = special;
+    else if (path === "/api/auth/me") data = admin;
+    else if (path === "/api/preferences")
+      data = {
+        collection_view: "detail",
+        library_views: {},
+        cover_size: "medium",
+        cover_actions: "on",
+      };
+    else if (path === "/api/metadata/account")
+      data = { enabled: true, suggest_series_gaps: true };
+    else if (path.includes("/quick-add/latest/")) data = null;
     else if (path === "/api/setup/onboarding") data = { status: "completed" };
     else if (path === "/api/library/libraries") data = [];
     else if (path === "/api/application/release")
       data = {
-        installed_version: "v0.4.8",
+        installed_version: "v0.5.8",
         installed_url: null,
-        latest_version: newerRelease ? "v0.4.9" : "v0.4.8",
+        latest_version: newerRelease ? "v0.5.9" : "v0.5.8",
         release_url: null,
         update_available: newerRelease,
         status: "checked",
@@ -197,7 +530,7 @@ async function setup(
         audio_seconds: 41340,
       };
     else if (path === "/api/acquisition/preferences/personal")
-      data = { effective: { desired_media: "audio" } };
+      data = { effective: { desired_media: "both" } };
     else if (path === `/api/following/${list}/summary`)
       data = {
         list_id: list,
@@ -241,8 +574,8 @@ async function setup(
           provider: "hardcover",
           external_id: `cal-${index}`,
           title: titles[(index + 3) % titles.length],
-          authors: [["Mara Ellison", "Tobias Wren", "June Okafor"][index % 3]],
-          cover_url: `/demo-covers/${(index + 3) % titles.length}.svg`,
+          authors: [authors[index % 3]],
+          cover_url: `/demo-covers/${(index + 3) % titles.length}-${index % 3}.svg`,
           release_date: `${month}-${String(day).padStart(2, "0")}`,
           basis: "audiobook",
           followed: index % 4 === 0,
@@ -256,37 +589,41 @@ async function setup(
       };
     } else if (path === "/api/upgrade")
       data = {
-        release: "2026.10.31",
-        version: "0.4.0",
-        acknowledged: upgrading ? null : "2026.10.31",
+        release: "2026.11.02",
+        version: "0.5.8",
+        acknowledged: upgrading ? null : "2026.11.02",
         pending: upgrading,
         releases: [
           {
-            id: "2026.10.31",
-            title: "Storyarr",
+            id: "2026.11.02",
+            title: "Cover actions, shelf arrows and radio",
             highlights: [
-              "A bookshelf page for each followed author or series.",
-              "A light theme, with display and accessibility settings.",
-              "Wanted books are searched again automatically.",
+              "Series pages have a new header: the series logo above the name, or the name set large when there is no logo.",
+              "Every cover has its actions: Details, Ebook, Audiobook, Add to a list and More, on the cover or beside it.",
+              "Discover shelves have no scroll bars: the covers fade at each end, with an arrow when there are more books that way.",
+              "Radio, an early feature: add BBC radio shows by link or name, and browse shows, stations, series and episodes.",
             ],
             review: [
               {
-                id: "layout",
-                title: "Layout and display",
+                id: "cover-actions",
+                title: "Cover actions",
                 description:
-                  "Choose Classic or Shelf, a theme and a text size.",
+                  "Whether a book's buttons sit on the cover or beside it. Saved with your account.",
                 link: "/settings#display",
               },
             ],
-            database_changes: ["Two new indexes on the operations table."],
+            database_changes: [
+              "New tables for radio: stations, shows, series and episodes.",
+              "A new table for series logos. The logo files are kept in the config folder.",
+            ],
             rollback:
-              "Downgrade the database to 0082_installation_automation to remove the indexes.",
+              "To go back to v0.4.8, run python -m app.downgrade storyarr_0086_notification_title in the Storyarr container first.",
           },
         ],
         backups: [
           {
-            name: "settings-20261031-090000-before-upgrade.json",
-            created_at: "2026-10-31T09:00:00Z",
+            name: "settings-20261102-090000-before-upgrade.json",
+            created_at: "2026-11-02T09:00:00Z",
             reason: "before-upgrade",
             size: 20480,
             rows: { metadata_settings: 1, libraries: 1 },
@@ -295,17 +632,21 @@ async function setup(
         automatic: false,
         automatic_from_environment: false,
         way_back: {
-          title: "Storyarr",
-          database_changes: ["Two new indexes on the operations table."],
+          title: "Cover actions, shelf arrows and radio",
+          database_changes: [
+            "New tables for radio: stations, shows, series and episodes.",
+            "A new table for series logos. The logo files are kept in the config folder.",
+          ],
           rollback:
-            "Downgrade the database to 0082_installation_automation to remove the indexes.",
+            "To go back to v0.4.8, run python -m app.downgrade storyarr_0086_notification_title in the Storyarr container first.",
         },
       };
     return route.fulfill({ json: data });
   });
 }
 
-test.use({ viewport: { width: 1440, height: 900 } });
+// British dates, as Storyarr's readers see them (the browser's language sets most date formats).
+test.use({ viewport: { width: 1440, height: 900 }, locale: "en-GB" });
 
 test("bookshelf, light and dark", async ({ page }) => {
   await setup(page);
@@ -356,6 +697,15 @@ test("display and accessibility", async ({ page }) => {
   ).toBeVisible();
   await page.getByRole("button", { name: "Display", exact: true }).click();
   await page.waitForTimeout(400);
+  // Moving focus to Close scrolls the panel a little; show it from the top, as it opens.
+  await page
+    .getByRole("dialog")
+    .evaluate((dialog) =>
+      [dialog, ...dialog.querySelectorAll("*")].forEach(
+        (node) => (node.scrollTop = 0),
+      ),
+    );
+  await page.waitForTimeout(200);
   await page.screenshot({ path: `${OUT}/display.png` });
 });
 
@@ -363,7 +713,7 @@ test("upgrade wizard", async ({ page }) => {
   await setup(page, "light", true);
   await page.goto("/upgrade");
   await expect(
-    page.getByRole("heading", { name: "Welcome to version 0.4.0" }),
+    page.getByRole("heading", { name: "Welcome to version 0.5.8" }),
   ).toBeVisible();
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${OUT}/upgrade-wizard.png` });
@@ -372,7 +722,9 @@ test("upgrade wizard", async ({ page }) => {
 test("settings", async ({ page }) => {
   await setup(page);
   await page.goto("/settings");
-  await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Settings", exact: true }),
+  ).toBeVisible();
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}/settings.png` });
 });
@@ -380,9 +732,11 @@ test("settings", async ({ page }) => {
 test("my library, with a summary and a newer release", async ({ page }) => {
   await setup(page, "light", false, true);
   await page.goto("/library");
-  const books = page.locator(".shelf-book");
+  const books = page.locator(".shelf-wall .cover-card");
   await expect(books.first().locator("img")).toBeVisible();
-  await books.nth(6).click();
+  await page
+    .getByRole("button", { name: "The Clockmaker's Daughter, details" })
+    .click();
   await expect(page.locator(".book-summary")).toBeVisible();
   await expect(
     page.locator(".book-summary").getByRole("link", { name: "Mara Ellison" }),
@@ -400,4 +754,92 @@ test("restore previous version", async ({ page }) => {
   ).toBeVisible();
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${OUT}/restore-previous-version.png` });
+});
+
+test("discover shelf, with cover actions and the shelf arrows", async ({
+  page,
+}) => {
+  await setup(page, "light", false, false, (path) => discoverApi(path));
+  await page.goto("/discover");
+  const shelf = page.getByRole("region", { name: "Trending books" });
+  await expect(shelf.locator(".cover-card img").first()).toBeVisible();
+  await shelf
+    .getByRole("button", { name: "More books in Trending on Hardcover" })
+    .click();
+  await page.waitForTimeout(800);
+  await shelf.locator(".cover-card").nth(10).hover();
+  await page.waitForTimeout(400);
+  // Only the shelf: the other Discover shelves have no invented books.
+  await page.screenshot({
+    path: `${OUT}/discover-shelf.png`,
+    clip: { x: 0, y: 0, width: 1440, height: 640 },
+  });
+});
+
+test("in my libraries, with larger covers", async ({ page }) => {
+  await setup(page);
+  await page.goto("/library");
+  const books = page.locator(".shelf-wall .cover-card");
+  await expect(books.first().locator("img")).toBeVisible();
+  await books.nth(2).hover();
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: `${OUT}/library-covers.png` });
+});
+
+test("series page, books in order with actions", async ({ page }) => {
+  await setup(page, "light", false, false, (path, _url, route) =>
+    seriesApi(path, route),
+  );
+  await page.goto("/series/hardcover/77");
+  await expect(page.locator(".book-row").first()).toBeVisible();
+  await page
+    .getByRole("heading", { name: "Reading order" })
+    .evaluate((node) =>
+      window.scrollBy({ top: node.getBoundingClientRect().top - 90 }),
+    );
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}/series-books-in-order.png` });
+});
+
+test("series header with a logo", async ({ page }) => {
+  await setup(page, "light", false, false, (path, _url, route) =>
+    seriesApi(path, route),
+  );
+  await page.goto("/series/hardcover/1042");
+  await page.locator(".series-head .logo-mask").waitFor();
+  await expect(page.locator(".series-head img").first()).toBeVisible();
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}/series-header.png` });
+});
+
+test("radio shows", async ({ page }) => {
+  await setup(page, "light", false, false, (path, url) => radioApi(path, url));
+  await page.goto("/library/radio");
+  await expect(
+    page.getByRole("img", { name: "The Lantern Hour, BBC Radio 4" }),
+  ).toBeVisible();
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: `${OUT}/radio-shows.png` });
+});
+
+test("radio show page", async ({ page }) => {
+  await setup(page, "light", false, false, (path, url) => radioApi(path, url));
+  await page.goto("/library/radio/shows/s1");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "The Lantern Hour" }),
+  ).toBeVisible();
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}/radio-show.png` });
+});
+
+test("settings, cover actions", async ({ page }) => {
+  await setup(page);
+  await page.goto("/settings#display");
+  const setting = page.getByRole("group", { name: "Cover actions" });
+  await setting.scrollIntoViewIfNeeded();
+  await setting.evaluate((node) =>
+    node.scrollIntoView({ block: "center", behavior: "instant" }),
+  );
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: `${OUT}/cover-actions-setting.png` });
 });
