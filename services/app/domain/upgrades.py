@@ -383,7 +383,10 @@ async def snapshot(db, reason: str) -> str:
     tables = {}
     for name in upgrade_backups.TABLES:
         if name in present:
-            rows = await db.scalars(text(f'SELECT row_to_json(t) FROM "{name}" t'))
+            # Names come from upgrade_backups.TABLES.
+            rows = await db.scalars(
+                text(f'SELECT row_to_json(t) FROM "{name}" t')  # nosec B608
+            )
             tables[name] = list(rows)
     upgraded = await state(db)
     schema = await _schema(db)
@@ -456,12 +459,17 @@ async def restore(db, name: str) -> dict[str, dict[str, int]]:
             listed = _quoted(names)
             updates = [column for column in names if column not in primary]
             conflict = (
-                "DO UPDATE SET " + ", ".join(f'"{c}" = EXCLUDED."{c}"' for c in updates)
+                "DO UPDATE SET "
+                + ", ".join(
+                    # Column names come from the database's own catalogue.
+                    f'"{c}" = EXCLUDED."{c}"'  # nosec B608
+                    for c in updates
+                )
                 if updates
                 else "DO NOTHING"
             )
             statement = text(
-                f'INSERT INTO "{table}" ({listed}) '
+                f'INSERT INTO "{table}" ({listed}) '  # names from TABLES and the catalogue  # nosec B608
                 f'SELECT {listed} FROM json_populate_record(NULL::"{table}", CAST(:row AS json)) '
                 f"ON CONFLICT ({_quoted(primary)}) {conflict}"
             )

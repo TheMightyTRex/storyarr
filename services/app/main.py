@@ -80,6 +80,7 @@ from app.api import (
     sources,
     upgrade,
 )
+from app.body_limit import BodyLimit
 from app.config import get_settings
 from app.db.session import get_engine, session_factory
 from app.diagnostics import auth_configuration
@@ -117,7 +118,16 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Storyarr", version="0.3.0", lifespan=lifespan)
+    # No /docs, /redoc or /openapi.json: the API map is not served to anyone who can reach the port.
+    # The contract is still generated from app.openapi() (scripts/export_openapi.py).
+    app = FastAPI(
+        title="Storyarr",
+        version="0.3.0",
+        lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
+    )
     app.include_router(application_release.router, prefix="/api")
     app.include_router(notifications.router, prefix="/api")
     app.include_router(background_work.router, prefix="/api")
@@ -251,6 +261,7 @@ def create_app() -> FastAPI:
             return JSONResponse({"detail": "Not found"}, 404)
         return FileResponse(dist / "index.html")
 
+    app.add_middleware(BodyLimit)
     # Added last so it is the outermost layer and sees the browser's disconnect first.
     app.add_middleware(CancelOnDisconnect)
     return app

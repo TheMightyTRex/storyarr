@@ -23,7 +23,7 @@ pytestmark = pytest.mark.integration
         ({"public_url": "https://books.example.test"}, False),
         ({"token": "private-import-token"}, False),
         ({"token": "replacement-token"}, True),
-        ({"base_url": "http://replacement.test"}, True),
+        ({"base_url": "http://replacement.test", "token": "replacement-token"}, True),
         ({"enabled": False}, True),
     ],
 )
@@ -62,6 +62,44 @@ async def test_connection_edit_only_invalidates_library_access_when_needed(
         destination = await db.get(ImportDestination, destination.id)
         after = await destination_configuration(db, destination)
         assert (before != after) is invalidated
+
+
+async def test_saved_credentials_never_go_to_a_new_address(
+    client, admin, database, empty_route, monkeypatch
+):
+    # Security check, 3 November 2026: checking or saving a connection with a new address reused the
+    # saved Audiobookshelf token, so it could be sent to any server. A new address needs the token
+    # typed again.
+    sent = []
+
+    async def inspect(kind, endpoint, secrets):
+        sent.append((endpoint, secrets))
+        return {"operations": ["scan"], "library_count": 1, "book_count": 0, "version": None}
+
+    monkeypatch.setattr(integrations, "inspect_connection", inspect)
+    async with database() as db:
+        library = await db.get(Library, UUID(empty_route["destination"]["library_id"]))
+        identifier = library.integration_id
+    elsewhere = {"name": "ABS", "base_url": "https://elsewhere.example"}
+    check = await client.post(
+        f"/api/integrations/check?integration_id={identifier}", json=elsewhere
+    )
+    assert check.status_code == 422, check.text
+    assert "token" in check.json()["detail"]
+    saved = await client.put(f"/api/integrations/{identifier}", json=elsewhere)
+    assert saved.status_code == 422, saved.text
+    assert sent == []
+    # The same address still uses the saved token, and a new address works with a new token.
+    same = {"name": "ABS", "base_url": "http://fixture"}
+    assert (
+        await client.post(f"/api/integrations/check?integration_id={identifier}", json=same)
+    ).status_code == 200
+    moved = await client.put(
+        f"/api/integrations/{identifier}", json={**elsewhere, "token": "new-token"}
+    )
+    assert moved.status_code == 200, moved.text
+    assert [endpoint for endpoint, _ in sent] == ["http://fixture", "https://elsewhere.example"]
+    assert sent[-1][1] == {"token": "new-token"}
 
 
 async def test_sync_restores_hidden_folders_without_reconnecting(

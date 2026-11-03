@@ -19,7 +19,10 @@ def downgrade():
     connection = op.get_bind()
     for table in ("acquisition_intents", "acquisition_reasons"):
         if connection.scalar(
-            sa.text(f"SELECT EXISTS(SELECT 1 FROM {table} WHERE release_policy IS NOT NULL)")
+            # Table names come from a fixed tuple.
+            sa.text(
+                f"SELECT EXISTS(SELECT 1 FROM {table} WHERE release_policy IS NOT NULL)"  # nosec B608
+            )
         ):
             raise RuntimeError(
                 "Acquisition history cannot be preserved: "

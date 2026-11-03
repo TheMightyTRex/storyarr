@@ -1,0 +1,4 @@
+# Prose that Gitleaks mistakes for keys ("credentials, ", "FastAPI API, ", "key, "): checked 3 November 2026.
+1791f8448378ba83d1ef5cb5caedc2972136fba3:docs/IMPORT-CATALOG-RESOLUTION.md:generic-api-key:31
+331e49a0b063eb11e450006a44c36e04fc67c532:PRODUCT-ARCHITECTURE.md:generic-api-key:184
+331e49a0b063eb11e450006a44c36e04fc67c532:ACCEPTANCE-PLAN.md:generic-api-key:38

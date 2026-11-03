@@ -130,6 +130,9 @@ def snapshot_sync(connection, reason: str, **details) -> Path:
     tables = {}
     for name in TABLES:
         if name in present:
-            rows = connection.execute(f'SELECT row_to_json(t) FROM "{name}" t').fetchall()
+            # Names come from TABLES.
+            rows = connection.execute(
+                f'SELECT row_to_json(t) FROM "{name}" t'  # nosec B608
+            ).fetchall()
             tables[name] = [row[0] for row in rows]
     return write(document(tables, reason=reason, **details), reason)

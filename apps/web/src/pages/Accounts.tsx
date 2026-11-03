@@ -1901,6 +1901,7 @@ function AccountProfileDialog({
               account.
             </p>
           )}
+          <AccountPasswordReset user={user} selfId={selfId} disabled={busy} />
           <AccountRemovalControls
             user={user}
             selfId={selfId}
@@ -1936,6 +1937,79 @@ function AccountProfileDialog({
         </form>
       )}
     </AccessDialog>
+  );
+}
+
+/**
+ * An administrator sets a new password for someone else, who is then signed out everywhere. Not a
+ * form of its own: it sits inside the account details form, so its button does not submit that form.
+ */
+function AccountPasswordReset({
+  user,
+  selfId,
+  disabled,
+}: {
+  user: User;
+  selfId?: string;
+  disabled: boolean;
+}) {
+  const [password, setPassword] = useState("");
+  const [done, setDone] = useState(false);
+  const reset = useMutation({
+    mutationFn: async () =>
+      result(
+        await api.PUT("/api/auth/users/{user_id}/password", {
+          params: { path: { user_id: user.id } },
+          body: { password },
+        }),
+      ),
+    onSuccess: () => {
+      setPassword("");
+      setDone(true);
+    },
+  });
+  if (user.id === selfId)
+    return (
+      <p className="access-hint">
+        Change your own password in Settings → Sign-in.
+      </p>
+    );
+  return (
+    <div className="account-password-reset">
+      <label>
+        New password
+        <input
+          type="password"
+          autoComplete="new-password"
+          minLength={12}
+          maxLength={256}
+          value={password}
+          disabled={disabled || reset.isPending}
+          onChange={(event) => {
+            setDone(false);
+            setPassword(event.target.value);
+          }}
+        />
+      </label>
+      <p className="access-hint">
+        At least 12 characters. {user.display_name} is signed out everywhere and
+        signs in with the new password.
+      </p>
+      <button
+        type="button"
+        disabled={disabled || reset.isPending || password.length < 12}
+        onClick={() => reset.mutate()}
+      >
+        {reset.isPending ? "Setting password…" : "Set new password"}
+      </button>
+      {done && (
+        <p role="status">
+          New password set for {user.display_name}. They are signed out
+          everywhere.
+        </p>
+      )}
+      <Notice error={reset.error} />
+    </div>
   );
 }
 

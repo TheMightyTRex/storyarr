@@ -335,7 +335,15 @@ def main() -> int:
         if stop.is_set():
             return 0
         commands = [
-            ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-proxy-headers"]
+            [
+                "uvicorn",
+                "app.main:app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+                "--no-proxy-headers",
+            ]  # the container's own listener; Docker publishes the port  # nosec B104
         ]
         if recovering:
             commands.append([sys.executable, "-m", "app.jobs.worker", "--recovery"])

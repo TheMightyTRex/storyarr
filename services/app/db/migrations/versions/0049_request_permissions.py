@@ -79,7 +79,7 @@ def upgrade():
                 WHEN can_automate THEN {member_auto}
                 ELSE {_MEMBER}
             END
-            """
+            """  # the values are the permission constants in this file  # nosec B608
         )
     )
     op.add_column(

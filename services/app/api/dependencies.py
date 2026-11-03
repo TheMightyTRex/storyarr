@@ -220,7 +220,10 @@ async def current_user(request: Request, db: Database) -> User:
             raise HTTPException(423, "Recovery review is active; application actions are paused")
     if request.method not in {"GET", "HEAD", "OPTIONS"}:
         require_origin(request)
-        if not hmac.compare_digest(request.headers.get("x-csrf-token", ""), csrf_token(raw)):
+        sent = request.headers.get("x-csrf-token", "")
+        # compare_digest raises on text outside ASCII, which made a 500; such a token is simply
+        # wrong.
+        if not sent.isascii() or not hmac.compare_digest(sent, csrf_token(raw)):
             raise HTTPException(403, "Refresh this page before trying again")
     return user
 

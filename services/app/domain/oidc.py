@@ -451,9 +451,15 @@ async def _match_existing(db, provider: Provider, claims: dict[str, Any]) -> Use
         if not email:
             return None
         found = await db.scalar(select(User).where(User.email == email))
-        if found:
-            return found
-        return await db.scalar(select(User).where(User.username == email, User.email.is_(None)))
+        if found is None:
+            found = await db.scalar(
+                select(User).where(User.username == email, User.email.is_(None))
+            )
+        # As with usernames: an administrator links a provider only from their own signed-in
+        # account, never because a provider says the email matches.
+        if found is not None and found.role == "admin":
+            raise OidcRejected("rejected")
+        return found
     if provider.match_existing == "username":
         username = exact_username(claims.get("preferred_username") or claims.get("username"))
         if not username:

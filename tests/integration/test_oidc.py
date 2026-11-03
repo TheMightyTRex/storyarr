@@ -418,6 +418,35 @@ async def test_username_match_does_not_attach_an_administrator(client, admin, da
         assert await db.scalar(select(func.count()).select_from(OidcIdentity)) == 0
 
 
+async def test_email_match_does_not_attach_an_administrator(client, admin, database, idp):
+    # Security check, 3 November 2026: email matching refused nobody, so an identity provider
+    # account with the administrator's verified email signed in as the administrator.
+    async with database() as db, db.begin():
+        db.add(
+            User(
+                username="boss@example.com",
+                display_name="Boss",
+                password_hash="unused",
+                role="admin",
+                email="boss@example.com",
+            )
+        )
+    await save_provider(client, idp, match_existing="email", auto_register=True)
+    idp.email = "boss@example.com"
+    idp.preferred_username = "someone-else"
+    state = await start(client, idp)
+    assert "oidc_error=rejected" in (await callback(client, state)).headers["location"]
+    assert (await client.get("/api/auth/me")).json()["user"]["username"] == "admin"
+    async with database() as db:
+        assert await db.scalar(select(func.count()).select_from(OidcIdentity)) == 0
+    # The same with no email saved: the username itself is the email address.
+    async with database() as db, db.begin():
+        boss = await db.scalar(select(User).where(User.username == "boss@example.com"))
+        boss.email = None
+    state = await start(client, idp)
+    assert "oidc_error=rejected" in (await callback(client, state)).headers["location"]
+
+
 async def test_groups_do_not_change_password_accounts(client, admin, idp):
     created = await client.post(
         "/api/auth/users",
