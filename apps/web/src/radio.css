@@ -278,3 +278,90 @@
 .radio-show-head__text > .logo-mask {
   --logo-w: 340px;
 }
+
+/* Review the radio library (RADIO-03): shows to add, and files that match no episode. */
+.radio-review {
+  max-width: 64rem;
+}
+
+.radio-review-notice a {
+  font-weight: 600;
+}
+
+.radio-review-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.radio-review-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface-raised);
+}
+
+.radio-review-row > span:first-child {
+  flex: 1 1 18rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.radio-review-row .button-row {
+  margin: 0;
+}
+
+.radio-review-use {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+/* The episode list and its buttons share one height (consistent control heights). */
+.radio-review-use select,
+.radio-review-use button,
+.radio-review-row .button-row button {
+  min-height: var(--control-h);
+}
+
+.radio-review-use select {
+  width: 22rem;
+  max-width: 100%;
+}
+
+.radio-review-show {
+  margin: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.radio-review-show > summary {
+  padding: var(--space-3) 0;
+  cursor: pointer;
+}
+
+.radio-file-actions {
+  display: flex;
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 40rem) {
+  .radio-review-use {
+    flex-basis: 100%;
+  }
+
+  .radio-review-use select {
+    flex: 1 1 12rem;
+    width: auto;
+    min-width: 0;
+  }
+}

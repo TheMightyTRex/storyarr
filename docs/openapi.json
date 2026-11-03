@@ -6046,6 +6046,28 @@
         }
       }
     },
+    "/api/radio/library/review": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Review",
+        "description": "Shows in the radio library that are not in your radio shows, and your shows' files that\nhold no episode.",
+        "operationId": "review_api_radio_library_review_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioLibraryReview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/radio/search": {
       "get": {
         "tags": [
@@ -6311,7 +6333,7 @@
           "radio"
         ],
         "summary": "Edit Show",
-        "description": "Change the follow choice; episode statuses follow it.",
+        "description": "Change the follow choice (episode statuses follow it), or the radio library show to use.",
         "operationId": "edit_show_api_radio_shows__show_id__patch",
         "parameters": [
           {
@@ -6445,6 +6467,102 @@
         ],
         "summary": "Episode Detail",
         "operationId": "episode_detail_api_radio_episodes__episode_id__get",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Episode Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioEpisodeDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/episodes/{episode_id}/file": {
+      "put": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Choose Episode File",
+        "description": "Link the episode to a file of its show by hand, or say no file holds it. The radio sync\nthen leaves the episode as it is.",
+        "operationId": "choose_episode_file_api_radio_episodes__episode_id__file_put",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Episode Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadioEpisodeFileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioEpisodeDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Automatic Episode File",
+        "description": "Let the radio sync find the episode's file again.",
+        "operationId": "automatic_episode_file_api_radio_episodes__episode_id__file_delete",
         "parameters": [
           {
             "name": "episode_id",
@@ -38525,6 +38643,11 @@
                 "type": "null"
               }
             ]
+          },
+          "file_manual": {
+            "type": "boolean",
+            "title": "File Manual",
+            "default": false
           }
         },
         "type": "object",
@@ -38545,6 +38668,11 @@
       },
       "RadioEpisodeFile": {
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
           "name": {
             "type": "string",
             "title": "Name"
@@ -38560,12 +38688,35 @@
         },
         "type": "object",
         "required": [
+          "id",
           "name",
           "size",
           "library"
         ],
         "title": "RadioEpisodeFile",
         "description": "The radio library file that holds the episode: its name only, never the folder."
+      },
+      "RadioEpisodeFileInput": {
+        "properties": {
+          "file_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "file_id"
+        ],
+        "title": "RadioEpisodeFileInput"
       },
       "RadioEpisodeSeries": {
         "properties": {
@@ -38795,6 +38946,60 @@
         ],
         "title": "RadioLibraryInput"
       },
+      "RadioLibraryReview": {
+        "properties": {
+          "library": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Library"
+          },
+          "synced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synced At"
+          },
+          "shows": {
+            "items": {
+              "$ref": "#/components/schemas/RadioLibraryShow"
+            },
+            "type": "array",
+            "title": "Shows"
+          },
+          "unmatched": {
+            "items": {
+              "$ref": "#/components/schemas/RadioUnmatchedShow"
+            },
+            "type": "array",
+            "title": "Unmatched"
+          },
+          "unmatched_files": {
+            "type": "integer",
+            "title": "Unmatched Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "library",
+          "synced_at",
+          "shows",
+          "unmatched",
+          "unmatched_files"
+        ],
+        "title": "RadioLibraryReview"
+      },
       "RadioLibrarySetup": {
         "properties": {
           "current": {
@@ -38829,6 +39034,30 @@
           "options"
         ],
         "title": "RadioLibrarySetup"
+      },
+      "RadioLibraryShow": {
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "title": "Item Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "files": {
+            "type": "integer",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "item_id",
+          "title",
+          "files"
+        ],
+        "title": "RadioLibraryShow",
+        "description": "A show in the radio library that is not in your radio shows yet."
       },
       "RadioLibraryView": {
         "properties": {
@@ -39345,20 +39574,37 @@
       "RadioShowEdit": {
         "properties": {
           "follow": {
-            "type": "string",
-            "enum": [
-              "all",
-              "from_now_on",
-              "none"
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "from_now_on",
+                  "none"
+                ]
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Follow"
+          },
+          "library_item_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Library Item Id"
           }
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "follow"
-        ],
         "title": "RadioShowEdit"
       },
       "RadioShowInput": {
@@ -39378,6 +39624,19 @@
             ],
             "title": "Follow",
             "default": "from_now_on"
+          },
+          "library_item_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Library Item Id"
           }
         },
         "additionalProperties": false,
@@ -39766,6 +40025,82 @@
           "show_count"
         ],
         "title": "RadioStationView"
+      },
+      "RadioUnmatchedFile": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "season": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season"
+          },
+          "episode": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Episode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "title",
+          "season",
+          "episode"
+        ],
+        "title": "RadioUnmatchedFile"
+      },
+      "RadioUnmatchedShow": {
+        "properties": {
+          "show_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Show Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/RadioUnmatchedFile"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "show_id",
+          "title",
+          "files"
+        ],
+        "title": "RadioUnmatchedShow",
+        "description": "One of your shows, with its library files that hold no episode."
       },
       "RankedReleaseView": {
         "properties": {

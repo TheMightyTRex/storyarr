@@ -3,6 +3,19 @@
 Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
 logabell. Release notes for each version are in [docs/releases](docs/releases).
 
+## Unreleased
+
+### Added
+- **Review the radio library** (My library, Radio): the shows in the radio library that are not in your radio
+  shows, each with Find on the BBC (the show then takes that folder's files, whatever it is called) or Already
+  added, and the files that match no episode, each with a list of the show's episodes to link it by hand.
+- **Not this file** on an episode's file, and **Match automatically again** after a choice by hand. The radio
+  library sync keeps choices made by hand.
+
+### Changed
+- **Add a show** also looks in the BBC programmes A to Z when BBC Sounds has no show of that name, so older
+  shows such as Cabin Pressure and Old Harry's Game are found by name.
+
 ## v0.6.0 (2 November 2026)
 
 ### Added

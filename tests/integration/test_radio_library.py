@@ -13,7 +13,13 @@ from sqlalchemy import select
 
 from app.adapters import abs_podcasts
 from app.adapters.abs_podcasts import PodcastEpisode, PodcastLibrary, PodcastShow, find_pid
-from app.db.models import Integration, RadioEpisode, RadioLibrary, RadioSeries
+from app.db.models import (
+    Integration,
+    RadioEpisode,
+    RadioLibrary,
+    RadioLibraryFile,
+    RadioSeries,
+)
 from app.domain import radio_filing, radio_library
 from app.domain.radio_filing import EpisodeFacts, FilingError
 from tests.integration.test_radio import add, finish
@@ -71,15 +77,23 @@ def test_a_podcast_show_keeps_only_downloaded_episodes():
     assert episode.published_at == datetime(2026, 7, 15, 16, tzinfo=UTC)
 
 
-def _episode(show_id, series_id, number, title, pid):
+def _episode(show_id, series_id, number, title, pid, *, file_id=None, manual=False):
     return SimpleNamespace(
-        id=uuid4(), show_id=show_id, series_id=series_id, number=number, title=title, pid=pid
+        id=uuid4(),
+        show_id=show_id,
+        series_id=series_id,
+        number=number,
+        title=title,
+        pid=pid,
+        file_id=file_id,
+        file_manual=manual,
     )
 
 
-def _file(show_title, title, path, *, pid=None, season=None, episode=None):
+def _file(show_title, title, path, *, pid=None, season=None, episode=None, item_id="item"):
     return SimpleNamespace(
         id=uuid4(),
+        item_id=item_id,
         show_title=show_title,
         title=title,
         path=path,
@@ -90,8 +104,8 @@ def _file(show_title, title, path, *, pid=None, season=None, episode=None):
 
 
 def test_links_use_the_pid_then_numbers_then_a_unique_title():
-    show = SimpleNamespace(id=uuid4(), title="The Unbelievable Truth")
-    other = SimpleNamespace(id=uuid4(), title="Just a Minute")
+    show = SimpleNamespace(id=uuid4(), title="The Unbelievable Truth", library_item_id=None)
+    other = SimpleNamespace(id=uuid4(), title="Just a Minute", library_item_id=None)
     series = [SimpleNamespace(id=uuid4(), number=20), SimpleNamespace(id=uuid4(), number=1)]
     by_pid = _episode(show.id, series[0].id, 1, "Episode 1", "b0aaaaa1")
     by_code = _episode(show.id, series[0].id, 3, "Episode 3", "b0aaaaa3")
@@ -115,6 +129,71 @@ def test_links_use_the_pid_then_numbers_then_a_unique_title():
         by_code.id: files[1].id,
         by_title.id: files[2].id,
     }
+
+
+def test_links_take_the_folder_a_show_was_added_from_and_keep_hand_links():
+    show = SimpleNamespace(
+        id=uuid4(), title="Hamish and Dougal: You'll Have Had Your Tea", library_item_id="hd"
+    )
+    series = [SimpleNamespace(id=uuid4(), number=1)]
+    first = _episode(show.id, series[0].id, 1, "The Musical Evening", "b0hd0001")
+    second = _episode(show.id, series[0].id, 2, "Episode 2", "b0hd0002")
+    files = [
+        _file("Hamish And Dougal", "The Musical Evening", "/r/H - S01E01.mp3", item_id="hd"),
+        _file("Hamish And Dougal", "Two", "/r/H - S01E02.mp3", item_id="hd"),
+        _file("Someone Else", "One", "/r/S - S01E01.mp3", item_id="other"),
+    ]
+    assert radio_library.links([show], series, [first, second], files) == {
+        first.id: files[0].id,
+        second.id: files[1].id,
+    }
+
+    # By hand: the first file is the second episode, and the first episode has no file.
+    first.file_id, first.file_manual = None, True
+    second.file_id, second.file_manual = files[0].id, True
+    assert radio_library.links([show], series, [first, second], files) == {}
+    third = _episode(show.id, series[0].id, 1, "The Musical Evening", "b0hd0003")
+    # The hand-linked file is not offered to another episode of the show.
+    assert radio_library.links([show], series, [first, second, third], files) == {}
+
+
+async def test_the_bbc_a_to_z_finds_shows_bbc_sounds_leaves_out():
+    from app.adapters import bbc_programmes
+
+    titles = [f"C{index:03d} filler" for index in range(70)]
+    titles[45:48] = ["Cabin Fever", "Cabin Pressure", "Cabin Pressure: The Specials"]
+    titles.sort(key=bbc_programmes.atoz_key)
+    calls = []
+
+    def item(title, kind="brand", service="radio"):
+        return {
+            "title": title,
+            "programme": {
+                "pid": f"b00{abs(hash(title)) % 100000:05d}",
+                "title": title,
+                "type": kind,
+                "short_synopsis": "A synopsis",
+                "ownership": {
+                    "service": {"type": service, "id": "bbc_radio_four", "title": "BBC Radio 4"}
+                },
+            },
+        }
+
+    async def fetch(path, params):
+        calls.append(params["page"])
+        assert path == "programmes/a-z/by/c/all.json"
+        start = (params["page"] - 1) * 30
+        rows = [item(title) for title in titles[start : start + 30]]
+        if params["page"] == 2:
+            rows.append(item("Cabin Pressure", kind="episode"))
+            rows.append(item("Cabin Pressure Live", service="tv"))
+        return {"atoz": {"total": len(titles), "tleo_titles": rows}}
+
+    found = await bbc_programmes.atoz(fetch, "Cabin Pressure")
+    assert [result.title for result in found] == ["Cabin Pressure", "Cabin Pressure: The Specials"]
+    assert found[0].station_name == "BBC Radio 4"
+    assert len(calls) <= 5
+    assert await bbc_programmes.atoz(fetch, "  ") == []
 
 
 @pytest.fixture
@@ -233,7 +312,12 @@ async def test_choosing_and_syncing_the_radio_library_links_episodes(
     assert statuses[second.id] == ("in_library", True)
     detail = (await client.get(f"/api/radio/episodes/{first.id}")).json()
     assert detail["status"]["kind"] == "in_library"
-    assert detail["file"] == {"name": "a.m4a", "size": 1000, "library": "Radio"}
+    assert {key: detail["file"][key] for key in ("name", "size", "library")} == {
+        "name": "a.m4a",
+        "size": 1000,
+        "library": "Radio",
+    }
+    assert detail["file_manual"] is False
     view = (await client.get(BASE)).json()["current"]
     assert (view["files"], view["linked"], view["last_error"]) == (2, 2, None)
 
@@ -243,6 +327,120 @@ async def test_choosing_and_syncing_the_radio_library_links_episodes(
     async with database() as db:
         again = await db.get(RadioEpisode, first.id)
     assert (again.status, again.file_id) == ("wanted", None)
+
+
+async def test_the_review_adds_library_shows_and_links_files_by_hand(
+    client, admin, database, bbc, podcasts
+):
+    server = await _server(database)
+    chosen = await client.put(
+        BASE,
+        json={
+            "integration_id": str(server),
+            "library_id": "radio-lib",
+            "abs_folder": "/radio",
+            "local_path": str(podcasts["folder"]),
+        },
+    )
+    assert chosen.status_code == 200, chosen.text
+
+    def episode(identifier, title, name, **extra):
+        return PodcastEpisode(
+            id=identifier, title=title, path=f"/radio/Truth/{name}", size=1000, **extra
+        )
+
+    # The folder is called "Truth", not the BBC title, so nothing links by title.
+    podcasts["shows"] = [
+        PodcastShow(
+            id="item-truth",
+            title="Truth",
+            path="/radio/Truth",
+            episodes=[
+                episode("e1", "First", "Truth - S01E01 - First.m4a"),
+                episode("e2", "Odd", "Truth - S09E09 - Odd.m4a"),
+            ],
+        )
+    ]
+    async with database() as db:
+        library_id = await db.scalar(select(RadioLibrary.id))
+    await radio_library.sync(library_id)
+    review = (await client.get(BASE + "/review")).json()
+    assert review["library"] == "Radio"
+    assert review["shows"] == [{"item_id": "item-truth", "title": "Truth", "files": 2}]
+    assert (review["unmatched"], review["unmatched_files"]) == ([], 0)
+
+    response = await client.post(
+        "/api/radio/shows",
+        json={"link": "https://www.bbc.co.uk/programmes/b007mf4f", "library_item_id": "item-truth"},
+    )
+    assert response.status_code == 201, response.text
+    show = response.json()
+    await finish(database, show)
+    async with database() as db:
+        first, first_series = (
+            await db.execute(
+                select(RadioEpisode, RadioSeries)
+                .join(RadioSeries, RadioSeries.id == RadioEpisode.series_id)
+                .order_by(RadioSeries.number, RadioEpisode.number)
+                .limit(1)
+            )
+        ).one()
+    code = f"S{first_series.number:02d}E{first.number:02d}"
+    podcasts["shows"][0].episodes[0] = episode("e1", "First", f"Truth - {code} - First.m4a")
+    await radio_library.sync(library_id)
+    review = (await client.get(BASE + "/review")).json()
+    assert review["shows"] == []
+    [loose] = review["unmatched"]
+    assert loose["show_id"] == show["id"]
+    assert [(file["name"], file["season"]) for file in loose["files"]] == [
+        ("Truth - S09E09 - Odd.m4a", None)
+    ]
+    odd = loose["files"][0]["id"]
+    linked = (await client.get(f"/api/radio/episodes/{first.id}")).json()
+    assert linked["file"]["name"] == f"Truth - {code} - First.m4a"
+
+    # By hand: the odd file is really series 1 episode 1; the sync keeps it so.
+    put = await client.put(f"/api/radio/episodes/{first.id}/file", json={"file_id": odd})
+    assert put.status_code == 200, put.text
+    assert (put.json()["file"]["id"], put.json()["file_manual"]) == (odd, True)
+    await radio_library.sync(library_id)
+    after = (await client.get(f"/api/radio/episodes/{first.id}")).json()
+    assert (after["file"]["id"], after["status"]["kind"]) == (odd, "in_library")
+    review = (await client.get(BASE + "/review")).json()
+    assert [file["name"] for file in review["unmatched"][0]["files"]] == [
+        f"Truth - {code} - First.m4a"
+    ]
+
+    # Not this file: no file, and the sync leaves it so.
+    none = await client.put(f"/api/radio/episodes/{first.id}/file", json={"file_id": None})
+    assert (none.json()["file"], none.json()["file_manual"]) == (None, True)
+    assert none.json()["status"]["kind"] != "in_library"
+    # A file of another show is refused.
+    async with database() as db:
+        other = RadioLibraryFile(
+            library_id=library_id,
+            item_id="x",
+            episode_id="x1",
+            show_title="Other",
+            title="A",
+            path="/radio/Other/a.m4a",
+            size=1,
+            seen_at=datetime.now(UTC),
+        )
+        db.add(other)
+        await db.commit()
+        other_id = other.id
+    wrong = await client.put(
+        f"/api/radio/episodes/{first.id}/file", json={"file_id": str(other_id)}
+    )
+    assert wrong.status_code == 422
+    # Automatic again: the sync finds the file by its number.
+    back = await client.delete(f"/api/radio/episodes/{first.id}/file")
+    assert back.status_code == 200, back.text
+    assert (back.json()["file"]["name"], back.json()["file_manual"]) == (
+        f"Truth - {code} - First.m4a",
+        False,
+    )
 
 
 def _has_ffmpeg():

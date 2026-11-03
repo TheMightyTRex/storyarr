@@ -11,6 +11,7 @@ position the BBC gives.
 """
 
 import re
+import unicodedata
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -440,3 +441,89 @@ def search_results(data: dict) -> list[SearchResult]:
             )
         )
     return results
+
+
+ATOZ_PAGE = 30
+
+
+def atoz_key(value: str) -> str:
+    """How the BBC A to Z sorts titles: no case, accents or punctuation, and no leading "The"."""
+    text = unicodedata.normalize("NFKD", value or "")
+    text = "".join(character for character in text if not unicodedata.combining(character))
+    text = re.sub(r"[^0-9a-z ]+", "", text.casefold())
+    return re.sub(r"^the ", "", re.sub(r"\s+", " ", text).strip())
+
+
+def _atoz_page(data) -> tuple[int, list[dict]]:
+    atoz = data.get("atoz") if isinstance(data, dict) else None
+    titles = atoz.get("tleo_titles") if isinstance(atoz, dict) else None
+    total = atoz.get("total") if isinstance(atoz, dict) else None
+    if not isinstance(titles, list) or not isinstance(total, int):
+        raise AdapterError(FailureKind.PARSER, CHANGED)
+    return total, [item for item in titles if isinstance(item, dict)]
+
+
+async def atoz(fetch: Fetch, title: str, limit: int = 10) -> list[SearchResult]:
+    """Radio shows whose title starts with ``title`` in the BBC programmes A to Z.
+
+    BBC Sounds search leaves out many older shows, but the A to Z lists every brand and series.
+    Its pages hold 30 titles in order, so a binary search finds the right page in about ten
+    requests (cached for an hour like every BBC read).
+    """
+    key = atoz_key(title)
+    if not key or not key[0].isalnum():
+        return []
+    letter = key[0] if key[0].isalpha() else "@"
+
+    async def page(number):
+        return _atoz_page(await fetch(f"programmes/a-z/by/{letter}/all.json", {"page": number}))
+
+    total, first = await page(1)
+    pages = {1: first}
+    last = max(1, -(-total // ATOZ_PAGE))
+    low, high = 1, last
+    while low < high:
+        middle = (low + high + 1) // 2
+        if middle not in pages:
+            pages[middle] = (await page(middle))[1]
+        head = pages[middle][0].get("title") if pages[middle] else None
+        if head is not None and atoz_key(head) <= key:
+            low = middle
+        else:
+            high = middle - 1
+    results = []
+    for number in range(max(1, low - 1), min(last, low + 1) + 1):
+        if number not in pages:
+            pages[number] = (await page(number))[1]
+        for item in pages[number]:
+            programme = item.get("programme")
+            if not isinstance(programme, dict) or not atoz_key(item.get("title", "")).startswith(
+                key
+            ):
+                continue
+            service = (programme.get("ownership") or {}).get("service") or {}
+            pid = _pid(programme.get("pid"))
+            name = _text(programme.get("title"))
+            if (
+                not pid
+                or not name
+                or service.get("type") != "radio"
+                or programme.get("type") not in {"brand", "series"}
+            ):
+                continue
+            service_id = service.get("id")
+            image = (programme.get("image") or {}).get("pid")
+            results.append(
+                SearchResult(
+                    pid=pid,
+                    title=name,
+                    synopsis=_text(programme.get("short_synopsis"), 1000),
+                    station_id=service_id
+                    if isinstance(service_id, str) and SERVICE_ID.fullmatch(service_id)
+                    else None,
+                    station_name=_text(service.get("title"), 200),
+                    image_pid=image if isinstance(image, str) and PID.fullmatch(image) else None,
+                )
+            )
+    unique = {result.pid: result for result in results}
+    return list(unique.values())[:limit]

@@ -323,6 +323,37 @@ async def test_name_search_uses_bbc_sounds(client, admin, bbc):
     assert bbc["calls"] == ["v2/programmes/search/container"]
 
 
+async def test_name_search_falls_back_to_the_bbc_a_to_z(client, admin, bbc):
+    """BBC Sounds has no show called this, so the BBC programmes A to Z is read too."""
+    service = {"type": "radio", "id": "bbc_radio_four", "title": "BBC Radio 4"}
+    bbc["data"]["programmes/a-z/by/c/all.json"] = {
+        "atoz": {
+            "total": 2,
+            "tleo_titles": [
+                {
+                    "title": "Cabin Pressure",
+                    "programme": {
+                        "pid": "b00lmcxj",
+                        "title": "Cabin Pressure",
+                        "type": "brand",
+                        "ownership": {"service": service},
+                    },
+                },
+                {
+                    "title": "Cabin Pressure",
+                    "programme": {"pid": "b00ph8rn", "title": "Cabin Pressure", "type": "episode"},
+                },
+            ],
+        }
+    }
+    found = await client.get(BASE + "/search", params={"q": "Cabin Pressure"})
+    assert found.status_code == 200, found.text
+    items = found.json()["items"]
+    assert (items[0]["pid"], items[0]["station_name"]) == ("b00lmcxj", "BBC Radio 4")
+    assert "b00ph8rn" not in [item["pid"] for item in items]
+    assert bbc["calls"] == ["v2/programmes/search/container", "programmes/a-z/by/c/all.json"]
+
+
 async def test_bbc_reads_are_cached_through_the_catalog_gateway(client, admin, monkeypatch):
     """The real reader: one request per address, then the saved copy; missing ids are explained."""
     requests = []
