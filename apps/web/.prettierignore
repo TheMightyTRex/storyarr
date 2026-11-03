@@ -1,4 +1,5 @@
-# Synced copies of the shared component library (~/Documents/Claude/design/shared-components,
-# written by its tools/sync.py). Change them there, not here, so they stay identical to the library.
+# Synced copies of the shared design system (github.com/TheMightyTRex/design-system, written by its
+# tools/sync.py). Change them there, not here, so they stay identical to the library.
 src/shared/tokens.css
 src/shared/components.css
+src/shared/ux-notes.js

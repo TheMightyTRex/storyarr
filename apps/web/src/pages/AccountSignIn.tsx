@@ -121,8 +121,8 @@ export default function AccountSignIn() {
               </form>
             ) : (
               <p>
-                An administrator must activate an identity provider in Users &amp;
-                access first.
+                An administrator must activate an identity provider in Users
+                &amp; access first.
               </p>
             )}
           </>
