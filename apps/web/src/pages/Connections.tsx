@@ -21,6 +21,7 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Empty, Loading, Notice } from "../components";
 import { randomUUID } from "../randomUUID";
+import { useToast } from "../components/Toasts";
 
 type Connection = components["schemas"]["ConnectionView"];
 
@@ -36,6 +37,7 @@ export default function Connections({
     Connection | "audiobookshelf" | "grimmory" | null
   >(null);
   const [message, setMessage] = useState("");
+  const toast = useToast();
   const connections = useQuery({
     queryKey: ["connections"],
     queryFn: async () => result(await api.GET("/api/integrations")),
@@ -68,7 +70,11 @@ export default function Connections({
             },
           }),
         );
-        setMessage("Library sync queued. Follow its progress in Activity.");
+        setMessage("");
+        toast("Library sync queued", {
+          tone: "info",
+          detail: "Follow its progress in Activity.",
+        });
       }
     },
     onSuccess: () => cache.invalidateQueries(),
@@ -471,7 +477,7 @@ function ConnectionForm({
           name="enabled"
           defaultChecked={connection?.enabled ?? true}
         />
-        Enable connection
+        Activate connection
       </label>
       <div
         role="status"

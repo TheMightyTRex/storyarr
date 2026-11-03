@@ -40,7 +40,7 @@ export default function ConnectionTestStatus({
               ? "attention"
               : "not-saved";
   const label = {
-    disabled: "Disabled",
+    disabled: "Inactive",
     pending: "Testing…",
     failed: "Test failed",
     connected: "Saved & connected",
@@ -58,7 +58,7 @@ export default function ConnectionTestStatus({
     "not-saved": { tone: "muted", icon: Minus },
   } as const;
   const detail = disabled
-    ? "Enable this connection to test it."
+    ? "Activate this connection to test it."
     : isPending
       ? "Checking the saved connection."
       : error

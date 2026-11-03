@@ -117,7 +117,7 @@ test("after an upgrade, admins get the wizard; the way back is in Settings", asy
   const store = page.getByRole("form", { name: "Audible store" });
   await store.getByRole("combobox").selectOption("uk");
   await store.getByRole("button", { name: "Save Audible store" }).click();
-  await expect(store.getByRole("status")).toHaveText("Audible store saved.");
+  await expect(store.getByRole("status")).toHaveText(/^Saved at \d\d:\d\d/);
   expect(saved).toMatchObject({ primary: "hardcover", audible_region: "uk" });
   await expect(page).toHaveURL(/\/upgrade$/);
   // New settings are the last step: there is no way-back step any more.

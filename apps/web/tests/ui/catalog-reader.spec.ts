@@ -289,7 +289,9 @@ for (const unlinked of [false, true]) {
     await list
       .getByRole("button", { name: "Add to list", exact: true })
       .click();
-    await expect(list.getByText("Added to your list.")).toBeVisible();
+    await expect(
+      page.getByText("Added to your list", { exact: true }),
+    ).toBeVisible();
     expect(writes).toEqual(["/api/lists/list/entries"]);
     await page.keyboard.press("Escape");
     await expect(list).toHaveCount(0);

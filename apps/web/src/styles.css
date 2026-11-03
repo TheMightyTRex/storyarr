@@ -865,6 +865,14 @@ nav a.active .nav-count {
   font-size: 0.8125rem;
   margin-top: 12px;
 }
+/* The saved note where a settings section's save bar was (SaveBar savedAt). Empty, it takes no room,
+   not even a gap in a grid form. */
+.save-bar-saved:has(.saved-note:not([hidden])) {
+  margin-top: 12px;
+}
+.save-bar-saved:not(:has(.saved-note:not([hidden]))) {
+  display: none;
+}
 .loading {
   display: flex;
   flex-direction: column;
@@ -1193,6 +1201,10 @@ nav a.active .nav-count {
 .skip-link:focus {
   top: 8px;
   left: 8px;
+}
+/* Main takes focus from the skip link and from a closing toast; the page needs no ring around it. */
+.main-content:focus {
+  outline: none;
 }
 .auth-page {
   min-height: 100vh;

@@ -184,9 +184,7 @@ test("administrator saves all OIDC presets, group mappings, and onboarding polic
     .click();
   await expect.poll(() => policyWrites).toBe(2);
   await expect(
-    page
-      .getByRole("status")
-      .filter({ hasText: "Onboarding preference saved." }),
+    page.getByRole("status").filter({ hasText: /^Saved at \d\d:\d\d$/ }),
   ).toBeVisible();
   expect(policy.show_member_onboarding).toBe(false);
   await page.getByText("Identity provider", { exact: true }).click();

@@ -53,6 +53,7 @@ export const statusLooks: Record<string, Look> = {
   "Not connected": { tone: "muted", icon: Minus },
   "Not tested": { tone: "neutral", icon: CircleDashed },
   Disabled: { tone: "muted", icon: Ban },
+  Inactive: { tone: "muted", icon: Ban },
   Checking: { tone: "info", icon: LoaderCircle },
 };
 

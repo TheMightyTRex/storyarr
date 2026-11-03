@@ -7,7 +7,8 @@ export type DisplayPreferences = {
   theme: "light" | "dark" | "auto";
   textSize: 100 | 125 | 150 | 175;
   highContrast: boolean;
-  reduceMotion: boolean;
+  // Match device, On or Off. Off still follows a device set to reduce motion (the library's rule).
+  reduceMotion: "auto" | "on" | "off";
   underlineLinks: boolean;
   wideSpacing: boolean;
 };
@@ -18,7 +19,7 @@ export const displayDefaults: DisplayPreferences = {
   theme: "light",
   textSize: 100,
   highContrast: false,
-  reduceMotion: false,
+  reduceMotion: "auto",
   underlineLinks: false,
   wideSpacing: false,
 };
@@ -38,7 +39,7 @@ const allowed: { [K in keyof DisplayPreferences]: readonly unknown[] } = {
   theme: ["light", "dark", "auto"],
   textSize: [100, 125, 150, 175],
   highContrast: [true, false],
-  reduceMotion: [true, false],
+  reduceMotion: ["auto", "on", "off"],
   underlineLinks: [true, false],
   wideSpacing: [true, false],
 };
@@ -47,6 +48,9 @@ let snapshot = displayDefaults;
 function read() {
   try {
     const saved = JSON.parse(localStorage.getItem(key) || "{}");
+    // Before Match device, On and Off, Reduce motion was a switch: on stays On, off becomes Match device.
+    if (saved.reduceMotion === true) saved.reduceMotion = "on";
+    if (saved.reduceMotion === false) saved.reduceMotion = "auto";
     const next: Record<string, unknown> = { ...displayDefaults };
     for (const name of Object.keys(allowed) as (keyof DisplayPreferences)[]) {
       if (allowed[name].includes(saved[name])) next[name] = saved[name];
@@ -64,7 +68,7 @@ export function applyDisplay(value: DisplayPreferences) {
   root.dataset.theme = value.theme;
   root.style.fontSize = value.textSize === 100 ? "" : `${value.textSize}%`;
   root.classList.toggle("pref-hc", value.highContrast);
-  root.classList.toggle("pref-calm", value.reduceMotion);
+  root.classList.toggle("pref-calm", value.reduceMotion === "on");
   root.classList.toggle("pref-underline", value.underlineLinks);
   root.classList.toggle("pref-spacing", value.wideSpacing);
   // The same choices under the shared library's names (shared/tokens.css), used by Starboard too.
@@ -74,7 +78,7 @@ export function applyDisplay(value: DisplayPreferences) {
       matchMedia("(prefers-color-scheme: dark)").matches);
   root.classList.toggle("pref-contrast", value.highContrast);
   root.classList.toggle("is-dark", dark);
-  root.classList.toggle("pref-motion", value.reduceMotion);
+  root.classList.toggle("pref-motion", value.reduceMotion === "on");
 }
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () =>
   applyDisplay(snapshot),

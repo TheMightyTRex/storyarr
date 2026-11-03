@@ -102,18 +102,16 @@ test("onboarding defers, resumes and completes once; settings show one focused s
   await catalog
     .getByRole("button", { name: "Save connection", exact: true })
     .click();
-  await expect(
-    catalog.getByText("Your catalogue connection was saved."),
-  ).toBeVisible();
+  await expect(catalog.getByText(/^Saved at \d\d:\d\d/)).toBeVisible();
   await catalog
     .getByRole("button", { name: "Test connection", exact: true })
     .click();
   await expect(
-    catalog.getByText("Hardcover catalogue access verified."),
+    page.locator(".toast", { hasText: "Hardcover catalogue access verified" }),
   ).toBeVisible();
   await catalog.getByLabel("Primary language").selectOption("fr");
   await catalog.getByRole("button", { name: "Save changes" }).click();
-  await expect(catalog.getByText("Metadata defaults saved.")).toBeVisible();
+  await expect(catalog.getByText(/^Saved at \d\d:\d\d/)).toBeVisible();
   await page.goto("/settings#sources");
   const mam = page.getByRole("form", { name: "MAM connection settings" });
   // Open the MAM row, waiting for it to render before checking again, so a second click does not

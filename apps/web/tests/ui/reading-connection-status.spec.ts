@@ -183,7 +183,7 @@ for (const explicitTest of [true, false]) {
     account = { ...account, enabled: false, status: "disabled" };
     await page.reload();
     await hardcover.locator(".reading-connection > summary").click();
-    await expect(hardcover.locator(".connection-state")).toHaveText("Disabled");
+    await expect(hardcover.locator(".connection-state")).toHaveText("Inactive");
     // Every chip has an icon now; Disabled shows the muted tone.
     await expect(hardcover.locator(".connection-state")).toHaveAttribute(
       "data-tone",

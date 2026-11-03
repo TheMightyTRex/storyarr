@@ -192,7 +192,7 @@ test("restored sources save explicit settings and verify rotating sessions witho
       .getByLabel("Proxy URL", { exact: true })
       .fill("http://gluetun.test:8888");
     await expect(
-      editor.getByRole("checkbox", { name: "Enable source", exact: true }),
+      editor.getByRole("checkbox", { name: "Activate source", exact: true }),
     ).not.toBeChecked();
     await editor
       .getByRole("button", { name: "Preview source settings", exact: true })

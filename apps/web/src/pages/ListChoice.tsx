@@ -6,6 +6,7 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import InfiniteScroll from "../components/InfiniteScroll";
 import { usePagedQuery } from "../hooks/usePagedQuery";
+import { useToast } from "../components/Toasts";
 
 type ListView = components["schemas"]["ListView"];
 type Subscription = components["schemas"]["ReadingSubscription"];
@@ -70,7 +71,7 @@ export default function ListChoice({
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
   const [chosen, setChosen] = useState<ListView | null>(null);
-  const [createdName, setCreatedName] = useState("");
+  const toast = useToast();
   const cache = useQueryClient();
   const lists = usePagedQuery({
     queryKey: ["lists", "choice", search],
@@ -110,7 +111,7 @@ export default function ListChoice({
       ),
     onSuccess: async (list) => {
       setChosen(list);
-      setCreatedName(list.name);
+      toast(`${list.name} created`);
       setCreating(false);
       setName("");
       setSearch("");
@@ -125,7 +126,6 @@ export default function ListChoice({
       : items;
   const choose = (list: ListView) => {
     setChosen(list);
-    setCreatedName("");
     onChange(list.id);
   };
   return (
@@ -271,18 +271,12 @@ export default function ListChoice({
           disabled={disabled}
           onClick={() => {
             setCreating(true);
-            setCreatedName("");
             create.reset();
           }}
         >
           <Plus size={16} aria-hidden="true" />
           New list
         </button>
-      )}
-      {createdName && (
-        <p className="success" role="status">
-          Created {createdName}.
-        </p>
       )}
     </div>
   );

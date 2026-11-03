@@ -110,7 +110,7 @@ test("Soulseek saves and tests, appears as a client, and maps through the native
     document.documentElement.setAttribute("data-theme", "dark"),
   );
   await expect(
-    page.getByText("Downloads are disabled on this server", { exact: true }),
+    page.getByText("Downloads are inactive on this server", { exact: true }),
   ).toBeVisible();
   await page
     .getByRole("button", { name: "Connect Soulseek", exact: true })

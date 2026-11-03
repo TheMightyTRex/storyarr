@@ -328,12 +328,12 @@ test("every download client can be disabled and re-enabled without losing settin
     const form = page.getByRole("form", {
       name: `${name} connection settings`,
     });
-    await expect(form.getByLabel("Enabled", { exact: true })).toBeChecked();
-    await form.getByLabel("Enabled", { exact: true }).uncheck();
+    await expect(form.getByLabel("Active", { exact: true })).toBeChecked();
+    await form.getByLabel("Active", { exact: true }).uncheck();
     await form
       .getByRole("button", { name: "Save connection", exact: true })
       .click();
-    await expect(card.getByText("Disabled", { exact: true })).toBeVisible();
+    await expect(card.getByText("Inactive", { exact: true })).toBeVisible();
     await expect(
       card.getByRole("button", { name: "Test connection" }),
     ).toBeDisabled();
@@ -342,23 +342,23 @@ test("every download client can be disabled and re-enabled without losing settin
   await page.reload();
   for (const [, name] of clients) {
     const card = page.getByRole("article", { name, exact: true });
-    await expect(card.getByText("Disabled", { exact: true })).toBeVisible();
+    await expect(card.getByText("Inactive", { exact: true })).toBeVisible();
     await card.getByRole("button", { name: "Edit downloader" }).click();
     const form = page.getByRole("form", {
       name: `${name} connection settings`,
     });
-    await expect(form.getByLabel("Enabled", { exact: true })).not.toBeChecked();
+    await expect(form.getByLabel("Active", { exact: true })).not.toBeChecked();
     await expect(
       form.getByLabel("Download category", { exact: true }),
     ).toHaveValue("books");
-    await form.getByLabel("Enabled", { exact: true }).check();
+    await form.getByLabel("Active", { exact: true }).check();
     await form
       .getByRole("button", { name: "Save & test connection", exact: true })
       .click();
     await expect(
       card.getByRole("button", { name: "Test connection" }),
     ).toBeEnabled();
-    await expect(card.getByText("Disabled", { exact: true })).toHaveCount(0);
+    await expect(card.getByText("Inactive", { exact: true })).toHaveCount(0);
   }
   expect(tests).toBe(clients.length);
 });

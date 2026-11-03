@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result, type BookList } from "../api/client";
 import { Loading, Notice } from "../components";
 import BookDialog from "../components/BookDialog";
+import { useToast } from "../components/Toasts";
 
 export default function ReadingListDetails({
   listId,
@@ -58,7 +59,7 @@ function DetailsForm({
   const [name, setName] = useState(list.name);
   const [shared, setShared] = useState(list.shared);
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const [message, setMessage] = useState("");
+  const toast = useToast();
   const path = { list_id: list.id };
   const policy = useQuery({
     queryKey: ["list-policy", list.id],
@@ -117,7 +118,7 @@ function DetailsForm({
         }),
       ),
     onSuccess: async () => {
-      setMessage("Automatic downloads paused.");
+      toast("Automatic downloads paused");
       await refresh();
     },
   });
@@ -182,7 +183,7 @@ function DetailsForm({
       {policy.data?.active &&
         policy.data.configuration.mode === "automatic" && (
           <div className="reading-details-section">
-            <p>Automatic downloads are enabled for this list.</p>
+            <p>Automatic downloads are active for this list.</p>
             <button disabled={busy} onClick={() => pause.mutate()}>
               Pause automatic downloads
             </button>
@@ -220,11 +221,6 @@ function DetailsForm({
           </button>
         )}
       </div>
-      {message && (
-        <p role="status" className="muted">
-          {message}
-        </p>
-      )}
     </div>
   );
 }

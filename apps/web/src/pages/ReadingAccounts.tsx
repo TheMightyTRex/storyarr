@@ -24,6 +24,7 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import { randomUUID } from "../randomUUID";
 import { useTrackStoryGraphToRead } from "../hooks/useTrackStoryGraphToRead";
+import { useToast } from "../components/Toasts";
 
 const ReadingListDetails = lazy(() => import("./ReadingListDetails"));
 
@@ -822,7 +823,7 @@ function TrackedList({
   count?: number | null;
 }) {
   const cache = useQueryClient();
-  const [message, setMessage] = useState("");
+  const toast = useToast();
   const sub = entry.subscription;
   const save = useMutation({
     mutationFn: async ({
@@ -842,7 +843,10 @@ function TrackedList({
           },
         }),
       ),
-    onSuccess: () => setMessage("Tracking settings saved."),
+    onSuccess: (_, { enabled }) =>
+      toast(enabled ? "Tracking settings saved" : "Tracking paused", {
+        detail: entry.name,
+      }),
     onSettled: () =>
       Promise.all(
         ["reading-subscriptions", "list-subscription"].map((key) =>
@@ -861,9 +865,10 @@ function TrackedList({
         }),
       ),
     onSuccess: () => {
-      setMessage(
-        "Update queued. Your books will appear in the list when it finishes.",
-      );
+      toast("Update queued", {
+        tone: "info",
+        detail: "Your books will appear in the list when it finishes.",
+      });
       cache.invalidateQueries({ queryKey: ["reading-subscriptions"] });
     },
   });
@@ -976,11 +981,6 @@ function TrackedList({
       </div>
       {sub.state === "failed" && <p className="notice error">{sub.message}</p>}
       <Notice error={save.error || refresh.error} />
-      {message && (
-        <p role="status" className="muted">
-          {message}
-        </p>
-      )}
     </article>
   );
 }

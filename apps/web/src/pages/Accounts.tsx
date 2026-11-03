@@ -60,6 +60,7 @@ function OidcSettingsPanel() {
   const [draft, setDraft] = useState<OidcSettings | null>(null);
   const [secret, setSecret] = useState("");
   const [open, setOpen] = useState(false);
+  const [oidcSavedAt, setOidcSavedAt] = useState<Date | null>(null);
   useEffect(() => {
     const loaded = settings.data;
     if (loaded) setDraft((current) => current ?? loaded);
@@ -77,6 +78,7 @@ function OidcSettingsPanel() {
     },
     onSuccess: (saved, submitted) => {
       client.setQueryData(["oidc-settings"], saved);
+      setOidcSavedAt(new Date());
       // A completed save must not overwrite edits made while it was in flight.
       setDraft((current) =>
         current === submitted.draft
@@ -128,7 +130,7 @@ function OidcSettingsPanel() {
         <h2>Identity provider</h2>
         {draft ? (
           <StatusChip
-            label={draft.enabled ? "On" : "Off"}
+            label={draft.enabled ? "Active" : "Inactive"}
             status={draft.enabled ? "Connected" : "Not connected"}
           />
         ) : null}
@@ -172,7 +174,7 @@ function OidcSettingsPanel() {
                 checked={draft.enabled}
                 onChange={(event) => update("enabled", event.target.checked)}
               />
-              Enable identity provider sign-in
+              Activate identity provider sign-in
             </label>
             <div className="form-row">
               <label>
@@ -433,6 +435,7 @@ function OidcSettingsPanel() {
                 setDraft(settings.data ?? null);
                 setSecret("");
               }}
+              savedAt={oidcSavedAt}
             />
           </>
         ) : null}
@@ -452,6 +455,7 @@ function PlexSettingsPanel() {
     queryKey: ["plex-pending"],
     queryFn: async () => result(await api.GET("/api/auth/plex/pending")),
   });
+  const [plexSavedAt, setPlexSavedAt] = useState<Date | null>(null);
   const [draft, setDraft] = useState<PlexSettings | null>(null);
   const [machineId, setMachineId] = useState("");
   const [plexError] = useState(() => {
@@ -495,6 +499,7 @@ function PlexSettingsPanel() {
     },
     onSuccess: (saved) => {
       if (!saved) return;
+      setPlexSavedAt(new Date());
       client.setQueryData(["plex-settings"], saved);
       client.setQueryData(["plex-pending"], { servers: [] });
     },
@@ -518,7 +523,7 @@ function PlexSettingsPanel() {
         <h2>Plex</h2>
         {draft ? (
           <StatusChip
-            label={draft.enabled ? "On" : "Off"}
+            label={draft.enabled ? "Active" : "Inactive"}
             status={draft.enabled ? "Connected" : "Not connected"}
           />
         ) : null}
@@ -553,7 +558,7 @@ function PlexSettingsPanel() {
                 disabled={!machineId}
                 onChange={(event) => update("enabled", event.target.checked)}
               />
-              Enable Plex sign-in
+              Activate Plex sign-in
             </label>
             <a className="plex-link" href="/api/auth/plex/link">
               Link a Plex server
@@ -562,7 +567,7 @@ function PlexSettingsPanel() {
               <p className="muted">Linked server: {draft.server_name}</p>
             ) : servers.length ? (
               <p className="muted">
-                Choose this server and save to turn on Plex sign-in.
+                Choose this server and save to activate Plex sign-in.
               </p>
             ) : (
               <p className="muted">No Plex server linked yet.</p>
@@ -630,6 +635,7 @@ function PlexSettingsPanel() {
                 setDraft(settings.data ?? null);
                 setMachineId(settings.data?.machine_id ?? "");
               }}
+              savedAt={plexSavedAt}
             />
           </>
         ) : null}
@@ -928,7 +934,7 @@ function UsersTable({
                   </span>
                 )}
                 {user.active === false && (
-                  <span className="access-meta">Disabled account</span>
+                  <span className="access-meta">Inactive account</span>
                 )}
               </td>
               <td>
@@ -1880,15 +1886,16 @@ function AccountProfileDialog({
               disabled={busy || user.id === selfId}
               onChange={(event) => setActive(event.target.checked)}
             />
-            Account enabled
+            Account active
           </label>
           <p className="access-hint">
-            Disabling an account ends its sessions and blocks sign-in. Its books
-            and history are retained. Rename it to release its old username.
+            Deactivating an account ends its sessions and blocks sign-in. Its
+            books and history are retained. Rename it to release its old
+            username.
           </p>
           {user.id === selfId && (
             <p className="access-hint">
-              Use another administrator account to disable your own account.
+              Use another administrator account to deactivate your own account.
             </p>
           )}
           <p className="access-hint">
@@ -2062,8 +2069,8 @@ function AccountRemovalControls({
         <>
           <p>
             {action === "delete"
-              ? "Delete this unused account permanently? Accounts with owned data or history must be disabled instead."
-              : `Unlink ${action === "oidc" ? "OIDC" : "Plex"}? All sessions will end. This account must have another enabled sign-in method. Provider matching or registration settings can allow a future sign-in to link again.`}
+              ? "Delete this unused account permanently? Accounts with owned data or history must be deactivated instead."
+              : `Unlink ${action === "oidc" ? "OIDC" : "Plex"}? All sessions will end. This account must have another active sign-in method. Provider matching or registration settings can allow a future sign-in to link again.`}
           </p>
           <label>
             Type {user.username} to confirm

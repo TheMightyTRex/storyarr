@@ -15,8 +15,13 @@ const themes: { id: DisplayPreferences["theme"]; label: string }[] = [
   { id: "dark", label: "Dark" },
 ];
 const sizes: DisplayPreferences["textSize"][] = [100, 125, 150, 175];
+const motions: { id: DisplayPreferences["reduceMotion"]; label: string }[] = [
+  { id: "auto", label: "Match device" },
+  { id: "on", label: "On" },
+  { id: "off", label: "Off" },
+];
 const switches: {
-  id: "highContrast" | "reduceMotion" | "underlineLinks" | "wideSpacing";
+  id: "highContrast" | "underlineLinks" | "wideSpacing";
   label: string;
   hint: string;
 }[] = [
@@ -24,11 +29,6 @@ const switches: {
     id: "highContrast",
     label: "High contrast",
     hint: "Makes text, icons, and borders stronger against the background.",
-  },
-  {
-    id: "reduceMotion",
-    label: "Reduce motion",
-    hint: "Stops animations and moving effects. This is always active when your device is set to reduce motion.",
   },
   {
     id: "underlineLinks",
@@ -130,6 +130,31 @@ export default function DisplayPanel({
           ))}
         </div>
       </fieldset>
+      <fieldset className="display-group">
+        <legend>Reduce motion</legend>
+        <div className="segmented">
+          {motions.map((motion) => (
+            <label key={motion.id}>
+              <input
+                type="radio"
+                name={`${id}-motion`}
+                checked={display.reduceMotion === motion.id}
+                onChange={() =>
+                  update(
+                    { reduceMotion: motion.id },
+                    `Reduce motion changed to ${motion.label}.`,
+                  )
+                }
+              />
+              <span>{motion.label}</span>
+            </label>
+          ))}
+        </div>
+        <p className="muted small">
+          Stops animations and moving effects. Match device follows your
+          device&apos;s setting.
+        </p>
+      </fieldset>
       <div className="display-switches">
         {switches.map((item) => (
           <label key={item.id} className="display-switch">
@@ -176,12 +201,12 @@ export function DisplayButton() {
       <button
         ref={button}
         type="button"
-        className="topbar-action display-button"
+        className="icon-btn topbar-action display-button"
+        aria-label="Display"
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >
         <Sun size={20} aria-hidden="true" />
-        <span className="topbar-label">Display</span>
       </button>
       {open && (
         // A slide-out like the library's (gallery: Display and accessibility), so the page stays in view

@@ -21,7 +21,7 @@ export default function DownloadPreferences({
   embedded?: boolean;
   librariesOnly?: boolean;
 }) {
-  const [saved, setSaved] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [scope, setScope] = useState<Scope>("personal");
   const current = useQuery({
     queryKey: ["download-defaults", scope],
@@ -42,7 +42,7 @@ export default function DownloadPreferences({
           <select
             value={scope}
             onChange={(event) => {
-              setSaved(false);
+              setSavedAt(null);
               setScope(event.target.value as Scope);
             }}
           >
@@ -52,13 +52,6 @@ export default function DownloadPreferences({
         </label>
       )}
       <Notice error={current.error} />
-      {saved && (
-        <p className="success" role="status">
-          {librariesOnly
-            ? "Library defaults saved."
-            : "Download defaults saved."}
-        </p>
-      )}
       {current.isPending && <Loading />}
       {current.data && (
         <Editor
@@ -67,8 +60,9 @@ export default function DownloadPreferences({
           scope={scope}
           librariesOnly={librariesOnly}
           current={current.data}
-          onSaved={() => setSaved(true)}
-          onEdit={() => setSaved(false)}
+          savedAt={savedAt}
+          onSaved={() => setSavedAt(new Date())}
+          onEdit={() => setSavedAt(null)}
         />
       )}
     </section>
@@ -80,6 +74,7 @@ function Editor({
   scope,
   librariesOnly,
   current: latest,
+  savedAt,
   onSaved,
   onEdit,
 }: {
@@ -87,6 +82,7 @@ function Editor({
   scope: Scope;
   librariesOnly: boolean;
   current: Defaults;
+  savedAt: Date | null;
   onSaved: () => void;
   onEdit: () => void;
 }) {
@@ -279,6 +275,7 @@ function Editor({
           setDraft(null);
           setMerge(null);
         }}
+        savedAt={savedAt}
       />
     </form>
   );

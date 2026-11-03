@@ -520,7 +520,7 @@ function Shell({ auth }: { auth: Auth }) {
                 <AddDiscoveryList close={() => setAddingList(false)} />
               </Suspense>
             )}
-            <main id="main" className="main-content">
+            <main id="main" className="main-content" tabIndex={-1}>
               {/* Page actions live in the body for now; the header holds only the sub-menu, search and Display. */}
               <div className="page-actions">
                 <ConnectionHealth />

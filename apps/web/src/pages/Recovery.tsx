@@ -131,7 +131,7 @@ export default function Recovery() {
               )}
               <p>
                 Protection remains after recovery. Resuming current work
-                requires a separate review; this screen does not enable
+                requires a separate review; this screen does not activate
                 automation.
               </p>
               <p>

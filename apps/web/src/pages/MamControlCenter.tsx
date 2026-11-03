@@ -132,7 +132,7 @@ export default function MamControlCenter({
         <p className="mam-control-note">
           {blocked
             ? "Save connection changes to load the matching MAM account."
-            : "Enable MAM and save a session cookie to see your account."}
+            : "Activate MAM and save a session cookie to see your account."}
         </p>
       )}
       {ready && account.isError && (

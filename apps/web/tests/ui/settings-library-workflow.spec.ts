@@ -202,7 +202,7 @@ for (const clientSetup of [
     await expect(card.getByText(/On after verification/)).toBeVisible();
     await expect(
       card.getByRole("button", {
-        name: "Enable automatic import",
+        name: "Activate automatic import",
         exact: true,
       }),
     ).toHaveCount(0);
@@ -211,7 +211,7 @@ for (const clientSetup of [
     ).toHaveAttribute("href", "/settings#downloaders");
     if (clientSetup === "missing") {
       await card
-        .getByRole("button", { name: "Disable automatic import" })
+        .getByRole("button", { name: "Deactivate automatic import" })
         .click();
       await expect(
         card.getByText("Off · completed downloads stay in file review."),
@@ -556,7 +556,7 @@ for (const mode of ["hardlink", "copy"]) {
       writes.find((w) => w.path.endsWith("/activate"))?.body.automatic,
     ).toBe(true);
     await page
-      .getByRole("button", { name: "Disable automatic import", exact: true })
+      .getByRole("button", { name: "Deactivate automatic import", exact: true })
       .click();
     await expect(
       page.getByText("Off · completed downloads stay in file review.", {

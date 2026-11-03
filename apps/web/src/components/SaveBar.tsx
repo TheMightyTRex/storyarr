@@ -1,10 +1,13 @@
+import SavedNote from "./SavedNote";
+
 /**
  * The one way to save a settings section: the shared library's save bar. It shows only while there
  * are unsaved changes, sticks to the foot of the window while its section is in view, says how many
  * changes there are, and offers Save changes and Discard changes.
  *
  * Inside a form, Save changes submits the form, so the browser's own checks (required, min, max) run
- * first. Outside a form, pass onSave.
+ * first. Outside a form, pass onSave. Pass savedAt after a save: the bar goes and the library's saved
+ * note, "Saved at 16:31", stays in its place until the next change (no toast on settings pages).
  */
 export default function SaveBar({
   changes,
@@ -13,6 +16,8 @@ export default function SaveBar({
   onSave,
   onDiscard,
   label = "Unsaved changes",
+  savedAt,
+  savedDetail,
 }: {
   /** How many settings differ from the saved ones. */
   changes: number;
@@ -23,8 +28,48 @@ export default function SaveBar({
   onDiscard: () => void;
   /** The bar's name for assistive technology, when a page has more than one. */
   label?: string;
+  /** When the section was last saved, for the saved note. */
+  savedAt?: Date | null;
+  /** A sentence after "Saved at 16:31". */
+  savedDetail?: string;
 }) {
-  if (!changes && !saving) return null;
+  const open = changes > 0 || saving;
+  return (
+    <>
+      {open && (
+        <Bar
+          changes={changes}
+          saving={saving}
+          disabled={disabled}
+          onSave={onSave}
+          onDiscard={onDiscard}
+          label={label}
+        />
+      )}
+      {savedAt !== undefined && (
+        <div className="save-bar-saved">
+          <SavedNote at={open ? null : savedAt} detail={savedDetail} />
+        </div>
+      )}
+    </>
+  );
+}
+
+function Bar({
+  changes,
+  saving,
+  disabled,
+  onSave,
+  onDiscard,
+  label,
+}: {
+  changes: number;
+  saving: boolean;
+  disabled: boolean;
+  onSave?: () => void;
+  onDiscard: () => void;
+  label: string;
+}) {
   return (
     <div className="save-bar" role="region" aria-label={label}>
       <span className="save-bar__text" role="status">

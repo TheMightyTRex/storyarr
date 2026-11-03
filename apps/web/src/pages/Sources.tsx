@@ -567,7 +567,7 @@ export function MamConnectionForm({ value }: { value: Connection }) {
     (!accountRecovered ? cookieTest.error?.message : null) ||
     (!accountDirty ? value.last_error : null);
   const accountStatus = !enabled
-    ? "Disabled"
+    ? "Inactive"
     : accountDirty
       ? "Not tested"
       : value.status === "connected"
@@ -616,7 +616,7 @@ export function MamConnectionForm({ value }: { value: Connection }) {
               Exclude VIP releases
             </label>
             <p className="muted">
-              Enable this if your MAM account cannot download VIP releases.
+              Activate this if your MAM account cannot download VIP releases.
               Applies to direct MAM searches and selection; configure Prowlarr
               separately. Leave off for VIP/Elite access or if unsure. MAM still
               authorises each download; missing VIP expiry does not establish
@@ -635,7 +635,7 @@ export function MamConnectionForm({ value }: { value: Connection }) {
               checked={enabled}
               onChange={(event) => setEnabled(event.target.checked)}
             />
-            Enable MAM
+            Activate MAM
           </label>
           <div className="mam-setup-checks">
             <section
@@ -909,6 +909,7 @@ function networkLook(label: string): ComponentProps<typeof StatusChip> {
     Unverified: { tone: "neutral", icon: CircleDashed },
     Direct: { tone: "muted", icon: Minus },
     Disabled: { tone: "muted", icon: Ban },
+    Inactive: { tone: "muted", icon: Ban },
   };
   return { label, ...looks[label] };
 }

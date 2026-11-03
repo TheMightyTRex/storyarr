@@ -93,7 +93,7 @@ export default function LibraryFolderRecovery({
                   ? connection.last_error
                     ? `: ${connection.last_error}`
                     : " · Sync to refresh available libraries."
-                  : " · Enable this connection in Libraries settings."}
+                  : " · Activate this connection in Libraries settings."}
               </p>
               {connection.enabled && (
                 <button

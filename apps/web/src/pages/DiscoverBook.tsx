@@ -36,6 +36,7 @@ import BookReaderDetails, {
 } from "../components/BookReaderDetails";
 import ListChoice from "./ListChoice";
 import Wanted from "./Wanted";
+import { useToast } from "../components/Toasts";
 
 type Provider = "hardcover" | "openlibrary" | "audible" | "custom";
 type Action = "catalog" | "request" | "list" | "sources" | "editions";
@@ -201,6 +202,12 @@ function BookPage({
         });
     } else save.mutate();
   }
+  const toast = useToast();
+  // Said once when the book is in the catalog after Add to catalog, whether it was added now or before.
+  const inCatalog = action === "catalog" && !!work;
+  useEffect(() => {
+    if (inCatalog) toast("Added to your catalog");
+  }, [inCatalog, toast]);
   const addToList = useMutation({
     mutationFn: async () =>
       result(
@@ -211,6 +218,7 @@ function BookPage({
       ),
     onSuccess: () => {
       cache.invalidateQueries({ queryKey: ["lists"] });
+      toast("Added to your list");
     },
   });
   const sourceName = {
@@ -448,11 +456,6 @@ function BookPage({
               </p>
             )}
             <Notice error={save.error} />
-            {action === "catalog" && work && (
-              <p className="success" role="status">
-                Added to your catalog.
-              </p>
-            )}
           </BookHero>
           <DetailTabs tabs={tabs} selected={tab} label="Book sections" />
           {canEdit && work && (action === "request" || action === "list") && (
@@ -498,11 +501,6 @@ function BookPage({
                     Save to list
                   </button>
                   <Notice error={addToList.error} />
-                  {addToList.isSuccess && (
-                    <p role="status" className="success">
-                      Added to your list.
-                    </p>
-                  )}
                 </form>
               )}
             </section>

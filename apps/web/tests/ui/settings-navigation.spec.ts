@@ -103,9 +103,7 @@ for (const role of ["admin", "member", "viewer"]) {
       await page.getByText("Storage reserve", { exact: true }).click();
       await page.getByLabel("Minimum free storage (%)").fill("0");
       await page.getByRole("button", { name: "Save changes" }).click();
-      await expect(
-        page.getByText("Storage reserve saved.", { exact: true }),
-      ).toBeVisible();
+      await expect(page.getByText(/^Saved at \d\d:\d\d/)).toBeVisible();
       expect(reservePercent).toBe(0);
       await expect(
         page.getByLabel("Automatic transfers per 24 hours", { exact: false }),

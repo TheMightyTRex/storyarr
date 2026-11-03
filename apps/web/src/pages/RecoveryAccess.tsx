@@ -133,7 +133,7 @@ function AccessEditor({
             disabled={evidence.operator}
             onChange={(e) => edit({ active: e.target.checked })}
           />
-          Account enabled
+          Account active
         </label>
         <label>
           Account role
@@ -219,7 +219,7 @@ function PermissionSummary({
   return (
     <>
       <p>
-        {value.active ? "Enabled" : "Disabled"} · {value.role} · Member
+        {value.active ? "Active" : "Inactive"} · {value.role} · Member
         automation {value.can_automate ? "allowed" : "not allowed"}
         {value.permissions ? ` · permission set ${value.permissions}` : ""}
       </p>

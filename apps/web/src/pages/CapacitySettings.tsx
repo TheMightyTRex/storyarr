@@ -21,7 +21,7 @@ export default function CapacitySettings() {
 }
 
 function StorageReserve() {
-  const [saved, setSaved] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const cache = useQueryClient();
   const settings = useQuery({
     queryKey: ["capacity-settings"],
@@ -35,7 +35,6 @@ function StorageReserve() {
       </p>
       <Notice error={settings.error} />
       {settings.isPending && <Loading />}
-      {saved && <p role="status">Storage reserve saved.</p>}
       {settings.data && (
         <>
           <p>
@@ -46,9 +45,10 @@ function StorageReserve() {
           <Editor
             key={settings.data.revision}
             current={settings.data}
+            savedAt={savedAt}
             onSaved={(value) => {
               cache.setQueryData(["capacity-settings"], value);
-              setSaved(true);
+              setSavedAt(new Date());
             }}
           />
         </>
@@ -59,9 +59,11 @@ function StorageReserve() {
 
 function Editor({
   current,
+  savedAt,
   onSaved,
 }: {
   current: View;
+  savedAt: Date | null;
   onSaved: (value: View) => void;
 }) {
   const [limits, setLimits] = useState(current.limits);
@@ -127,6 +129,7 @@ function Editor({
         changes={countChanges(limits, current.limits)}
         saving={save.isPending}
         onDiscard={() => setLimits(current.limits)}
+        savedAt={savedAt}
       />
     </form>
   );

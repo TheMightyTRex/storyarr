@@ -32,6 +32,7 @@ import BookDialog from "./BookDialog";
 import { useBookSummary } from "./BookSummaryContext";
 import { useQuickAdd, type Mode } from "./QuickAdd";
 import { usePreferences } from "../hooks/usePreferences";
+import { useToast } from "./Toasts";
 
 export type CoverActionsLayout = "on" | "beside";
 type ProviderBook = { provider: string; external_id: string };
@@ -737,6 +738,7 @@ function AddToList({
 }) {
   const cache = useQueryClient();
   const [listId, setListId] = useState("");
+  const toast = useToast();
   const add = useMutation({
     mutationFn: async () => {
       const work = workId || (await resolveBookWork(providerBook!));
@@ -747,7 +749,10 @@ function AddToList({
         }),
       );
     },
-    onSuccess: () => cache.invalidateQueries({ queryKey: ["lists"] }),
+    onSuccess: () => {
+      toast("Added to your list");
+      return cache.invalidateQueries({ queryKey: ["lists"] });
+    },
   });
   return (
     <BookDialog title="Add to a reading list" close={close}>
@@ -772,11 +777,6 @@ function AddToList({
         <button className="primary" disabled={!listId || add.isPending}>
           {add.isPending ? "Adding…" : "Add to list"}
         </button>
-        {add.isSuccess && (
-          <p className="success" role="status">
-            Added to your list.
-          </p>
-        )}
       </form>
     </BookDialog>
   );

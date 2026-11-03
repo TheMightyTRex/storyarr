@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import SelectMenu from "./components/SelectMenu";
 import { BookSummaryProvider } from "./components/BookSummaryContext";
+import { ToastProvider } from "./components/Toasts";
 // One typeface throughout: Atkinson Hyperlegible Next, designed for readers with low vision.
 import "@fontsource-variable/atkinson-hyperlegible-next";
 import "./app.css";
@@ -16,9 +17,11 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <BookSummaryProvider>
-          <App />
-        </BookSummaryProvider>
+        <ToastProvider>
+          <BookSummaryProvider>
+            <App />
+          </BookSummaryProvider>
+        </ToastProvider>
         <SelectMenu />
       </BrowserRouter>
     </QueryClientProvider>

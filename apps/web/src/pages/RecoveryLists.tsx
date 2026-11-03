@@ -124,7 +124,7 @@ export function ListBaselineRecoveryReview({
             )}
             {item.pause_writeback && (
               <p>
-                Disable current list write-back pending a new owner
+                Deactivate current list write-back pending a new owner
                 confirmation.
               </p>
             )}

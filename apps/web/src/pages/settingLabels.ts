@@ -4,7 +4,7 @@ export function connectionLabel(status?: string) {
     stale: "Check overdue",
     "not-configured": "Not connected",
     untested: "Not tested",
-    disabled: "Disabled",
+    disabled: "Inactive",
     authentication: "Check credentials",
     parser: "Unexpected response",
     unavailable: "Unavailable",

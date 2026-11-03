@@ -143,7 +143,7 @@ for (const scenario of [
     }
     const expected =
       scenario === "empty"
-        ? "No enabled reading lists."
+        ? "No active reading lists."
         : scenario === "partial failure"
           ? "Want to read: Shelf was paused"
           : scenario === "worker failure"

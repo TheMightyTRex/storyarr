@@ -86,9 +86,7 @@ test("source popularity persists as an ordered preference without rewriting save
   await preferences
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
-  await expect(
-    preferences.getByText("Download defaults saved.", { exact: true }),
-  ).toBeVisible();
+  await expect(preferences.getByText(/^Saved at \d\d:\d\d/)).toBeVisible();
   await page.goto(`/books/${work.id}?tab=sources`);
   await refresh();
   await mam.getByRole("button", { name: /^Details for/ }).click();
@@ -120,9 +118,7 @@ test("source popularity persists as an ordered preference without rewriting save
   await preferences
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
-  await expect(
-    preferences.getByText("Download defaults saved.", { exact: true }),
-  ).toBeVisible();
+  await expect(preferences.getByText(/^Saved at \d\d:\d\d/)).toBeVisible();
   const latest = await (
     await page.request.get(
       `/api/catalog/works/${work.id}/source-searches/latest`,

@@ -119,15 +119,15 @@ export function CommandRecoveryReview({
             <p>Saved state: {item.saved_state}.</p>
             <p>
               {item.action === "pause-imports"
-                ? "Turn off automatic imports for this destination and invalidate its prior approval. Keep current imports, files and reservations unchanged; verify the route before enabling it again."
+                ? "Deactivate automatic imports for this destination and invalidate its prior approval. Keep current imports, files and reservations unchanged; verify the route before activating it again."
                 : item.action === "pause-subscription"
                   ? "Stop scheduled list synchronization and invalidate its old worker lease. Keep membership, exclusions and history. Related acquisition and write-back policies require their own review."
                   : item.action === "pause-writeback"
-                    ? "Turn off future Hardcover writes and invalidate the saved policy approval. Preserve pending writes and uncertainty about their results for separate reconciliation."
+                    ? "Deactivate future Hardcover writes and invalidate the saved policy approval. Preserve pending writes and uncertainty about their results for separate reconciliation."
                     : item.action === "pause-policy"
                       ? "Pause this list policy and stop scheduled book checks. Keep monitored books and their request history."
                       : item.action === "pause-controller"
-                        ? "Disable this series controller and invalidate its earlier authorisation. Keep its accepted batch and acquisition progress."
+                        ? "Deactivate this series controller and invalidate its earlier authorisation. Keep its accepted batch and acquisition progress."
                         : "Retire this command. Its old preview and worker cannot run again; any existing wanted books stay intact."}
             </p>
           </li>

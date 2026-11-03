@@ -62,10 +62,10 @@ export default function AutomaticImportPolicy({
       <div className="setting-subheading">
         <h3>Import on completion</h3>
         <SettingHelp label="automatic import">
-          Applies to new downloads after enabling. EPUB and identified M4B/MP3
+          Applies to new downloads after activating. EPUB and identified M4B/MP3
           recordings import when identity and completeness checks pass.
           Ambiguous books, unsupported formats and incomplete tracks stay for
-          review. Disabling holds unpublished automatic work and preserves
+          review. Deactivating holds unpublished automatic work and preserves
           published files.
         </SettingHelp>
       </div>
@@ -88,8 +88,8 @@ export default function AutomaticImportPolicy({
                 onClick={() => save.mutate(true)}
               >
                 {query.data.can_enable
-                  ? "Enable automatic import"
-                  : "Turn on after verification"}
+                  ? "Activate automatic import"
+                  : "Activate after verification"}
               </button>
             )}
             {requested && !query.data.ready && query.data.can_enable && (
@@ -97,7 +97,7 @@ export default function AutomaticImportPolicy({
                 disabled={unsaved || save.isPending}
                 onClick={() => save.mutate(true)}
               >
-                Enable automatic import
+                Activate automatic import
               </button>
             )}
             {requested && (
@@ -105,7 +105,7 @@ export default function AutomaticImportPolicy({
                 disabled={unsaved || save.isPending}
                 onClick={() => save.mutate(false)}
               >
-                Disable automatic import
+                Deactivate automatic import
               </button>
             )}
           </div>

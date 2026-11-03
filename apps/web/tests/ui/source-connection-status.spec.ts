@@ -189,12 +189,12 @@ test("source connections keep masked credentials and show verified status beside
   await expect(
     page.getByLabel("1 connection issue", { exact: true }),
   ).toBeVisible();
-  await soulseek.getByLabel("Enabled", { exact: true }).uncheck();
+  await soulseek.getByLabel("Active", { exact: true }).uncheck();
   await soulseek
     .getByRole("button", { name: "Save connection", exact: true })
     .click();
   await expect(soulseek.getByLabel("Connection test status")).toContainText(
-    "Disabled",
+    "Inactive",
   );
   await expect(
     soulseek.getByText("Cannot reach Soulseek.", { exact: true }),
@@ -207,7 +207,7 @@ test("source connections keep masked credentials and show verified status beside
   ).toHaveCount(0);
   expect(soulseekTests).toBe(2);
   failSoulseek = false;
-  await soulseek.getByLabel("Enabled", { exact: true }).check();
+  await soulseek.getByLabel("Active", { exact: true }).check();
   await soulseek
     .getByRole("button", { name: "Save & test connection", exact: true })
     .click();

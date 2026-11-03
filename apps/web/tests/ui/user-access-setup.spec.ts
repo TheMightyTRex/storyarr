@@ -396,7 +396,7 @@ test("account removal and provider unlink require reviewed username confirmation
   await expect(
     dialog.getByLabel("Display name", { exact: true }),
   ).toBeDisabled();
-  await expect(dialog.getByLabel("Account enabled")).toBeDisabled();
+  await expect(dialog.getByLabel("Account active")).toBeDisabled();
   await expect(
     dialog.getByRole("button", { name: "Cancel", exact: true }),
   ).toBeDisabled();

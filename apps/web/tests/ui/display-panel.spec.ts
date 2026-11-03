@@ -68,16 +68,17 @@ test("Display and accessibility settings change the theme and reading aids, and 
   expect(
     await page.evaluate(() => getComputedStyle(document.body).fontFamily),
   ).toContain("Atkinson Hyperlegible Next");
-  for (const name of [
-    "High contrast",
-    "Reduce motion",
-    "Underline links",
-    "Wider text spacing",
-  ])
+  // Reduce motion is Match device, On or Off, like the library's (ACCESSIBILITY.md section 1).
+  const motion = dialog.getByRole("group", { name: "Reduce motion" });
+  await expect(
+    motion.getByRole("radio", { name: "Match device" }),
+  ).toBeChecked();
+  await motion.getByRole("radio", { name: "On" }).check();
+  await expect(html).toHaveClass(/pref-motion/);
+  for (const name of ["High contrast", "Underline links", "Wider text spacing"])
     await dialog.getByRole("switch", { name: new RegExp(name) }).check();
-  await expect(html).toHaveClass(
-    /pref-hc.*pref-calm.*pref-underline.*pref-spacing/,
-  );
+  for (const name of ["pref-hc", "pref-calm", "pref-underline", "pref-spacing"])
+    await expect(html).toHaveClass(new RegExp(`\\b${name}\\b`));
   await expect(dialog.getByRole("status")).toHaveText(
     "Wider text spacing activated.",
   );

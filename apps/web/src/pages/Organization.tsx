@@ -117,6 +117,7 @@ function Editor({
         }),
       ),
   });
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const save = useMutation({
     mutationFn: async () =>
       result(
@@ -124,8 +125,10 @@ function Editor({
           body: { profile: draft, expected_revision: settings.revision },
         }),
       ),
-    onSuccess: (settings) =>
-      cache.setQueryData(["organization"], { settings, defaults }),
+    onSuccess: (settings) => {
+      cache.setQueryData(["organization"], { settings, defaults });
+      setSavedAt(new Date());
+    },
   });
   const folder = `${medium}_folder` as const;
   const filename = `${medium}_filename` as const;
@@ -390,8 +393,8 @@ function Editor({
               )}
               {medium === "audio" && draft[folder].includes("{narrator}") && (
                 <p className="naming-section-note">
-                  Narrator names use file or catalogue metadata. Enable the MAM
-                  source to use its release narrators when file tags are
+                  Narrator names use file or catalogue metadata. Activate the
+                  MAM source to use its release narrators when file tags are
                   missing.
                 </p>
               )}
@@ -528,6 +531,7 @@ function Editor({
           preview.data.items.some((item) => item.state !== "ready")
         }
         onSave={() => save.mutate()}
+        savedAt={savedAt}
         onDiscard={() => {
           setShowJoins(false);
           setDraft(settings.profile);

@@ -6,6 +6,7 @@ import type { components } from "../api/schema";
 import { Empty, Loading, Notice } from "../components";
 import EnrichedBookCard from "../components/EnrichedBookCard";
 import { randomUUID } from "../randomUUID";
+import { useToast } from "../components/Toasts";
 
 type Detail = components["schemas"]["ListDetail"];
 type Input = components["schemas"]["CurationInput"];
@@ -27,7 +28,7 @@ export default function ListCuration({
 }) {
   const [selection, setSelection] = useState<string[]>([]);
   const [adding, setAdding] = useState(false);
-  const [message, setMessage] = useState("");
+  const toast = useToast();
   const [selectionRevision, setSelectionRevision] = useState<string>();
   const selected = selection;
   const pageOffset = list.offset;
@@ -51,8 +52,9 @@ export default function ListCuration({
       ),
     onSuccess: async (receipt) => {
       setSelection([]);
-      setMessage(
-        `${receipt.changed} ${receipt.changed === 1 ? "book" : "books"} removed from this list. Library files were kept.`,
+      toast(
+        `${receipt.changed} ${receipt.changed === 1 ? "book" : "books"} removed from this list`,
+        { detail: "Library files were kept." },
       );
       await onChange();
     },
@@ -77,13 +79,12 @@ export default function ListCuration({
       );
     },
     onSuccess: async () => {
-      setMessage("List order saved.");
+      toast("List order saved");
       await onChange();
     },
   });
   const busy = loading || change.isPending || reorder.isPending || stale;
   function remove(ids: string[]) {
-    setMessage("");
     change.mutate({
       body: {
         action: "remove",
@@ -182,7 +183,6 @@ export default function ListCuration({
               Refresh list order
             </button>
           )}
-          {message && <p role="status">{message}</p>}
         </>
       )}
       {shown.length ? (
@@ -305,7 +305,7 @@ function CatalogPicker({
   const [search, setSearch] = useState("");
   const [offset, setOffset] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
-  const [message, setMessage] = useState("");
+  const toast = useToast();
   const query = useQuery({
     queryKey: ["curation-catalog", list.id, search, offset],
     queryFn: async () =>
@@ -334,8 +334,8 @@ function CatalogPicker({
       ),
     onSuccess: async (receipt) => {
       setSelected([]);
-      setMessage(
-        `Added ${receipt.changed} ${receipt.changed === 1 ? "book" : "books"} to this list.`,
+      toast(
+        `${receipt.changed} ${receipt.changed === 1 ? "book" : "books"} added to this list`,
       );
       await onChange();
     },
@@ -471,7 +471,6 @@ function CatalogPicker({
           </>
         )}
       </div>
-      {message && <p role="status">{message}</p>}
     </section>
   );
 }

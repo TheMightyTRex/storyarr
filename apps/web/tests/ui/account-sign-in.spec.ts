@@ -157,13 +157,13 @@ test("administrator renames and disables an account with conflict feedback", asy
   await dialog
     .getByLabel("Display name", { exact: true })
     .fill("Former reader");
-  await dialog.getByLabel("Account enabled", { exact: true }).uncheck();
+  await dialog.getByLabel("Account active", { exact: true }).uncheck();
   await dialog
     .getByRole("button", { name: "Save account", exact: true })
     .click();
   await expect(dialog).toHaveCount(0);
   await expect(page.getByText("Former reader", { exact: true })).toBeVisible();
   await expect(
-    page.getByText("Disabled account", { exact: true }),
+    page.getByText("Inactive account", { exact: true }),
   ).toBeVisible();
 });

@@ -39,6 +39,7 @@ import BookDownloads from "../components/BookDownloads";
 import BookDetailsStatus from "../components/BookDetailsStatus";
 import BookDialog from "../components/BookDialog";
 import CatalogEditions from "../components/CatalogEditions";
+import { useToast } from "../components/Toasts";
 const BookSources = lazy(() => import("./BookSources"));
 const RelatedBooks = lazy(() => import("../components/RelatedBooks"));
 const tabs = [
@@ -149,6 +150,7 @@ function BookDetailContent({
     staleTime: 300_000,
     retry: false,
   });
+  const toast = useToast();
   const add = useMutation({
     mutationFn: async () =>
       result(
@@ -159,6 +161,7 @@ function BookDetailContent({
       ),
     onSuccess: () => {
       cache.invalidateQueries({ queryKey: ["lists"] });
+      toast("Added to your list");
     },
   });
   useEffect(() => {
@@ -615,11 +618,6 @@ function BookDetailContent({
               <button className="primary" disabled={!listId || add.isPending}>
                 Add to list
               </button>
-              {add.isSuccess && (
-                <p className="success" role="status">
-                  Added to your list.
-                </p>
-              )}
             </form>
           )}
         </BookDialog>
