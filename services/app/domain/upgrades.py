@@ -468,8 +468,9 @@ async def restore(db, name: str) -> dict[str, dict[str, int]]:
                 if updates
                 else "DO NOTHING"
             )
+            # The names come from TABLES and the database's own catalogue; values are bound.
             statement = text(
-                f'INSERT INTO "{table}" ({listed}) '  # names from TABLES and the catalogue  # nosec B608
+                f'INSERT INTO "{table}" ({listed}) '  # nosec B608
                 f'SELECT {listed} FROM json_populate_record(NULL::"{table}", CAST(:row AS json)) '
                 f"ON CONFLICT ({_quoted(primary)}) {conflict}"
             )
