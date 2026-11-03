@@ -59,9 +59,7 @@ test("Wanted books settings turn repeat searches on or off for each format", asy
     form.getByRole("region", { name: "Unsaved changes" }),
   ).toContainText("1 unsaved change");
   await save.click();
-  await expect(form.getByRole("status")).toHaveText(
-    "Wanted books settings saved.",
-  );
+  await expect(form.getByRole("status")).toHaveText(/^Saved at \d\d:\d\d$/);
   expect(saved.at(-1)).toEqual({
     wanted_search: { enabled: true, audio: true, ebook: false },
     expected_generation: 1,

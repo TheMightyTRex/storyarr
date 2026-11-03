@@ -66,8 +66,8 @@ test("download defaults inherit per field and persist after reload", async ({
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(
-    panel.getByRole("status").filter({ hasText: "Download defaults saved" }),
-  ).toContainText("Download defaults saved");
+    panel.getByRole("status").filter({ hasText: "Saved at" }),
+  ).toContainText("Saved at");
   let releasePersonal!: () => void;
   const personalRefresh = new Promise<void>((resolve) => {
     releasePersonal = resolve;
@@ -127,9 +127,11 @@ test("download defaults inherit per field and persist after reload", async ({
   // Edits made during a save belong to the next save, not the submitted snapshot.
   await panel.getByLabel("Require standalone copies", { exact: true }).check();
   releaseSave();
+  // The saved note goes at the next change, so the edit made during the save keeps the bar open instead.
   await expect(
-    panel.getByRole("status").filter({ hasText: "Download defaults saved" }),
-  ).toContainText("Download defaults saved");
+    panel.getByRole("region", { name: "Unsaved changes" }),
+  ).toContainText("1 unsaved change");
+  await expect(panel.getByText(/^Saved at \d\d:\d\d/)).toHaveCount(0);
   await page.unroute("**/api/acquisition/preferences/personal");
   await expect(
     panel.getByLabel("Require standalone copies", { exact: true }),
@@ -138,8 +140,8 @@ test("download defaults inherit per field and persist after reload", async ({
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(
-    panel.getByRole("status").filter({ hasText: "Download defaults saved" }),
-  ).toContainText("Download defaults saved");
+    panel.getByRole("status").filter({ hasText: "Saved at" }),
+  ).toContainText("Saved at");
   await expect(
     panel.getByRole("button", { name: "Save changes", exact: true }),
   ).toHaveCount(0);
@@ -163,11 +165,11 @@ test("download defaults inherit per field and persist after reload", async ({
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(
-    panel.getByRole("status").filter({ hasText: "Download defaults saved" }),
-  ).toContainText("Download defaults saved");
+    panel.getByRole("status").filter({ hasText: "Saved at" }),
+  ).toContainText("Saved at");
   await expect(
-    panel.getByRole("status").filter({ hasText: "Download defaults saved" }),
-  ).toContainText("Download defaults saved");
+    panel.getByRole("status").filter({ hasText: "Saved at" }),
+  ).toContainText("Saved at");
   await page.reload();
   const profiles = await (
     await page.request.get("/api/acquisition/profiles")
@@ -192,8 +194,8 @@ test("download defaults inherit per field and persist after reload", async ({
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await expect(
-    panel.getByRole("status").filter({ hasText: "Download defaults saved" }),
-  ).toContainText("Download defaults saved");
+    panel.getByRole("status").filter({ hasText: "Saved at" }),
+  ).toContainText("Saved at");
   // On a phone, Sign out is in the main menu.
   await page.getByRole("button", { name: /^Menu/ }).click();
   await page

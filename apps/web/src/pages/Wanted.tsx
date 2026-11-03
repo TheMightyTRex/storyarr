@@ -20,6 +20,7 @@ import RequestNextAction, {
   requestTargetLabel,
 } from "../components/RequestNextAction";
 import { randomUUID } from "../randomUUID";
+import { useToast } from "../components/Toasts";
 
 type Spec = components["schemas"]["RequestOptions"];
 export type WantedVersion = components["schemas"]["VersionView"];
@@ -130,6 +131,7 @@ export default function Wanted({
       ].map((name) => cache.invalidateQueries({ queryKey: [name] })),
     );
   };
+  const toast = useToast();
   const save = useMutation({
     mutationFn: async () =>
       result(
@@ -148,7 +150,12 @@ export default function Wanted({
           params: { header: { "idempotency-key": key.current } },
         }),
       ),
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      if (data.request.approval_status === "pending")
+        toast("Request sent", {
+          detail: "It will download after approval.",
+        });
+      else toast("Request saved");
       key.current = randomUUID();
       await refresh();
     },
@@ -341,13 +348,6 @@ export default function Wanted({
       >
         {autoDownload ? "Save to wanted" : "Request book"}
       </button>
-      {save.isSuccess && (
-        <p className="success" role="status">
-          {save.data.request.approval_status === "pending"
-            ? "Request sent. It will download after approval."
-            : "Your media request was saved."}
-        </p>
-      )}
       {!!requests.data?.items.length && (
         <>
           <h3>Your saved requests</h3>

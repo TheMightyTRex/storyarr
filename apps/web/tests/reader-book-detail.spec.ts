@@ -46,9 +46,7 @@ test("Discover opens a full book page with safe reviews and explicit actions", a
     })
     .getByRole("button", { name: "Save connection", exact: true })
     .click();
-  await expect(
-    page.getByText("Your catalogue connection was saved.", { exact: true }),
-  ).toBeVisible();
+  await expect(page.getByText(/^Saved at \d\d:\d\d/)).toBeVisible();
   const auth = await (await page.request.get("/api/auth/me")).json();
   const headers = {
     Origin: "http://127.0.0.1:8001",
@@ -227,7 +225,7 @@ test("Discover opens a full book page with safe reviews and explicit actions", a
   await page.getByRole("radio", { name: "Detail page reading list" }).click();
   await page.getByRole("button", { name: "Save to list", exact: true }).click();
   await expect(
-    page.getByText("Added to your list.", { exact: true }),
+    page.getByText("Added to your list", { exact: true }),
   ).toBeVisible();
   expect(writes.filter((url) => url.endsWith("/import"))).toHaveLength(1);
   await page

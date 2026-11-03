@@ -146,9 +146,7 @@ test("individual indexer priorities load explicitly and retain saved choices thr
   await sources
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
-  await expect(
-    sources.getByText("Download defaults saved.", { exact: true }),
-  ).toBeVisible();
+  await expect(sources.getByText(/^Saved at \d\d:\d\d/)).toBeVisible();
   const savedDefaults = await (
     await page.request.get("/api/acquisition/preferences/personal")
   ).json();

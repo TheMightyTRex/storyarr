@@ -124,9 +124,7 @@ test("recovery is grouped with clients, keeps collapsed drafts, and saves source
   });
   await indexer.getByLabel("Failed transfer cleanup").selectOption("pause");
   await form.getByRole("button", { name: "Save changes" }).click();
-  await expect(page.getByRole("status")).toContainText(
-    "Recovery settings saved",
-  );
+  await expect(page.getByText(/^Saved at \d\d:\d\d$/)).toBeVisible();
   expect(fixture.recovery()).toMatchObject({
     sources: {
       "prowlarr:12": { cleanup: "pause" },

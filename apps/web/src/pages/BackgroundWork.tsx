@@ -41,6 +41,7 @@ export function BackgroundWorkForm() {
     queryFn: async () => result(await api.GET("/api/background-work")),
   });
   const [draft, setDraft] = useState<Pace | null>(null);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const pace = draft ?? setting.data?.pace ?? "normal";
   const save = useMutation({
     mutationFn: async (submitted: Pace) =>
@@ -50,6 +51,7 @@ export function BackgroundWorkForm() {
     onSuccess: (saved, submitted) => {
       setDraft((current) => (current === submitted ? null : current));
       cache.setQueryData(["background-work"], saved);
+      setSavedAt(new Date());
     },
   });
   if (setting.isPending) return <Loading />;
@@ -86,12 +88,9 @@ export function BackgroundWorkForm() {
             changes={draft && draft !== setting.data.pace ? 1 : 0}
             saving={save.isPending}
             onDiscard={() => setDraft(null)}
+            savedAt={savedAt}
+            savedDetail="It applies within a minute."
           />
-          {save.isSuccess && (
-            <p role="status">
-              Background work saved. It applies within a minute.
-            </p>
-          )}
         </>
       )}
       <Notice error={setting.error || save.error} />

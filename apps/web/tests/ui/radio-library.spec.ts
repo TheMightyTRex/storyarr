@@ -91,7 +91,7 @@ test("an admin chooses the radio library and reads it again", async ({
     local_path: "/media/radio",
   });
   await expect(block.getByRole("status")).toHaveText(
-    "Radio library saved: Radio. Storyarr is reading it now.",
+    /^Saved at \d\d:\d\d\. Storyarr is reading it now\.$/,
   );
   await expect(block.getByText("Radio on Home ABS")).toBeVisible();
   await expect(block.getByText("Not read yet")).toBeVisible();
@@ -103,9 +103,11 @@ test("an admin chooses the radio library and reads it again", async ({
   ).toBeVisible();
   await expect(block.getByText("2 November 2026")).toBeVisible();
   await block.getByRole("button", { name: "Read again" }).click();
-  await expect(block.getByRole("status")).toHaveText(
-    "Storyarr is reading the radio library. This takes a minute.",
-  );
+  const toast = page.locator(".toast", {
+    hasText: "Reading the radio library",
+  });
+  await expect(toast).toContainText("This takes a minute.");
+  await expect(toast).toHaveAttribute("data-tone", "info");
   expect(state.syncs).toBe(1);
 
   await block.getByRole("button", { name: "Change" }).click();

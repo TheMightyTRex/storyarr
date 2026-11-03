@@ -323,13 +323,12 @@
   outline: 3px solid var(--accent);
   outline-offset: 0;
 }
+/* Display is the library's icon button (.icon-btn), square and as tall as the search box. */
 .topbar-actions > .display-button {
-  gap: 8px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  background: transparent;
-  font-size: 0.875rem;
-  font-weight: 600;
+  width: var(--control-height-large);
+  min-width: var(--control-height-large);
+  padding: 0;
+  justify-content: center;
 }
 
 /* Row 2: the page's own tabs, Starboard's sub-menu row. */
@@ -424,11 +423,6 @@
   }
   .topbar-actions {
     margin-left: auto;
-  }
-  .topbar-actions > .display-button {
-    width: var(--control-height-large);
-    padding: 0;
-    justify-content: center;
   }
 }
 

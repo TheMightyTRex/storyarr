@@ -230,7 +230,7 @@ for (const connection of ["missing", "disabled"] as const) {
       dialog.getByText(
         connection === "missing"
           ? "Connect Audiobookshelf or Grimmory to choose a library folder."
-          : "Enable this connection in Libraries settings.",
+          : "Activate this connection in Libraries settings.",
         { exact: false },
       ),
     ).toBeVisible();

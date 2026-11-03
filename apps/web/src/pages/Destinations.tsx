@@ -242,7 +242,7 @@ export default function Destinations({
                       {destination && (
                         <DeleteConfiguration
                           name={`${names[medium].toLowerCase()} folder`}
-                          description="Remove this library folder configuration and turn off automatic imports into it. Existing books and files are kept."
+                          description="Remove this library folder configuration and deactivate automatic imports into it. Existing books and files are kept."
                           onDelete={async () =>
                             result(
                               await api.DELETE(
@@ -967,7 +967,7 @@ function FolderPicker({
                 </p>
                 {!options.data.downloaders.length && (
                   <p className="notice">
-                    You can save this folder now. To verify it and enable
+                    You can save this folder now. To verify it and activate
                     imports, connect and test a{" "}
                     <Link to="/settings#downloaders" onClick={close}>
                       download client

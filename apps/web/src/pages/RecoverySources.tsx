@@ -129,9 +129,9 @@ function SourceEditor({
       <fieldset disabled={disabled || prepare.isPending}>
         <legend>Settings for {names[choice.source_key]}</legend>
         <p>
-          Confirmation saves the reviewed settings, then tests an enabled
-          source. A failed test leaves the settings saved so a rotated MAM
-          session is preserved.
+          Confirmation saves the reviewed settings, then tests an active source.
+          A failed test leaves the settings saved so a rotated MAM session is
+          preserved.
         </p>
         <label>
           Source URL
@@ -149,13 +149,13 @@ function SourceEditor({
             checked={choice.enabled}
             onChange={(e) => edit({ enabled: e.target.checked })}
           />
-          Enable source
+          Activate source
         </label>
         {choice.source_key === "mam" && (
           <>
             <p>
               {evidence.requires_current_session
-                ? "Enter a current mam_id before enabling or testing this restored session."
+                ? "Enter a current mam_id before activating or testing this restored session."
                 : "Leave mam_id blank to keep the session supplied during this recovery. A changed route or interrupted request needs a current mam_id."}
             </p>
             <label>
@@ -325,7 +325,7 @@ function SettingsSummary({ value }: { value: Settings }) {
   return (
     <>
       <p>
-        {names[value.source_key]} · {value.enabled ? "Enabled" : "Disabled"}
+        {names[value.source_key]} · {value.enabled ? "Active" : "Inactive"}
       </p>
       <p>Source: {value.base_url}</p>
       <p>
@@ -386,9 +386,9 @@ export function SourceRecoveryReview({
         Review source settings
       </h3>
       <p>
-        Confirmation saves these settings, then verifies an enabled source.
+        Confirmation saves these settings, then verifies an active source.
         Verification can rotate MAM credentials; a failed test keeps the saved
-        settings and any returned session. Disabled sources are saved without
+        settings and any returned session. Inactive sources are saved without
         contacting them.
       </p>
       <ul>

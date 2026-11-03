@@ -156,7 +156,7 @@ test("admin grants and revokes a member's library access while preserving other 
   await dialog.getByRole("button", { name: "Save library access" }).click();
   await expect(dialog).toHaveCount(0);
   await expect(
-    page.getByText("Library access saved for Household books."),
+    page.getByText("Library access saved", { exact: true }),
   ).toBeVisible();
   expect(grants).toContain("reader");
   await page

@@ -226,7 +226,7 @@ export default function ListDifferences({
               </p>
               {!enabled && (
                 <p>
-                  Enable future changes above before sending selected
+                  Activate future changes above before sending selected
                   differences to Hardcover.
                 </p>
               )}

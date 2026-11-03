@@ -393,7 +393,7 @@ export function AudiobookBayConnectionForm({ value }: { value: Connection }) {
           checked={enabled}
           onChange={(event) => setEnabled(event.target.checked)}
         />
-        Enable AudiobookBay
+        Activate AudiobookBay
       </label>
       <div className="connection-action-bar">
         <div className="button-row">

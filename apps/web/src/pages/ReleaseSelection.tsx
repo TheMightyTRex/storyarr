@@ -14,6 +14,7 @@ import {
   protocolPreference,
 } from "./RouteFields";
 import { randomUUID } from "../randomUUID";
+import { useToast } from "../components/Toasts";
 
 type Artifact = components["schemas"]["SourceArtifactView"];
 const ManualPack = lazy(() => import("./ManualPack"));
@@ -199,6 +200,7 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
   const unconfirmed = checks.data?.unconfirmed || [];
   const blockedOverride =
     unconfirmed.length > 0 && checks.data?.can_override === false;
+  const toast = useToast();
   const save = useMutation({
     mutationFn: async () =>
       result(
@@ -234,6 +236,9 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
         }),
       ),
     onSuccess: async () => {
+      toast("Release selection saved", {
+        detail: "No download has been started.",
+      });
       key.current = randomUUID();
       setConfirmed(false);
       setLanguageConfirmed(false);
@@ -448,11 +453,6 @@ export default function ReleaseSelection({ artifact }: { artifact: Artifact }) {
       >
         {save.isPending ? "Saving selection…" : "Save release selection"}
       </button>
-      {save.isSuccess && (
-        <p role="status" className="success">
-          Release selection saved. No download has been started.
-        </p>
-      )}
       {!!history.data?.items.length && (
         <>
           <h3>Saved selections</h3>

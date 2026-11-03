@@ -149,7 +149,7 @@ export default function RouteFields({
         <span className="setting-subheading">
           Downloader defaults
           <SettingHelp label="download preferences">
-            The only enabled client of each type is used automatically. When
+            The only active client of each type is used automatically. When
             several clients share a type, choose a default here. Soulseek uses
             its own connection for searches and downloads. Destinations use the
             folders configured in Libraries, separately for ebooks and

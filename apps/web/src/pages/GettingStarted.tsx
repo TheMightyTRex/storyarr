@@ -253,7 +253,7 @@ export default function GettingStarted({ role }: { role: string }) {
                               ).length,
                               "enabled",
                               "enabled",
-                              "None enabled",
+                              "None active",
                             )}
                           </dd>
                         </div>
@@ -272,8 +272,8 @@ export default function GettingStarted({ role }: { role: string }) {
                     {readiness.data &&
                       !readiness.data.download_dispatch_enabled && (
                         <p className="onboarding-finish-note">
-                          Downloads are disabled on this server. Browsing and
-                          lists are ready. To enable downloads, set{" "}
+                          Downloads are inactive on this server. Browsing and
+                          lists are ready. To activate downloads, set{" "}
                           <code>BOOK_DOWNLOAD_DISPATCH_ENABLED=true</code> and
                           restart Storyarr.
                         </p>

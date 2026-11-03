@@ -168,7 +168,7 @@ export function AccountAutomation({
       <summary>
         <span>Account automation</span>
         <span className="account-automation-state">
-          {count ? `${count} enabled` : "All off"}
+          {count ? `${count} active` : "All inactive"}
         </span>
       </summary>
       <p className="muted">

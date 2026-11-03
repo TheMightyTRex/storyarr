@@ -4,6 +4,8 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import SettingHelp from "./SettingHelp";
+import SavedNote from "./SavedNote";
+import { useToast } from "./Toasts";
 
 type Setup = components["schemas"]["RadioLibrarySetup"];
 type Current = components["schemas"]["RadioLibraryView"];
@@ -46,11 +48,15 @@ export default function RadioLibrarySetting() {
     queryFn: async () => result(await api.GET("/api/radio/library")),
   });
   const [changing, setChanging] = useState(false);
-  const [message, setMessage] = useState("");
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const toast = useToast();
   const sync = useMutation({
     mutationFn: async () => result(await api.POST("/api/radio/library/sync")),
     onSuccess: () =>
-      setMessage("Storyarr is reading the radio library. This takes a minute."),
+      toast("Reading the radio library", {
+        tone: "info",
+        detail: "This takes a minute.",
+      }),
   });
   const current = setup.data?.current;
   return (
@@ -65,11 +71,6 @@ export default function RadioLibrarySetting() {
         </SettingHelp>
       </div>
       <Notice error={setup.error || sync.error} />
-      {message && (
-        <p className="success" role="status">
-          {message}
-        </p>
-      )}
       {setup.isPending ? (
         <Loading />
       ) : setup.data && (changing || !current) ? (
@@ -82,9 +83,7 @@ export default function RadioLibrarySetting() {
               old ? { ...old, current: saved } : old,
             );
             setChanging(false);
-            setMessage(
-              `Radio library saved: ${saved.name}. Storyarr is reading it now.`,
-            );
+            setSavedAt(new Date());
           }}
         />
       ) : current ? (
@@ -132,7 +131,7 @@ export default function RadioLibrarySetting() {
               type="button"
               disabled={sync.isPending}
               onClick={() => {
-                setMessage("");
+                setSavedAt(null);
                 sync.mutate();
               }}
             >
@@ -141,12 +140,13 @@ export default function RadioLibrarySetting() {
             <button
               type="button"
               onClick={() => {
-                setMessage("");
+                setSavedAt(null);
                 setChanging(true);
               }}
             >
               Change
             </button>
+            <SavedNote at={savedAt} detail="Storyarr is reading it now." />
           </div>
         </>
       ) : null}

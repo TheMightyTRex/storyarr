@@ -111,7 +111,7 @@ export function SlskdConnectionForm({
           checked={enabled}
           onChange={(event) => setEnabled(event.target.checked)}
         />
-        Enabled
+        Active
       </label>
       <div className="connection-action-bar">
         <div className="button-row">

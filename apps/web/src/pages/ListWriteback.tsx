@@ -186,9 +186,7 @@ export default function ListWriteback({
             <>
               <p>
                 <strong>
-                  {policy.data.enabled
-                    ? "Write-back enabled"
-                    : "Write-back off"}
+                  {policy.data.enabled ? "Write-back active" : "Write-back off"}
                 </strong>{" "}
                 · {policy.data.message}
               </p>
@@ -234,7 +232,7 @@ export default function ListWriteback({
                         disabled={busy || !comparisonReady}
                         onClick={() => configure.mutate(true)}
                       >
-                        Enable future changes
+                        Activate future changes
                       </button>
                       <button disabled={busy} onClick={() => preview.reset()}>
                         Cancel enablement
@@ -312,7 +310,7 @@ export default function ListWriteback({
               <h3>Membership changes</h3>
               {changes.data?.total === 0 && (
                 <p className="muted">
-                  No outbound changes yet. Enabling write-back does not send
+                  No outbound changes yet. Activating write-back does not send
                   your existing list.
                 </p>
               )}

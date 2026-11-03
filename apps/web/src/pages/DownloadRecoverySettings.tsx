@@ -17,7 +17,7 @@ const defaultPolicy: Policy = {
 export default function DownloadRecoverySettings() {
   const cache = useQueryClient();
   const [offset, setOffset] = useState(0);
-  const [saved, setSaved] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const approvals = useQuery({
     queryKey: ["recovery-approvals"],
     queryFn: async () =>
@@ -83,13 +83,13 @@ export default function DownloadRecoverySettings() {
         <Editor
           key={settings.dataUpdatedAt}
           current={settings.data}
+          savedAt={savedAt}
           onSaved={(value) => {
             cache.setQueryData(["download-recovery-settings"], value);
-            setSaved(true);
+            setSavedAt(new Date());
           }}
         />
       )}
-      {saved && <p role="status">Recovery settings saved.</p>}
       <details className="policy-disclosure" open={!!approvals.data?.length}>
         <summary>
           Replacement approvals
@@ -170,9 +170,11 @@ export default function DownloadRecoverySettings() {
 
 function Editor({
   current,
+  savedAt,
   onSaved,
 }: {
   current: Configuration;
+  savedAt: Date | null;
   onSaved: (value: Configuration) => void;
 }) {
   const [value, setValue] = useState(current);
@@ -306,6 +308,7 @@ function Editor({
         changes={countChanges(value, current)}
         saving={save.isPending}
         onDiscard={() => setValue(current)}
+        savedAt={savedAt}
       />
     </form>
   );
@@ -331,7 +334,7 @@ function PolicyFields({
             change({ ...value, enabled: event.target.checked })
           }
         />
-        Enable automatic recovery
+        Activate automatic recovery
       </label>
       <div className="policy-fields policy-fields-three">
         <label>
@@ -384,7 +387,7 @@ function PolicyFields({
         </label>
       </div>
       <p className="muted">
-        Leave the stall threshold blank to disable stall detection. Error
+        Leave the stall threshold blank to deactivate stall detection. Error
         recovery still uses the grace period.
       </p>
     </fieldset>

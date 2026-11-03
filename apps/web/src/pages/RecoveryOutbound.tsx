@@ -92,7 +92,7 @@ export function OutboundRecoveryReview({
         satisfied request does not prove that our earlier write caused it.
       </p>
       <p>
-        Old commands stop here. Write-back stays disabled until the list owner
+        Old commands stop here. Write-back stays inactive until the list owner
         reviews current differences and confirms their settings again. An
         unconfirmed sent attempt remains held, even when the book is absent.
       </p>

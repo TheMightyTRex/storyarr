@@ -10,6 +10,7 @@ import {
   sameIds,
   useAccessLibraries,
 } from "./AccessControls";
+import { useToast } from "../components/Toasts";
 
 type Library = components["schemas"]["LibraryView"];
 type Connection = components["schemas"]["ConnectionView"];
@@ -26,7 +27,7 @@ export default function LibraryAccess({
     queryFn: async () => result(await api.GET("/api/auth/users")),
   });
   const [editing, setEditing] = useState<Library | null>(null);
-  const [saved, setSaved] = useState("");
+  const toast = useToast();
   return (
     <section className="settings-block" aria-label="Library access">
       <div className="setting-subheading">
@@ -40,11 +41,6 @@ export default function LibraryAccess({
         adding or editing a user. Administrators always have access.
       </p>
       <Notice error={libraries.error || accounts.error} />
-      {saved && (
-        <p className="success" role="status">
-          {saved}
-        </p>
-      )}
       {libraries.isPending ? (
         <Loading />
       ) : libraries.data?.length ? (
@@ -99,7 +95,6 @@ export default function LibraryAccess({
                   type="button"
                   aria-label={`Edit access to ${library.name}`}
                   onClick={() => {
-                    setSaved("");
                     setEditing(library);
                   }}
                 >
@@ -117,7 +112,7 @@ export default function LibraryAccess({
           library={editing}
           close={() => setEditing(null)}
           onSaved={() => {
-            setSaved(`Library access saved for ${editing.name}.`);
+            toast("Library access saved", { detail: editing.name });
             setEditing(null);
           }}
         />
@@ -242,7 +237,7 @@ function AccessEditor({
                 description: `@${user.username}`,
                 badge:
                   user.active === false
-                    ? "Disabled account"
+                    ? "Inactive account"
                     : user.access_label || user.role,
                 disabled:
                   user.active === false &&

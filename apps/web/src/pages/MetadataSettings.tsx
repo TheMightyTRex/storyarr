@@ -9,6 +9,8 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import LanguageSelect from "../components/LanguageSelect";
 import SettingHelp from "../components/SettingHelp";
+import SavedNote from "../components/SavedNote";
+import { useToast } from "../components/Toasts";
 
 type Preferences = components["schemas"]["MetadataPreferences"];
 const fields = [
@@ -51,6 +53,8 @@ export default function MetadataSettings({
   const client = useQueryClient();
   const [token, setToken] = useState("");
   const [message, setMessage] = useState("");
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const toast = useToast();
   const account = useQuery({
     queryKey: ["metadata-account"],
     queryFn: async () => result(await api.GET("/api/metadata/account")),
@@ -71,7 +75,8 @@ export default function MetadataSettings({
       client.removeQueries({ queryKey: ["discovery"] });
       client.resetQueries({ queryKey: ["reading-hardcover-lists"] });
       setToken("");
-      setMessage("Your catalogue connection was saved.");
+      setMessage("");
+      setSavedAt(new Date());
     },
   });
   const suggestions = useMutation({
@@ -88,7 +93,7 @@ export default function MetadataSettings({
       setMessage(
         value.suggest_series_gaps
           ? "Storyarr will look for missing books in series linked to your library."
-          : "Series suggestions are off.",
+          : "Series suggestions are inactive.",
       );
     },
   });
@@ -102,11 +107,9 @@ export default function MetadataSettings({
           queryKey: ["reading-hardcover-lists"],
         });
       }
-      setMessage(
-        value.status === "connected"
-          ? "Hardcover catalogue access verified."
-          : "",
-      );
+      setMessage("");
+      if (value.status === "connected")
+        toast("Hardcover catalogue access verified");
     },
   });
   return (
@@ -196,11 +199,12 @@ export default function MetadataSettings({
                       disabled={save.isPending || test.isPending}
                     >
                       {account.data.enabled
-                        ? "Disable connection"
-                        : "Enable connection"}
+                        ? "Deactivate connection"
+                        : "Activate connection"}
                     </button>
                   </>
                 )}
+                <SavedNote at={savedAt} />
                 <a
                   className="metadata-token-link"
                   href={hardcoverTokenUrl}
@@ -259,19 +263,18 @@ function PreferenceForm({ value }: { value: Preferences }) {
     ...value,
     audible_region: value.audible_region ?? suggestedAudibleStore(),
   }));
-  const [saved, setSaved] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const save = useMutation({
     mutationFn: async () =>
       result(await api.PUT("/api/metadata/preferences", { body: settings })),
     onSuccess: (result) => {
       client.setQueryData(["metadata-preferences"], result);
-      setSaved(true);
+      setSavedAt(new Date());
     },
   });
   return (
     <form
       className="settings-block editor metadata-defaults"
-      onChange={() => setSaved(false)}
       onSubmit={(e) => {
         e.preventDefault();
         save.mutate();
@@ -289,7 +292,6 @@ function PreferenceForm({ value }: { value: Preferences }) {
           <select
             value={settings.primary}
             onChange={(e) => {
-              setSaved(false);
               setSettings({
                 ...settings,
                 primary: e.target.value as Preferences["primary"],
@@ -305,7 +307,6 @@ function PreferenceForm({ value }: { value: Preferences }) {
           <LanguageSelect
             value={settings.language}
             onChange={(language) => {
-              setSaved(false);
               setSettings({ ...settings, language });
             }}
           />
@@ -315,7 +316,6 @@ function PreferenceForm({ value }: { value: Preferences }) {
           <select
             value={settings.audible_region ?? "us"}
             onChange={(e) => {
-              setSaved(false);
               setSettings({
                 ...settings,
                 audible_region: e.target.value as AudibleStore,
@@ -340,7 +340,6 @@ function PreferenceForm({ value }: { value: Preferences }) {
           type="checkbox"
           checked={settings.filter_language ?? false}
           onChange={(event) => {
-            setSaved(false);
             setSettings({ ...settings, filter_language: event.target.checked });
           }}
         />
@@ -529,12 +528,8 @@ function PreferenceForm({ value }: { value: Preferences }) {
         changes={countChanges(settings, value)}
         saving={save.isPending}
         onDiscard={() => setSettings(value)}
+        savedAt={savedAt}
       />
-      {saved && (
-        <p className="success" role="status">
-          Metadata defaults saved.
-        </p>
-      )}
     </form>
   );
 }

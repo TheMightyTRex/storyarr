@@ -70,7 +70,7 @@ test("admins choose how often background jobs run in Settings, System", async ({
   await section.getByRole("radio", { name: /^Minimal/ }).check();
   await section.getByRole("button", { name: "Save changes" }).click();
   await expect(section.getByRole("status")).toHaveText(
-    "Background work saved. It applies within a minute.",
+    /^Saved at \d\d:\d\d\. It applies within a minute\.$/,
   );
   expect(saved).toEqual([{ pace: "minimal" }]);
   await page.reload();

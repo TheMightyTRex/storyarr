@@ -371,7 +371,7 @@ export function ProwlarrConnectionForm({
           checked={enabled}
           onChange={(event) => setEnabled(event.target.checked)}
         />
-        Enable Prowlarr
+        Activate Prowlarr
       </label>
       <details>
         <summary>Advanced</summary>

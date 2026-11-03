@@ -255,7 +255,7 @@ export default function Downloaders({
                       error={testError}
                     />
                   ) : (
-                    <StatusChip label="Disabled" />
+                    <StatusChip label="Inactive" />
                   )}
                 </div>
                 {connection.enabled && (testError || connection.last_error) && (
@@ -767,11 +767,11 @@ function ConnectionForm({
           checked={enabled}
           onChange={(event) => setEnabled(event.target.checked)}
         />
-        Enabled
+        Active
       </label>
       <p className="muted">
-        Disable to stop new downloads while keeping this configuration. Existing
-        transfers continue to be monitored.
+        Deactivate to stop new downloads while keeping this configuration.
+        Existing transfers continue to be monitored.
       </p>
       <div className="button-row">
         <button className="primary" disabled={save.isPending}>
@@ -797,7 +797,7 @@ function DownloadDispatchNotice() {
   if (readiness.data?.download_dispatch_enabled !== false) return null;
   return (
     <div className="notice">
-      <strong>Downloads are disabled on this server</strong>
+      <strong>Downloads are inactive on this server</strong>
       <p>
         You can connect clients and verify folders now. To start downloads, set{" "}
         <code>BOOK_DOWNLOAD_DISPATCH_ENABLED=true</code> in Storyarr’s

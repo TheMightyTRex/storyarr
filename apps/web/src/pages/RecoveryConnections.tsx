@@ -144,7 +144,7 @@ function ConnectionEditor({
       <fieldset disabled={disabled || prepare.isPending}>
         <legend>Settings for {evidence.before.name}</legend>
         <p>
-          Review the current connection. Enabled connections are tested only
+          Review the current connection. Active connections are tested only
           after you confirm the preview.
         </p>
         <label>
@@ -172,7 +172,7 @@ function ConnectionEditor({
             checked={choice.enabled}
             onChange={(e) => edit({ enabled: e.target.checked })}
           />
-          Enable connection
+          Activate connection
         </label>
         <p>
           Leave credentials blank to keep the saved credentials. Changing the
@@ -322,7 +322,7 @@ function ConnectionEditor({
               {!evidence.source_roots.length && (
                 <p>
                   No worker download roots are configured. You can keep this
-                  connection disabled while repairing the deployment mounts.
+                  connection inactive while repairing the deployment mounts.
                 </p>
               )}
             </fieldset>
@@ -343,7 +343,7 @@ function SettingsSummary({ value }: { value: Settings }) {
   return (
     <>
       <p>
-        {value.name} · {value.enabled ? "Enabled" : "Disabled"}
+        {value.name} · {value.enabled ? "Active" : "Inactive"}
       </p>
       <p>Server: {value.base_url}</p>
       {value.kind === "audiobookshelf" ? (
@@ -407,8 +407,8 @@ export function ConnectionRecoveryReview({
         Review connection settings
       </h3>
       <p>
-        Enabled connections must pass a fresh read-only connection test before
-        these settings are saved. Disabled connections are saved without
+        Active connections must pass a fresh read-only connection test before
+        these settings are saved. Inactive connections are saved without
         contacting the server.
       </p>
       <p>

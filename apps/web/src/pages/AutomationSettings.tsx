@@ -55,7 +55,7 @@ export function WantedSearchSettings() {
   const cache = useQueryClient();
   const settings = useAutomationSettings();
   const [draft, setDraft] = useState<WantedSearch | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const value = draft ?? settings.data?.settings?.wanted_search;
   const save = useMutation({
     mutationFn: async () =>
@@ -70,11 +70,10 @@ export function WantedSearchSettings() {
     onSuccess: (data) => {
       cache.setQueryData(["automation-settings"], data);
       setDraft(null);
-      setSaved(true);
+      setSavedAt(new Date());
     },
   });
   const change = (next: Partial<WantedSearch>) => {
-    setSaved(false);
     setDraft({ ...value!, ...next });
   };
   return (
@@ -88,12 +87,11 @@ export function WantedSearchSettings() {
     >
       <Notice error={settings.error || save.error} />
       {settings.isPending && <Loading />}
-      {saved && <p role="status">Wanted books settings saved.</p>}
       {value && (
         <>
           <p>
             When a search finds no suitable release, the book stays wanted. With
-            this on, it is searched again automatically: after 6 hours, then
+            this active, it is searched again automatically: after 6 hours, then
             once a day for a week, then once a week until it is found.
           </p>
           <label className="check-label">
@@ -135,6 +133,7 @@ export function WantedSearchSettings() {
             }
             saving={save.isPending}
             onDiscard={() => setDraft(null)}
+            savedAt={savedAt}
           />
         </>
       )}
@@ -144,7 +143,7 @@ export function WantedSearchSettings() {
 
 export function DeletedRetention() {
   const cache = useQueryClient();
-  const [saved, setSaved] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const query = useQuery({
     queryKey: ["automation-installation"],
     queryFn: async () =>
@@ -165,7 +164,7 @@ export function DeletedRetention() {
     onSuccess: (data) => {
       cache.setQueryData(["automation-installation"], data);
       setDays(null);
-      setSaved(true);
+      setSavedAt(new Date());
     },
   });
   return (
@@ -179,7 +178,6 @@ export function DeletedRetention() {
     >
       <Notice error={query.error || save.error} />
       {query.isPending && <Loading />}
-      {saved && <p role="status">Retention saved.</p>}
       <p>
         Deleting a book from a library moves its files to a hidden{" "}
         <code>.deleted-books</code> folder inside that library, so it can be
@@ -209,13 +207,14 @@ export function DeletedRetention() {
         }
         saving={save.isPending}
         onDiscard={() => setDays(null)}
+        savedAt={savedAt}
       />
     </form>
   );
 }
 
 export function FollowDefaults() {
-  const [saved, setSaved] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const cache = useQueryClient();
   const settings = useAutomationSettings();
   return (
@@ -226,14 +225,14 @@ export function FollowDefaults() {
       </p>
       <Notice error={settings.error} />
       {settings.isPending && <Loading />}
-      {saved && <p role="status">Follow defaults saved.</p>}
       {settings.data && (
         <Editor
           key={settings.data.generation}
           current={settings.data}
+          savedAt={savedAt}
           onSaved={(value) => {
             cache.setQueryData(["automation-settings"], value);
-            setSaved(true);
+            setSavedAt(new Date());
           }}
         />
       )}
@@ -243,9 +242,11 @@ export function FollowDefaults() {
 
 function Editor({
   current,
+  savedAt,
   onSaved,
 }: {
   current: View;
+  savedAt: Date | null;
   onSaved: (value: View) => void;
 }) {
   const [filters, setFilters] = useState(current.settings.follow_filters);
@@ -283,6 +284,7 @@ function Editor({
         changes={countChanges(filters, current.settings.follow_filters)}
         saving={save.isPending}
         onDiscard={() => setFilters(current.settings.follow_filters)}
+        savedAt={savedAt}
       />
     </form>
   );

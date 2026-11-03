@@ -20,7 +20,7 @@ export default function DisplaySettings() {
       setMessage("Display settings saved.");
     } catch {
       setMessage(
-        "Your browser could not save these settings. Enable local storage and try again.",
+        "Your browser could not save these settings. Allow this site to store data and try again.",
       );
     }
   }

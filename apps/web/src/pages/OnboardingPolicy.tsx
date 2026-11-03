@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
+import SavedNote from "../components/SavedNote";
 
 export default function OnboardingPolicy() {
   const cache = useQueryClient();
@@ -10,6 +11,7 @@ export default function OnboardingPolicy() {
     queryFn: async () => result(await api.GET("/api/setup/onboarding-policy")),
   });
   const [draft, setDraft] = useState<boolean | null>(null);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const show = draft ?? policy.data?.show_member_onboarding ?? true;
   const save = useMutation({
     mutationFn: async (submitted: boolean) =>
@@ -21,6 +23,7 @@ export default function OnboardingPolicy() {
     onSuccess: (saved, submitted) => {
       setDraft((current) => (current === submitted ? null : current));
       cache.setQueryData(["onboarding-policy"], saved);
+      setSavedAt(new Date());
       cache.invalidateQueries({ queryKey: ["session"] });
     },
   });
@@ -55,10 +58,12 @@ export default function OnboardingPolicy() {
             This setting leaves personal integrations, library access, and saved
             setup progress unchanged.
           </p>
-          <button className="primary" disabled={save.isPending}>
-            {save.isPending ? "Saving…" : "Save onboarding preference"}
-          </button>
-          {save.isSuccess && <p role="status">Onboarding preference saved.</p>}
+          <div className="button-row">
+            <button className="primary" disabled={save.isPending}>
+              {save.isPending ? "Saving…" : "Save onboarding preference"}
+            </button>
+            <SavedNote at={savedAt} />
+          </div>
         </form>
       ) : null}
       <Notice error={policy.error || save.error} />

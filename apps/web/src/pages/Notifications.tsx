@@ -5,6 +5,7 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookDialog from "../components/BookDialog";
+import { useToast } from "../components/Toasts";
 
 type Channel = components["schemas"]["NotificationChannelView"];
 type Input = components["schemas"]["NotificationChannelInput"];
@@ -27,7 +28,7 @@ export default function Notifications({ admin }: { admin: boolean }) {
   const [historyId, setHistoryId] = useState<string | null>(null);
   // Deleting a channel cannot be undone, so it is confirmed first.
   const [deleting, setDeleting] = useState<Channel | null>(null);
-  const [notice, setNotice] = useState("");
+  const toast = useToast();
   const settings = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => result(await api.GET("/api/notifications")),
@@ -81,7 +82,7 @@ export default function Notifications({ admin }: { admin: boolean }) {
       setShowForm(false);
       setDestination("");
       setToken("");
-      setNotice("Channel saved.");
+      toast("Channel saved");
       await refresh();
     },
   });
@@ -123,11 +124,18 @@ export default function Notifications({ admin }: { admin: boolean }) {
       );
     },
     onSuccess: async (_, variables) => {
-      setNotice(
-        variables.type === "test"
-          ? "Test queued. Delivery status will update after the worker runs (within a minute)."
-          : "Channel updated.",
-      );
+      if (variables.type === "test")
+        toast("Test queued", {
+          tone: "info",
+          detail: "Delivery status updates within a minute.",
+        });
+      else if (variables.type === "delete") toast("Channel deleted");
+      else
+        toast(
+          variables.channel.enabled
+            ? "Channel deactivated"
+            : "Channel activated",
+        );
       await refresh();
     },
   });
@@ -167,7 +175,6 @@ export default function Notifications({ admin }: { admin: boolean }) {
     setDestination("");
     setToken("");
     setShowForm(true);
-    setNotice("");
   }
   return (
     <section className="notification-settings" aria-label="Notifications">
@@ -185,7 +192,6 @@ export default function Notifications({ admin }: { admin: boolean }) {
           history.error
         }
       />
-      {notice && <p role="status">{notice}</p>}
       {settings.isPending && <Loading />}
       {settings.data && (
         <>
@@ -366,7 +372,7 @@ export default function Notifications({ admin }: { admin: boolean }) {
               <p>
                 {channel.kind} ·{" "}
                 {channel.installation ? "Installation" : "Personal"} ·{" "}
-                {channel.enabled ? "Enabled" : "Paused"}
+                {channel.enabled ? "Active" : "Paused"}
               </p>
               {!admin && channel.kind === "apprise" && (
                 <p>
