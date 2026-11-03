@@ -680,6 +680,14 @@ async def purge_held_books(timestamp: int = 0) -> None:
     await purge_held()
 
 
+@tasks.periodic(cron="30 4 * * *")
+@tasks.task(name="auth.expired.purge", queue="system", lock="auth.expired.purge")
+async def purge_expired_sign_ins(timestamp: int = 0) -> None:
+    from app.domain.auth_cleanup import purge
+
+    await purge()
+
+
 @tasks.periodic(cron="*/5 * * * *")
 @tasks.task(name="connections.health", queue="system", lock="connections.health")
 async def check_connection_health(timestamp: int = 0) -> None:

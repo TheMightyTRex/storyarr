@@ -7,12 +7,16 @@ from time import monotonic
 from urllib.parse import quote
 
 import httpx
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from app.api.dependencies import current_user
 from app.config import get_settings
 
-router = APIRouter()
+# Signed in only: the exact version and the administrator's upgrade page are not for anyone who can
+# reach the port (security check, 3 November 2026). The side and phone menus show them after signing
+# in.
+router = APIRouter(dependencies=[Depends(current_user)])
 _lock = threading.Lock()
 _cache: dict[str, tuple[float, str | None, str]] = {}
 _history: dict[str, tuple[float, str, list["ApplicationReleaseNote"]]] = {}

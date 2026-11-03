@@ -1,0 +1,5 @@
+# Left on purpose; docs/SECURITY.md explains each one.
+# DS-0002, no USER in the Dockerfile: Storyarr starts as root only to switch to PUID and PGID at once
+# (services/app/container.py refuses user or group 0), so the files in /config and /data stay yours.
+AVD-DS-0002
+DS-0002

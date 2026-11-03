@@ -19,14 +19,14 @@ BEGIN
   SELECT pg_get_functiondef('capture_notification_event()'::regprocedure) INTO definition;
   EXECUTE replace(definition, '''{old}''', '''{new}''');
 END $$
-"""
+"""  # only called with the two fixed titles below  # nosec B608
     )
     op.execute(
         f"""
 UPDATE notification_events
 SET payload = jsonb_set(payload, '{{title}}', to_jsonb('{new}'::text))
 WHERE payload ->> 'title' = '{old}'
-"""
+"""  # only called with the two fixed titles below  # nosec B608
     )
 
 

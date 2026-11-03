@@ -106,6 +106,11 @@ class ConnectionCheck(BaseModel):
     version: str | None
 
 
+def saved_for(record: Integration, body: ABSConnectionInput) -> dict:
+    """Saved credentials, only for the address they were saved for: a new address needs new ones."""
+    return decrypt_secrets(record.encrypted_secrets) if record.base_url == body.base_url else {}
+
+
 def connection_secrets(body: ABSConnectionInput, saved: dict | None = None) -> dict:
     saved = saved or {}
     if body.kind == "grimmory":
@@ -153,7 +158,7 @@ async def check_connection(
         record = await connection_or_404(db, integration_id)
         if record.kind != body.kind:
             raise HTTPException(422, "A connection cannot change library apps")
-        saved = decrypt_secrets(record.encrypted_secrets)
+        saved = saved_for(record, body)
     return await inspect_connection(body.kind, body.base_url, connection_secrets(body, saved))
 
 
@@ -187,7 +192,7 @@ async def update_connection(
         raise HTTPException(422, "A connection cannot change library apps")
     generation = record.credential_generation
     saved_secrets = decrypt_secrets(record.encrypted_secrets)
-    secrets = connection_secrets(body, saved_secrets)
+    secrets = connection_secrets(body, saved_for(record, body))
     capabilities = await inspect_connection(body.kind, body.base_url, secrets)
     await db.refresh(record, with_for_update=True)
     if record.deleted_at or record.credential_generation != generation:

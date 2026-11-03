@@ -600,6 +600,58 @@ async def delete_user(user_id: UUID, body: AccountRemovalInput, actor: Admin, db
     await db.commit()
 
 
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1, max_length=256)
+    new_password: str = Field(min_length=12, max_length=256)
+
+
+class PasswordReset(BaseModel):
+    password: str = Field(min_length=12, max_length=256)
+
+
+@router.put("/password", status_code=204, response_class=Response)
+async def change_password(body: PasswordChange, request: Request, user: CurrentUser, db: Database):
+    """Change your own password (security check, 3 November 2026). Other browsers are signed out."""
+    await enforce_auth_budget(db, "password:" + str(user.id))
+    user_id, encoded = user.id, user.password_hash
+    await db.rollback()  # Password hashing must not hold a connection/transaction open.
+    if not encoded:
+        raise HTTPException(
+            409, "This account signs in with another service and has no password here"
+        )
+    if not await asyncio.to_thread(verify_password, body.current_password, encoded):
+        raise HTTPException(422, "Your current password is incorrect")
+    replacement = await asyncio.to_thread(hash_password, body.new_password)
+    user = await db.get(User, user_id, with_for_update=True, populate_existing=True)
+    if not user or not user.active:
+        raise HTTPException(401, "Sign in again")
+    user.password_hash = replacement
+    current = token_hash(request.cookies.get(COOKIE, ""))
+    await db.execute(
+        delete(LoginSession).where(
+            LoginSession.user_id == user_id, LoginSession.token_hash != current
+        )
+    )
+    db.add(AuditEvent(actor_id=user_id, action="user.password.changed", entity_id=user_id))
+    await db.commit()
+
+
+@router.put("/users/{user_id}/password", status_code=204, response_class=Response)
+async def reset_password(user_id: UUID, body: PasswordReset, actor: Admin, db: Database):
+    """An administrator sets a new password for someone else, who is then signed out everywhere."""
+    if user_id == actor.id:
+        raise HTTPException(409, "Change your own password in Settings, Sign-in")
+    actor_id = actor.id
+    replacement = await asyncio.to_thread(hash_password, body.password)
+    user = await db.get(User, user_id, with_for_update=True, populate_existing=True)
+    if not user:
+        raise HTTPException(404, "Account not found")
+    user.password_hash = replacement
+    await db.execute(delete(LoginSession).where(LoginSession.user_id == user_id))
+    db.add(AuditEvent(actor_id=actor_id, action="user.password.reset", entity_id=user_id))
+    await db.commit()
+
+
 @router.put("/users/{user_id}/profile", response_model=UserView)
 async def update_account_profile(
     user_id: UUID, body: AccountProfileInput, actor: Admin, db: Database

@@ -56,77 +56,151 @@ export default function AccountSignIn() {
   });
   const busy = link.isPending || unlink.isPending;
   return (
-    <div className="panel editor">
-      <p>
-        Link your existing account to an identity provider without losing your
-        books, permissions, or local password.
-      </p>
-      {status.isPending && <Loading />}
-      {message && <p role="status">{message}</p>}
-      {status.data && (
-        <>
-          <p>
-            Local password:{" "}
-            {status.data.password_available ? "Available" : "Not configured"}
-          </p>
-          <p>
-            Identity provider:{" "}
-            {status.data.linked
-              ? `Linked (${status.data.issuer})`
-              : "Not linked"}
-          </p>
-          {!status.data.password_available ? (
+    <>
+      {status.data?.password_available && <ChangePassword />}
+      <div className="panel editor">
+        <p>
+          Link your existing account to an identity provider without losing your
+          books, permissions, or local password.
+        </p>
+        {status.isPending && <Loading />}
+        {message && <p role="status">{message}</p>}
+        {status.data && (
+          <>
             <p>
-              Linking changes require a local password. Keep using your existing
-              sign-in provider.
+              Local password:{" "}
+              {status.data.password_available ? "Available" : "Not configured"}
             </p>
-          ) : status.data.linked || provider.data?.enabled ? (
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                setMessage("");
-                link.reset();
-                unlink.reset();
-                if (status.data.linked) unlink.mutate();
-                else link.mutate();
-              }}
-            >
+            <p>
+              Identity provider:{" "}
+              {status.data.linked
+                ? `Linked (${status.data.issuer})`
+                : "Not linked"}
+            </p>
+            {!status.data.password_available ? (
               <p>
-                {status.data.linked
-                  ? "Confirm your local password to unlink this provider."
-                  : `Confirm your local password, then sign in with ${provider.data?.label || "your identity provider"}. Choose the identity you want to use for this account.`}
+                Linking changes require a local password. Keep using your
+                existing sign-in provider.
               </p>
-              <label>
-                Current password
-                <input
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  maxLength={256}
-                  value={password}
-                  disabled={busy}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-              </label>
-              <button className="primary" disabled={busy || !password}>
-                {busy
-                  ? "Please wait…"
-                  : status.data.linked
-                    ? "Unlink identity provider"
-                    : "Link identity provider"}
-              </button>
-            </form>
-          ) : (
-            <p>
-              An administrator must enable an identity provider in Users &amp;
-              access first.
-            </p>
-          )}
-        </>
+            ) : status.data.linked || provider.data?.enabled ? (
+              <form
+                aria-label="Identity provider"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setMessage("");
+                  link.reset();
+                  unlink.reset();
+                  if (status.data.linked) unlink.mutate();
+                  else link.mutate();
+                }}
+              >
+                <p>
+                  {status.data.linked
+                    ? "Confirm your local password to unlink this provider."
+                    : `Confirm your local password, then sign in with ${provider.data?.label || "your identity provider"}. Choose the identity you want to use for this account.`}
+                </p>
+                <label>
+                  Current password
+                  <input
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    maxLength={256}
+                    value={password}
+                    disabled={busy}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                </label>
+                <button className="primary" disabled={busy || !password}>
+                  {busy
+                    ? "Please wait…"
+                    : status.data.linked
+                      ? "Unlink identity provider"
+                      : "Link identity provider"}
+                </button>
+              </form>
+            ) : (
+              <p>
+                An administrator must enable an identity provider in Users &amp;
+                access first.
+              </p>
+            )}
+          </>
+        )}
+        <Notice
+          error={status.error || provider.error || link.error || unlink.error}
+        />
+      </div>
+    </>
+  );
+}
+
+/** Change your own password. Your other browsers are signed out; this one stays signed in. */
+function ChangePassword() {
+  const [current, setCurrent] = useState("");
+  const [replacement, setReplacement] = useState("");
+  const [done, setDone] = useState(false);
+  const change = useMutation({
+    mutationFn: async () =>
+      result(
+        await api.PUT("/api/auth/password", {
+          body: { current_password: current, new_password: replacement },
+        }),
+      ),
+    onSuccess: () => {
+      setCurrent("");
+      setReplacement("");
+      setDone(true);
+    },
+  });
+  return (
+    <form
+      className="panel editor"
+      aria-label="Change password"
+      onSubmit={(event) => {
+        event.preventDefault();
+        setDone(false);
+        change.mutate();
+      }}
+    >
+      <h3>Change password</h3>
+      <label>
+        Current password
+        <input
+          type="password"
+          autoComplete="current-password"
+          required
+          maxLength={256}
+          value={current}
+          disabled={change.isPending}
+          onChange={(event) => setCurrent(event.target.value)}
+        />
+      </label>
+      <label>
+        New password
+        <input
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={12}
+          maxLength={256}
+          value={replacement}
+          disabled={change.isPending}
+          onChange={(event) => setReplacement(event.target.value)}
+        />
+      </label>
+      <p className="muted small">
+        At least 12 characters. Your other browsers and devices are signed out.
+      </p>
+      <button className="primary" disabled={change.isPending}>
+        {change.isPending ? "Changing password…" : "Change password"}
+      </button>
+      {done && (
+        <p role="status">
+          Password changed. Your other browsers and devices are signed out.
+        </p>
       )}
-      <Notice
-        error={status.error || provider.error || link.error || unlink.error}
-      />
-    </div>
+      <Notice error={change.error} />
+    </form>
   );
 }

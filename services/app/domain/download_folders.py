@@ -20,7 +20,7 @@ _SYSTEM_ROOTS = (
     "/run",
     "/sbin",
     "/sys",
-    "/tmp",
+    "/tmp",  # a list of system folders that are never offered, not a temporary file  # nosec B108
     "/usr",
     "/var",
 )

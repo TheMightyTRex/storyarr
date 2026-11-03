@@ -416,6 +416,46 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/auth/password": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Change Password
+     * @description Change your own password (security check, 3 November 2026). Your other browsers are signed out.
+     */
+    put: operations["change_password_api_auth_password_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/users/{user_id}/password": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Reset Password
+     * @description An administrator sets a new password for someone else, who is then signed out everywhere.
+     */
+    put: operations["reset_password_api_auth_users__user_id__password_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/auth/users/{user_id}/profile": {
     parameters: {
       query?: never;
@@ -12279,6 +12319,18 @@ export interface components {
        */
       can_combine: boolean;
     };
+    /** PasswordChange */
+    PasswordChange: {
+      /** Current Password */
+      current_password: string;
+      /** New Password */
+      new_password: string;
+    };
+    /** PasswordReset */
+    PasswordReset: {
+      /** Password */
+      password: string;
+    };
     /** PathPreviewInput */
     PathPreviewInput: {
       /** Path */
@@ -17590,6 +17642,70 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["AccountRemovalInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  change_password_api_auth_password_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordChange"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  reset_password_api_auth_users__user_id__password_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordReset"];
       };
     };
     responses: {

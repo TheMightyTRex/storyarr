@@ -46,9 +46,10 @@ UNSAFE = {
     "handler",
     "listener",
 }
-UNSAFE_STYLE = re.compile(r"url\(|@import|javascript:|expression\(", re.I)
-# Any url() that is not a reference inside the same file, or script in an attribute.
-OUTSIDE = re.compile(r"url\((?!\s*['\"]?#)|javascript:|expression\(", re.I)
+# A backslash is a CSS escape ("\\75 rl(" is "url("), which could hide any of these, so it goes too.
+UNSAFE_STYLE = re.compile(r"url\(|@import|javascript:|expression\(|\\", re.I)
+# Any url() that is not a reference inside the same file, script in an attribute, or a CSS escape.
+OUTSIDE = re.compile(r"url\((?!\s*['\"]?#)|javascript:|expression\(|\\", re.I)
 SVG_HEADERS = {
     # Opened directly, the logo still cannot run script or load anything.
     "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",

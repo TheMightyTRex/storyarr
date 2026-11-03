@@ -53,15 +53,25 @@ test("link and unlink the current account with password confirmation", async ({
   await expect(
     page.getByText("Identity provider: Not linked", { exact: true }),
   ).toBeVisible();
-  await page.getByLabel("Current password").fill("wrong password");
+  await page
+    .getByRole("form", { name: "Identity provider" })
+    .getByLabel("Current password")
+    .fill("wrong password");
   await page
     .getByRole("button", { name: "Link identity provider", exact: true })
     .click();
   await expect(
     page.getByText("Your local password is incorrect", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByLabel("Current password")).toHaveValue("");
-  await page.getByLabel("Current password").fill("my local password");
+  await expect(
+    page
+      .getByRole("form", { name: "Identity provider" })
+      .getByLabel("Current password"),
+  ).toHaveValue("");
+  await page
+    .getByRole("form", { name: "Identity provider" })
+    .getByLabel("Current password")
+    .fill("my local password");
   await page
     .getByRole("button", { name: "Link identity provider", exact: true })
     .click();
@@ -71,14 +81,21 @@ test("link and unlink the current account with password confirmation", async ({
       { exact: true },
     ),
   ).toBeVisible();
-  await page.getByLabel("Current password").fill("my local password");
+  await page
+    .getByRole("form", { name: "Identity provider" })
+    .getByLabel("Current password")
+    .fill("my local password");
   await page
     .getByRole("button", { name: "Unlink identity provider", exact: true })
     .click();
   await expect(
     page.getByText("Identity provider: Not linked", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByLabel("Current password")).toHaveValue("");
+  await expect(
+    page
+      .getByRole("form", { name: "Identity provider" })
+      .getByLabel("Current password"),
+  ).toHaveValue("");
   expect(passwords).toEqual([
     "wrong password",
     "my local password",

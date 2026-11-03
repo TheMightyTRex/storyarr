@@ -42,6 +42,18 @@ def test_svg_logos_lose_script_handlers_and_outside_references():
     assert clean.startswith("<svg")
 
 
+def test_css_escapes_cannot_hide_an_outside_reference():
+    # Security check, 3 November 2026: "\\75 rl(" is CSS for "url(", so a backslash in style text
+    # could hide a reference to another site from the cleaner.
+    logo = (
+        b'<svg xmlns="http://www.w3.org/2000/svg"><style>rect{fill:\\75 rl(https://example.com/x)}</style>'
+        b'<rect width="10" height="10" style="fill:\\75 rl(https://example.com/y)"/></svg>'
+    )
+    clean = radio_images.sanitise_svg(logo).decode()
+    assert "example.com" not in clean
+    assert "<rect" in clean
+
+
 @pytest.mark.parametrize(
     "data",
     [
