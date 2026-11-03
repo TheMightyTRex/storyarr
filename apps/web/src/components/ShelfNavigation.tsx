@@ -69,10 +69,17 @@ export function ShelfRail({
         </NavLink>
       </nav>
       <div className="shelf-account">
-        <span className="avatar" title={name} aria-hidden="true">
+        <span
+          className="avatar"
+          title={name}
+          aria-hidden="true"
+          data-snag-private
+        >
           {name.slice(0, 1).toUpperCase()}
         </span>
-        <span className="sr-only">Signed in as {name}</span>
+        <span className="sr-only" data-snag-private>
+          Signed in as {name}
+        </span>
         <button
           type="button"
           className="icon-button"

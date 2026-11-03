@@ -3,3 +3,4 @@
 src/shared/tokens.css
 src/shared/components.css
 src/shared/ux-notes.js
+src/vendor/snaglist.js

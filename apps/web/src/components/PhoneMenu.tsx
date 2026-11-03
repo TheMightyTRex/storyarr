@@ -276,7 +276,7 @@ export default function PhoneMenu({
             })}
           </nav>
           <footer className="phone-menu-footer">
-            <div className="phone-menu-account">
+            <div className="phone-menu-account" data-snag-private>
               <span className="avatar" aria-hidden="true">
                 {name.slice(0, 1).toUpperCase()}
               </span>

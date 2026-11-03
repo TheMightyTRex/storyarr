@@ -895,7 +895,7 @@ function UsersTable({
 }) {
   return (
     <div className="access-table-scroll">
-      <table className="access-table access-table-users">
+      <table className="access-table access-table-users" data-snag-private>
         <caption className="sr-only">Users</caption>
         <thead>
           <tr>

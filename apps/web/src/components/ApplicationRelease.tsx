@@ -12,6 +12,7 @@ import {
   type Inline,
   type NoteBlock,
 } from "./releaseNotes";
+import { SendFeedback } from "./SendFeedback";
 
 type Release = components["schemas"]["ApplicationRelease"];
 
@@ -355,6 +356,7 @@ export function ApplicationRelease() {
     return (
       <footer className="application-release">
         <small>{isError ? "Version unavailable" : "Checking version…"}</small>
+        <SendFeedback />
       </footer>
     );
   const label = versionLabel(data.installed_version);
@@ -389,6 +391,7 @@ export function ApplicationRelease() {
       ) : (
         <small>{footerStatus(data)}</small>
       )}
+      <SendFeedback version={data.installed_version} />
       {open && (
         <ReleaseHistory
           installed={data.installed_version}
