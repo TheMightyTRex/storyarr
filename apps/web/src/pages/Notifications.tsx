@@ -6,6 +6,7 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import BookDialog from "../components/BookDialog";
 import { useToast } from "../components/Toasts";
+import { dateAndTime } from "../dates";
 
 type Channel = components["schemas"]["NotificationChannelView"];
 type Input = components["schemas"]["NotificationChannelInput"];
@@ -385,7 +386,7 @@ export default function Notifications({ admin }: { admin: boolean }) {
                 Last delivery:{" "}
                 <strong>{channel.last_status ?? "Not tested"}</strong>
                 {channel.last_delivery_at &&
-                  ` · ${new Date(channel.last_delivery_at).toLocaleString("en-GB")}`}
+                  ` · ${dateAndTime(channel.last_delivery_at)}`}
               </p>
               {channel.last_message && <p>{channel.last_message}</p>}
               <div className="actions">

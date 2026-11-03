@@ -5,6 +5,7 @@ import { api, result } from "../api/client";
 import { Notice } from "../components";
 import ListDifferences from "./ListDifferences";
 import { randomUUID } from "../randomUUID";
+import { dateAndTime } from "../dates";
 
 export default function ListWriteback({
   listId,
@@ -262,7 +263,7 @@ export default function ListWriteback({
               {policy.data.confirmed_at && (
                 <p className="muted">
                   Last confirmed membership:{" "}
-                  {new Date(policy.data.confirmed_at).toLocaleString("en-GB")}
+                  {dateAndTime(policy.data.confirmed_at)}
                 </p>
               )}
               {resolve.data && <p role="status">{resolve.data.message}</p>}

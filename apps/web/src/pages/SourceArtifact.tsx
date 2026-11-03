@@ -12,6 +12,7 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import ReleaseSelection from "./ReleaseSelection";
+import { dateAndTime } from "../dates";
 
 type Descriptor = components["schemas"]["SourceArtifactView"]["descriptor"];
 
@@ -95,7 +96,7 @@ export default function SourceArtifact() {
               : " · Public torrent"}
         </p>
         <p className="muted">
-          Inspected {new Date(created_at).toLocaleString("en-GB")}.{" "}
+          Inspected {dateAndTime(created_at)}.{" "}
           {usenet
             ? "These are the file names from the NZB. The Usenet client unpacks the download, and book matches are reviewed after it finishes."
             : "These are torrent file entries; book and edition matches are reviewed after download."}

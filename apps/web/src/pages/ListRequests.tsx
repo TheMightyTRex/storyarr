@@ -12,6 +12,7 @@ import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
 import DownloadConstraints from "./DownloadConstraints";
 import { randomUUID } from "../randomUUID";
+import { dateAndTime } from "../dates";
 
 type Spec = components["schemas"]["RequestOptions"];
 const media: Record<string, string> = {
@@ -448,8 +449,7 @@ function ListRequestEditor({
                 }}
               >
                 {item.count} {item.count === 1 ? "book" : "books"} ·{" "}
-                {item.status} ·{" "}
-                {new Date(item.created_at).toLocaleString("en-GB")}
+                {item.status} · {dateAndTime(item.created_at)}
               </button>
             </p>
           ))}

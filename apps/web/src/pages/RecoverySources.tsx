@@ -4,6 +4,7 @@ import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
 import type { components } from "../api/schema";
 import { randomUUID } from "../randomUUID";
+import { dateAndTime } from "../dates";
 
 export type SourceReview = components["schemas"]["SourceReconciliationView"];
 type Choice = components["schemas"]["SourceChoice"];
@@ -305,9 +306,8 @@ function SourceEditor({
         {evidence.blocked_until &&
           new Date(evidence.blocked_until).getTime() > Date.now() && (
             <p>
-              Source cooldown until{" "}
-              {new Date(evidence.blocked_until).toLocaleString("en-GB")}. Saving
-              settings does not bypass it.
+              Source cooldown until {dateAndTime(evidence.blocked_until)}.
+              Saving settings does not bypass it.
             </p>
           )}
         <button type="submit">
@@ -436,8 +436,7 @@ export function SourceRecoveryReview({
       {prepared && (
         <>
           <p className="muted">
-            Review expires {new Date(review.expires_at).toLocaleString("en-GB")}
-            .
+            Review expires {dateAndTime(review.expires_at)}.
           </p>
           {review.scan_id !== currentScan && (
             <p>A newer observation exists. Prepare a new review from it.</p>

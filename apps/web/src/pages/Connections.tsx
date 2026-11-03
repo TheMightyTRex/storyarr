@@ -22,6 +22,7 @@ import type { components } from "../api/schema";
 import { Empty, Loading, Notice } from "../components";
 import { randomUUID } from "../randomUUID";
 import { useToast } from "../components/Toasts";
+import { dateAndTime } from "../dates";
 
 type Connection = components["schemas"]["ConnectionView"];
 
@@ -140,7 +141,7 @@ export default function Connections({
               <p className="muted connection-detail">
                 {connection.version ? `v${connection.version} · ` : ""}
                 {connection.last_success_at
-                  ? `Synced ${new Date(connection.last_success_at).toLocaleString("en-GB")}`
+                  ? `Synced ${dateAndTime(connection.last_success_at)}`
                   : "Not synced yet"}
               </p>
               {connection.last_error && (

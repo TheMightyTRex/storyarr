@@ -8,6 +8,7 @@ import type { components } from "../api/schema";
 import { Notice } from "../components";
 import ListWriteback from "./ListWriteback";
 import { randomUUID } from "../randomUUID";
+import { dateAndTime } from "../dates";
 
 type Subscription = components["schemas"]["SubscriptionView"];
 
@@ -149,7 +150,7 @@ export default function ListSubscription({
           <p className="muted">
             Last success:{" "}
             {data.last_success_at
-              ? new Date(data.last_success_at).toLocaleString("en-GB")
+              ? dateAndTime(data.last_success_at)
               : "Not yet observed"}
             .{" "}
             {hardcover

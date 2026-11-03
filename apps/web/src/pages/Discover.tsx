@@ -53,6 +53,7 @@ import {
 } from "../components/DiscoveryCollections";
 import ReleaseCalendar, { UpcomingShelf } from "./ReleaseCalendar";
 import { currentParams } from "../currentParams";
+import { longDate } from "../dates";
 
 const views = discoverViews;
 export default function Discover({ canEdit = true }: { canEdit?: boolean }) {
@@ -932,7 +933,7 @@ function CollectionPage({ id, canEdit }: { id: string; canEdit: boolean }) {
           <p className="explore-footnote">
             {c.kind === "listopia"
               ? "Books load from Goodreads as you scroll."
-              : `Verified ${new Date(c.updated_at).toLocaleDateString("en-GB")} · ${c.refresh_mode === "app-update" ? "Official award facts are updated with Storyarr releases." : "Collections refresh daily while followed."}`}
+              : `Verified ${longDate(c.updated_at)} · ${c.refresh_mode === "app-update" ? "Official award facts are updated with Storyarr releases." : "Collections refresh daily while followed."}`}
           </p>
         </>
       )}

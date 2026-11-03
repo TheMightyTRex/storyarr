@@ -6,6 +6,7 @@ import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Notice } from "../components";
 import Order from "./PreferenceOrder";
+import { dateAndTime } from "../dates";
 
 type Indexer = components["schemas"]["ProwlarrIndexer"];
 const standard = {
@@ -139,9 +140,8 @@ export default function SourcePriorities({
         {indexers.data && (
           <>
             <p className="muted">
-              Last loaded{" "}
-              {new Date(indexers.dataUpdatedAt).toLocaleString("en-GB")}. Reload
-              to check current names and availability.
+              Last loaded {dateAndTime(indexers.dataUpdatedAt)}. Reload to check
+              current names and availability.
             </p>
             <div className="indexer-add-row">
               <label>

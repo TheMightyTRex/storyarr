@@ -5,6 +5,7 @@ import type { components } from "../api/schema";
 import { UploadSelect, type UploadAmount } from "./MamAutomation";
 import { randomUUID } from "../randomUUID";
 import "./mam-control-center.css";
+import { dateAndTime, longDate } from "../dates";
 
 type Connection = components["schemas"]["MAMConnectionView"];
 type Purchase = components["schemas"]["MAMPurchase"];
@@ -162,11 +163,9 @@ export default function MamControlCenter({
       {data && (
         <p className="mam-account-timestamp">
           Last refreshed{" "}
-          {data.checked_at
-            ? new Date(data.checked_at).toLocaleString("en-GB")
-            : "Unknown"}
+          {data.checked_at ? dateAndTime(data.checked_at) : "Unknown"}
           {data.vip_until
-            ? ` · VIP expires ${new Date(data.vip_until).toLocaleDateString("en-GB")}`
+            ? ` · VIP expires ${longDate(data.vip_until)}`
             : " · VIP expiry unavailable"}
         </p>
       )}

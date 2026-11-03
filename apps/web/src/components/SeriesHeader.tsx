@@ -10,20 +10,13 @@ import AddMissingBooks from "./AddMissingBooks";
 import FollowCatalog from "./FollowCatalog";
 import LogoMask from "./LogoMask";
 import LogoPanel, { type LogoCover } from "./LogoPanel";
+import { longDate } from "../dates";
 
 type SeriesView = components["schemas"]["SeriesView"];
 
 /** A cover the cut-out canvas can read: Storyarr serves it from its own address. */
 function readableCover(url: string | null | undefined) {
   return !!url && /^(https:\/\/|\/|data:image\/)/.test(url);
-}
-
-/** "12 March 2027". */
-function longDate(value: string) {
-  return new Date(`${value.slice(0, 10)}T12:00:00Z`).toLocaleDateString(
-    "en-GB",
-    { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" },
-  );
 }
 
 /** The first sentences, up to about 280 characters; the whole text is under About. */
@@ -122,7 +115,7 @@ export default function SeriesHeader({
                 Next: {nextBook.position ? `book ${nextBook.position}, ` : ""}
                 {nextBook.work.title},{" "}
                 {nextBook.release_date
-                  ? longDate(nextBook.release_date)
+                  ? longDate(nextBook.release_date.slice(0, 10))
                   : "date not announced"}
               </span>
             )}

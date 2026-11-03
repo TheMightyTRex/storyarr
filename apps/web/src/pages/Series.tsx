@@ -18,6 +18,7 @@ import SeriesScopeReview from "./SeriesScopeReview";
 import FollowRelease from "../components/FollowRelease";
 import { randomUUID } from "../randomUUID";
 import { currentParams } from "../currentParams";
+import { dateAndTime } from "../dates";
 
 function missingWorkIds(
   items: {
@@ -437,8 +438,7 @@ function SeriesContent({
               <summary>About this series catalogue</summary>
               {data.fetched_at && (
                 <p className="muted">
-                  Last verified{" "}
-                  {new Date(data.fetched_at).toLocaleString("en-GB")} ·{" "}
+                  Last verified {dateAndTime(data.fetched_at)} ·{" "}
                   {data.raw_total} catalogue entries.
                 </p>
               )}

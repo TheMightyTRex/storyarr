@@ -21,6 +21,7 @@ import { ChevronRight } from "lucide-react";
 import { api, result } from "../api/client";
 import { Empty, Loading, Notice } from "../components";
 import { currentParams } from "../currentParams";
+import { dateAndTime } from "../dates";
 
 const PAGE_SIZE = 50;
 
@@ -278,9 +279,7 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
                         <td className="logs-time">
                           <time
                             dateTime={item.created_at}
-                            title={new Date(item.created_at).toLocaleString(
-                              "en-GB",
-                            )}
+                            title={dateAndTime(item.created_at)}
                           >
                             {new Date(item.created_at).toLocaleDateString(
                               "en-GB",
@@ -338,17 +337,13 @@ export default function OperationHistory({ actions }: { actions?: ReactNode }) {
                             <p>
                               Created:{" "}
                               <time dateTime={item.created_at}>
-                                {new Date(item.created_at).toLocaleString(
-                                  "en-GB",
-                                )}
+                                {dateAndTime(item.created_at)}
                               </time>
                             </p>
                             <p>
                               Last updated:{" "}
                               <time dateTime={item.updated_at}>
-                                {new Date(item.updated_at).toLocaleString(
-                                  "en-GB",
-                                )}
+                                {dateAndTime(item.updated_at)}
                               </time>
                             </p>
                           </div>

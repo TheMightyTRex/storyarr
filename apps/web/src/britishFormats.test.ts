@@ -32,3 +32,17 @@ test("every date, time and number format names en-GB", () => {
   }
   assert.deepEqual(loose, []);
 });
+
+test("no date is written as numbers alone (12/05/2020)", () => {
+  // toLocaleDateString("en-GB") and toLocaleString("en-GB") with no options give "12/05/2020"; the content
+  // guide wants "12 May 2020". Use longDate, shortDate or dateAndTime from dates.ts.
+  const numeric: string[] = [];
+  for (const file of sources(root)) {
+    const text = readFileSync(file, "utf8");
+    for (const match of text.matchAll(
+      /toLocaleDateString\(\s*"en-GB"\s*,?\s*\)|Date\([^()]*\)\.toLocaleString\(\s*"en-GB"\s*,?\s*\)/g,
+    ))
+      numeric.push(`${file.slice(root.length)}: ${match[0]}`);
+  }
+  assert.deepEqual(numeric, []);
+});

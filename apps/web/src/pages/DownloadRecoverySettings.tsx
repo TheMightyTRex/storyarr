@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
+import { dateAndTime } from "../dates";
 
 type Configuration = components["schemas"]["RecoveryConfiguration"];
 type Policy = components["schemas"]["RecoveryPolicy"];
@@ -136,8 +137,7 @@ export default function DownloadRecoverySettings() {
                 <p>
                   {block.reason} ·{" "}
                   {block.automatic ? "Automatic detection for" : "Reported by"}{" "}
-                  {block.actor_name} ·{" "}
-                  {new Date(block.created_at).toLocaleString("en-GB")}
+                  {block.actor_name} · {dateAndTime(block.created_at)}
                 </p>
                 <button
                   disabled={remove.isPending}

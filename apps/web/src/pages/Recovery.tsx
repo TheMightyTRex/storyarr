@@ -46,6 +46,7 @@ import {
   type SourceReview,
 } from "./RecoverySources";
 import { randomUUID } from "../randomUUID";
+import { dateAndTime } from "../dates";
 
 type RecoveryReview = components["schemas"]["ReconciliationView"];
 
@@ -327,9 +328,8 @@ function RecoveryChecks({
           <p role="status">{report.data.scan.message}</p>
           {report.data.scan.finished_at && (
             <p className="muted">
-              Observed{" "}
-              {new Date(report.data.scan.finished_at).toLocaleString("en-GB")}.
-              This is a saved report.
+              Observed {dateAndTime(report.data.scan.finished_at)}. This is a
+              saved report.
             </p>
           )}
           <label>
@@ -639,8 +639,7 @@ function ReconciliationReview({
       {review.status === "prepared" && (
         <>
           <p className="muted">
-            Review expires {new Date(review.expires_at).toLocaleString("en-GB")}
-            .
+            Review expires {dateAndTime(review.expires_at)}.
           </p>
           {review.scan_id !== currentScan && (
             <p>A newer observation exists. Prepare a new review from it.</p>
