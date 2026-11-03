@@ -89,10 +89,24 @@ async def preview(link: str) -> bbc_feed.ShowData:
 
 
 async def search(query: str) -> list[bbc_feed.SearchResult]:
-    """Name search through BBC Sounds (public, no sign-in). Shows only, best match first."""
+    """Name search through BBC Sounds (public, no sign-in). Shows only, best match first.
+
+    BBC Sounds leaves out many older shows, so when none of its results has the name asked for,
+    the BBC programmes A to Z is read too and its radio shows come first.
+    """
     async with bbc(provider="bbc-sounds") as fetch:
         data = await fetch("v2/programmes/search/container", {"q": query})
-    return bbc_feed.search_results(data)
+    found = bbc_feed.search_results(data)
+    key = bbc_feed.atoz_key(query)
+    if any(bbc_feed.atoz_key(result.title) == key for result in found):
+        return found
+    try:
+        async with bbc() as fetch:
+            listed = await bbc_feed.atoz(fetch, query)
+    except AdapterError:
+        return found
+    pids = {result.pid for result in listed}
+    return listed + [result for result in found if result.pid not in pids]
 
 
 async def popular(*, category: str | None = None, network: str | None = None):
@@ -202,7 +216,9 @@ async def owned_show(db, user, show_id, *, lock=False) -> RadioShow:
     return show
 
 
-async def add(db, owner_id, data: bbc_feed.ShowData, follow: str) -> tuple[RadioShow, Operation]:
+async def add(
+    db, owner_id, data: bbc_feed.ShowData, follow: str, library_item_id: str | None = None
+) -> tuple[RadioShow, Operation]:
     await transaction_lock(db, f"radio-show:{owner_id}:{data.pid}")
     existing = await db.scalar(
         select(RadioShow.id).where(
@@ -222,6 +238,7 @@ async def add(db, owner_id, data: bbc_feed.ShowData, follow: str) -> tuple[Radio
         title=data.title,
         follow=follow,
         followed_at=now if follow != "none" else None,
+        library_item_id=library_item_id,
     )
     db.add(show)
     await db.flush()

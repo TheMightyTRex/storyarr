@@ -34,6 +34,7 @@ import SidePanel from "../components/SidePanel";
 import StatusChip from "../components/StatusChip";
 import { usePreferences } from "../hooks/usePreferences";
 import { currentParams } from "../currentParams";
+import RadioReview, { RadioReviewNotice, useRadioReview } from "./RadioReview";
 import "../radio.css";
 
 type Show = components["schemas"]["RadioShowSummary"];
@@ -120,6 +121,7 @@ export default function RadioLibrary({ canEdit }: { canEdit: boolean }) {
       <Route path="stations" element={<RadioStations />} />
       <Route path="stations/:stationId" element={<RadioStation />} />
       <Route path="shows/:showId" element={<RadioShow canEdit={canEdit} />} />
+      <Route path="review" element={<RadioReview canEdit={canEdit} />} />
       <Route path="*" element={<RadioShows canEdit={canEdit} />} />
     </Routes>
   );
@@ -326,6 +328,7 @@ function RadioShows({ canEdit }: { canEdit: boolean }) {
       follow === "following" ? true : follow === "not" ? false : undefined,
   });
   const all = useShows({});
+  const review = useRadioReview(canEdit);
   function change(key: string, value: string) {
     const next = currentParams();
     if (value) next.set(key, value);
@@ -420,6 +423,7 @@ function RadioShows({ canEdit }: { canEdit: boolean }) {
         showing={`Showing ${plural(items.length, "show")}`}
       />
       <Notice error={shows.error} />
+      {canEdit && <RadioReviewNotice review={review.data} />}
       {shows.isPending && <Loading />}
       {shows.data &&
         (items.length ? (
@@ -872,6 +876,7 @@ function RadioShow({
         <EpisodePanel
           data={data}
           episodeId={episodeId}
+          canEdit={canEdit}
           move={setEpisodeId}
           close={() => setEpisodeId(null)}
         />
@@ -1083,11 +1088,13 @@ function ShowEpisodes({
 function EpisodePanel({
   data,
   episodeId,
+  canEdit,
   move,
   close,
 }: {
   data: Detail;
   episodeId: string;
+  canEdit: boolean;
   move: (id: string) => void;
   close: () => void;
 }) {
@@ -1172,14 +1179,40 @@ function EpisodePanel({
             {ep.pid}
           </a>
         </dd>
-        {ep.status.kind === "in_library" && <EpisodeFile episodeId={ep.id} />}
+        <EpisodeFile episodeId={ep.id} canEdit={canEdit} />
       </dl>
     </SidePanel>
   );
 }
 
 /** The radio library file that holds an episode: its name, size and library. */
-function EpisodeFile({ episodeId }: { episodeId: string }) {
+/** The file that holds the episode, with "Not this file" and, after a choice by hand, a way back. */
+function EpisodeFile({
+  episodeId,
+  canEdit,
+}: {
+  episodeId: string;
+  canEdit: boolean;
+}) {
+  const cache = useQueryClient();
+  const change = useMutation({
+    mutationFn: async (automatic: boolean) =>
+      result(
+        automatic
+          ? await api.DELETE("/api/radio/episodes/{episode_id}/file", {
+              params: { path: { episode_id: episodeId } },
+            })
+          : await api.PUT("/api/radio/episodes/{episode_id}/file", {
+              params: { path: { episode_id: episodeId } },
+              body: { file_id: null },
+            }),
+      ),
+    onSuccess: (saved) => {
+      cache.setQueryData(["radio", "episode", episodeId], saved);
+      void cache.invalidateQueries({ queryKey: ["radio", "show"] });
+      void cache.invalidateQueries({ queryKey: ["radio", "review"] });
+    },
+  });
   const detail = useQuery({
     queryKey: ["radio", "episode", episodeId],
     queryFn: async ({ signal }) =>
@@ -1191,20 +1224,51 @@ function EpisodeFile({ episodeId }: { episodeId: string }) {
       ),
   });
   const file = detail.data?.file;
-  if (!file) return null;
+  const manual = detail.data?.file_manual;
+  if (!file && !manual) return null;
   return (
     <>
       <dt>File</dt>
       <dd>
-        {file.name}
-        <span className="small muted">
-          {" "}
-          ·{" "}
-          {(file.size / 1_000_000).toLocaleString("en-GB", {
-            maximumFractionDigits: 1,
-          })}{" "}
-          MB in {file.library}
-        </span>
+        {file ? (
+          <>
+            {file.name}
+            <span className="small muted">
+              {" "}
+              ·{" "}
+              {(file.size / 1_000_000).toLocaleString("en-GB", {
+                maximumFractionDigits: 1,
+              })}{" "}
+              MB in {file.library}
+              {manual && " · chosen by hand"}
+            </span>
+          </>
+        ) : (
+          <span className="muted">No file (chosen by hand)</span>
+        )}
+        {canEdit && (
+          <span className="button-row radio-file-actions">
+            {file && (
+              <button
+                type="button"
+                disabled={change.isPending}
+                onClick={() => change.mutate(false)}
+              >
+                Not this file
+              </button>
+            )}
+            {manual && (
+              <button
+                type="button"
+                disabled={change.isPending}
+                onClick={() => change.mutate(true)}
+              >
+                Match automatically again
+              </button>
+            )}
+          </span>
+        )}
+        <Notice error={change.error} />
       </dd>
     </>
   );
@@ -1215,22 +1279,37 @@ const looksLikeLink = (value: string) =>
 const programmeLink = (pid: string) =>
   `https://www.bbc.co.uk/programmes/${pid}`;
 
-/** Add a show: a link or a name, a preview, the follow choice (From now on by default), then the show. */
+/**
+ * Add a show: a link or a name, a preview, the follow choice (From now on by default), then the
+ * show. From the radio library review it starts with the library show's name and keeps its files.
+ */
 export function AddShow({
   close,
   pid,
+  initialText = "",
+  libraryItemId,
+  onAdded,
 }: {
   close: () => void;
   /** A show chosen elsewhere (Discover, For you, Radio): its preview opens straight away. */
   pid?: string;
+  initialText?: string;
+  libraryItemId?: string;
+  onAdded?: (show: Show) => void;
 }) {
   const navigate = useNavigate();
   const cache = useQueryClient();
-  const [text, setText] = useState(pid ? programmeLink(pid) : "");
+  const [text, setText] = useState(pid ? programmeLink(pid) : initialText);
   const [query, setQuery] = useState<{
     kind: "link" | "name";
     value: string;
-  } | null>(pid ? { kind: "link", value: pid } : null);
+  } | null>(
+    pid
+      ? { kind: "link", value: pid }
+      : initialText.trim().length >= 2
+        ? { kind: "name", value: initialText.trim() }
+        : null,
+  );
   const [link, setLink] = useState<string | null>(
     pid ? programmeLink(pid) : null,
   );
@@ -1261,10 +1340,17 @@ export function AddShow({
   const add = useMutation({
     mutationFn: async () =>
       result(
-        await api.POST("/api/radio/shows", { body: { link: link!, follow } }),
+        await api.POST("/api/radio/shows", {
+          body: {
+            link: link!,
+            follow,
+            ...(libraryItemId ? { library_item_id: libraryItemId } : {}),
+          },
+        }),
       ),
     onSuccess: async (show) => {
       await cache.invalidateQueries({ queryKey: ["radio"] });
+      if (onAdded) return onAdded(show);
       close();
       navigate(showPage(show.id));
     },
@@ -1315,7 +1401,7 @@ export function AddShow({
       {query?.kind === "name" && (
         <section aria-label="Shows found" className="radio-add-results">
           <Notice error={search.error} />
-          {search.isPending && <Loading label="Searching BBC Sounds…" />}
+          {search.isPending && <Loading label="Searching the BBC…" />}
           {search.data && (
             <>
               <p className="small" role="status">

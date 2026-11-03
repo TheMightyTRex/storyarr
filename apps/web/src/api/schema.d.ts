@@ -426,7 +426,7 @@ export interface paths {
     get?: never;
     /**
      * Change Password
-     * @description Change your own password (security check, 3 November 2026). Your other browsers are signed out.
+     * @description Change your own password (security check, 3 November 2026). Other browsers are signed out.
      */
     put: operations["change_password_api_auth_password_put"];
     post?: never;
@@ -2133,6 +2133,27 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/radio/library/review": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Review
+     * @description Shows in the radio library that are not in your radio shows, and your shows' files that
+     *     hold no episode.
+     */
+    get: operations["review_api_radio_library_review_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/radio/search": {
     parameters: {
       query?: never;
@@ -2235,7 +2256,7 @@ export interface paths {
     head?: never;
     /**
      * Edit Show
-     * @description Change the follow choice; episode statuses follow it.
+     * @description Change the follow choice (episode statuses follow it), or the radio library show to use.
      */
     patch: operations["edit_show_api_radio_shows__show_id__patch"];
     trace?: never;
@@ -2272,6 +2293,31 @@ export interface paths {
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/episodes/{episode_id}/file": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Choose Episode File
+     * @description Link the episode to a file of its show by hand, or say no file holds it. The radio sync
+     *     then leaves the episode as it is.
+     */
+    put: operations["choose_episode_file_api_radio_episodes__episode_id__file_put"];
+    post?: never;
+    /**
+     * Automatic Episode File
+     * @description Let the radio sync find the episode's file again.
+     */
+    delete: operations["automatic_episode_file_api_radio_episodes__episode_id__file_delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -13244,18 +13290,33 @@ export interface components {
       show: components["schemas"]["RadioEpisodeShow"];
       series: components["schemas"]["RadioEpisodeSeries"];
       file?: components["schemas"]["RadioEpisodeFile"] | null;
+      /**
+       * File Manual
+       * @default false
+       */
+      file_manual: boolean;
     };
     /**
      * RadioEpisodeFile
      * @description The radio library file that holds the episode: its name only, never the folder.
      */
     RadioEpisodeFile: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
       /** Name */
       name: string;
       /** Size */
       size: number;
       /** Library */
       library: string;
+    };
+    /** RadioEpisodeFileInput */
+    RadioEpisodeFileInput: {
+      /** File Id */
+      file_id: string | null;
     };
     /** RadioEpisodeSeries */
     RadioEpisodeSeries: {
@@ -13349,6 +13410,19 @@ export interface components {
       /** Local Path */
       local_path: string;
     };
+    /** RadioLibraryReview */
+    RadioLibraryReview: {
+      /** Library */
+      library: string | null;
+      /** Synced At */
+      synced_at: string | null;
+      /** Shows */
+      shows: components["schemas"]["RadioLibraryShow"][];
+      /** Unmatched */
+      unmatched: components["schemas"]["RadioUnmatchedShow"][];
+      /** Unmatched Files */
+      unmatched_files: number;
+    };
     /** RadioLibrarySetup */
     RadioLibrarySetup: {
       current: components["schemas"]["RadioLibraryView"] | null;
@@ -13359,6 +13433,18 @@ export interface components {
        * @default []
        */
       errors: string[];
+    };
+    /**
+     * RadioLibraryShow
+     * @description A show in the radio library that is not in your radio shows yet.
+     */
+    RadioLibraryShow: {
+      /** Item Id */
+      item_id: string;
+      /** Title */
+      title: string;
+      /** Files */
+      files: number;
     };
     /** RadioLibraryView */
     RadioLibraryView: {
@@ -13514,11 +13600,10 @@ export interface components {
     };
     /** RadioShowEdit */
     RadioShowEdit: {
-      /**
-       * Follow
-       * @enum {string}
-       */
-      follow: "all" | "from_now_on" | "none";
+      /** Follow */
+      follow?: ("all" | "from_now_on" | "none") | null;
+      /** Library Item Id */
+      library_item_id?: string | null;
     };
     /** RadioShowInput */
     RadioShowInput: {
@@ -13530,6 +13615,8 @@ export interface components {
        * @enum {string}
        */
       follow: "all" | "from_now_on" | "none";
+      /** Library Item Id */
+      library_item_id?: string | null;
     };
     /** RadioShowList */
     RadioShowList: {
@@ -13638,6 +13725,37 @@ export interface components {
       label: string;
       /** Group */
       group: string;
+    };
+    /** RadioUnmatchedFile */
+    RadioUnmatchedFile: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Title */
+      title: string;
+      /** Season */
+      season: number | null;
+      /** Episode */
+      episode: number | null;
+    };
+    /**
+     * RadioUnmatchedShow
+     * @description One of your shows, with its library files that hold no episode.
+     */
+    RadioUnmatchedShow: {
+      /**
+       * Show Id
+       * Format: uuid
+       */
+      show_id: string;
+      /** Title */
+      title: string;
+      /** Files */
+      files: components["schemas"]["RadioUnmatchedFile"][];
     };
     /** RankedReleaseView */
     RankedReleaseView: {
@@ -21105,6 +21223,26 @@ export interface operations {
       };
     };
   };
+  review_api_radio_library_review_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioLibraryReview"];
+        };
+      };
+    };
+  };
   search_api_radio_search_get: {
     parameters: {
       query: {
@@ -21379,6 +21517,72 @@ export interface operations {
     };
   };
   episode_detail_api_radio_episodes__episode_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        episode_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioEpisodeDetail"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  choose_episode_file_api_radio_episodes__episode_id__file_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        episode_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RadioEpisodeFileInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioEpisodeDetail"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  automatic_episode_file_api_radio_episodes__episode_id__file_delete: {
     parameters: {
       query?: never;
       header?: never;

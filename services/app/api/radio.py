@@ -32,6 +32,7 @@ from app.db.models import (
 )
 from app.domain import radio, radio_images
 from app.domain.follow_status import StatusKind
+from app.domain.radio_library import relink, show_files
 
 router = APIRouter(prefix="/radio", tags=["radio"])
 
@@ -106,11 +107,21 @@ class RadioShowInput(BaseModel):
     # A BBC programmes or BBC Sounds link, or a programme id.
     link: str = Field(min_length=8, max_length=500)
     follow: Follow = "from_now_on"
+    # The radio library show (Audiobookshelf item id) this show is added from, if any.
+    library_item_id: str | None = Field(default=None, min_length=1, max_length=200)
 
 
 class RadioShowEdit(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    follow: Follow
+    follow: Follow | None = None
+    # Use this radio library show's files for the show (from the radio library review).
+    library_item_id: str | None = Field(default=None, min_length=1, max_length=200)
+
+
+class RadioEpisodeFileInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    # A radio library file, or None for "no file": the episode is not in any file seen so far.
+    file_id: UUID | None
 
 
 class RadioEpisodeStatus(BaseModel):
@@ -195,6 +206,7 @@ class RadioEpisodeSeries(BaseModel):
 class RadioEpisodeFile(BaseModel):
     """The radio library file that holds the episode: its name only, never the folder."""
 
+    id: UUID
     name: str
     size: int
     library: str
@@ -204,6 +216,8 @@ class RadioEpisodeDetail(RadioEpisodeView):
     show: RadioEpisodeShow
     series: RadioEpisodeSeries
     file: RadioEpisodeFile | None = None
+    # True when the file (or no file) was chosen by hand in the radio library review.
+    file_manual: bool = False
 
 
 def station_ref(station: RadioStation | None) -> RadioStationRef | None:
@@ -437,7 +451,7 @@ async def add_show(body: RadioShowInput, user: Member, db: Database):
     user_id = user.id
     radio.link_pid(body.link)
     data = await _read_bbc(db, lambda: radio.preview(body.link))
-    show, _ = await radio.add(db, user_id, data, body.follow)
+    show, _ = await radio.add(db, user_id, data, body.follow, body.library_item_id)
     db.add(
         AuditEvent(
             actor_id=user_id,
@@ -508,9 +522,13 @@ async def show_detail(show_id: UUID, user: CurrentUser, db: Database):
 
 @router.patch("/shows/{show_id}", response_model=RadioShowSummary)
 async def edit_show(show_id: UUID, body: RadioShowEdit, user: Member, db: Database):
-    """Change the follow choice; episode statuses follow it."""
+    """Change the follow choice (episode statuses follow it), or the radio library show to use."""
     show = await radio.owned_show(db, user, show_id, lock=True)
-    await radio.set_follow(db, show, body.follow)
+    if body.follow:
+        await radio.set_follow(db, show, body.follow)
+    if body.library_item_id:
+        show.library_item_id = body.library_item_id
+        await relink(db, show_id=show.id)
     await db.commit()
     (summary,) = await summaries(db, [show])
     return summary
@@ -574,11 +592,73 @@ async def episode_detail(episode_id: UUID, user: CurrentUser, db: Database):
             station=station_ref(station),
         ),
         file=RadioEpisodeFile(
-            name=PurePosixPath(file.path).name, size=file.size, library=library.name
+            id=file.id, name=PurePosixPath(file.path).name, size=file.size, library=library.name
         )
         if file and library
         else None,
+        file_manual=episode.file_manual,
     )
+
+
+async def _owned_episode(db, user, episode_id: UUID) -> tuple[RadioEpisode, RadioShow]:
+    row = (
+        await db.execute(
+            select(RadioEpisode, RadioShow)
+            .join(RadioShow, RadioShow.id == RadioEpisode.show_id)
+            .where(RadioEpisode.id == episode_id, RadioShow.owner_id == user.id)
+            .with_for_update(of=RadioEpisode)
+        )
+    ).first()
+    if not row:
+        raise HTTPException(404, "Episode not found")
+    return row[0], row[1]
+
+
+@router.put("/episodes/{episode_id}/file", response_model=RadioEpisodeDetail)
+async def choose_episode_file(
+    episode_id: UUID, body: RadioEpisodeFileInput, user: Member, db: Database
+):
+    """Link the episode to a file of its show by hand, or say no file holds it. The radio sync
+    then leaves the episode as it is."""
+    episode, show = await _owned_episode(db, user, episode_id)
+    if body.file_id:
+        file = await db.get(RadioLibraryFile, body.file_id)
+        if not file or not show_files(show, [file]):
+            raise HTTPException(422, "Choose a file of this show from the radio library.")
+        other = await db.scalar(
+            select(RadioEpisode).where(
+                RadioEpisode.show_id == show.id,
+                RadioEpisode.file_id == file.id,
+                RadioEpisode.file_manual.is_(True),
+                RadioEpisode.id != episode.id,
+            )
+        )
+        if other:
+            raise HTTPException(
+                409, "This file is linked to another episode by hand. Unlink it there first."
+            )
+    episode.file_id, episode.file_manual = body.file_id, True
+    db.add(
+        AuditEvent(
+            actor_id=user.id,
+            action="radio.episode.file",
+            entity_id=episode.id,
+            detail={"file_id": str(body.file_id) if body.file_id else None},
+        )
+    )
+    await relink(db, show_id=show.id)
+    await db.commit()
+    return await episode_detail(episode_id, user, db)
+
+
+@router.delete("/episodes/{episode_id}/file", response_model=RadioEpisodeDetail)
+async def automatic_episode_file(episode_id: UUID, user: Member, db: Database):
+    """Let the radio sync find the episode's file again."""
+    episode, show = await _owned_episode(db, user, episode_id)
+    episode.file_id, episode.file_manual = None, False
+    await relink(db, show_id=show.id)
+    await db.commit()
+    return await episode_detail(episode_id, user, db)
 
 
 def _image(data: bytes, kind: str, if_none_match: str | None, extra=None) -> Response:

@@ -19,9 +19,10 @@ from sqlalchemy import func, select
 from app.adapters import abs_podcasts
 from app.adapters.audiobookshelf import backend_path
 from app.adapters.contracts import AdapterError
-from app.api.dependencies import Admin, Database
+from app.api.dependencies import Admin, CurrentUser, Database
 from app.api.library_folders import library_client
 from app.db.models import AuditEvent, Integration, RadioEpisode, RadioLibrary, RadioLibraryFile
+from app.domain import radio_library
 from app.domain.download_folders import browse_roots, readable_folder
 from app.domain.operations import transaction_lock
 from app.importing.storage import storage_settings
@@ -57,6 +58,38 @@ class RadioLibrarySetup(BaseModel):
     options: list[PodcastLibraryOption]
     # Why a server's podcast libraries could not be read, by server name.
     errors: list[str] = []
+
+
+class RadioLibraryShow(BaseModel):
+    """A show in the radio library that is not in your radio shows yet."""
+
+    item_id: str
+    title: str
+    files: int
+
+
+class RadioUnmatchedFile(BaseModel):
+    id: UUID
+    name: str
+    title: str
+    season: int | None
+    episode: int | None
+
+
+class RadioUnmatchedShow(BaseModel):
+    """One of your shows, with its library files that hold no episode."""
+
+    show_id: UUID
+    title: str
+    files: list[RadioUnmatchedFile]
+
+
+class RadioLibraryReview(BaseModel):
+    library: str | None
+    synced_at: datetime | None
+    shows: list[RadioLibraryShow]
+    unmatched: list[RadioUnmatchedShow]
+    unmatched_files: int
 
 
 class RadioLibraryInput(BaseModel):
@@ -237,3 +270,37 @@ async def sync_now(admin: Admin, db: Database):
     await enqueue(db, SYNC, job_lock=SYNC)
     await db.commit()
     return Response(status_code=202)
+
+
+@router.get("/review", response_model=RadioLibraryReview)
+async def review(user: CurrentUser, db: Database):
+    """Shows in the radio library that are not in your radio shows, and your shows' files that
+    hold no episode."""
+    library = await db.scalar(select(RadioLibrary).order_by(RadioLibrary.created_at).limit(1))
+    to_add, unmatched = await radio_library.review(db, user.id)
+    return RadioLibraryReview(
+        library=library.name if library else None,
+        synced_at=library.synced_at if library else None,
+        shows=[
+            RadioLibraryShow(item_id=item_id, title=title, files=count)
+            for item_id, title, count in to_add
+        ],
+        unmatched=[
+            RadioUnmatchedShow(
+                show_id=show.id,
+                title=show.title,
+                files=[
+                    RadioUnmatchedFile(
+                        id=file.id,
+                        name=PurePosixPath(file.path).name,
+                        title=file.title,
+                        season=file.season,
+                        episode=file.episode,
+                    )
+                    for file in files
+                ],
+            )
+            for show, files in unmatched
+        ],
+        unmatched_files=sum(len(files) for _, files in unmatched),
+    )

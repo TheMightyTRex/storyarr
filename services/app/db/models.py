@@ -1621,6 +1621,9 @@ class RadioShow(Identity, Base):
     operation_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("operations.id", ondelete="SET NULL")
     )
+    # The radio library show (Audiobookshelf item id) it was added from (storyarr_0090), so its
+    # files link even when the folder's title differs from the BBC title.
+    library_item_id: Mapped[str | None] = mapped_column(String(200))
 
 
 class SeriesLogo(Base):
@@ -1707,6 +1710,9 @@ class RadioEpisode(Identity, Base):
     file_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("radio_library_files.id", ondelete="SET NULL"), index=True
     )
+    # Set by hand in the radio library review (storyarr_0090): the sync keeps file_id as it is,
+    # including no file when someone said a linked file was not this episode.
+    file_manual: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
 
 
 class RadioLibrary(Identity, Base):
