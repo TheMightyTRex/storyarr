@@ -4,7 +4,7 @@ from typing import Literal
 from uuid import UUID
 
 from fastapi import APIRouter
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.api.dependencies import CurrentUser, Database
 from app.db.models import User
@@ -13,6 +13,41 @@ router = APIRouter(prefix="/preferences", tags=["preferences"])
 
 
 LibrarySection = Literal["books", "authors", "series", "saved"]
+# Radio types for Discover, For you, Radio: the BBC Sounds category id, the name and its group.
+# BBC Sounds has no science fiction category of its own; it sits under Drama.
+RADIO_TYPES = (
+    ("comedy", "All comedy", "Comedy"),
+    ("comedy-sitcoms", "Sitcoms", "Comedy"),
+    ("comedy-satire", "Satire", "Comedy"),
+    ("comedy-standup", "Stand-up", "Comedy"),
+    ("comedy-sketch", "Sketches", "Comedy"),
+    ("comedy-chat", "Chat", "Comedy"),
+    ("gamesandquizzes", "Panel games and quizzes", "Comedy"),
+    ("drama", "All drama", "Drama"),
+    ("drama-scifiandfantasy", "Science fiction and fantasy", "Drama"),
+    ("drama-crime", "Crime", "Drama"),
+    ("drama-thriller", "Thrillers", "Drama"),
+    ("drama-horrorandsupernatural", "Horror and supernatural", "Drama"),
+    ("drama-historical", "Historical", "Drama"),
+    ("drama-classicandperiod", "Classic and period", "Drama"),
+    ("drama-relationshipsandromance", "Relationships and romance", "Drama"),
+    ("drama-soaps", "Soaps", "Drama"),
+    ("readings", "Readings", "Drama"),
+    ("audiobooks", "Audiobooks", "Drama"),
+    ("news", "News", "Factual"),
+    ("documentaries", "Documentaries", "Factual"),
+    ("factual-history", "History", "Factual"),
+    ("factual-scienceandnature", "Science and nature", "Factual"),
+    ("factual-politics", "Politics", "Factual"),
+    ("factual-crimeandjustice", "Crime and justice", "Factual"),
+    ("factual-artscultureandthemedia", "Arts, culture and media", "Factual"),
+    ("factual-healthandwellbeing", "Health and wellbeing", "Factual"),
+    ("factual-foodanddrink", "Food and drink", "Factual"),
+    ("discussionandtalk", "Discussion and talk", "Factual"),
+    ("sport", "Sport", "Sport and music"),
+    ("music", "Music", "Sport and music"),
+)
+RadioTypeId = Literal[tuple(key for key, _, _ in RADIO_TYPES)]  # type: ignore[valid-type]
 
 
 class SavedView(BaseModel):
@@ -36,6 +71,8 @@ class UserPreferences(BaseModel):
     # Where a cover's actions sit: "on" the cover's right edge, shown on hover and focus (the
     # default), or "beside" the cover, always shown.
     cover_actions: Literal["on", "beside"] = "on"
+    # The radio types shown on Discover, For you, Radio, in the order chosen.
+    radio_types: list[RadioTypeId] = ["comedy", "drama-scifiandfantasy", "news"]
 
 
 class PreferencesInput(BaseModel):
@@ -45,6 +82,14 @@ class PreferencesInput(BaseModel):
     library_views: dict[LibrarySection, SavedView] | None = None
     cover_size: Literal["small", "medium", "large"] | None = None
     cover_actions: Literal["on", "beside"] | None = None
+    radio_types: list[RadioTypeId] | None = Field(default=None, max_length=12)
+
+    @field_validator("radio_types")
+    @classmethod
+    def unique_types(cls, value):
+        if value is not None and len(set(value)) != len(value):
+            raise ValueError("Choose each radio type once")
+        return value
 
 
 def view(saved: dict | None) -> UserPreferences:

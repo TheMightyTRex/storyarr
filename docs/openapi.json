@@ -5969,6 +5969,96 @@
         }
       }
     },
+    "/api/radio/discover": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Discover",
+        "description": "Five stations (those of the person's shows first) and the types they chose.",
+        "operationId": "discover_api_radio_discover_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioDiscoverView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/discover/popular": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Popular",
+        "description": "Popular shows on BBC Sounds for one type or one station, marked when already added.",
+        "operationId": "popular_api_radio_discover_popular_get",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "name": "station",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Station"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PopularShowList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/radio/library": {
       "get": {
         "tags": [
@@ -27104,6 +27194,34 @@
         ],
         "title": "DiscoverInput"
       },
+      "DiscoverStation": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "logo_url": {
+            "type": "string",
+            "title": "Logo Url"
+          },
+          "show_count": {
+            "type": "integer",
+            "title": "Show Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "logo_url",
+          "show_count"
+        ],
+        "title": "DiscoverStation"
+      },
       "DiscoveryBookPage": {
         "properties": {
           "items": {
@@ -36861,6 +36979,95 @@
         ],
         "title": "PolicyRoute"
       },
+      "PopularShowList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PopularShowView"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "PopularShowList"
+      },
+      "PopularShowView": {
+        "properties": {
+          "pid": {
+            "type": "string",
+            "title": "Pid"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "synopsis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synopsis"
+          },
+          "station_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Station Id"
+          },
+          "station_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Station Name"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "show_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Show Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pid",
+          "title"
+        ],
+        "title": "PopularShowView"
+      },
       "PreReleaseCandidate": {
         "properties": {
           "title": {
@@ -37351,6 +37558,53 @@
               }
             ],
             "title": "Cover Actions"
+          },
+          "radio_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "comedy",
+                    "comedy-sitcoms",
+                    "comedy-satire",
+                    "comedy-standup",
+                    "comedy-sketch",
+                    "comedy-chat",
+                    "gamesandquizzes",
+                    "drama",
+                    "drama-scifiandfantasy",
+                    "drama-crime",
+                    "drama-thriller",
+                    "drama-horrorandsupernatural",
+                    "drama-historical",
+                    "drama-classicandperiod",
+                    "drama-relationshipsandromance",
+                    "drama-soaps",
+                    "readings",
+                    "audiobooks",
+                    "news",
+                    "documentaries",
+                    "factual-history",
+                    "factual-scienceandnature",
+                    "factual-politics",
+                    "factual-crimeandjustice",
+                    "factual-artscultureandthemedia",
+                    "factual-healthandwellbeing",
+                    "factual-foodanddrink",
+                    "discussionandtalk",
+                    "sport",
+                    "music"
+                  ]
+                },
+                "type": "array",
+                "maxItems": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radio Types"
           }
         },
         "additionalProperties": false,
@@ -38445,6 +38699,38 @@
           "updated_at"
         ],
         "title": "QuickAddView"
+      },
+      "RadioDiscoverView": {
+        "properties": {
+          "stations": {
+            "items": {
+              "$ref": "#/components/schemas/DiscoverStation"
+            },
+            "type": "array",
+            "title": "Stations"
+          },
+          "types": {
+            "items": {
+              "$ref": "#/components/schemas/RadioType"
+            },
+            "type": "array",
+            "title": "Types"
+          },
+          "chosen": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Chosen"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stations",
+          "types",
+          "chosen"
+        ],
+        "title": "RadioDiscoverView"
       },
       "RadioEpisodeDetail": {
         "properties": {
@@ -39766,6 +40052,29 @@
           "show_count"
         ],
         "title": "RadioStationView"
+      },
+      "RadioType": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "group": {
+            "type": "string",
+            "title": "Group"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "group"
+        ],
+        "title": "RadioType"
       },
       "RankedReleaseView": {
         "properties": {
@@ -46971,6 +47280,50 @@
             ],
             "title": "Cover Actions",
             "default": "on"
+          },
+          "radio_types": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "comedy",
+                "comedy-sitcoms",
+                "comedy-satire",
+                "comedy-standup",
+                "comedy-sketch",
+                "comedy-chat",
+                "gamesandquizzes",
+                "drama",
+                "drama-scifiandfantasy",
+                "drama-crime",
+                "drama-thriller",
+                "drama-horrorandsupernatural",
+                "drama-historical",
+                "drama-classicandperiod",
+                "drama-relationshipsandromance",
+                "drama-soaps",
+                "readings",
+                "audiobooks",
+                "news",
+                "documentaries",
+                "factual-history",
+                "factual-scienceandnature",
+                "factual-politics",
+                "factual-crimeandjustice",
+                "factual-artscultureandthemedia",
+                "factual-healthandwellbeing",
+                "factual-foodanddrink",
+                "discussionandtalk",
+                "sport",
+                "music"
+              ]
+            },
+            "type": "array",
+            "title": "Radio Types",
+            "default": [
+              "comedy",
+              "drama-scifiandfantasy",
+              "news"
+            ]
           }
         },
         "type": "object",

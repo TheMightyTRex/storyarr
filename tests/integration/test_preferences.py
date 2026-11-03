@@ -34,6 +34,7 @@ async def test_preferences_follow_the_account(client, admin):
         "library_views": {},
         "cover_size": "medium",
         "cover_actions": "on",
+        "radio_types": ["comedy", "drama-scifiandfantasy", "news"],
     }
     saved = await client.patch("/api/preferences", json={"collection_view": "list"})
     assert saved.status_code == 200, saved.text
@@ -42,12 +43,14 @@ async def test_preferences_follow_the_account(client, admin):
         "library_views": {},
         "cover_size": "medium",
         "cover_actions": "on",
+        "radio_types": ["comedy", "drama-scifiandfantasy", "news"],
     }
     assert (await client.get("/api/preferences")).json() == {
         "collection_view": "list",
         "library_views": {},
         "cover_size": "medium",
         "cover_actions": "on",
+        "radio_types": ["comedy", "drama-scifiandfantasy", "news"],
     }
     # A partial change keeps what is already saved.
     assert (await client.patch("/api/preferences", json={})).json() == {
@@ -55,6 +58,7 @@ async def test_preferences_follow_the_account(client, admin):
         "library_views": {},
         "cover_size": "medium",
         "cover_actions": "on",
+        "radio_types": ["comedy", "drama-scifiandfantasy", "news"],
     }
     for bad in ({"collection_view": "grid"}, {"theme": "dark"}):
         assert (await client.patch("/api/preferences", json=bad)).status_code == 422
@@ -121,6 +125,7 @@ async def test_each_person_has_their_own_preferences(client, admin):
         "library_views": {},
         "cover_size": "medium",
         "cover_actions": "on",
+        "radio_types": ["comedy", "drama-scifiandfantasy", "news"],
     }
     assert (
         await client.patch("/api/preferences", json={"collection_view": "list"})

@@ -95,6 +95,18 @@ async def search(query: str) -> list[bbc_feed.SearchResult]:
     return bbc_feed.search_results(data)
 
 
+async def popular(*, category: str | None = None, network: str | None = None):
+    """Popular shows on BBC Sounds for one category or one station (cached for an hour)."""
+    params = {"sort": "popular", "limit": 60}
+    if category:
+        params["category"] = category
+    if network:
+        params["network"] = network
+    async with bbc(provider="bbc-sounds") as fetch:
+        data = await fetch("v2/programmes/playable", params)
+    return bbc_feed.popular_shows(data)
+
+
 def episode_status(first_broadcast, follow, followed_at, current=None, now=None) -> str:
     if current and current not in COMPUTED:
         return current

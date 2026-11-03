@@ -2009,6 +2009,46 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/radio/discover": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Discover
+     * @description Five stations (those of the person's shows first) and the types they chose.
+     */
+    get: operations["discover_api_radio_discover_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/discover/popular": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Popular
+     * @description Popular shows on BBC Sounds for one type or one station, marked when already added.
+     */
+    get: operations["popular_api_radio_discover_popular_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/radio/library": {
     parameters: {
       query?: never;
@@ -8822,6 +8862,17 @@ export interface components {
       /** Issuer */
       issuer: string;
     };
+    /** DiscoverStation */
+    DiscoverStation: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Logo Url */
+      logo_url: string;
+      /** Show Count */
+      show_count: number;
+    };
     /** DiscoveryBookPage */
     DiscoveryBookPage: {
       /** Items */
@@ -12494,6 +12545,28 @@ export interface components {
       /** Destination Revision */
       destination_revision: string;
     };
+    /** PopularShowList */
+    PopularShowList: {
+      /** Items */
+      items: components["schemas"]["PopularShowView"][];
+    };
+    /** PopularShowView */
+    PopularShowView: {
+      /** Pid */
+      pid: string;
+      /** Title */
+      title: string;
+      /** Synopsis */
+      synopsis?: string | null;
+      /** Station Id */
+      station_id?: string | null;
+      /** Station Name */
+      station_name?: string | null;
+      /** Image Url */
+      image_url?: string | null;
+      /** Show Id */
+      show_id?: string | null;
+    };
     /** PreReleaseCandidate */
     PreReleaseCandidate: {
       /** Title */
@@ -12629,6 +12702,41 @@ export interface components {
       cover_size?: ("small" | "medium" | "large") | null;
       /** Cover Actions */
       cover_actions?: ("on" | "beside") | null;
+      /** Radio Types */
+      radio_types?:
+        | (
+            | "comedy"
+            | "comedy-sitcoms"
+            | "comedy-satire"
+            | "comedy-standup"
+            | "comedy-sketch"
+            | "comedy-chat"
+            | "gamesandquizzes"
+            | "drama"
+            | "drama-scifiandfantasy"
+            | "drama-crime"
+            | "drama-thriller"
+            | "drama-horrorandsupernatural"
+            | "drama-historical"
+            | "drama-classicandperiod"
+            | "drama-relationshipsandromance"
+            | "drama-soaps"
+            | "readings"
+            | "audiobooks"
+            | "news"
+            | "documentaries"
+            | "factual-history"
+            | "factual-scienceandnature"
+            | "factual-politics"
+            | "factual-crimeandjustice"
+            | "factual-artscultureandthemedia"
+            | "factual-healthandwellbeing"
+            | "factual-foodanddrink"
+            | "discussionandtalk"
+            | "sport"
+            | "music"
+          )[]
+        | null;
     };
     /** PresetInfo */
     PresetInfo: {
@@ -13047,6 +13155,15 @@ export interface components {
       /** Source Checks */
       source_checks?: components["schemas"]["QuickAddSourceCheck"][];
     };
+    /** RadioDiscoverView */
+    RadioDiscoverView: {
+      /** Stations */
+      stations: components["schemas"]["DiscoverStation"][];
+      /** Types */
+      types: components["schemas"]["RadioType"][];
+      /** Chosen */
+      chosen: string[];
+    };
     /** RadioEpisodeDetail */
     RadioEpisodeDetail: {
       /**
@@ -13460,6 +13577,15 @@ export interface components {
       logo_url?: string | null;
       /** Show Count */
       show_count: number;
+    };
+    /** RadioType */
+    RadioType: {
+      /** Id */
+      id: string;
+      /** Label */
+      label: string;
+      /** Group */
+      group: string;
     };
     /** RankedReleaseView */
     RankedReleaseView: {
@@ -16173,6 +16299,46 @@ export interface components {
        * @enum {string}
        */
       cover_actions: "on" | "beside";
+      /**
+       * Radio Types
+       * @default [
+       *       "comedy",
+       *       "drama-scifiandfantasy",
+       *       "news"
+       *     ]
+       */
+      radio_types: (
+        | "comedy"
+        | "comedy-sitcoms"
+        | "comedy-satire"
+        | "comedy-standup"
+        | "comedy-sketch"
+        | "comedy-chat"
+        | "gamesandquizzes"
+        | "drama"
+        | "drama-scifiandfantasy"
+        | "drama-crime"
+        | "drama-thriller"
+        | "drama-horrorandsupernatural"
+        | "drama-historical"
+        | "drama-classicandperiod"
+        | "drama-relationshipsandromance"
+        | "drama-soaps"
+        | "readings"
+        | "audiobooks"
+        | "news"
+        | "documentaries"
+        | "factual-history"
+        | "factual-scienceandnature"
+        | "factual-politics"
+        | "factual-crimeandjustice"
+        | "factual-artscultureandthemedia"
+        | "factual-healthandwellbeing"
+        | "factual-foodanddrink"
+        | "discussionandtalk"
+        | "sport"
+        | "music"
+      )[];
     };
     /** UserView */
     UserView: {
@@ -20687,6 +20853,58 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SeriesRequestView"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  discover_api_radio_discover_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioDiscoverView"];
+        };
+      };
+    };
+  };
+  popular_api_radio_discover_popular_get: {
+    parameters: {
+      query?: {
+        type?: string | null;
+        station?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PopularShowList"];
         };
       };
       /** @description Validation Error */

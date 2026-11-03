@@ -278,3 +278,65 @@
 .radio-show-head__text > .logo-mask {
   --logo-w: 340px;
 }
+
+/* Discover, For you, Radio: five station tiles in one row, each a toggle for its popular shows. */
+.discover-stations {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+/* On phones the five stations scroll sideways in one row instead of taking a screen. */
+@media (max-width: 760px) {
+  .discover-stations {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 132px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+}
+.discover-stations .station-card {
+  padding: 0;
+}
+.discover-stations .logo-tile {
+  width: 112px;
+  max-width: 100%;
+  height: 64px;
+}
+.discover-station {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+  width: 100%;
+  margin: 0;
+  padding: var(--space-4);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.discover-station[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+.discover-station:focus-visible {
+  outline: 2px solid var(--color-focus, var(--color-accent));
+  outline-offset: 2px;
+}
+.discover-radio__add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.radio-types > p {
+  margin: 0 0 var(--space-4);
+}
+.radio-types__group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-4);
+}
+.radio-types__group legend {
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}

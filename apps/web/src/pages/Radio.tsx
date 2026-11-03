@@ -457,7 +457,7 @@ function RadioShows({ canEdit }: { canEdit: boolean }) {
   );
 }
 
-function StationLogo({
+export function StationLogo({
   station,
 }: {
   station: { name: string; logo_url?: string | null };
@@ -1216,15 +1216,24 @@ const programmeLink = (pid: string) =>
   `https://www.bbc.co.uk/programmes/${pid}`;
 
 /** Add a show: a link or a name, a preview, the follow choice (From now on by default), then the show. */
-export function AddShow({ close }: { close: () => void }) {
+export function AddShow({
+  close,
+  pid,
+}: {
+  close: () => void;
+  /** A show chosen elsewhere (Discover, For you, Radio): its preview opens straight away. */
+  pid?: string;
+}) {
   const navigate = useNavigate();
   const cache = useQueryClient();
-  const [text, setText] = useState("");
+  const [text, setText] = useState(pid ? programmeLink(pid) : "");
   const [query, setQuery] = useState<{
     kind: "link" | "name";
     value: string;
-  } | null>(null);
-  const [link, setLink] = useState<string | null>(null);
+  } | null>(pid ? { kind: "link", value: pid } : null);
+  const [link, setLink] = useState<string | null>(
+    pid ? programmeLink(pid) : null,
+  );
   const [follow, setFollow] = useState<Follow>("from_now_on");
   const field = useRef<HTMLInputElement>(null);
   useEffect(() => field.current?.focus(), []);

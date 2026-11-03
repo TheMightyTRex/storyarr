@@ -440,3 +440,47 @@ def search_results(data: dict) -> list[SearchResult]:
             )
         )
     return results
+
+
+@dataclass
+class PopularShow:
+    pid: str
+    title: str
+    synopsis: str | None
+    station_id: str | None
+    station_name: str | None
+    image_pid: str | None
+
+
+def popular_shows(data: dict, limit: int = 12) -> list[PopularShow]:
+    """Shows from BBC Sounds popular episodes (rms.api.bbc.co.uk/v2/programmes/playable,
+    sort=popular): one per brand or series, in the order of their most popular episode."""
+    items = data.get("data") if isinstance(data, dict) else None
+    if not isinstance(items, list):
+        raise AdapterError(FailureKind.PARSER, "BBC Sounds popular shows have changed.")
+    shows: dict[str, PopularShow] = {}
+    for item in items:
+        if not isinstance(item, dict) or item.get("type") != "playable_item":
+            continue
+        container = item.get("container") if isinstance(item.get("container"), dict) else {}
+        pid = _pid(container.get("id"))
+        title = _text(container.get("title")) or _text((item.get("titles") or {}).get("primary"))
+        if not pid or not title or pid in shows:
+            continue
+        network = item.get("network") if isinstance(item.get("network"), dict) else {}
+        service_id = network.get("id")
+        image = re.search(r"/([0-9b-df-hj-np-tv-z]{8,15})\.jpg$", str(item.get("image_url") or ""))
+        shows[pid] = PopularShow(
+            pid=pid,
+            title=title,
+            synopsis=_text((container.get("synopses") or {}).get("short"), 1000)
+            or _text((item.get("synopses") or {}).get("short"), 1000),
+            station_id=service_id
+            if isinstance(service_id, str) and SERVICE_ID.fullmatch(service_id)
+            else None,
+            station_name=_text(network.get("short_title"), 200),
+            image_pid=image[1] if image else None,
+        )
+        if len(shows) >= limit:
+            break
+    return list(shows.values())

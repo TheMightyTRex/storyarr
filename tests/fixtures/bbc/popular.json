@@ -1,0 +1,1998 @@
+{
+ "_about": "BBC Sounds v2/programmes/playable sort=popular, recorded 3 November 2026, trimmed to the fields Storyarr reads.",
+ "category=comedy": {
+  "total": 7482,
+  "data": [
+   {
+    "type": "playable_item",
+    "id": "m0033p8p",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Room 101 with Paul Merton",
+     "secondary": "Series 4",
+     "tertiary": "Andi Osho",
+     "entity_title": "Andi Osho"
+    },
+    "synopses": {
+     "short": "Paul asks novelist and actress Andi Osho about her pet peeves and worst nightmares."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pg8kx4.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m001x0mr",
+     "title": "Room 101 with Paul Merton",
+     "synopses": {
+      "short": "Paul Merton interviews a guest to find out what they would send to Room 101.",
+      "medium": "Returning in its original one-to-one incarnation, Paul Merton interviews a variety of guests from the world of comedy and entertainment to find out what they would send to Room 101.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "b005fr8v",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Dad's Army",
+     "secondary": "Series 3",
+     "tertiary": "Is There Honey Still for Tea?",
+     "entity_title": "Is There Honey Still for Tea?"
+    },
+    "synopses": {
+     "short": "Godfrey's idyllic cottage is threatened with demolition."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m614nn.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b009v6h3",
+     "title": "Dad's Army",
+     "synopses": {
+      "short": "Classic sitcom about the exploits of a Second World War Home Guard platoon.",
+      "medium": "Classic sitcom about the exploits of a Second World War Home Guard platoon. Adapted from BBC TV",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "1976-08-31T00:00:00Z",
+     "label": "31 Aug 1976"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pkjmlp",
+    "network": {
+     "id": "bbc_radio_five_live",
+     "short_title": "Radio 5 Live",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_five_live/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Elis James and John Robins",
+     "secondary": "#588 - One Hundred and Pourteen Charges",
+     "tertiary": null,
+     "entity_title": "#588 - One Hundred and Pourteen Charges"
+    },
+    "synopses": {
+     "short": "There's huge damage to the integrity of the Elis James and John Robins show."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0nc17qt.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m0005fdz",
+     "title": "Elis James and John Robins",
+     "synopses": {
+      "short": "Join Elis and John for your twice-weekly dose of big laughs and top quality #content.",
+      "medium": "Join Elis and John for your twice-weekly dose of big laughs and top quality #content.",
+      "long": "Join the UK's youngest and most relevant broadcasters Elis James and John Robins for your twice-weekly dose of big laughs and top quality #content.\n\nHilarious, welcoming and unashamedly ashamed, let these two best friends keep you company every Tuesday and Friday.\n\nListen to the Elis James and John Robins podcast every Tuesday and Friday on BBC Sounds.\n\nEmail: elisandjohn@bbc.co.uk\n#elisandjohn"
+     }
+    },
+    "release": {
+     "date": "2026-10-30T00:00:00Z",
+     "label": "30 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033dvd",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Room 101 with Paul Merton",
+     "secondary": "Series 4",
+     "tertiary": "Andy Hamilton",
+     "entity_title": "Andy Hamilton"
+    },
+    "synopses": {
+     "short": "Paul asks comedian and writer Andy Hamilton about his pet peeves and worst nightmares."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pgtb6x.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m001x0mr",
+     "title": "Room 101 with Paul Merton",
+     "synopses": {
+      "short": "Paul Merton interviews a guest to find out what they would send to Room 101.",
+      "medium": "Returning in its original one-to-one incarnation, Paul Merton interviews a variety of guests from the world of comedy and entertainment to find out what they would send to Room 101.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-10-26T00:00:00Z",
+     "label": "26 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pkj39s",
+    "network": {
+     "id": "bbc_radio_five_live",
+     "short_title": "Radio 5 Live",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_five_live/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Murder They Wrote with Laura Whitmore and Iain Stirling",
+     "secondary": "138: New Zealand’s “Vilest” Criminal",
+     "tertiary": null,
+     "entity_title": "138: New Zealand’s “Vilest” Criminal"
+    },
+    "synopses": {
+     "short": "Iain kicks off a new series, “Cases From Other Places” with a crime from New Zealand."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0p8jqq5.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0gq38lc",
+     "title": "Murder They Wrote with Laura Whitmore and Iain Stirling",
+     "synopses": {
+      "short": "Join Laura Whitmore and Iain Stirling on a chaotic journey through crime...",
+      "medium": "Laura Whitmore and Iain Stirling dive into some of the world's most jaw-dropping crime stories. Expect murder, mayhem, blackmail and more from this true-crime-obsessed couple.",
+      "long": "Laura Whitmore and Iain Stirling love true crime - in fact, they're a little bit obsessed. And now they want to share that obsession with you.\n\nJoin Laura and Iain as they dive deep into some of the world's most jaw-dropping crime stories. Expect murder, mayhem, blackmail, betrayal, and more.\n\nEach week, the pair choose a new crime and divulge all the details you're dying to know. They unpick the crucial moments and get to the heart of the whodunnit - all while making each other laugh along the way.\n\nMurder They Wrote with Laura Whitmore and Iain Stirling is available weekly on BBC Sounds. Subscribe now so you never miss an episode!\n\nIf you would like to send us a message, email lauraandiain@bbc.co.uk and join the conversation using the hashtag #MTWPod"
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pk38pq",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Infinite Monkey Cage",
+     "secondary": "Series 35",
+     "tertiary": "Ghosts - Isy Suttie, Laurence Rickard, Ciarán O'Keeffe and Chris French",
+     "entity_title": "Ghosts - Isy Suttie, Laurence Rickard, Ciarán O'Keeffe and Chris French"
+    },
+    "synopses": {
+     "short": "Jessica Fostekew and Adam Rutherford investigate the spooky science behind ghosts."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pk91ln.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b00snr0w",
+     "title": "The Infinite Monkey Cage",
+     "synopses": {
+      "short": "A witty, irreverent look at the world through scientists' eyes.",
+      "medium": "A witty, irreverent look at the world through scientists' eyes, guest hosted by Prof. Adam Rutherford and Jess Fostekew.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-10-29T00:00:00Z",
+     "label": "29 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033f3n",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Matt Forde Focus Group",
+     "secondary": "The Politics of Trick-or-Treat (Halloween Special)",
+     "tertiary": null,
+     "entity_title": "The Politics of Trick-or-Treat (Halloween Special)"
+    },
+    "synopses": {
+     "short": "Hand over the sweets or face the consequences. Is this how modern politics really works?"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0l99phx.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m002cfl3",
+     "title": "The Matt Forde Focus Group",
+     "synopses": {
+      "short": "Comedian Matt Forde and guests chew over some of the UK's juiciest political subjects.",
+      "medium": "Comedian Matt Forde and guests chew over some of the UK's juiciest political subjects in front of a live audience.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-10-30T00:00:00Z",
+     "label": "30 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "b052m4wg",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Cleaning Up",
+     "secondary": "1. New Recruit",
+     "tertiary": null,
+     "entity_title": "1. New Recruit"
+    },
+    "synopses": {
+     "short": "Cleaners set to work in night-time Manchester. Sitcom starring Julie Hesmondhalgh"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0ph2107.jpg",
+    "container": {
+     "type": "series",
+     "id": "b054cpfl",
+     "title": "Cleaning Up",
+     "synopses": {
+      "short": "Sitcom about a group of night-time office cleaners in Manchester. Written by Ian Kershaw.",
+      "medium": "Sitcom about a group of night-time office cleaners in Manchester. Written by Ian Kershaw.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2015-02-20T00:00:00Z",
+     "label": "20 Feb 2015"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pjvcrw",
+    "network": {
+     "id": "bbc_radio_five_live",
+     "short_title": "Radio 5 Live",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_five_live/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Elis James and John Robins",
+     "secondary": "#587 - 101 Damatians, Mr Swede and Can I Check a Text Message!?",
+     "tertiary": null,
+     "entity_title": "#587 - 101 Damatians, Mr Swede and Can I Check a Text Message!?"
+    },
+    "synopses": {
+     "short": "Possibly the tensest Cymru Connection in history, plus a trip to the pantomime scene."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0nc17qt.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m0005fdz",
+     "title": "Elis James and John Robins",
+     "synopses": {
+      "short": "Join Elis and John for your twice-weekly dose of big laughs and top quality #content.",
+      "medium": "Join Elis and John for your twice-weekly dose of big laughs and top quality #content.",
+      "long": "Join the UK's youngest and most relevant broadcasters Elis James and John Robins for your twice-weekly dose of big laughs and top quality #content.\n\nHilarious, welcoming and unashamedly ashamed, let these two best friends keep you company every Tuesday and Friday.\n\nListen to the Elis James and John Robins podcast every Tuesday and Friday on BBC Sounds.\n\nEmail: elisandjohn@bbc.co.uk\n#elisandjohn"
+     }
+    },
+    "release": {
+     "date": "2026-10-27T00:00:00Z",
+     "label": "27 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pkj1rx",
+    "network": {
+     "id": "bbc_radio_five_live",
+     "short_title": "Radio 5 Live",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_five_live/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Elis James and John Robins",
+     "secondary": "The Bureau de Change of the Mind - ‘A Refreshing Onion’",
+     "tertiary": null,
+     "entity_title": "The Bureau de Change of the Mind - ‘A Refreshing Onion’"
+    },
+    "synopses": {
+     "short": "Is half a bag of radishes enough to keep you alive?"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0nc17qt.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m0005fdz",
+     "title": "Elis James and John Robins",
+     "synopses": {
+      "short": "Join Elis and John for your twice-weekly dose of big laughs and top quality #content.",
+      "medium": "Join Elis and John for your twice-weekly dose of big laughs and top quality #content.",
+      "long": "Join the UK's youngest and most relevant broadcasters Elis James and John Robins for your twice-weekly dose of big laughs and top quality #content.\n\nHilarious, welcoming and unashamedly ashamed, let these two best friends keep you company every Tuesday and Friday.\n\nListen to the Elis James and John Robins podcast every Tuesday and Friday on BBC Sounds.\n\nEmail: elisandjohn@bbc.co.uk\n#elisandjohn"
+     }
+    },
+    "release": {
+     "date": "2026-10-31T00:00:00Z",
+     "label": "31 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pkg6k3",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Friday Night Comedy from BBC Radio 4",
+     "secondary": "The Matt Forde Focus Group: The Politics of Trick-or-Treat (Halloween Special)",
+     "tertiary": null,
+     "entity_title": "The Matt Forde Focus Group: The Politics of Trick-or-Treat (Halloween Special)"
+    },
+    "synopses": {
+     "short": "Hand over the sweets or face the consequences: is this how modern politics really works?"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0mqb2gm.jpg",
+    "container": {
+     "type": "series",
+     "id": "p02pc9pj",
+     "title": "Friday Night Comedy from BBC Radio 4",
+     "synopses": {
+      "short": "The best topical comedy from BBC Radio 4, every Friday. Listen first on BBC Sounds.",
+      "medium": "The best topical comedy from BBC Radio 4, every Friday. Features The News Quiz, Dead Ringers, The Naked Week and Too Long; Didn’t Read. Listen first on BBC Sounds.",
+      "long": "Topical comedy from the sharpest satirical minds in the business. Listen first on BBC Sounds, every Friday.\n\nIs the news driving you up the wall? You’re not alone. Let the comedians take the strain and work out what’s been funny this week. Features BBC Radio 4’s The News Quiz, Dead Ringers, The Naked Week and Too Long; Didn’t Read. \n\nListen on BBC Sounds, seven days earlier than anywhere else, and subscribe to make sure that you don’t miss an episode."
+     }
+    },
+    "release": {
+     "date": null,
+     "label": null
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pkjcq9",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Wanging On with Graham Norton and Maria McErlane",
+     "secondary": "Should I come out to my parents at 41? Graham and Maria get emotional",
+     "tertiary": null,
+     "entity_title": "Should I come out to my parents at 41? Graham and Maria get emotional"
+    },
+    "synopses": {
+     "short": "Graham and Maria share an emotional response to a listener's dilemma."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0mw6lp1.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0mw6k03",
+     "title": "Wanging On with Graham Norton and Maria McErlane",
+     "synopses": {
+      "short": "Graham Norton and Maria McErlane share their 'so-so' advice to tackle everyday dilemmas.",
+      "medium": null,
+      "long": "Graham Norton is reunited with his dear friend Maria McErlane to dish out average advice and so-so solutions to your everyday dilemmas. \n\nTogether they do their level best to tackle office politics, friendship tensions, unruly pets, neighbourly disputes and family bust-ups. Plus you - the ‘Wangers’ - can wade in with your nuggets of wisdom too. Each week, Graham and Maria share the latest in their life - be it bikes, books, haircuts or hangover cures. They’ll also pass judgement on your most peculiar proclivities in Am I Weird? \n\nSo don’t let your problems get you down, let Graham and Maria help!"
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pkbjq8",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "No Such Thing As A Fish",
+     "secondary": "No Such Thing As Sea Cucumber in a Haunted House",
+     "tertiary": null,
+     "entity_title": "No Such Thing As Sea Cucumber in a Haunted House"
+    },
+    "synopses": {
+     "short": "In our SPOOKY special, Dan, James, Anna and Andy discuss coffins, spirits and jump-scares"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pfgzh3.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0gwnyjd",
+     "title": "No Such Thing As A Fish",
+     "synopses": {
+      "short": "Four dorks discuss the most amazing facts they’ve learned over the last seven days",
+      "medium": null,
+      "long": "The show about everything: four dorks discuss the most amazing facts they’ve learned over the last seven days.\n\nThe multi award-winning, globe-travelling, 600-million-download phenomenon. Hosted by Dan Schreiber, James Harkin, Andrew Hunter Murray and Anna Ptaszynski."
+     }
+    },
+    "release": {
+     "date": "2026-10-30T00:00:00Z",
+     "label": "30 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0007rfk",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Mark Steel Revolution",
+     "secondary": "The Russian Revolution",
+     "tertiary": null,
+     "entity_title": "The Russian Revolution"
+    },
+    "synopses": {
+     "short": "The radical comedian re-assesses the historical forces and key players."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p01l30tx.jpg",
+    "container": {
+     "type": "series",
+     "id": "b00fn0x6",
+     "title": "The Mark Steel Revolution",
+     "synopses": {
+      "short": "Mark Steel presents six lectures on the theme of revolution.",
+      "medium": "Mark Steel presents six lectures on the theme of revolution.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "1998-07-14T00:00:00Z",
+     "label": "14 Jul 1998"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pk0m7g",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Strong Message Here",
+     "secondary": "In a Surprise Announcement (with Beth Rigby)",
+     "tertiary": null,
+     "entity_title": "In a Surprise Announcement (with Beth Rigby)"
+    },
+    "synopses": {
+     "short": "Beth Rigby joins Armando to talk the language of the budget."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pk3hkf.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m0024cp6",
+     "title": "Strong Message Here",
+     "synopses": {
+      "short": "Armando Iannucci and guests decode the utterly baffling world of political language.",
+      "medium": "Armando Iannucci hosts the programme that gives you a cast-iron guarantee to be laser-focused on decoding the baffling world of political language.",
+      "long": "Armando Iannucci hosts the programme that gives you a cast-iron guarantee to be laser-focused on decoding the baffling world of political language.\n\nEach week he'll be joined by a guest to crack open the political phrasebook and attempt to demystify the doublespeak. Why does everything now have to be 'turbo-charged'? What's the difference between a 'pledge' and a 'mission'? Why has my local MP been 'weaponised' and should I be worried?\n\nYou'll be treated to a crash course in the dark arts of political language from people on the inside who are both baffled and beguiled by it. They'll walk you through the various verbal fiascos of the modern political lexicon so that by the end you'll be oven-ready for an appearance on Newsnight.\n\nArmando's erstwhile partner in de-baffling political lexicon, Helen Lewis, is away working in the United States in the autumn and so her seat will be kept warm by a rotating cast of co-hosts.\n\nListen to Strong Message Here on Thursdays on Radio 4 at 9.45am, and an extended version is available on BBC Sounds.\n\nProduced by Gwyn Rhys Davies. A BBC Studios Production for BBC Radio 4."
+     }
+    },
+    "release": {
+     "date": "2026-10-29T00:00:00Z",
+     "label": "29 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pkbgsb",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Sherlock & Co.",
+     "secondary": "The Gloria Scott - Part One",
+     "tertiary": null,
+     "entity_title": "The Gloria Scott - Part One"
+    },
+    "synopses": {
+     "short": "My companion, Mariana and I headed to Camden, with an old school friend of Sherlock's..."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0p49jvg.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0nq34ms",
+     "title": "Sherlock & Co.",
+     "synopses": {
+      "short": "Join podcaster Dr. John Watson as he documents the adventures of Sherlock Holmes.",
+      "medium": null,
+      "long": "My name is Dr. John Watson, once of the British Army Northumberland Fusilier Regiment, now a true crime podcaster based in Central London. I don't have much experience in criminology, so this is mostly a record of how I met possibly the most brilliant and bizarre person I have ever (and will ever) know. Join me as I document the adventures of Sherlock Holmes.\n\nThis podcast is property of Goalhanger Podcasts. Based on the works of Sir Arthur Conan Doyle."
+     }
+    },
+    "release": {
+     "date": "2026-10-30T00:00:00Z",
+     "label": "30 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m00333st",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The News Quiz",
+     "secondary": "Series 121",
+     "tertiary": "8. 'Everyday fixes'",
+     "entity_title": "8. 'Everyday fixes'"
+    },
+    "synopses": {
+     "short": "Has The News Quiz managed to avoid being hacked?"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0ls0lj6.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006r9yq",
+     "title": "The News Quiz",
+     "synopses": {
+      "short": "Topical panel quiz show, taking its questions from the week's news stories.",
+      "medium": "Topical panel quiz show, taking its questions from the week's news stories.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-10-23T00:00:00Z",
+     "label": "23 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033c7j",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Beyond Our Ken",
+     "secondary": "Series 5",
+     "tertiary": "Episode 15",
+     "entity_title": "Episode 15"
+    },
+    "synopses": {
+     "short": "Blast off! Kenneth Horne and the gang are heading into space!"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p08wfkn6.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b009twnn",
+     "title": "Beyond Our Ken",
+     "synopses": {
+      "short": "Classic BBC comedy - precursor to 'Round The Horne' - with Kenneth Horne and company.",
+      "medium": "Classic BBC comedy - precursor to 'Round The Horne' - starring Kenneth Horne, Kenneth Williams, Hugh Paddick, Betty Marsden and Bill Pertwee.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "1962-01-18T00:00:00Z",
+     "label": "18 Jan 1962"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "b008j0yr",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Revolting People",
+     "secondary": "Series 3",
+     "tertiary": "Them Thar Hills",
+     "entity_title": "Them Thar Hills"
+    },
+    "synopses": {
+     "short": "Samuel and McGurk follow prospector Mad Pete to hunt for gold."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p01lckfc.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b007v7v0",
+     "title": "Revolting People",
+     "synopses": {
+      "short": "Sitcom set in Baltimore, just before the American War of Independence.",
+      "medium": "Sitcom set in Baltimore, just before the American War of Independence. Written by and starring Andy Hamilton and Jay Tarses",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2004-06-24T00:00:00Z",
+     "label": "24 Jun 2004"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033pcp",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Just a Minute",
+     "secondary": "Series 64",
+     "tertiary": "Episode 1",
+     "entity_title": "Episode 1"
+    },
+    "synopses": {
+     "short": "Nicholas Parsons challenges Paul Merton, Sue Perkins, Liza Tarbuck and Graham Norton"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0hq5hy6.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006s5dp",
+     "title": "Just a Minute",
+     "synopses": {
+      "short": "Panel game in which players must speak for one minute on any subject asked of them",
+      "medium": "Panel game in which the contestants are challenged to speak for one minute without hesitation, deviation or repetition on any subject that comes up on the cards",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2012-08-06T00:00:00Z",
+     "label": "06 Aug 2012"
+    }
+   }
+  ]
+ },
+ "category=drama-scifiandfantasy": {
+  "total": 208,
+  "data": [
+   {
+    "type": "playable_item",
+    "id": "b082r2r8",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Over Sea, Under Stone by Susan Cooper",
+     "secondary": "The Trust of Logres",
+     "tertiary": null,
+     "entity_title": "The Trust of Logres"
+    },
+    "synopses": {
+     "short": "The children near the end of their quest, over sea and under stone."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p04fghz1.jpg",
+    "container": {
+     "type": "series",
+     "id": "b082wyr6",
+     "title": "Over Sea, Under Stone by Susan Cooper",
+     "synopses": {
+      "short": "Contemporary fantasy novel written for children by the English author Susan Cooper.",
+      "medium": "Adaptation of the contemporary fantasy novel written for children by the English author Susan Cooper.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "1995-09-10T00:00:00Z",
+     "label": "10 Sep 1995"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "b082qf33",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Over Sea, Under Stone by Susan Cooper",
+     "secondary": "The Parchment",
+     "tertiary": null,
+     "entity_title": "The Parchment"
+    },
+    "synopses": {
+     "short": "Holidaying with an uncle in Cornwall turns sinister as the Drew children make a discovery."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p04fghz1.jpg",
+    "container": {
+     "type": "series",
+     "id": "b082wyr6",
+     "title": "Over Sea, Under Stone by Susan Cooper",
+     "synopses": {
+      "short": "Contemporary fantasy novel written for children by the English author Susan Cooper.",
+      "medium": "Adaptation of the contemporary fantasy novel written for children by the English author Susan Cooper.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "1995-08-20T00:00:00Z",
+     "label": "20 Aug 1995"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "b082qnvh",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Over Sea, Under Stone by Susan Cooper",
+     "secondary": "The Standing Stones",
+     "tertiary": null,
+     "entity_title": "The Standing Stones"
+    },
+    "synopses": {
+     "short": "A treasure hunt leads the children deeper into danger."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p04fghz1.jpg",
+    "container": {
+     "type": "series",
+     "id": "b082wyr6",
+     "title": "Over Sea, Under Stone by Susan Cooper",
+     "synopses": {
+      "short": "Contemporary fantasy novel written for children by the English author Susan Cooper.",
+      "medium": "Adaptation of the contemporary fantasy novel written for children by the English author Susan Cooper.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "1995-08-27T00:00:00Z",
+     "label": "27 Aug 1995"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "b082qz0c",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Over Sea, Under Stone by Susan Cooper",
+     "secondary": "The Furry Dance",
+     "tertiary": null,
+     "entity_title": "The Furry Dance"
+    },
+    "synopses": {
+     "short": "A carnival twists through the winding streets, as the powers of the dark close in."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p04fghz1.jpg",
+    "container": {
+     "type": "series",
+     "id": "b082wyr6",
+     "title": "Over Sea, Under Stone by Susan Cooper",
+     "synopses": {
+      "short": "Contemporary fantasy novel written for children by the English author Susan Cooper.",
+      "medium": "Adaptation of the contemporary fantasy novel written for children by the English author Susan Cooper.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "1995-09-03T00:00:00Z",
+     "label": "03 Sep 1995"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0012mw8",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Midnight Folk by John Masefield",
+     "secondary": "1. Get Set - Go!",
+     "tertiary": null,
+     "entity_title": "1. Get Set - Go!"
+    },
+    "synopses": {
+     "short": "A little boy sets out on a magical quest to find treasure. Stars Charles Dance."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pgs1qz.jpg",
+    "container": {
+     "type": "series",
+     "id": "b00fyjkv",
+     "title": "The Midnight Folk by John Masefield",
+     "synopses": {
+      "short": "John Masefield's adventure stars Sam Salter, Nickolas Grace and Charles Dance.",
+      "medium": "Children's fantasy adventure about a young boy who sets out on a magical quest. Stars Sam Salter, Nickolas Grace and Charles Dance",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2006-12-10T00:00:00Z",
+     "label": "10 Dec 2006"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0012mtn",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Midnight Folk by John Masefield",
+     "secondary": "2. Dangers Ahead",
+     "tertiary": null,
+     "entity_title": "2. Dangers Ahead"
+    },
+    "synopses": {
+     "short": "Little boy Kay Harker sets out on a magical quest to find treasure. With Charles Dance."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pgs1qz.jpg",
+    "container": {
+     "type": "series",
+     "id": "b00fyjkv",
+     "title": "The Midnight Folk by John Masefield",
+     "synopses": {
+      "short": "John Masefield's adventure stars Sam Salter, Nickolas Grace and Charles Dance.",
+      "medium": "Children's fantasy adventure about a young boy who sets out on a magical quest. Stars Sam Salter, Nickolas Grace and Charles Dance",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2006-12-17T00:00:00Z",
+     "label": "17 Dec 2006"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033c38",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Gargantua and Pantagruel by François Rabelais",
+     "secondary": "1. Gargantua",
+     "tertiary": null,
+     "entity_title": "1. Gargantua"
+    },
+    "synopses": {
+     "short": "A young giant faces laughable insanity due to ignorance, crones and syphilitic professors."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p01l7yys.jpg",
+    "container": {
+     "type": "series",
+     "id": "b0186f4t",
+     "title": "Gargantua and Pantagruel by François Rabelais",
+     "synopses": {
+      "short": "Comedic moral stories by Rabelais that interweave the realistic with the fantastical",
+      "medium": "By François Rabelais. Comedic moral stories that interweave the realistic with the fantastical to expose human follies",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2011-12-11T00:00:00Z",
+     "label": "11 Dec 2011"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p07lgzdr",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The War of the Worlds by HG Wells",
+     "secondary": "Book 1 - Chapter 1",
+     "tertiary": null,
+     "entity_title": "Book 1 - Chapter 1"
+    },
+    "synopses": {
+     "short": "HG Wells’ iconic sci-fi story about the battle to save Earth from a Martian invasion."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0nzw42y.jpg",
+    "container": {
+     "type": "series",
+     "id": "p07lbzbp",
+     "title": "The War of the Worlds by HG Wells",
+     "synopses": {
+      "short": "The iconic sci-fi story about the battle to save Earth from a Martian invasion.",
+      "medium": "HG Wells’ iconic sci-fi story about the battle to save Earth from a Martian invasion. Read by Michael Bertenshaw. Produced by Martha Littlehailes.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2019-08-23T00:00:00Z",
+     "label": "23 Aug 2019"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "b01888kx",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Gargantua and Pantagruel by François Rabelais",
+     "secondary": "2. Pantagruel",
+     "tertiary": null,
+     "entity_title": "2. Pantagruel"
+    },
+    "synopses": {
+     "short": "Pantagruel and his friend embark on a quest to discover whether marriage is for them."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p01l7yys.jpg",
+    "container": {
+     "type": "series",
+     "id": "b0186f4t",
+     "title": "Gargantua and Pantagruel by François Rabelais",
+     "synopses": {
+      "short": "Comedic moral stories by Rabelais that interweave the realistic with the fantastical",
+      "medium": "By François Rabelais. Comedic moral stories that interweave the realistic with the fantastical to expose human follies",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2011-12-18T00:00:00Z",
+     "label": "18 Dec 2011"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m00201vf",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Nineteen Eighty-Four",
+     "secondary": "1: 'Big Brother Is Watching You'",
+     "tertiary": null,
+     "entity_title": "1: 'Big Brother Is Watching You'"
+    },
+    "synopses": {
+     "short": "Martin Freeman reads from Orwell's dystopian classic, now celebrating its 75th anniversary"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m33kf5.jpg",
+    "container": {
+     "type": "series",
+     "id": "m00201vh",
+     "title": "Nineteen Eighty-Four",
+     "synopses": {
+      "short": "Special readings from Orwell's dystopian classic, now celebrating its 75th anniversary.",
+      "medium": "Special readings from Orwell's dystopian classic, now celebrating its 75th anniversary.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2024-06-08T00:00:00Z",
+     "label": "08 Jun 2024"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0lh806y",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Up In Smoke",
+     "secondary": "1. The Fire",
+     "tertiary": null,
+     "entity_title": "1. The Fire"
+    },
+    "synopses": {
+     "short": "A devastating house fire kills a teenage boy, but police find no body in the ashes."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0lght1k.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0lghsnr",
+     "title": "Up In Smoke",
+     "synopses": {
+      "short": "A true crime-style drama: a fictional house fire, a missing boy and a global media frenzy",
+      "medium": null,
+      "long": "Adam Buxton and Mei Mac star in a true crime podcast about a fictional event. In 2014 a devastating house fire shatters the quiet life of Greenloch, a rural English village. Teenager Mason Miller is presumed dead in the blaze. When investigators sift through the ashes, no trace of his body is found.\n\nThe mystery of Mason’s disappearance ignites a global media frenzy. It draws in police, reporters, and psychics from around the world - all obsessed with one question: Where is Mason Miller?\n\nYears later, after the wrongful conviction of Mason's music teacher, the local tabloid journalist who broke the story launches this podcast to unravel the mystery. She personally witnessed an event in 2014 that was beyond belief - something extraordinary and unexplainable. Now she’s determined to challenge the official story. But will the world believe her?\n\nStarring Mei Mac (My Neighbour Totoro), Adam Buxton (Adam and Joe, Hot Fuzz), and Allan Corduner (Tár, Defiance), Up In Smoke in an eight-part supernatural thriller written and directed by Guy Larsen and Cambria Bailey-Jones."
+     }
+    },
+    "release": {
+     "date": "2025-06-10T00:00:00Z",
+     "label": "10 Jun 2025"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0lqgd8s",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Up In Smoke",
+     "secondary": "7. Selfish Spirits",
+     "tertiary": null,
+     "entity_title": "7. Selfish Spirits"
+    },
+    "synopses": {
+     "short": "Kay and Burgess meet the shadowy person behind an illusive letter. Is it a trap?"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0lght1k.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0lghsnr",
+     "title": "Up In Smoke",
+     "synopses": {
+      "short": "A true crime-style drama: a fictional house fire, a missing boy and a global media frenzy",
+      "medium": null,
+      "long": "Adam Buxton and Mei Mac star in a true crime podcast about a fictional event. In 2014 a devastating house fire shatters the quiet life of Greenloch, a rural English village. Teenager Mason Miller is presumed dead in the blaze. When investigators sift through the ashes, no trace of his body is found.\n\nThe mystery of Mason’s disappearance ignites a global media frenzy. It draws in police, reporters, and psychics from around the world - all obsessed with one question: Where is Mason Miller?\n\nYears later, after the wrongful conviction of Mason's music teacher, the local tabloid journalist who broke the story launches this podcast to unravel the mystery. She personally witnessed an event in 2014 that was beyond belief - something extraordinary and unexplainable. Now she’s determined to challenge the official story. But will the world believe her?\n\nStarring Mei Mac (My Neighbour Totoro), Adam Buxton (Adam and Joe, Hot Fuzz), and Allan Corduner (Tár, Defiance), Up In Smoke in an eight-part supernatural thriller written and directed by Guy Larsen and Cambria Bailey-Jones."
+     }
+    },
+    "release": {
+     "date": "2025-07-16T00:00:00Z",
+     "label": "16 Jul 2025"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0lntrs8",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Up In Smoke",
+     "secondary": "6. Bogeybear",
+     "tertiary": null,
+     "entity_title": "6. Bogeybear"
+    },
+    "synopses": {
+     "short": "Kay delves into the dark secrets of the Millers’ past"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0lght1k.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0lghsnr",
+     "title": "Up In Smoke",
+     "synopses": {
+      "short": "A true crime-style drama: a fictional house fire, a missing boy and a global media frenzy",
+      "medium": null,
+      "long": "Adam Buxton and Mei Mac star in a true crime podcast about a fictional event. In 2014 a devastating house fire shatters the quiet life of Greenloch, a rural English village. Teenager Mason Miller is presumed dead in the blaze. When investigators sift through the ashes, no trace of his body is found.\n\nThe mystery of Mason’s disappearance ignites a global media frenzy. It draws in police, reporters, and psychics from around the world - all obsessed with one question: Where is Mason Miller?\n\nYears later, after the wrongful conviction of Mason's music teacher, the local tabloid journalist who broke the story launches this podcast to unravel the mystery. She personally witnessed an event in 2014 that was beyond belief - something extraordinary and unexplainable. Now she’s determined to challenge the official story. But will the world believe her?\n\nStarring Mei Mac (My Neighbour Totoro), Adam Buxton (Adam and Joe, Hot Fuzz), and Allan Corduner (Tár, Defiance), Up In Smoke in an eight-part supernatural thriller written and directed by Guy Larsen and Cambria Bailey-Jones."
+     }
+    },
+    "release": {
+     "date": "2025-07-08T00:00:00Z",
+     "label": "08 Jul 2025"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0ljmh17",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Up In Smoke",
+     "secondary": "3. 18, 15, 22",
+     "tertiary": null,
+     "entity_title": "3. 18, 15, 22"
+    },
+    "synopses": {
+     "short": "Kay realises she's made a huge mistake and Dylan uncovers a strange video of Mason."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0lght1k.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0lghsnr",
+     "title": "Up In Smoke",
+     "synopses": {
+      "short": "A true crime-style drama: a fictional house fire, a missing boy and a global media frenzy",
+      "medium": null,
+      "long": "Adam Buxton and Mei Mac star in a true crime podcast about a fictional event. In 2014 a devastating house fire shatters the quiet life of Greenloch, a rural English village. Teenager Mason Miller is presumed dead in the blaze. When investigators sift through the ashes, no trace of his body is found.\n\nThe mystery of Mason’s disappearance ignites a global media frenzy. It draws in police, reporters, and psychics from around the world - all obsessed with one question: Where is Mason Miller?\n\nYears later, after the wrongful conviction of Mason's music teacher, the local tabloid journalist who broke the story launches this podcast to unravel the mystery. She personally witnessed an event in 2014 that was beyond belief - something extraordinary and unexplainable. Now she’s determined to challenge the official story. But will the world believe her?\n\nStarring Mei Mac (My Neighbour Totoro), Adam Buxton (Adam and Joe, Hot Fuzz), and Allan Corduner (Tár, Defiance), Up In Smoke in an eight-part supernatural thriller written and directed by Guy Larsen and Cambria Bailey-Jones."
+     }
+    },
+    "release": {
+     "date": "2025-06-17T00:00:00Z",
+     "label": "17 Jun 2025"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0lrfpq5",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Up In Smoke",
+     "secondary": "8. Facades",
+     "tertiary": null,
+     "entity_title": "8. Facades"
+    },
+    "synopses": {
+     "short": "Kay’s ‘Where are they now?’ episode takes a pivotal turn, when a familiar face shows up."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0lght1k.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0lghsnr",
+     "title": "Up In Smoke",
+     "synopses": {
+      "short": "A true crime-style drama: a fictional house fire, a missing boy and a global media frenzy",
+      "medium": null,
+      "long": "Adam Buxton and Mei Mac star in a true crime podcast about a fictional event. In 2014 a devastating house fire shatters the quiet life of Greenloch, a rural English village. Teenager Mason Miller is presumed dead in the blaze. When investigators sift through the ashes, no trace of his body is found.\n\nThe mystery of Mason’s disappearance ignites a global media frenzy. It draws in police, reporters, and psychics from around the world - all obsessed with one question: Where is Mason Miller?\n\nYears later, after the wrongful conviction of Mason's music teacher, the local tabloid journalist who broke the story launches this podcast to unravel the mystery. She personally witnessed an event in 2014 that was beyond belief - something extraordinary and unexplainable. Now she’s determined to challenge the official story. But will the world believe her?\n\nStarring Mei Mac (My Neighbour Totoro), Adam Buxton (Adam and Joe, Hot Fuzz), and Allan Corduner (Tár, Defiance), Up In Smoke in an eight-part supernatural thriller written and directed by Guy Larsen and Cambria Bailey-Jones."
+     }
+    },
+    "release": {
+     "date": "2025-07-22T00:00:00Z",
+     "label": "22 Jul 2025"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0lm9krq",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Up In Smoke",
+     "secondary": "5. Psych and Subscribe!",
+     "tertiary": null,
+     "entity_title": "5. Psych and Subscribe!"
+    },
+    "synopses": {
+     "short": "Shaken, Kay triggers a series of mistakes that explode into a public humiliation."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0lght1k.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0lghsnr",
+     "title": "Up In Smoke",
+     "synopses": {
+      "short": "A true crime-style drama: a fictional house fire, a missing boy and a global media frenzy",
+      "medium": null,
+      "long": "Adam Buxton and Mei Mac star in a true crime podcast about a fictional event. In 2014 a devastating house fire shatters the quiet life of Greenloch, a rural English village. Teenager Mason Miller is presumed dead in the blaze. When investigators sift through the ashes, no trace of his body is found.\n\nThe mystery of Mason’s disappearance ignites a global media frenzy. It draws in police, reporters, and psychics from around the world - all obsessed with one question: Where is Mason Miller?\n\nYears later, after the wrongful conviction of Mason's music teacher, the local tabloid journalist who broke the story launches this podcast to unravel the mystery. She personally witnessed an event in 2014 that was beyond belief - something extraordinary and unexplainable. Now she’s determined to challenge the official story. But will the world believe her?\n\nStarring Mei Mac (My Neighbour Totoro), Adam Buxton (Adam and Joe, Hot Fuzz), and Allan Corduner (Tár, Defiance), Up In Smoke in an eight-part supernatural thriller written and directed by Guy Larsen and Cambria Bailey-Jones."
+     }
+    },
+    "release": {
+     "date": "2025-07-01T00:00:00Z",
+     "label": "01 Jul 2025"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0lh8jcv",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Up In Smoke",
+     "secondary": "2. The Burning Boy",
+     "tertiary": null,
+     "entity_title": "2. The Burning Boy"
+    },
+    "synopses": {
+     "short": "After an impossible video emerges, suspicion falls on last person to see Mason alive."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0lght1k.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0lghsnr",
+     "title": "Up In Smoke",
+     "synopses": {
+      "short": "A true crime-style drama: a fictional house fire, a missing boy and a global media frenzy",
+      "medium": null,
+      "long": "Adam Buxton and Mei Mac star in a true crime podcast about a fictional event. In 2014 a devastating house fire shatters the quiet life of Greenloch, a rural English village. Teenager Mason Miller is presumed dead in the blaze. When investigators sift through the ashes, no trace of his body is found.\n\nThe mystery of Mason’s disappearance ignites a global media frenzy. It draws in police, reporters, and psychics from around the world - all obsessed with one question: Where is Mason Miller?\n\nYears later, after the wrongful conviction of Mason's music teacher, the local tabloid journalist who broke the story launches this podcast to unravel the mystery. She personally witnessed an event in 2014 that was beyond belief - something extraordinary and unexplainable. Now she’s determined to challenge the official story. But will the world believe her?\n\nStarring Mei Mac (My Neighbour Totoro), Adam Buxton (Adam and Joe, Hot Fuzz), and Allan Corduner (Tár, Defiance), Up In Smoke in an eight-part supernatural thriller written and directed by Guy Larsen and Cambria Bailey-Jones."
+     }
+    },
+    "release": {
+     "date": "2025-06-10T00:00:00Z",
+     "label": "10 Jun 2025"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "b0026406",
+    "network": {
+     "id": "bbc_radio_four_extra",
+     "short_title": "Radio 4 Extra",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four_extra/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Space Force by Charles Chilton",
+     "secondary": "Series 2",
+     "tertiary": "2. The Red Planet",
+     "entity_title": "2. The Red Planet"
+    },
+    "synopses": {
+     "short": "The crew make a discovery in Egypt, while stowaways are reported on the Mars-bound ship."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0f7hp9t.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b00dm15q",
+     "title": "Space Force by Charles Chilton",
+     "synopses": {
+      "short": "Charles Chilton's sci-fi drama starring Nicky Henson, Nigel Stock and Barry Foster",
+      "medium": "Sci-fi drama starring Nicky Henson, Nigel Stock and Barry Foster",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "1985-05-20T00:00:00Z",
+     "label": "20 May 1985"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p07lh0w2",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The War of the Worlds by HG Wells",
+     "secondary": "Book 1 - Chapter 6",
+     "tertiary": null,
+     "entity_title": "Book 1 - Chapter 6"
+    },
+    "synopses": {
+     "short": "HG Wells’ iconic sci-fi story about the battle to save Earth from a Martian invasion."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0nzw42y.jpg",
+    "container": {
+     "type": "series",
+     "id": "p07lbzbp",
+     "title": "The War of the Worlds by HG Wells",
+     "synopses": {
+      "short": "The iconic sci-fi story about the battle to save Earth from a Martian invasion.",
+      "medium": "HG Wells’ iconic sci-fi story about the battle to save Earth from a Martian invasion. Read by Michael Bertenshaw. Produced by Martha Littlehailes.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2019-08-23T00:00:00Z",
+     "label": "23 Aug 2019"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p07lh324",
+    "network": {
+     "id": "bbc_sounds_podcasts",
+     "short_title": "Sounds",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_sounds_podcasts/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The War of the Worlds by HG Wells",
+     "secondary": "Book 1 - Chapter 12",
+     "tertiary": null,
+     "entity_title": "Book 1 - Chapter 12"
+    },
+    "synopses": {
+     "short": "HG Wells’ iconic sci-fi story about the battle to save Earth from a Martian invasion."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0nzw42y.jpg",
+    "container": {
+     "type": "series",
+     "id": "p07lbzbp",
+     "title": "The War of the Worlds by HG Wells",
+     "synopses": {
+      "short": "The iconic sci-fi story about the battle to save Earth from a Martian invasion.",
+      "medium": "HG Wells’ iconic sci-fi story about the battle to save Earth from a Martian invasion. Read by Michael Bertenshaw. Produced by Martha Littlehailes.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2019-08-23T00:00:00Z",
+     "label": "23 Aug 2019"
+    }
+   }
+  ]
+ },
+ "network=bbc_radio_four": {
+  "total": 30423,
+  "data": [
+   {
+    "type": "playable_item",
+    "id": "p0phlwvw",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Archers",
+     "secondary": "02/11/2026",
+     "tertiary": null,
+     "entity_title": "02/11/2026"
+    },
+    "synopses": {
+     "short": "Lily offers her support."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0n3nsm2.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qpgr",
+     "title": "The Archers",
+     "synopses": {
+      "short": "Contemporary drama in a rural setting.",
+      "medium": "Contemporary drama in a rural setting.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033p7k",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Today",
+     "secondary": "02/11/2026",
+     "tertiary": null,
+     "entity_title": "02/11/2026"
+    },
+    "synopses": {
+     "short": "News and current affairs, including Sports Desk, Weather and Thought for the Day."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m1dy2t.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qj9z",
+     "title": "Today",
+     "synopses": {
+      "short": "Radio 4's flagship news and current affairs programme; including Thought for the Day",
+      "medium": "Radio 4's flagship news and current affairs programme; including religious reflections from Thought for the Day at 0748",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pjswlz",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Uncanny",
+     "secondary": "Halloween Countdown 2026",
+     "tertiary": "Uncanny Halloween Special",
+     "entity_title": "Uncanny Halloween Special"
+    },
+    "synopses": {
+     "short": "Danny Robins, Ciaran O'Keeffe and Evelyn Hollow visit The Tower of London - after dark."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pj70rt.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m0010x7c",
+     "title": "Uncanny",
+     "synopses": {
+      "short": "Danny Robins investigates compelling real-life stories of the paranormal.",
+      "medium": "From ghostly phantoms to UFOs, Danny Robins investigates real-life stories of paranormal encounters. So,",
+      "long": "From ghostly phantoms to UFOs, Danny Robins investigates real-life stories of paranormal encounters. So, are you Team Believer or Team Sceptic?\n\nWritten and presented by Danny Robins\nEditor and Sound Designer: Charlie Brandon-King\nMusic: Evelyn Sykes\nTheme Music by Lanterns on the Lake\nProduced by Danny Robins and Simon Barnard\n\nA Bafflegab and Uncanny Media production for BBC Radio 4"
+     }
+    },
+    "release": {
+     "date": "2026-10-31T00:00:00Z",
+     "label": "31 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0phlwny",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Archers",
+     "secondary": "01/11/2026",
+     "tertiary": null,
+     "entity_title": "01/11/2026"
+    },
+    "synopses": {
+     "short": "The nightmare continues for Alan."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0n3nsm2.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qpgr",
+     "title": "The Archers",
+     "synopses": {
+      "short": "Contemporary drama in a rural setting.",
+      "medium": "Contemporary drama in a rural setting.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-01T00:00:00Z",
+     "label": "01 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033p86",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "A Charles Paris Mystery",
+     "secondary": "Dead Giveaway",
+     "tertiary": "Episode 1",
+     "entity_title": "Episode 1"
+    },
+    "synopses": {
+     "short": "Bill Nighy returns as the actor cum amateur sleuth Charles Paris."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0mksq9r.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b00x94yv",
+     "title": "A Charles Paris Mystery",
+     "synopses": {
+      "short": "Bill Nighy stars as actor-cum-amateur sleuth Charles Paris",
+      "medium": "Bill Nighy stars as actor-cum-amateur sleuth Charles Paris in the stories by Simon Brett, dramatised by Jeremy Front",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pk03l9",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Desert Island Discs",
+     "secondary": "Paul Sinton-Hewitt, founder of parkrun",
+     "tertiary": null,
+     "entity_title": "Paul Sinton-Hewitt, founder of parkrun"
+    },
+    "synopses": {
+     "short": "The founder of parkrun, Paul Sinton-Hewitt, shares his favourite music with Lauren."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pjms6n.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qnmr",
+     "title": "Desert Island Discs",
+     "synopses": {
+      "short": "Castaway guests share the soundtrack of their lives.",
+      "medium": "Eight tracks, a book and a luxury: what would you take to a desert island? Guests share the soundtrack of their lives.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-01T00:00:00Z",
+     "label": "01 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033qxd",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Archers Omnibus",
+     "secondary": "01/11/2026",
+     "tertiary": null,
+     "entity_title": "01/11/2026"
+    },
+    "synopses": {
+     "short": "A decision is reached for the Grundys, and Rex attempts to bury the truth."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0mmbf4c.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qnkc",
+     "title": "The Archers Omnibus",
+     "synopses": {
+      "short": "The week's events in Ambridge",
+      "medium": "The week's events in Ambridge",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-01T00:00:00Z",
+     "label": "01 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033p8p",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Room 101 with Paul Merton",
+     "secondary": "Series 4",
+     "tertiary": "Andi Osho",
+     "entity_title": "Andi Osho"
+    },
+    "synopses": {
+     "short": "Paul asks novelist and actress Andi Osho about her pet peeves and worst nightmares."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pg8kx4.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m001x0mr",
+     "title": "Room 101 with Paul Merton",
+     "synopses": {
+      "short": "Paul Merton interviews a guest to find out what they would send to Room 101.",
+      "medium": "Returning in its original one-to-one incarnation, Paul Merton interviews a variety of guests from the world of comedy and entertainment to find out what they would send to Room 101.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033p7z",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "World at One",
+     "secondary": "Legal migration decision imminent",
+     "tertiary": null,
+     "entity_title": "Legal migration decision imminent"
+    },
+    "synopses": {
+     "short": "The Home Secretary will lay out plans for indefinite leave to remain."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m46ftc.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qptc",
+     "title": "World at One",
+     "synopses": {
+      "short": "Forty-five minutes of news, analysis and comment, with Sarah Montague.",
+      "medium": "Forty-five minutes of news, analysis and comment, with Sarah Montague.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033p8k",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "PM",
+     "secondary": "Tougher rules for migrants settling in the UK",
+     "tertiary": null,
+     "entity_title": "Tougher rules for migrants settling in the UK"
+    },
+    "synopses": {
+     "short": "The Home Secretary tightens criteria for settlement but waters down her original proposals"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m1r3nz.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qskw",
+     "title": "PM",
+     "synopses": {
+      "short": "Afternoon news and current affairs programme",
+      "medium": "Afternoon news and current affairs programme, reporting on breaking stories and summing up the day's headlines",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pktr5w",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Start the Week",
+     "secondary": "Global instability and the end of illusion",
+     "tertiary": null,
+     "entity_title": "Global instability and the end of illusion"
+    },
+    "synopses": {
+     "short": "How global power has shifted and the world has become a more dangerous place"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m1x71n.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006r9xr",
+     "title": "Start the Week",
+     "synopses": {
+      "short": "Weekly discussion programme, setting the cultural agenda every Monday",
+      "medium": "Weekly discussion programme, setting the cultural agenda every Monday",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pgt9nr",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Archers",
+     "secondary": "30/10/2026",
+     "tertiary": null,
+     "entity_title": "30/10/2026"
+    },
+    "synopses": {
+     "short": "There’s a surprise visitor for Alan."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0n3nsm2.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qpgr",
+     "title": "The Archers",
+     "synopses": {
+      "short": "Contemporary drama in a rural setting.",
+      "medium": "Contemporary drama in a rural setting.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-10-30T00:00:00Z",
+     "label": "30 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033p7x",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "You and Yours",
+     "secondary": "EVs, Ticketing and Affordable Luxury Fashion",
+     "tertiary": null,
+     "entity_title": "EVs, Ticketing and Affordable Luxury Fashion"
+    },
+    "synopses": {
+     "short": "Will a promise of more money for EV charging help people switch?"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m1wh8q.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qps9",
+     "title": "You and Yours",
+     "synopses": {
+      "short": "News and discussion of consumer affairs",
+      "medium": "News and discussion of consumer affairs",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pkv7xh",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Woman's Hour",
+     "secondary": "Laura Kuenssberg, Living standards, Motherless mothers",
+     "tertiary": null,
+     "entity_title": "Laura Kuenssberg, Living standards, Motherless mothers"
+    },
+    "synopses": {
+     "short": "BBC Presenter Laura Kuenssberg on her new book, Pay Attention."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pf0cq3.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b007qlvb",
+     "title": "Woman's Hour",
+     "synopses": {
+      "short": "Women's voices and women's lives - topical conversations to inform, challenge and inspire.",
+      "medium": "Women's voices and women's lives - topical conversations to inform, challenge and inspire. See The Woman's Hour Guide to Life collection: https://www.bbc.co.uk/guidetolife",
+      "long": "Women's voices and women's lives - topical conversations to inform, challenge and inspire. The Woman's Hour Guide to Life collection is here: https://www.bbc.co.uk/guidetolife"
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033p8w",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The World Tonight",
+     "secondary": "Mahmood scraps settlement plans for migrant care workers",
+     "tertiary": null,
+     "entity_title": "Mahmood scraps settlement plans for migrant care workers"
+    },
+    "synopses": {
+     "short": "Plans to make foreign care workers wait 15 years for permanent settlement are scrapped"
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m60d38.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qtl3",
+     "title": "The World Tonight",
+     "synopses": {
+      "short": "In-depth reporting, intelligent analysis and major breaking news from a global perspective",
+      "medium": "In-depth reporting, intelligent analysis and major breaking news from a global perspective",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-11-02T00:00:00Z",
+     "label": "02 Nov 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033dvd",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Room 101 with Paul Merton",
+     "secondary": "Series 4",
+     "tertiary": "Andy Hamilton",
+     "entity_title": "Andy Hamilton"
+    },
+    "synopses": {
+     "short": "Paul asks comedian and writer Andy Hamilton about his pet peeves and worst nightmares."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0pgtb6x.jpg",
+    "container": {
+     "type": "brand",
+     "id": "m001x0mr",
+     "title": "Room 101 with Paul Merton",
+     "synopses": {
+      "short": "Paul Merton interviews a guest to find out what they would send to Room 101.",
+      "medium": "Returning in its original one-to-one incarnation, Paul Merton interviews a variety of guests from the world of comedy and entertainment to find out what they would send to Room 101.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-10-26T00:00:00Z",
+     "label": "26 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p06zlgzr",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Desert Island Discs",
+     "secondary": "Bob Mortimer, comedian",
+     "tertiary": null,
+     "entity_title": "Bob Mortimer, comedian"
+    },
+    "synopses": {
+     "short": "Comedian Bob Mortimer chooses the eight tracks he would take to a desert island."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0gxk6fq.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qnmr",
+     "title": "Desert Island Discs",
+     "synopses": {
+      "short": "Castaway guests share the soundtrack of their lives.",
+      "medium": "Eight tracks, a book and a luxury: what would you take to a desert island? Guests share the soundtrack of their lives.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2019-02-03T00:00:00Z",
+     "label": "03 Feb 2019"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "p0pgt9f2",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Archers",
+     "secondary": "29/10/2026",
+     "tertiary": null,
+     "entity_title": "29/10/2026"
+    },
+    "synopses": {
+     "short": "Helen finds herself in a web of deception."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0n3nsm2.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b006qpgr",
+     "title": "The Archers",
+     "synopses": {
+      "short": "Contemporary drama in a rural setting.",
+      "medium": "Contemporary drama in a rural setting.",
+      "long": null
+     }
+    },
+    "release": {
+     "date": "2026-10-29T00:00:00Z",
+     "label": "29 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0034db7",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "The Archers Podcast",
+     "secondary": "108. A Vicar Advises Alan",
+     "tertiary": null,
+     "entity_title": "108. A Vicar Advises Alan"
+    },
+    "synopses": {
+     "short": "This week an actor, a vicar and a teacher walk into a bar (well, a studio) to advise Alan."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0m2f6lg.jpg",
+    "container": {
+     "type": "brand",
+     "id": "p0jt4npn",
+     "title": "The Archers Podcast",
+     "synopses": {
+      "short": "Celebrating everything you love about the Archers. With Emma Freud.",
+      "medium": "Celebrating everything you love about the Archers, digging into the latest events and rich history, with behind-the-scenes secrets, your reactions and questions, with Emma Freud.",
+      "long": "Celebrating everything you love about the Archers, digging deep into the latest events and rich history, with behind-the-scenes secrets and your reactions and questions - with Emma Freud."
+     }
+    },
+    "release": {
+     "date": "2026-10-30T00:00:00Z",
+     "label": "30 Oct 2026"
+    }
+   },
+   {
+    "type": "playable_item",
+    "id": "m0033qxn",
+    "network": {
+     "id": "bbc_radio_four",
+     "short_title": "Radio 4",
+     "logo_url": "https://sounds.files.bbci.co.uk/3.12.0/networks/bbc_radio_four/{type}_{size}.{format}"
+    },
+    "titles": {
+     "primary": "Brain of Britain",
+     "secondary": "Brain of Britain - Semi-final 3, 2026",
+     "tertiary": null,
+     "entity_title": "Brain of Britain - Semi-final 3, 2026"
+    },
+    "synopses": {
+     "short": "General knowledge quiz. Spotlights on the board game Diplomacy and the Aztecs."
+    },
+    "image_url": "https://ichef.bbci.co.uk/images/ic/{recipe}/p0nrbc20.jpg",
+    "container": {
+     "type": "brand",
+     "id": "b00813s0",
+     "title": "Brain of Britain",
+     "synopses": {
+      "short": "General knowledge quiz in which listeners compete for the title of Brain of Britain.",
+      "medium": "Britain's brightest minds are put to the test, challenging their general knowledge, quick thinking and individual passions.",
+      "long": "Britain's brightest minds are put to the test, challenging their general knowledge, quick thinking and individual passions. The winner receives a trophy and the title 'Brain of Britain'."
+     }
+    },
+    "release": {
+     "date": "2026-11-01T00:00:00Z",
+     "label": "01 Nov 2026"
+    }
+   }
+  ]
+ }
+}

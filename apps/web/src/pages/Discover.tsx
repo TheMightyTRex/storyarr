@@ -3,11 +3,14 @@ import { usePagedQuery } from "../hooks/usePagedQuery";
 import InfiniteScroll from "../components/InfiniteScroll";
 import { HardcoverCollections } from "./CommunityLists";
 import { useState } from "react";
-import HeaderSubmenu from "../components/HeaderSubmenu";
+import HeaderSubmenu, { HeaderTabs } from "../components/HeaderSubmenu";
+import DiscoverRadio from "../components/DiscoverRadio";
 import { discoverViewIcons, discoverViews } from "../navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  BookOpen,
   Check,
+  Radio,
   Search,
   Settings,
   SlidersHorizontal,
@@ -74,6 +77,8 @@ export default function Discover({ canEdit = true }: { canEdit?: boolean }) {
           id={collectionId}
           canEdit={canEdit}
         />
+      ) : view === "home" && params.get("for") === "radio" ? (
+        <RadioHome />
       ) : view === "home" ? (
         <Home canEdit={canEdit} />
       ) : view === "browse" ? (
@@ -94,14 +99,37 @@ export default function Discover({ canEdit = true }: { canEdit?: boolean }) {
 function DiscoverNavigation({
   view = "home",
   collectionId,
+  forYou,
   children,
 }: {
   view?: string;
   collectionId?: string;
+  /** For you's own sections (level 3): books or radio. */
+  forYou?: "books" | "radio";
   children?: React.ReactNode;
 }) {
   return (
     <div className="page-tabs-bar">
+      {forYou && (
+        <HeaderTabs>
+          <nav className="page-tabs" aria-label="For you sections">
+            <Link
+              to="/discover"
+              aria-current={forYou === "books" ? "page" : undefined}
+            >
+              <BookOpen size={17} aria-hidden="true" />
+              Books
+            </Link>
+            <Link
+              to="/discover?for=radio"
+              aria-current={forYou === "radio" ? "page" : undefined}
+            >
+              <Radio size={17} aria-hidden="true" />
+              Radio
+            </Link>
+          </nav>
+        </HeaderTabs>
+      )}
       <HeaderSubmenu
         label="Discover navigation"
         items={views.map(([key, label]) => ({
@@ -305,7 +333,7 @@ function Home({ canEdit }: { canEdit: boolean }) {
   });
   return (
     <>
-      <DiscoverNavigation>
+      <DiscoverNavigation forYou="books">
         <div className="explore-home-tools">
           <button
             disabled={
@@ -379,6 +407,23 @@ function Home({ canEdit }: { canEdit: boolean }) {
             error={save.error}
           />
         )}
+    </>
+  );
+}
+
+/** For you, Radio: stations and popular shows by the types the person chose. */
+function RadioHome() {
+  const [choosing, setChoosing] = useState(false);
+  return (
+    <>
+      <DiscoverNavigation forYou="radio">
+        <div className="explore-home-tools">
+          <button onClick={() => setChoosing(true)}>
+            <SlidersHorizontal size={15} /> Choose types
+          </button>
+        </div>
+      </DiscoverNavigation>
+      <DiscoverRadio choosing={choosing} setChoosing={setChoosing} />
     </>
   );
 }
