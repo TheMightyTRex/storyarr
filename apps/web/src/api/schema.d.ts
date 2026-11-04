@@ -13289,6 +13289,7 @@ export interface components {
       status: components["schemas"]["RadioEpisodeStatus"];
       show: components["schemas"]["RadioEpisodeShow"];
       series: components["schemas"]["RadioEpisodeSeries"];
+      request?: components["schemas"]["RadioEpisodeRequest"] | null;
       file?: components["schemas"]["RadioEpisodeFile"] | null;
       /**
        * File Manual
@@ -13317,6 +13318,23 @@ export interface components {
     RadioEpisodeFileInput: {
       /** File Id */
       file_id: string | null;
+    };
+    /**
+     * RadioEpisodeRequest
+     * @description The open request for a wanted episode (R4), as Activity shows it.
+     */
+    RadioEpisodeRequest: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Title */
+      title: string;
+      /** State */
+      state: string;
+      /** Message */
+      message: string;
     };
     /** RadioEpisodeSeries */
     RadioEpisodeSeries: {
@@ -13490,6 +13508,50 @@ export interface components {
       /** First Broadcast */
       first_broadcast: string | null;
     };
+    /**
+     * RadioRelease
+     * @description An episode of a followed radio show (R4), broadcast on this day.
+     */
+    RadioRelease: {
+      /**
+       * Show Id
+       * Format: uuid
+       */
+      show_id: string;
+      /**
+       * Episode Id
+       * Format: uuid
+       */
+      episode_id: string;
+      /** Show Title */
+      show_title: string;
+      /** Episode Title */
+      episode_title: string;
+      /** Code */
+      code: string;
+      /** Station */
+      station?: string | null;
+      /**
+       * Broadcast At
+       * Format: date-time
+       */
+      broadcast_at: string;
+      /**
+       * Status
+       * @enum {string}
+       */
+      status:
+        | "in_library"
+        | "downloading"
+        | "importing"
+        | "searching"
+        | "waiting"
+        | "not_released"
+        | "attention"
+        | "wanted"
+        | "excluded"
+        | "not_requested";
+    };
     /** RadioSearchItem */
     RadioSearchItem: {
       /** Pid */
@@ -13592,6 +13654,11 @@ export interface components {
       series_count: number;
       /** Episode Count */
       episode_count: number;
+      /**
+       * Wanted Count
+       * @default 0
+       */
+      wanted_count: number;
       /** Refreshed At */
       refreshed_at: string | null;
       refresh: components["schemas"]["OperationView"] | null;
@@ -13688,6 +13755,11 @@ export interface components {
       series_count: number;
       /** Episode Count */
       episode_count: number;
+      /**
+       * Wanted Count
+       * @default 0
+       */
+      wanted_count: number;
       /** Refreshed At */
       refreshed_at: string | null;
       refresh: components["schemas"]["OperationView"] | null;
@@ -14303,7 +14375,7 @@ export interface components {
        * Provider
        * @enum {string}
        */
-      provider: "hardcover" | "local" | "librofm";
+      provider: "hardcover" | "local" | "librofm" | "radio";
       /** External Id */
       external_id?: string | null;
       /** Title */
@@ -14333,6 +14405,7 @@ export interface components {
       genres?: string[];
       /** State */
       state?: string | null;
+      radio?: components["schemas"]["RadioRelease"] | null;
     };
     /** ReleaseMonth */
     ReleaseMonth: {
@@ -14746,6 +14819,10 @@ export interface components {
       /** Description */
       description: string;
       release_policy?: components["schemas"]["ProfileSnapshot"] | null;
+      /** Radio Show Id */
+      radio_show_id?: string | null;
+      /** Radio Episode Id */
+      radio_episode_id?: string | null;
     };
     /** RestoreInput */
     RestoreInput: {

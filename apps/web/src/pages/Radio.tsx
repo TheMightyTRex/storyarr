@@ -65,9 +65,22 @@ const followChoices: { value: Follow; label: string; hint: string }[] = [
   {
     value: "none",
     label: "None",
-    hint: "Keeps the show and its episode list. Storyarr gets nothing until you request an episode.",
+    hint: "Keeps the show and its episode list. Storyarr wants nothing.",
   },
 ];
+
+/** What the follow choice means for this show, with how many episodes it wants now. */
+function followNote(follow: Follow, since: string | null, wanted: number) {
+  const count =
+    wanted === 1 ? "1 episode is wanted" : `${wanted} episodes are wanted`;
+  if (follow === "none")
+    return "Storyarr wants nothing from this show. The episode list still updates.";
+  const rule =
+    follow === "all"
+      ? "Storyarr wants every episode that is not in your library, and new ones after each broadcast."
+      : `Storyarr wants episodes first broadcast from ${since ? day(since, true) : "today"} onwards.`;
+  return `${rule} ${count}.`;
+}
 const followLabel = (follow: Follow) =>
   follow === "all"
     ? "Following · all series"
@@ -704,7 +717,11 @@ function RadioShow({
       ),
     onSuccess: () => cache.invalidateQueries({ queryKey: ["radio"] }),
   });
-  const [episodeId, setEpisodeId] = useState<string | null>(null);
+  // The calendar links to /library/radio/shows/{id}?episode={episode id}.
+  const [search] = useSearchParams();
+  const [episodeId, setEpisodeId] = useState<string | null>(() =>
+    search.get("episode"),
+  );
   const [logoOpen, setLogoOpen] = useState(false);
   const [logoMessage, setLogoMessage] = useState("");
   if (show.isPending) return <Loading />;
@@ -832,6 +849,17 @@ function RadioShow({
               </button>
             </div>
           )}
+          <p className="small radio-follow-note">
+            {followNote(data.follow, data.followed_at, data.wanted_count ?? 0)}
+            {(data.wanted_count ?? 0) > 0 && (
+              <>
+                {" "}
+                <Link to={`/requests?q=${encodeURIComponent(data.title)}`}>
+                  See them in Requests
+                </Link>
+              </>
+            )}
+          </p>
           <p className="small muted" role="status">
             {pending
               ? "Reading the BBC programme list. New series and episodes appear as they are found."
@@ -1180,9 +1208,41 @@ function EpisodePanel({
           </a>
         </dd>
         <EpisodeFile episodeId={ep.id} canEdit={canEdit} />
+        <EpisodeRequest episodeId={ep.id} />
       </dl>
     </SidePanel>
   );
+}
+
+/** The open request for a wanted episode (R4), with a link to it in Requests. */
+function EpisodeRequest({ episodeId }: { episodeId: string }) {
+  const detail = useEpisodeDetail(episodeId);
+  const request = detail.data?.request;
+  if (!request) return null;
+  return (
+    <>
+      <dt>Request</dt>
+      <dd>
+        {request.message}{" "}
+        <Link to={`/requests?q=${encodeURIComponent(request.title)}`}>
+          See it in Requests
+        </Link>
+      </dd>
+    </>
+  );
+}
+
+function useEpisodeDetail(episodeId: string) {
+  return useQuery({
+    queryKey: ["radio", "episode", episodeId],
+    queryFn: async ({ signal }) =>
+      result(
+        await api.GET("/api/radio/episodes/{episode_id}", {
+          params: { path: { episode_id: episodeId } },
+          signal,
+        }),
+      ),
+  });
 }
 
 /** The radio library file that holds an episode: its name, size and library. */
@@ -1213,16 +1273,7 @@ function EpisodeFile({
       void cache.invalidateQueries({ queryKey: ["radio", "review"] });
     },
   });
-  const detail = useQuery({
-    queryKey: ["radio", "episode", episodeId],
-    queryFn: async ({ signal }) =>
-      result(
-        await api.GET("/api/radio/episodes/{episode_id}", {
-          params: { path: { episode_id: episodeId } },
-          signal,
-        }),
-      ),
-  });
+  const detail = useEpisodeDetail(episodeId);
   const file = detail.data?.file;
   const manual = detail.data?.file_manual;
   if (!file && !manual) return null;

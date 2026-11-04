@@ -68,6 +68,7 @@ const truth = show("s1", "The Unbelievable Truth", {
   artwork_url: "/api/radio/shows/s1/artwork",
   stations: [r4, r4x],
   follow: "all",
+  wanted_count: 1,
 });
 const shows = [
   truth,
@@ -223,6 +224,17 @@ async function mockApi(
       };
     else if (path === "/api/radio/shows/s1" && request.method() === "PATCH")
       data = { ...truth, ...(request.postDataJSON() as object) };
+    else if (path === "/api/radio/episodes/e4")
+      data = {
+        file: null,
+        request: {
+          id: "request-e4",
+          title:
+            "The Unbelievable Truth - S20E02 - Lighthouses, Gravy and Kites",
+          state: "wanted",
+          message: "Wanted. Storyarr does not search for radio episodes yet.",
+        },
+      };
     else if (path === "/api/radio/shows/s1/refresh")
       return route.fulfill({
         status: 202,
@@ -540,6 +552,39 @@ test("a show page has the header, follow choice, refresh, series newest first an
     page
       .getByRole("heading", { level: 1, name: "The Unbelievable Truth" })
       .waitFor(),
+  );
+  expect(errors).toEqual([]);
+});
+
+test("following says what is wanted, and a wanted episode names its request (R4)", async ({
+  page,
+}) => {
+  const { errors } = await mockApi(page);
+  // The calendar links straight to an episode's details.
+  await page.goto("/library/radio/shows/s1?episode=e4");
+  const panel = page.getByRole("dialog", { name: /Episode S20E02/ });
+  await expect(panel).toContainText(
+    "RequestWanted. Storyarr does not search for radio episodes yet.",
+  );
+  await expect(
+    panel.getByRole("link", { name: "See it in Requests" }),
+  ).toHaveAttribute(
+    "href",
+    "/requests?q=The%20Unbelievable%20Truth%20-%20S20E02%20-%20Lighthouses%2C%20Gravy%20and%20Kites",
+  );
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".radio-follow-note")).toHaveText(
+    "Storyarr wants every episode that is not in your library, and new ones after each broadcast. 1 episode is wanted. See them in Requests",
+  );
+  await expect(
+    page.getByRole("link", { name: "See them in Requests" }),
+  ).toHaveAttribute("href", "/requests?q=The%20Unbelievable%20Truth");
+  // The hint for None no longer promises a request button that does not exist.
+  await expect(
+    page.getByRole("group", { name: "Follow" }).locator("label").nth(2),
+  ).toHaveAttribute(
+    "title",
+    "Keeps the show and its episode list. Storyarr wants nothing.",
   );
   expect(errors).toEqual([]);
 });

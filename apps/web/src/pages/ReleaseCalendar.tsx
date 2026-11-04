@@ -13,6 +13,7 @@ import { genreLabel } from "../components/DiscoveryCollections";
 import FollowRelease, { basisLabel } from "../components/FollowRelease";
 import QuickAdd from "../components/QuickAdd";
 import SidePanel from "../components/SidePanel";
+import ShowArt from "../components/ShowArt";
 import CalendarSettings, {
   shownOnCalendar,
   useCalendarPreferences,
@@ -134,7 +135,69 @@ function dayTitle(day: string) {
   });
 }
 
+/** A followed show's episode opens the show page with the episode's details (R4). */
+function radioHref(radio: NonNullable<Entry["radio"]>) {
+  return `/library/radio/shows/${radio.show_id}?episode=${radio.episode_id}`;
+}
+
+const RADIO_STATUS: Record<string, string> = {
+  in_library: "In library",
+  downloading: "Downloading",
+  importing: "Importing",
+  searching: "Searching",
+  waiting: "Waiting",
+  attention: "Needs attention",
+  wanted: "Wanted",
+  excluded: "Excluded",
+  not_requested: "Not requested",
+};
+
+function broadcastTime(value: string) {
+  return new Date(value).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/London",
+  });
+}
+
+/** Decision 4: an episode not broadcast yet is "Not released · date". */
+export function radioStatus(radio: NonNullable<Entry["radio"]>) {
+  if (radio.status === "not_released")
+    return `Not released · ${new Date(radio.broadcast_at).toLocaleDateString(
+      "en-GB",
+      { day: "numeric", month: "long", timeZone: "Europe/London" },
+    )}`;
+  return RADIO_STATUS[radio.status] ?? "Not requested";
+}
+
+function RadioCard({ radio }: { radio: NonNullable<Entry["radio"]> }) {
+  return (
+    <article className="release-day-card release-day-card--radio">
+      <Link className="release-day-card-main" to={radioHref(radio)}>
+        <ShowArt
+          title={radio.show_title}
+          station={radio.station}
+          artwork={`/api/radio/shows/${radio.show_id}/artwork`}
+        />
+        <span className="release-day-card-copy">
+          <span className="release-day-card-title">{radio.show_title}</span>
+          <span>
+            {radio.code} · {radio.episode_title}
+          </span>
+          <span className="muted">
+            {[radio.station, `${broadcastTime(radio.broadcast_at)} broadcast`]
+              .filter(Boolean)
+              .join(" · ")}
+          </span>
+          <span className="muted">{radioStatus(radio)}</span>
+        </span>
+      </Link>
+    </article>
+  );
+}
+
 function entryHref(entry: Entry) {
+  if (entry.radio) return radioHref(entry.radio);
   if (entry.work_id) return `/books/${entry.work_id}`;
   if (entry.external_id)
     return `/discover/books/hardcover/${encodeURIComponent(entry.external_id)}`;
@@ -211,6 +274,23 @@ function genreSections(entries: Entry[], selected: string[]) {
 }
 
 function ReleaseCard({
+  entry,
+  canEdit,
+  upcoming,
+  note,
+}: {
+  entry: Entry;
+  canEdit: boolean;
+  upcoming: boolean;
+  note?: string;
+}) {
+  if (entry.radio) return <RadioCard radio={entry.radio} />;
+  return (
+    <BookCard entry={entry} canEdit={canEdit} upcoming={upcoming} note={note} />
+  );
+}
+
+function BookCard({
   entry,
   canEdit,
   upcoming,
@@ -346,7 +426,7 @@ function DayPanel({
       <p className="muted release-drawer-count">
         {entries.length === 1 ? "1 release" : `${entries.length} releases`}
       </p>
-      {canEdit && upcoming && entries.length > 0 && (
+      {canEdit && upcoming && entries.some((entry) => !entry.radio) && (
         <p className="muted release-drawer-note">
           Request on release day waits until the book is out, then starts
           searching.
@@ -607,8 +687,9 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
         <div>
           <h2>Calendar</h2>
           <p className="muted">
-            Audiobook release days for the genres you follow. A work date is
-            labelled when the audiobook day is still unknown.
+            Audiobook release days for the genres you follow, and broadcasts of
+            the radio shows you follow. A work date is labelled when the
+            audiobook day is still unknown.
           </p>
         </div>
         <div className="release-toolbar">
@@ -730,7 +811,11 @@ export default function ReleaseCalendar({ canEdit }: { canEdit: boolean }) {
                   <span key={entryKey(entry)}>
                     {preferences.covers && entry.cover_url && (
                       <img
-                        className="release-mark-cover"
+                        className={
+                          entry.radio
+                            ? "release-mark-cover release-mark-cover--radio"
+                            : "release-mark-cover"
+                        }
                         src={entry.cover_url}
                         alt=""
                         loading="lazy"

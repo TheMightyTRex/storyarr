@@ -150,6 +150,10 @@ async def relink(db, *, show_id: UUID | None = None) -> int:
                 episode.first_broadcast, show.follow, show.followed_at, None, now
             )
     await db.flush()
+    # Requests follow the statuses: wanted episodes are requested, the rest withdrawn.
+    from app.domain.radio_wanted import sync
+
+    await sync(db, ids if show_id else None)
     return len(found)
 
 

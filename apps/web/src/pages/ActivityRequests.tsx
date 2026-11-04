@@ -637,6 +637,13 @@ function RequestCard({
                         <ContextLink to={`/books/${request.work_id}`}>
                           {request.work_title}
                         </ContextLink>
+                      ) : request.radio_show_id ? (
+                        // A radio episode (R4) opens its show, with the episode's details.
+                        <ContextLink
+                          to={`/library/radio/shows/${request.radio_show_id}${request.radio_episode_id ? `?episode=${request.radio_episode_id}` : ""}`}
+                        >
+                          {request.work_title}
+                        </ContextLink>
                       ) : (
                         request.work_title
                       )}

@@ -977,7 +977,9 @@ class AcquisitionReason(Identity, Base):
     __tablename__ = "acquisition_reasons"
     __table_args__ = (
         UniqueConstraint("intent_id", "kind", "reference"),
-        CheckConstraint("kind IN ('manual', 'list', 'series')", name="acquisition_reason_kind"),
+        CheckConstraint(
+            "kind IN ('manual', 'list', 'series', 'episode')", name="acquisition_reason_kind"
+        ),
         CheckConstraint(
             "approval_status IN ('pending', 'approved', 'declined')",
             name="ck_acquisition_reason_approval",
@@ -1713,6 +1715,11 @@ class RadioEpisode(Identity, Base):
     # Set by hand in the radio library review (storyarr_0090): the sync keeps file_id as it is,
     # including no file when someone said a linked file was not this episode.
     file_manual: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    # The private catalogue record a wanted episode is requested through (storyarr_0091), so it
+    # uses the book acquisition path with an `episode` reason. Kept out of book matching.
+    work_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("works.id", ondelete="SET NULL"), index=True
+    )
 
 
 class RadioLibrary(Identity, Base):

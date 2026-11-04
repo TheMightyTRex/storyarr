@@ -1518,3 +1518,15 @@ button.release-day[aria-expanded="true"] {
   object-fit: cover;
   border: 1px solid var(--line);
 }
+/* Release calendar (R4): square show artwork at the top of the 2:3 mark, never cropped. */
+.release-mark-cover--radio {
+  object-fit: contain;
+  object-position: top;
+  background: var(--color-surface-sunken);
+}
+.release-day-card--radio .show-art {
+  width: 48px;
+}
+.release-day-card--radio .release-day-card-main:hover .release-day-card-title {
+  text-decoration: underline;
+}

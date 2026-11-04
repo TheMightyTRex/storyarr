@@ -4,10 +4,11 @@ import type { components } from "../api/schema";
 
 type Entry = components["schemas"]["ReleaseEntry"];
 
-export type CalendarSource = "following" | "hardcover" | "librofm";
+export type CalendarSource = "following" | "radio" | "hardcover" | "librofm";
 
 export const CALENDAR_SOURCES: { id: CalendarSource; label: string }[] = [
   { id: "following", label: "Books you follow" },
+  { id: "radio", label: "Radio shows you follow" },
   { id: "hardcover", label: "Hardcover releases in your genres" },
   { id: "librofm", label: "Libro.fm" },
 ];
@@ -58,6 +59,7 @@ export function useCalendarPreferences() {
 }
 
 export function entrySource(entry: Entry): CalendarSource {
+  if (entry.provider === "radio") return "radio";
   if (entry.followed || entry.provider === "local") return "following";
   return entry.provider === "librofm" ? "librofm" : "hardcover";
 }

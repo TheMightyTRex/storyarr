@@ -250,6 +250,18 @@ async def refresh_radio_show(operation_id: str) -> None:
     await run(UUID(operation_id))
 
 
+@tasks.periodic(cron="*/15 * * * *")
+@tasks.task(name="radio.follow.schedule", queue="metadata", retry=3)
+async def schedule_radio_follow(timestamp: int) -> None:
+    """Followed shows: statuses after each broadcast, and a gentle BBC refresh (at most two
+    shows a run, each at most twice a day) so new episodes become wanted."""
+    if not await pace.due(timestamp, 900) or get_settings().recovery_mode:
+        return
+    from app.domain.radio_wanted import schedule
+
+    await schedule()
+
+
 @tasks.task(name="radio.library.sync", queue="system", retry=3)
 async def sync_radio_library() -> None:
     from app.domain.radio_library import sync_all

@@ -636,6 +636,11 @@ async def evaluate(db, user, intent):
                 db, parent.payload.get("pack_origin") if parent else None
             ):
                 reason.active = False
+        if reason.kind == "episode":
+            from app.domain.radio_wanted import still_wanted
+
+            if not await still_wanted(db, reason):
+                reason.active = False
         if reason.kind == "list" and not await db.scalar(
             select(BookList.id)
             .join(ListEntry)

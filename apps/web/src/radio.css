@@ -427,3 +427,7 @@
     min-width: 0;
   }
 }
+.radio-follow-note {
+  max-width: 68ch;
+  margin: 0;
+}

@@ -18,11 +18,13 @@ from app.db.models import MonitoredRelease, Operation, Work, WorkMetadataSource
 from app.domain.acquisition import RequestOptions
 from app.domain.availability import availability_for
 from app.domain.catalog_bindings import displayed_provider_works
+from app.domain.follow_status import StatusKind
 from app.domain.hardcover_matching import MatchEvidence
 from app.domain.libro_enrichment import agrees, field_locked, stage
 from app.domain.libro_library import _cover, _open_lookup, _write_item, audio_context, store
 from app.domain.operations import transaction_lock
 from app.domain.quick_add import begin
+from app.domain.radio_wanted import calendar_entries as radio_entries
 from app.domain.release_dates import (
     GENRES,
     assign_release,
@@ -55,9 +57,23 @@ class GenreInput(BaseModel):
     genres: list[str] = Field(default_factory=list, max_length=len(GENRES))
 
 
+class RadioRelease(BaseModel):
+    """An episode of a followed radio show (R4), broadcast on this day."""
+
+    show_id: UUID
+    episode_id: UUID
+    show_title: str
+    episode_title: str
+    # S20E03; specials are S00.
+    code: str
+    station: str | None = None
+    broadcast_at: datetime
+    status: StatusKind
+
+
 class ReleaseEntry(BaseModel):
     work_id: UUID | None = None
-    provider: Literal["hardcover", "local", "librofm"]
+    provider: Literal["hardcover", "local", "librofm", "radio"]
     external_id: str | None = None
     title: str
     authors: list[str]
@@ -68,6 +84,7 @@ class ReleaseEntry(BaseModel):
     in_library: bool = False
     genres: list[str] = Field(default_factory=list)
     state: str | None = None
+    radio: RadioRelease | None = None
 
 
 class ReleaseMonth(BaseModel):
@@ -150,6 +167,7 @@ def _entry(item) -> ReleaseEntry:
         in_library=bool(item.get("in_library")),
         genres=list(item.get("genres") or []),
         state=item.get("state"),
+        radio=item.get("radio"),
     )
 
 
@@ -253,7 +271,7 @@ async def calendar(
         await db.commit()
         user = await current_actor(db, user_id)
         personal = await personal_entries(db, user, start, end)
-    merged = merge_month(personal, discover, selected)
+    merged = merge_month(personal, discover, selected) + await radio_entries(db, user, start, end)
     result.items = [_entry(item) for item in merged if item.get("release_date")]
     result.undated = [_entry(item) for item in merged if not item.get("release_date")]
     return result

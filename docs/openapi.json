@@ -39039,6 +39039,16 @@
           "series": {
             "$ref": "#/components/schemas/RadioEpisodeSeries"
           },
+          "request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioEpisodeRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "file": {
             "anyOf": [
               {
@@ -39122,6 +39132,36 @@
           "file_id"
         ],
         "title": "RadioEpisodeFileInput"
+      },
+      "RadioEpisodeRequest": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "state",
+          "message"
+        ],
+        "title": "RadioEpisodeRequest",
+        "description": "The open request for a wanted episode (R4), as Activity shows it."
       },
       "RadioEpisodeSeries": {
         "properties": {
@@ -39595,6 +39635,76 @@
         ],
         "title": "RadioPreviewSeries"
       },
+      "RadioRelease": {
+        "properties": {
+          "show_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Show Id"
+          },
+          "episode_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Episode Id"
+          },
+          "show_title": {
+            "type": "string",
+            "title": "Show Title"
+          },
+          "episode_title": {
+            "type": "string",
+            "title": "Episode Title"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "station": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Station"
+          },
+          "broadcast_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Broadcast At"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "in_library",
+              "downloading",
+              "importing",
+              "searching",
+              "waiting",
+              "not_released",
+              "attention",
+              "wanted",
+              "excluded",
+              "not_requested"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "show_id",
+          "episode_id",
+          "show_title",
+          "episode_title",
+          "code",
+          "broadcast_at",
+          "status"
+        ],
+        "title": "RadioRelease",
+        "description": "An episode of a followed radio show (R4), broadcast on this day."
+      },
       "RadioSearchItem": {
         "properties": {
           "pid": {
@@ -39922,6 +40032,11 @@
           "episode_count": {
             "type": "integer",
             "title": "Episode Count"
+          },
+          "wanted_count": {
+            "type": "integer",
+            "title": "Wanted Count",
+            "default": 0
           },
           "refreshed_at": {
             "anyOf": [
@@ -40306,6 +40421,11 @@
           "episode_count": {
             "type": "integer",
             "title": "Episode Count"
+          },
+          "wanted_count": {
+            "type": "integer",
+            "title": "Wanted Count",
+            "default": 0
           },
           "refreshed_at": {
             "anyOf": [
@@ -41948,7 +42068,8 @@
             "enum": [
               "hardcover",
               "local",
-              "librofm"
+              "librofm",
+              "radio"
             ],
             "title": "Provider"
           },
@@ -42032,6 +42153,16 @@
               }
             ],
             "title": "State"
+          },
+          "radio": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RadioRelease"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -43136,6 +43267,30 @@
                 "type": "null"
               }
             ]
+          },
+          "radio_show_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radio Show Id"
+          },
+          "radio_episode_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radio Episode Id"
           }
         },
         "type": "object",

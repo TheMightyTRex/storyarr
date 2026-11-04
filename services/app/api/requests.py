@@ -34,6 +34,8 @@ from app.db.models import (
     LibraryAsset,
     LibraryGrant,
     Operation,
+    RadioEpisode,
+    RadioShow,
     User,
     Version,
     Work,
@@ -59,6 +61,7 @@ from app.domain.permissions import (
     effective_permissions,
     has,
 )
+from app.domain.radio_wanted import WANTING, shown_message
 from app.domain.release_profiles import ProfileSnapshot
 from app.domain.request_approvals import approval_download_started
 from app.domain.request_preferences import PreferenceChoice, resolve
@@ -140,6 +143,9 @@ class RequestView(BaseModel):
     reasons: list[ReasonView]
     description: str
     release_policy: ProfileSnapshot | None = None
+    # A radio episode request (R4): the show page to open instead of a book page.
+    radio_show_id: UUID | None = None
+    radio_episode_id: UUID | None = None
 
 
 class PreviewView(BaseModel):
@@ -1062,11 +1068,21 @@ async def view(db, user, intent, *, related=None):
             work = await canonical_work(db, intent.work_id)
         except HTTPException:
             work = None
+    radio_show_id = radio_episode_id = None
     if work is not None:
         work_id = work.id
         if can_open_book:
             cover_url = await series_cover(db, intent.owner_id, work)
             authors = [author for author in (work.authors or []) if isinstance(author, str)]
+        radio_show_id, radio_episode_id, radio_cover = await _radio_episode(db, work)
+        if radio_show_id or (work.metadata_fields or {}).get("origin") == "radio":
+            # A radio episode has no book page; Activity opens the show instead.
+            can_open_book, cover_url = False, radio_cover
+            descriptions = ["Radio episode"]
+            for target in targets:
+                target.message = shown_message(target.state, target.message)
+                if target.state == "wanted":
+                    target.next_action = "none"
     return RequestView(
         id=intent.id,
         work_id=work_id,
@@ -1081,6 +1097,8 @@ async def view(db, user, intent, *, related=None):
         cover_url=cover_url,
         authors=authors,
         created_at=intent.created_at,
+        radio_show_id=radio_show_id,
+        radio_episode_id=radio_episode_id,
         specification=spec,
         release_policy=intent.release_policy,
         description="; ".join(
@@ -1106,9 +1124,37 @@ async def view(db, user, intent, *, related=None):
     )
 
 
+async def _radio_episode(db, work):
+    """The show and episode of a radio episode's private record, while they exist."""
+    radio = (work.metadata_fields or {}).get("radio")
+    if (work.metadata_fields or {}).get("origin") != "radio" or not isinstance(radio, dict):
+        return None, None, None
+    try:
+        episode_id = UUID(str(radio.get("episode_id")))
+    except ValueError:
+        return None, None, None
+    episode = await db.get(RadioEpisode, episode_id)
+    show = await db.get(RadioShow, episode.show_id) if episode else None
+    if not show:
+        return None, None, None
+    cover = f"/api/radio/shows/{show.id}/artwork" if show.artwork_path else None
+    return show.id, episode.id, cover
+
+
+async def _episode_label(db, reason) -> str:
+    try:
+        episode = await db.get(RadioEpisode, UUID(str(reason.reference)))
+    except ValueError:
+        episode = None
+    show = await db.get(RadioShow, episode.show_id) if episode else None
+    return f"Following {show.title}" if show else "Radio show you followed"
+
+
 async def _reason_label(db, user, intent, owner, reason) -> str:
     if reason.kind == "series":
         return await _series_label(db, reason)
+    if reason.kind == "episode":
+        return await _episode_label(db, reason)
     if reason.kind == "manual" and intent.owner_id == user.id:
         return "Your request"
     if reason.kind == "manual":
@@ -1449,9 +1495,31 @@ async def decision(
     return response
 
 
+async def _episode_of(db, intent_id, reason_id):
+    """The radio episode of an `episode` reason, locked before the request locks (the order the
+    radio follow change takes them)."""
+    reference = await db.scalar(
+        select(AcquisitionReason.reference).where(
+            AcquisitionReason.id == reason_id,
+            AcquisitionReason.intent_id == intent_id,
+            AcquisitionReason.kind == "episode",
+        )
+    )
+    try:
+        episode_id = UUID(str(reference)) if reference else None
+    except ValueError:
+        episode_id = None
+    if not episode_id:
+        return None
+    return await db.scalar(
+        select(RadioEpisode).where(RadioEpisode.id == episode_id).with_for_update()
+    )
+
+
 @router.delete("/{intent_id}/reasons/{reason_id}", response_model=RequestView)
 async def cancel_reason(intent_id: UUID, reason_id: UUID, user: Member, db: Database):
     intent = await owned_intent(db, user, intent_id)
+    episode = await _episode_of(db, intent_id, reason_id)
     await acquisition_lock(db, intent.work_id)
     reason = await db.scalar(
         select(AcquisitionReason)
@@ -1463,6 +1531,9 @@ async def cancel_reason(intent_id: UUID, reason_id: UUID, user: Member, db: Data
     )
     if not reason:
         raise HTTPException(404, "Request reason not found")
+    if episode and episode.status in WANTING:
+        # Withdrawn by the person: the follow choice does not want it again by itself.
+        episode.status = "excluded"
     reason.active = False
     await db.flush()
     await evaluate(db, user, intent)

@@ -21,6 +21,9 @@ from app.api.logos import LogoView, show_view
 from app.api.metadata import adapter_http_error
 from app.api.operations import OperationView
 from app.db.models import (
+    AcquisitionIntent,
+    AcquisitionReason,
+    AcquisitionTarget,
     AuditEvent,
     Operation,
     RadioEpisode,
@@ -29,8 +32,9 @@ from app.db.models import (
     RadioSeries,
     RadioShow,
     RadioStation,
+    Work,
 )
-from app.domain import radio, radio_images
+from app.domain import radio, radio_images, radio_wanted
 from app.domain.follow_status import StatusKind
 from app.domain.radio_library import relink, show_files
 
@@ -176,6 +180,8 @@ class RadioShowSummary(BaseModel):
     logo: LogoView | None = None
     series_count: int
     episode_count: int
+    # Episodes Storyarr wants for this show (R4): wanted, searching, downloading and so on.
+    wanted_count: int = 0
     refreshed_at: datetime | None
     refresh: OperationView | None
 
@@ -212,9 +218,20 @@ class RadioEpisodeFile(BaseModel):
     library: str
 
 
+class RadioEpisodeRequest(BaseModel):
+    """The open request for a wanted episode (R4), as Activity shows it."""
+
+    id: UUID
+    # The request's title in Requests: Show - S20E03 - Title.
+    title: str
+    state: str
+    message: str
+
+
 class RadioEpisodeDetail(RadioEpisodeView):
     show: RadioEpisodeShow
     series: RadioEpisodeSeries
+    request: RadioEpisodeRequest | None = None
     file: RadioEpisodeFile | None = None
     # True when the file (or no file) was chosen by hand in the radio library review.
     file_manual: bool = False
@@ -234,19 +251,23 @@ def artwork_url(show: RadioShow) -> str | None:
     return f"/api/radio/shows/{show.id}/artwork" if show.artwork_path else None
 
 
-def status_view(episode: RadioEpisode) -> RadioEpisodeStatus:
+def status_view(episode: RadioEpisode, follow: str | None = None) -> RadioEpisodeStatus:
     detail = None
     if episode.status == "not_released" and episode.first_broadcast:
         day = episode.first_broadcast.date()
         detail = f"First broadcast {day.day} {day:%B %Y}"
     elif episode.status == "wanted":
-        detail = "Broadcast while you follow this show"
+        detail = (
+            "You follow all series" if follow == "all" else "Broadcast while you follow this show"
+        )
+    elif episode.status == "excluded":
+        detail = "Withdrawn in Activity. Change the follow choice to want it again."
     return RadioEpisodeStatus(
         kind=episode.status, label=STATUS_LABELS.get(episode.status, "Unknown"), detail=detail
     )
 
 
-def episode_view(episode: RadioEpisode) -> RadioEpisodeView:
+def episode_view(episode: RadioEpisode, follow: str | None = None) -> RadioEpisodeView:
     return RadioEpisodeView(
         id=episode.id,
         pid=episode.pid,
@@ -256,7 +277,7 @@ def episode_view(episode: RadioEpisode) -> RadioEpisodeView:
         synopsis=episode.synopsis,
         first_broadcast=episode.first_broadcast,
         duration_seconds=episode.duration_seconds,
-        status=status_view(episode),
+        status=status_view(episode, follow),
     )
 
 
@@ -288,6 +309,18 @@ async def summaries(db, shows: list[RadioShow]) -> list[RadioShowSummary]:
             await db.execute(
                 select(RadioEpisode.show_id, func.count())
                 .where(RadioEpisode.show_id.in_(ids))
+                .group_by(RadioEpisode.show_id)
+            )
+        ).all()
+    )
+    wanted_counts = dict(
+        (
+            await db.execute(
+                select(RadioEpisode.show_id, func.count())
+                .where(
+                    RadioEpisode.show_id.in_(ids),
+                    RadioEpisode.status.in_(radio_wanted.WANTING),
+                )
                 .group_by(RadioEpisode.show_id)
             )
         ).all()
@@ -337,6 +370,7 @@ async def summaries(db, shows: list[RadioShow]) -> list[RadioShowSummary]:
                 logo=show_view(show),
                 series_count=series_counts.get(show.id, 0),
                 episode_count=episode_counts.get(show.id, 0),
+                wanted_count=wanted_counts.get(show.id, 0),
                 refreshed_at=show.refreshed_at,
                 refresh=OperationView.model_validate(operation) if operation else None,
             )
@@ -380,7 +414,9 @@ async def detail_view(db, show: RadioShow) -> RadioShowDetail:
                 expected_episodes=row.expected_episodes,
                 first_broadcast=row.first_broadcast,
                 episode_count=len(episodes.get(row.id, [])),
-                episodes=[episode_view(episode) for episode in episodes.get(row.id, [])],
+                episodes=[
+                    episode_view(episode, show.follow) for episode in episodes.get(row.id, [])
+                ],
             )
             for row in series
         ],
@@ -525,7 +561,16 @@ async def edit_show(show_id: UUID, body: RadioShowEdit, user: Member, db: Databa
     """Change the follow choice (episode statuses follow it), or the radio library show to use."""
     show = await radio.owned_show(db, user, show_id, lock=True)
     if body.follow:
+        previous = show.follow
         await radio.set_follow(db, show, body.follow)
+        if previous != show.follow:
+            db.add(
+                AuditEvent(
+                    actor_id=user.id,
+                    action="radio.show.follow",
+                    detail={"show_id": str(show.id), "follow": show.follow},
+                )
+            )
     if body.library_item_id:
         show.library_item_id = body.library_item_id
         await relink(db, show_id=show.id)
@@ -560,6 +605,8 @@ async def remove_show(show_id: UUID, user: Member, db: Database):
         operation = await db.get(Operation, show.operation_id)
         if operation and operation.status in radio.ACTIVE:
             operation.status, operation.message = "cancelled", "The show was removed"
+    # Its episode requests are withdrawn; the private records stay for the request history.
+    await radio_wanted.sync(db, [show.id], removing=True)
     await db.delete(show)
     await db.commit()
     return Response(status_code=204)
@@ -581,8 +628,39 @@ async def episode_detail(episode_id: UUID, user: CurrentUser, db: Database):
     station = await db.get(RadioStation, series.station_id) if series.station_id else None
     file = await db.get(RadioLibraryFile, episode.file_id) if episode.file_id else None
     library = await db.get(RadioLibrary, file.library_id) if file else None
+    request = None
+    if episode.work_id:
+        found = (
+            await db.execute(
+                select(
+                    AcquisitionIntent.id,
+                    AcquisitionTarget.state,
+                    AcquisitionTarget.message,
+                    Work.title,
+                )
+                .join(Work, Work.id == AcquisitionIntent.work_id)
+                .join(AcquisitionReason, AcquisitionReason.intent_id == AcquisitionIntent.id)
+                .join(AcquisitionTarget, AcquisitionTarget.intent_id == AcquisitionIntent.id)
+                .where(
+                    AcquisitionIntent.work_id == episode.work_id,
+                    AcquisitionIntent.owner_id == user.id,
+                    AcquisitionReason.kind == radio_wanted.KIND,
+                    AcquisitionReason.reference == str(episode.id),
+                    AcquisitionReason.active.is_(True),
+                )
+                .limit(1)
+            )
+        ).first()
+        if found:
+            request = RadioEpisodeRequest(
+                id=found[0],
+                title=found[3],
+                state=found[1],
+                message=radio_wanted.shown_message(found[1], found[2]),
+            )
     return RadioEpisodeDetail(
-        **episode_view(episode).model_dump(),
+        **episode_view(episode, show.follow).model_dump(),
+        request=request,
         show=RadioEpisodeShow(id=show.id, title=show.title, artwork_url=artwork_url(show)),
         series=RadioEpisodeSeries(
             id=series.id,

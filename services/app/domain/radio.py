@@ -250,11 +250,21 @@ async def add(
 
 
 async def set_follow(db, show: RadioShow, follow: str):
+    """Change the follow choice; episode statuses and their requests follow it. A new choice
+    also wants again the episodes withdrawn in Activity (excluded)."""
+    from app.domain.radio_wanted import sync
+
     if follow == show.follow:
         return
     show.follow = follow
     show.followed_at = datetime.now(UTC) if follow != "none" else None
-    restatus(show, await db.scalars(select(RadioEpisode).where(RadioEpisode.show_id == show.id)))
+    episodes = list(await db.scalars(select(RadioEpisode).where(RadioEpisode.show_id == show.id)))
+    for episode in episodes:
+        if episode.status == "excluded":
+            episode.status = "not_requested"
+    restatus(show, episodes)
+    await db.flush()
+    await sync(db, [show.id])
 
 
 async def job_state(db, operation) -> str | None:

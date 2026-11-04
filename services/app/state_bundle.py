@@ -24,7 +24,7 @@ from app.config import Settings, get_settings
 from app.db.models import Base
 from app.recovery import MAINTENANCE_LOCK
 
-SCHEMA = "storyarr_0090_radio_review"
+SCHEMA = "storyarr_0091_radio_following"
 CONFIG_FIELDS = {
     "public_url",
     "cookie_secure",
