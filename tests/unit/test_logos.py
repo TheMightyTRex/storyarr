@@ -189,3 +189,13 @@ async def test_commons_copy_downloads_only_from_upload_wikimedia(logos_root):
     for title in ("", "a|b.svg", "x" * 300):
         with pytest.raises(ImageError):
             await logos.commons_copy(title, transport=commons([], []))
+
+
+def test_match_words_drops_articles_and_closing_series_words():
+    assert logos.match_words("The Glass Harbour Series", ["M. Ellison"]) == [
+        "Glass Harbour",
+        "Ellison",
+    ]
+    assert logos.match_words("Saga", []) == ["Saga"]
+    # A long run of spaces stays quick.
+    assert logos.match_words("x" + " " * 50_000 + "y", []) == ["x" + " " * 50_000 + "y"]

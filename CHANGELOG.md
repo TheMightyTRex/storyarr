@@ -42,6 +42,12 @@ v0.6.0, run `python -m app.downgrade storyarr_0089_radio_library` in the Storyar
   "12/05/2020" or "May 12, 2020".
 
 ### Security
+From GitHub's code scanning of 5 November 2026. Each fix has a test.
+- **Settings backups:** a backup is found only by its exact name, and only inside the backups folder.
+- **Cover pictures** show only from web addresses, Storyarr's own addresses and inline images.
+- **Goodreads shelves:** the profile number is matched as plain text.
+- **Logo search:** a series name with a long run of spaces no longer slows the search down.
+
 From the security check of 3 November 2026. Each fix has a test.
 - **Libraries updated** to versions without known problems: Pillow 13, Authlib, cryptography 50, oauthlib 4,
   pypdf, certifi, joserfc and Mako. The image also takes Debian's security updates when it is built, and leaves

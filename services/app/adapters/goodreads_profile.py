@@ -84,7 +84,7 @@ def parse_profile(content, user_id):
         parts = urlsplit(link["href"])
         if parts.netloc and parts.hostname not in {"goodreads.com", "www.goodreads.com"}:
             continue
-        if not re.fullmatch(rf"/review/list/{user_id}(?:-[\w-]+)?", parts.path):
+        if not re.fullmatch(rf"/review/list/{re.escape(str(user_id))}(?:-[\w-]+)?", parts.path):
             continue
         fields = dict(parse_qsl(parts.query))
         shelf = fields.get("shelf") or fields.get("tag")

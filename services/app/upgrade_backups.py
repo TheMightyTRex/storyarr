@@ -13,7 +13,7 @@ from pathlib import Path
 
 FORMAT = 1
 ROOT = Path(os.environ.get("BOOK_UPGRADE_BACKUPS", "/config/upgrade-backups"))
-NAME = re.compile(r"^settings-\d{8}-\d{6}-[a-z-]+\.json$")
+NAME = re.compile(r"settings-\d{8}-\d{6}-[a-z-]+\.json")
 
 # Configuration only. Users are saved for reference but never restored, so a restore cannot change
 # anyone's password or role.
@@ -87,7 +87,7 @@ def listing(root: Path | None = None) -> list[dict]:
         return []
     found = []
     for path in sorted(root.iterdir(), reverse=True):
-        if not NAME.match(path.name) or not path.is_file():
+        if not NAME.fullmatch(path.name) or not path.is_file():
             continue
         try:
             data = json.loads(path.read_text())
@@ -111,9 +111,15 @@ def listing(root: Path | None = None) -> list[dict]:
 
 def path_for(name: str, root: Path | None = None) -> Path:
     root = root or ROOT
-    if not NAME.match(name):
+    if not NAME.fullmatch(name):
         raise FileNotFoundError(name)
-    path = root / name
+    # Resolve the path and check it stays inside the backups folder, so a name can never reach
+    # another file.
+    folder = os.path.realpath(root)
+    full = os.path.realpath(os.path.join(folder, name))
+    if not full.startswith(folder + os.sep):
+        raise FileNotFoundError(name)
+    path = Path(full)
     if not path.is_file():
         raise FileNotFoundError(name)
     return path

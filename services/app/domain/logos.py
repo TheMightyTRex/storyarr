@@ -264,7 +264,12 @@ def _files(data: dict, names: list[str]) -> list[CommonsFile]:
 def match_words(name: str, people: list[str]) -> list[str]:
     """The series name, and each person's surname: a file that mentions none is a probable wrong
     match."""
-    name = re.sub(r"^(the|a|an)\s+|\s+(series|trilogy|saga)$", "", name.strip(), flags=re.I)
+    name = re.sub(r"^(the|a|an)\s+", "", name.strip(), flags=re.I)
+    # Drop a closing "series", "trilogy" or "saga" without a regular expression, which could run
+    # slowly on a name with many spaces.
+    head, _, last = name.rpartition(" ")
+    if head.strip() and last.casefold() in {"series", "trilogy", "saga"}:
+        name = head.rstrip()
     words = [name]
     for person in people:
         parts = person.replace(".", " ").split()
