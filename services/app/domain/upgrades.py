@@ -373,7 +373,7 @@ RELEASES = [
     ),
     UpgradeRelease(
         id="2026.11.05",
-        title="Review the radio library, passwords and security fixes",
+        title="Radio beyond the BBC, following shows, passwords and security fixes",
         added=[
             "Review the radio library in My library, Radio: add its shows, and link files that "
             "match no episode by hand.",
@@ -381,10 +381,19 @@ RELEASES = [
             "their account's details.",
             "Send feedback under the version number, sent as a GitHub issue.",
             "Discover, For you has Books and Radio tabs.",
+            "Follow radio shows: wanted episodes become requests in Activity and broadcasts "
+            "appear on the release calendar.",
+            "Radio from podcast feeds, Apple Podcasts and the Internet Archive, as well as the "
+            "BBC. Add a show searches the sources you choose for your country.",
+            "Want or do not want an episode, or a whole series, by hand.",
+            "Radio warns when shows you follow have nowhere to go, and a show page opens its "
+            "show in Audiobookshelf.",
         ],
         changed=[
             "Confirmations are toasts, and settings pages say when they were saved.",
             "Settings are activated and deactivated, and are active or inactive.",
+            "Episodes a source no longer lists are kept and marked, not deleted.",
+            "Not this file is remembered, so the radio library sync can find the right file.",
         ],
         fixed=[
             "Dates are written the same way on every page, whatever your browser's language.",
@@ -397,11 +406,18 @@ RELEASES = [
             "Two new columns for the radio library review (storyarr_0090_radio_review): the "
             "radio library folder a show was added from, and whether an episode's file was "
             "linked by hand.",
+            "Radio following (storyarr_0091_radio_following): episode requests use a new "
+            "request reason.",
+            "Radio sources (storyarr_0092_radio_sources): shows from feeds and the Internet "
+            "Archive, episodes no longer listed, episodes chosen by hand, files said to be "
+            "not an episode, and other ids a show is known by.",
         ],
         rollback=(
-            "To go back to v0.6.0, run python -m app.downgrade storyarr_0089_radio_library in the "
-            "Storyarr container first. Only the links chosen by hand in the review are lost. No "
-            "audio files are touched."
+            "To go back to v0.6.0, remove any shows from podcast feeds, Apple Podcasts or the "
+            "Internet Archive and any radio episode requests (or restore the backup taken before "
+            "the upgrade), then run python -m app.downgrade storyarr_0089_radio_library in the "
+            "Storyarr container. Choices made by hand for radio are lost. No audio files are "
+            "touched."
         ),
     ),
 ]

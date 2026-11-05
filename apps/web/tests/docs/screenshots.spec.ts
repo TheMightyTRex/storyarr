@@ -929,6 +929,66 @@ test("radio show page", async ({ page }) => {
   await page.screenshot({ path: `${OUT}/radio-show.png` });
 });
 
+test("radio, add a show from any source", async ({ page }) => {
+  // Invented shows from the three sources, each with its source label and artwork.
+  const hit = (
+    index: number,
+    source: "bbc" | "apple" | "archive",
+    extra: Record<string, unknown>,
+  ) => ({
+    source,
+    source_name: {
+      bbc: "BBC",
+      apple: "Apple Podcasts",
+      archive: "Internet Archive",
+    }[source],
+    link: `https://example.org/show-${index}`,
+    title: radioShows[index][1],
+    synopsis: null,
+    author: null,
+    station_id: null,
+    station_name: null,
+    pid: null,
+    image_pid: null,
+    artwork_url: `/api/radio/shows/${radioShows[index][0]}/artwork`,
+    licence: null,
+    existing_show_id: null,
+    ...extra,
+  });
+  await setup(page, "light", false, false, (path, url) => {
+    if (path === "/api/radio/search")
+      return {
+        sources: ["BBC", "Apple Podcasts", "Internet Archive"],
+        failed: [],
+        items: [
+          hit(0, "bbc", {
+            station_name: "BBC Radio 4",
+            existing_show_id: "s1",
+          }),
+          hit(1, "apple", { author: "Harbour Audio", synopsis: "Comedy" }),
+          hit(2, "apple", { author: "Night Desk", synopsis: "Fiction" }),
+          hit(3, "archive", { author: "Old-time radio" }),
+        ],
+      };
+    return radioApi(path, url);
+  });
+  await page.goto("/library/radio");
+  await page.getByRole("button", { name: "Add a show" }).click();
+  const dialog = page.getByRole("dialog", { name: "Add a show" });
+  await dialog.getByLabel("Link or show name").fill("lantern");
+  await dialog.getByRole("button", { name: "Find show" }).click();
+  await expect(dialog.getByRole("radio")).toHaveCount(4);
+  await page.waitForTimeout(800);
+  await dialog
+    .locator(".radio-add-results")
+    .screenshot({ path: `${OUT}/radio-add-show.png` });
+  await dialog.getByText("Where to search").click();
+  await page.waitForTimeout(400);
+  await dialog
+    .locator(".radio-search-choices")
+    .screenshot({ path: `${OUT}/radio-where-to-search.png` });
+});
+
 test("settings, cover actions", async ({ page }) => {
   await setup(page);
   await page.goto("/settings#display");

@@ -9,10 +9,29 @@ have come in releases that change only the last number. Storyarr is a fork of
 
 ## [Unreleased]
 
-The database gains two columns for the radio library review (`storyarr_0090_radio_review`). To go back to
-v0.6.0, run `python -m app.downgrade storyarr_0089_radio_library` in the Storyarr container first.
+## [0.6.1] (5 November 2026)
+
+The database changes three times: two columns for the radio library review (`storyarr_0090_radio_review`),
+radio following (`storyarr_0091_radio_following`) and radio sources (`storyarr_0092_radio_sources`). To go back to
+v0.6.0, remove shows from podcast feeds, Apple Podcasts or the Internet Archive and any radio episode requests
+(or restore the backup taken before the upgrade), then run `python -m app.downgrade storyarr_0089_radio_library`
+in the Storyarr container.
 
 ### Added
+- **Follow radio shows** (All series, From now on or None): wanted episodes become requests in Activity, and
+  broadcasts appear on the release calendar. Followed shows are read again twice a day.
+- **Radio beyond the BBC.** Add a show from a podcast feed (or a web page that links to one), an Apple Podcasts
+  link or an Internet Archive old-time radio item. Add a show searches the BBC, Apple Podcasts and the Internet
+  Archive by name, each result labelled with its source; **Where to search** keeps your country and the sources
+  to ask with your account. The BBC is only asked for the United Kingdom.
+- **Internet Archive licences** are shown on the show page; "No licence given" when the item gives none.
+- **Want an episode, or a whole series, by hand** (Wanted, Not wanted, or the follow choice). A new follow choice
+  applies to every episode again.
+- **Radio warns** when shows you follow have nowhere to go: no radio library chosen, Audiobookshelf not
+  answering, or the radio folder not mounted or not writable.
+- **Open in Audiobookshelf** and the show's web page on a radio show page.
+- Radio release names (`Show S20E03`, dates, a station in front, get_iplayer names), search words and the release
+  check, ready for torrent and Usenet searches for radio.
 - **Review the radio library** (My library, Radio): the shows in the radio library that are not in your radio
   shows, each with Find on the BBC (the show then takes that folder's files, whatever it is called) or Already
   added, and the files that match no episode, each with a list of the show's episodes to link it by hand.
@@ -29,6 +48,14 @@ v0.6.0, run `python -m app.downgrade storyarr_0089_radio_library` in the Storyar
 - **Discover, For you** has Books and Radio tabs: five stations, top shows and a genre choice.
 
 ### Changed
+- **Podcast feeds are read every hour**; one that has not changed costs one small request (ETag and
+  Last-Modified), not a full download.
+- **Episodes and series a source no longer lists are kept and marked** "No longer listed", not deleted.
+- **Radio library matching:** feed episodes match their files by guid or audio address; a series and episode
+  number that two files, or two episodes, share links nothing; **Not this file** is remembered, so the sync can
+  still find the right file.
+- **Shows found under another id** (a BBC series that led to its brand, an Apple Podcasts id that led to a feed)
+  are marked as already in your radio on Discover and in search.
 - **Add a show** also looks in the BBC programmes A to Z when BBC Sounds has no show of that name, so older
   shows such as Cabin Pressure and Old Harry's Game are found by name.
 - **Confirmations are toasts:** a card in the corner, up to three stacked, that waits while the pointer or
@@ -38,6 +65,9 @@ v0.6.0, run `python -m app.downgrade storyarr_0089_radio_library` in the Storyar
 - **Words:** settings are activated and deactivated, and are active or inactive, on every page and state chip.
 
 ### Fixed
+- **Going back to v0.6.0:** `python -m app.downgrade storyarr_0089_radio_library` is now accepted; before, the
+  command named in these notes was refused.
+- **Test results** committed by mistake were removed, and test result folders of any name are ignored.
 - **Dates** are written the same way on every page, whatever your browser's language: "12 May 2020", never
   "12/05/2020" or "May 12, 2020".
 
@@ -56,6 +86,10 @@ From the security check of 3 November 2026. Each fix has a test.
 - **Old sign-ins are cleared:** expired sessions and old sign-in counters are deleted each night.
 - **Logos:** CSS escapes are removed from uploaded SVG logos.
 - **A malformed security token** is refused (403) instead of causing a server error.
+- **Feed addresses:** podcast feeds, the pages that link to them and their artwork are only read from public
+  addresses. Every redirect is checked again, the connection is pinned to the checked address, bodies are size
+  limited, feed XML is read with defusedxml (no entity expansion or external entities), and feed addresses are
+  kept out of logs and audit records.
 
 ## [0.6.0] (2 November 2026)
 
@@ -422,7 +456,8 @@ The first Storyarr release.
 - **Removed files in My Library:** My Library no longer lists files that were removed or are confirmed missing as
   unticked books.
 
-[Unreleased]: https://github.com/TheMightyTRex/storyarr/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/TheMightyTRex/storyarr/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/TheMightyTRex/storyarr/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/TheMightyTRex/storyarr/compare/v0.5.9...v0.6.0
 [0.5.9]: https://github.com/TheMightyTRex/storyarr/compare/v0.5.8...v0.5.9
 [0.5.8]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.8...v0.5.8

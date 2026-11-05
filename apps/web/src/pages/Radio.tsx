@@ -1642,7 +1642,7 @@ function SearchChoices() {
         <fieldset className="radio-search-sources">
           <legend>Search in</legend>
           {SOURCE_CHOICES.map((choice) => (
-            <label key={choice.value} className="checkbox">
+            <label key={choice.value} className="check-label">
               <input
                 type="checkbox"
                 checked={sources.includes(choice.value)}

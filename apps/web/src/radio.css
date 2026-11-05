@@ -434,6 +434,7 @@
 
 /* Radio beyond the BBC (RADIO-02): search results with artwork, links, monitoring by hand. */
 .radio-add-choice {
+  grid-template-columns: auto auto minmax(0, 1fr);
   align-items: center;
 }
 .radio-add-art {
