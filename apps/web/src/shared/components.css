@@ -348,7 +348,7 @@
     padding-left: var(--rail-w);
   }
   /* The server's own name, up to 10 characters, at the start of the level 1 menu, as plain text with no
-     icon (David, 4 November 2026). A label, not a link: it names the server the page is about. */
+     icon (TheMightyTRexUK, 4 November 2026). A label, not a link: it names the server the page is about. */
   .site-header__server {
     display: inline-flex;
     flex: none;
@@ -358,7 +358,7 @@
     padding: 0 var(--space-4) 0 var(--space-5);
     border-right: 1px solid var(--color-divider);
     color: var(--color-text);
-    /* Bold, and a size up from the tabs (David, 4 November 2026: "Make the text bold"). */
+    /* Bold, and a size up from the tabs (TheMightyTRexUK, 4 November 2026: "Make the text bold"). */
     font-size: var(--text-md);
     font-weight: var(--weight-heading);
     white-space: nowrap;
@@ -1525,7 +1525,7 @@
     background: var(--color-accent);
     animation: loading 1.1s ease-in-out infinite;
   }
-  /* Toast (option C, David, 3 November 2026): a card in the corner with a status edge, an icon, a title,
+  /* Toast (option C, TheMightyTRexUK, 3 November 2026): a card in the corner with a status edge, an icon, a title,
      an optional line of detail, one optional action and Close. Tones: success, info, warning and danger
      (an error, on its tinted background so it stands apart). A lone .toast still works; components.js
      builds the .toasts stack. */
@@ -2002,7 +2002,7 @@
   .cover-card:has(> .cover-card__open:hover) .media-card__title {
     text-decoration: underline;
   }
-  /* The column is exactly the height of the cover, whatever its shape or size (David, 2 November
+  /* The column is exactly the height of the cover, whatever its shape or size (TheMightyTRexUK, 2 November
      2026): top and bottom edges match the art. Its 44px targets spread down the cover; on a cover
      shorter than five targets (a small or square cover) they share the height evenly instead of
      running past the bottom edge. Keep covers at least 120px tall so each target stays 24px or more. */
@@ -3747,7 +3747,7 @@
 
   /* Wizard rules (4 November 2026, docs/WIZARD.md): the progress bar and, for a step in parts, a
      small step bar under it. What happens next and the decision tree are review aids for testing
-     (David, 4 November 2026): shown beside the step only while an app's testing setting is on, never
+     (TheMightyTRexUK, 4 November 2026): shown beside the step only while an app's testing setting is on, never
      in the finished product. Without them, the step has the whole width. */
   .wizard-layout {
     display: grid;
@@ -4297,7 +4297,7 @@
     .site-header .site-header__search-btn {
       display: inline-flex;
     }
-    /* On phones the header shows only the logo on the left, no names (David, 4 November 2026). The app's
+    /* On phones the header shows only the logo on the left, no names (TheMightyTRexUK, 4 November 2026). The app's
        name and the server name stay for screen readers. */
     .site-header__brand > span,
     .site-header__server {

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "../fixtures";
 
-// David, 2 November 2026: on In my libraries the action column must be exactly the height of the cover,
+// TheMightyTRexUK, 2 November 2026: on In my libraries the action column must be exactly the height of the cover,
 // as on author pages, for a portrait ebook cover and a square audiobook cover, at every Cover size; and
 // the covers there are 10% larger than they were (113, 167 and 238px wide at 1440px).
 
