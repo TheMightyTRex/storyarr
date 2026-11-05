@@ -546,3 +546,10 @@ def test_search_terms_and_matches():
     )
     assert radio_releases.parse("S01E01") is None
     assert radio_releases.parse("") is None
+
+
+def test_a_feed_past_the_item_limit_marks_nothing_removed(monkeypatch):
+    monkeypatch.setattr(podcast_feed, "MAX_ITEMS", 2)
+    show = podcast_feed.parse("https://example.org/f", feed(item("a") + item("b") + item("c")))
+    assert show.episode_count == 2 and show.complete is False
+    assert podcast_feed.parse("https://example.org/f", feed(item("a"))).complete is True

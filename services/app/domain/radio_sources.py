@@ -152,8 +152,10 @@ async def gateway(provider: str):
         yield fetch
 
 
-async def read_page(url: str) -> public_web.Page:
+async def read_page(url: str, validators=None) -> public_web.Page:
     options = {"resolver": PUBLIC_RESOLVER} if PUBLIC_RESOLVER else {}
+    if validators:
+        options["validators"] = validators
     return await public_web.fetch(
         url,
         accept=podcast_feed.ACCEPT,
@@ -163,9 +165,9 @@ async def read_page(url: str) -> public_web.Page:
     )
 
 
-async def read_feed(url: str) -> bbc_feed.ShowData:
+async def read_feed(url: str, validators=None) -> bbc_feed.ShowData:
     try:
-        return await podcast_feed.read(url, read_page)
+        return await podcast_feed.read(url, read_page, validators)
     except AdapterError as error:
         raise friendly("feed", error) from None
 
@@ -191,8 +193,11 @@ async def preview(link: str) -> bbc_feed.ShowData:
     return await read_feed(value)
 
 
-async def read_show(provider: str, external_id: str, **bbc_options) -> bbc_feed.ShowData:
-    """The whole show again, for a refresh."""
+async def read_show(
+    provider: str, external_id: str, validators=None, **bbc_options
+) -> bbc_feed.ShowData:
+    """The whole show again, for a refresh. A feed that has not changed since the validators
+    were saved raises podcast_feed.FeedUnchanged."""
     from app.domain import radio
 
     if provider == "bbc":
@@ -202,7 +207,7 @@ async def read_show(provider: str, external_id: str, **bbc_options) -> bbc_feed.
         async with gateway("archive") as fetch:
             return await archive_radio.item(fetch, external_id)
     if provider == "feed":
-        return await read_feed(external_id)
+        return await read_feed(external_id, validators)
     raise AdapterError(FailureKind.UNSUPPORTED, "Storyarr cannot read this kind of show")
 
 

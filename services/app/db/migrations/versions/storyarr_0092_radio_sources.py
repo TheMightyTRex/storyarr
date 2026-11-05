@@ -42,6 +42,7 @@ def upgrade():
     op.add_column("radio_shows", sa.Column("web_url", sa.String(1000)))
     op.add_column("radio_shows", sa.Column("artwork_url", sa.String(1000)))
     op.add_column("radio_shows", sa.Column("licence", sa.String(300)))
+    op.add_column("radio_shows", sa.Column("feed_validators", postgresql.JSONB()))
 
     op.alter_column("radio_series", "pid", type_=sa.String(200))
     op.add_column("radio_series", sa.Column("removed_at", sa.DateTime(timezone=True)))
@@ -113,7 +114,7 @@ def downgrade():
     op.alter_column("radio_episodes", "pid", type_=sa.String(20))
     op.drop_column("radio_series", "removed_at")
     op.alter_column("radio_series", "pid", type_=sa.String(20))
-    for column in ("licence", "artwork_url", "web_url", "author"):
+    for column in ("feed_validators", "licence", "artwork_url", "web_url", "author"):
         op.drop_column("radio_shows", column)
     op.alter_column("radio_shows", "external_id", type_=sa.String(20))
     _replace_check("radio_shows", "radio_shows_provider_check", "provider = 'bbc'")

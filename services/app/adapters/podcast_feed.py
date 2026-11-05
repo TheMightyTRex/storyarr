@@ -40,6 +40,10 @@ SPECIAL_TYPES = {"trailer", "bonus"}
 NOT_A_FEED = "This address is not a podcast feed, and its page does not link to one."
 
 
+class FeedUnchanged(Exception):
+    """The feed answered "not modified" to a conditional read."""
+
+
 def unreadable(message=NOT_A_FEED) -> AdapterError:
     return AdapterError(FailureKind.PARSER, message)
 
@@ -215,7 +219,8 @@ def parse(feed_url: str, body: bytes) -> ShowData:
     seasons: dict[int, list[tuple[int | None, EpisodeData]]] = {}
     specials: list[tuple[int | None, EpisodeData]] = []
     seen: set[str] = set()
-    for item in channel.findall("item")[:MAX_ITEMS]:
+    items = channel.findall("item")
+    for item in items[:MAX_ITEMS]:
         enclosure_node = item.find("enclosure")
         enclosure = _web(enclosure_node.get("url")) if enclosure_node is not None else None
         guid = _child(item, "guid")
@@ -298,6 +303,8 @@ def parse(feed_url: str, body: bytes) -> ShowData:
         web_url=_web(_child(channel, "link")),
         artwork_url=artwork,
     )
+    # Items past the limit were not read, so nothing missing can be called removed.
+    show.complete = len(items) <= MAX_ITEMS
     show.durations = {
         episode.pid: episode.duration_seconds
         for item in series
@@ -314,10 +321,13 @@ def looks_like_feed(content_type: str, body: bytes) -> bool:
     return head.startswith(b"<?xml") or head.startswith(b"<rss")
 
 
-async def read(url: str, fetch) -> ShowData:
+async def read(url: str, fetch, validators=None) -> ShowData:
     """The show behind a feed address, or behind a web page that links to its feed.
-    ``fetch(url)`` returns a public_web.Page."""
-    page = await fetch(url)
+    ``fetch(url, validators)`` returns a public_web.Page. With the validators of the last read
+    (ETag, Last-Modified), an unchanged feed raises FeedUnchanged after one small request."""
+    page = await fetch(url, validators) if validators else await fetch(url)
+    if page.not_modified:
+        raise FeedUnchanged()
     if not looks_like_feed(page.content_type, page.body):
         found = feed_link(page.url, page.body)
         if not found:
@@ -326,6 +336,8 @@ async def read(url: str, fetch) -> ShowData:
         if not looks_like_feed(page.content_type, page.body):
             raise unreadable()
     show = parse(page.url, page.body)
+    if page.etag or page.last_modified:
+        show.validators = (page.etag, page.last_modified)
     if page.url != url:
         show.aliases.append(("feed", url[:1000]))
     return show

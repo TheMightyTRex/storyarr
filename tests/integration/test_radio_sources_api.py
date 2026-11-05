@@ -60,14 +60,19 @@ def web(monkeypatch, bbc):
         "apple": json.loads((FIXTURES / "apple-search.json").read_text()),
         "archive": json.loads((FIXTURES / "archive-raysalaugh.json").read_text()),
         "down": set(),
+        "validators": [],
     }
 
-    async def fetch(url, *, accept, limit, transport=None, resolver=None):
+    async def fetch(url, *, accept, limit, transport=None, resolver=None, validators=None):
         state["calls"].append(url)
         if url not in state["pages"]:
             raise AdapterError(FailureKind.NOT_FOUND, "Nothing was found at this web address")
         kind, body = state["pages"][url]
-        return public_web.Page(url, kind, body)
+        tag = f'"{hash(body)}"'
+        state["validators"].append(validators)
+        if validators and validators[0] == tag:
+            return public_web.Page(url, "", b"", not_modified=True)
+        return public_web.Page(url, kind, body, etag=tag)
 
     from contextlib import asynccontextmanager
 
@@ -362,3 +367,20 @@ async def test_links_to_private_addresses_are_refused(client, admin, database, b
         assert "public internet" in response.json()["detail"]
     async with database() as db:
         assert (await db.scalar(select(RadioEpisode.id).limit(1))) is None
+
+
+async def test_an_unchanged_feed_costs_one_small_request(client, admin, database, web):
+    show = await add_link(client, FEED, follow="all")
+    await finish(database, show)
+    await client.post(f"{BASE}/shows/{show['id']}/refresh")
+    operation = await finish(database, show)
+    assert operation.status == "completed"
+    assert operation.message == "The podcast feed has not changed since it was last read"
+    # The add and the first read sent no validators; the second read sent the ETag.
+    assert web["validators"][-1] and web["validators"][-1][0].startswith('"')
+    assert len(episodes_of(await detail(client, show))) == 3
+    # The feed changes: it is read in full again.
+    web["pages"][FEED] = ("application/rss+xml", feed_body("g1", "g2", "g3", "g4"))
+    await client.post(f"{BASE}/shows/{show['id']}/refresh")
+    operation = await finish(database, show)
+    assert operation.message.startswith("Read 1 series and 4 episodes")

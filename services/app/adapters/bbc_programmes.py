@@ -154,6 +154,8 @@ class ShowData:
     complete: bool = True
     # Other ids that led here (provider, id): a BBC series pid, an Apple Podcasts id.
     aliases: list[tuple[str, str]] = field(default_factory=list)
+    # Feeds: the ETag and Last-Modified of this read, sent back next time.
+    validators: tuple[str | None, str | None] | None = None
 
 
 async def programme(fetch: Fetch, pid: str) -> dict:

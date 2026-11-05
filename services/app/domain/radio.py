@@ -18,6 +18,7 @@ from sqlalchemy import and_, func, or_, select, text
 from sqlalchemy.dialects.postgresql import insert
 
 from app.adapters import bbc_programmes as bbc_feed
+from app.adapters import podcast_feed
 from app.adapters.contracts import AdapterError, FailureKind
 from app.config import get_settings
 from app.db.models import (
@@ -170,6 +171,8 @@ async def apply(db, show: RadioShow, data: bbc_feed.ShowData, now=None):
     show.artwork_url = data.artwork_url or show.artwork_url
     if data.provider == "archive":
         show.licence = data.licence
+    if data.provider == "feed":
+        show.feed_validators = list(data.validators) if data.validators else None
     saved = {
         row.pid: row
         for row in await db.scalars(select(RadioSeries).where(RadioSeries.show_id == show.id))
@@ -315,8 +318,10 @@ async def add(
     await db.flush()
     await save_aliases(db, show.id, data.aliases)
     await apply(db, show, data, now)
-    # Only the preview has been read so far; the refresh job reads every series.
+    # Only the preview has been read so far; the refresh job reads every series (and fetches
+    # the artwork), so it must not be skipped as "not changed".
     show.refreshed_at = None
+    show.feed_validators = None
     operation = await start_refresh(db, owner_id, show)
     return show, operation
 
@@ -434,6 +439,7 @@ async def run(operation_id):
         if not operation:
             return
         pid, show_id, provider = show.external_id, show.id, show.provider
+        validators = tuple(show.feed_validators) if show.feed_validators else None
         skip = await settled(db, show.id, now)
         lengths = (
             await db.execute(
@@ -455,9 +461,18 @@ async def run(operation_id):
                 "duration_budget": DURATION_BUDGET,
             }
             if provider == "bbc"
-            else {}
+            else {"validators": validators}
         )
         data = await radio_sources.read_show(provider, pid, **options)
+    except podcast_feed.FeedUnchanged:
+        async with session_factory()() as db, db.begin():
+            operation, show = await _current(db, operation_id)
+            if not operation:
+                return
+            show.refreshed_at = datetime.now(UTC)
+            operation.status = "completed"
+            operation.message = "The podcast feed has not changed since it was last read"
+        return
     except AdapterError as error:
         transient = error.kind in {
             FailureKind.RATE_LIMIT,

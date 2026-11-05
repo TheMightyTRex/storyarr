@@ -41,6 +41,11 @@ class Page:
     url: str
     content_type: str
     body: bytes
+    # For conditional reads: what the server said identifies this version, and whether it
+    # answered "not modified" to the validators sent (then the body is empty).
+    etag: str | None = None
+    last_modified: str | None = None
+    not_modified: bool = False
 
 
 def problem(message: str, kind=FailureKind.UNAVAILABLE) -> AdapterError:
@@ -91,6 +96,7 @@ async def fetch(
     limit: int,
     transport=None,
     resolver=public_addresses,
+    validators: tuple[str | None, str | None] | None = None,
 ) -> Page:
     """The body of a public web address, following up to five redirects, each checked."""
     marker = _reading.set(True)
@@ -109,6 +115,11 @@ async def fetch(
                 },
             ) as client,
         ):
+            etag, modified = validators or (None, None)
+            conditional = {
+                **({"If-None-Match": etag} if etag else {}),
+                **({"If-Modified-Since": modified} if modified else {}),
+            }
             for _ in range(MAX_REDIRECTS + 1):
                 scheme, host, port = checked_url(url)
                 addresses = await resolver(host, port)
@@ -128,7 +139,8 @@ async def fetch(
                                     "GET",
                                     target,
                                     headers={
-                                        "Host": host if port in {80, 443} else f"{host}:{port}"
+                                        "Host": host if port in {80, 443} else f"{host}:{port}",
+                                        **conditional,
                                     },
                                     extensions={"sni_hostname": host} if scheme == "https" else {},
                                 )
@@ -144,6 +156,8 @@ async def fetch(
                             raise problem("The web address sent an incomplete redirect")
                         url = urljoin(url, location)
                         continue
+                    if response.status_code == 304 and conditional:
+                        return Page(url=url, content_type="", body=b"", not_modified=True)
                     if response.status_code == 404:
                         raise problem(
                             "Nothing was found at this web address", FailureKind.NOT_FOUND
@@ -159,7 +173,13 @@ async def fetch(
                             raise problem("The web page is too large", FailureKind.PARSER)
                         body.extend(chunk)
                     kind = response.headers.get("content-type", "").split(";", 1)[0]
-                    return Page(url=url, content_type=kind.strip().lower(), body=bytes(body))
+                    return Page(
+                        url=url,
+                        content_type=kind.strip().lower(),
+                        body=bytes(body),
+                        etag=(response.headers.get("etag") or "")[:250] or None,
+                        last_modified=(response.headers.get("last-modified") or "")[:100] or None,
+                    )
             raise problem("The web address redirects too many times")
     except (TimeoutError, httpx.TimeoutException):
         raise problem("The web site did not answer in time", FailureKind.TIMEOUT) from None

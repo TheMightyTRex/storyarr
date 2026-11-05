@@ -1607,6 +1607,9 @@ class RadioShow(Identity, Base):
     web_url: Mapped[str | None] = mapped_column(String(1000))
     artwork_url: Mapped[str | None] = mapped_column(String(1000))
     licence: Mapped[str | None] = mapped_column(String(300))
+    # Feeds: the ETag and Last-Modified of the last read, as JSON, so an unchanged feed costs
+    # one small request.
+    feed_validators: Mapped[list | None] = mapped_column(JSONB)
     title: Mapped[str] = mapped_column(String(600))
     synopsis: Mapped[str | None] = mapped_column(Text)
     first_broadcast: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
