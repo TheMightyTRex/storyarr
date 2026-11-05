@@ -248,8 +248,10 @@ async def test_a_missing_or_changed_feed_is_explained(client, admin, database, b
     missing = await client.get(BASE + "/preview", params={"link": "b00zzzzz"})
     assert missing.status_code == 404
     assert missing.json()["detail"] == "The BBC has no programme with this id. Check the link."
-    bad = await client.get(BASE + "/preview", params={"link": "https://example.com/programmes/x"})
+    bad = await client.get(BASE + "/preview", params={"link": "not a link at all"})
     assert bad.status_code == 422
+    elsewhere = await client.get(BASE + "/preview", params={"link": "https://www.bbc.co.uk/news"})
+    assert elsewhere.status_code == 422
     show = await add(client, "m0012qgy")
     bbc["data"]["programmes/m0012qgy/children.json"] = {"children": {"programmes": "?"}}
     operation = await finish(database, show)

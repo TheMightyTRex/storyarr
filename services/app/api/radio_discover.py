@@ -13,7 +13,7 @@ from app.adapters.contracts import AdapterError
 from app.api.dependencies import CurrentUser, Database
 from app.api.metadata import adapter_http_error
 from app.api.preferences import RADIO_TYPES, view
-from app.db.models import RadioSeries, RadioShow, RadioStation
+from app.db.models import RadioSeries, RadioShow, RadioShowAlias, RadioStation
 from app.domain import radio
 
 router = APIRouter(prefix="/radio/discover", tags=["radio"])
@@ -135,16 +135,31 @@ async def popular(
         shows: list[PopularShow] = await radio.popular(category=type, network=station)
     except AdapterError as error:
         raise adapter_http_error(error) from None
+    pids = [show.pid for show in shows]
     owned = dict(
         (
             await db.execute(
                 select(RadioShow.external_id, RadioShow.id).where(
                     RadioShow.owner_id == user_id,
-                    RadioShow.external_id.in_([show.pid for show in shows]),
+                    RadioShow.provider == "bbc",
+                    RadioShow.external_id.in_(pids),
                 )
             )
         ).all()
     )
+    # Shows added under another pid (a series that led to its brand) count as added too.
+    for pid, show_id in (
+        await db.execute(
+            select(RadioShowAlias.external_id, RadioShow.id)
+            .join(RadioShow, RadioShow.id == RadioShowAlias.show_id)
+            .where(
+                RadioShow.owner_id == user_id,
+                RadioShowAlias.provider == "bbc",
+                RadioShowAlias.external_id.in_(pids),
+            )
+        )
+    ).all():
+        owned.setdefault(pid, show_id)
     return PopularShowList(
         items=[
             PopularShowView(

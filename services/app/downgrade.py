@@ -22,6 +22,7 @@ RELEASES = {
     "storyarr_0084_background_work": "Storyarr v0.4.2, before saved layouts",
     "storyarr_0085_user_preferences": "Storyarr v0.4.5, before the notification title change",
     "storyarr_0086_notification_title": "Storyarr v0.4.8, before radio",
+    "storyarr_0089_radio_library": "Storyarr v0.6.0, before the radio library review",
 }
 
 

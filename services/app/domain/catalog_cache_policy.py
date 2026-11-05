@@ -10,6 +10,11 @@ def lifetime(provider, path, document):
     name = name[1] if name else ""
     if provider == "bbc-sounds":
         return timedelta(minutes=5)
+    if provider == "apple":
+        return timedelta(minutes=30)
+    if provider == "archive":
+        # Old-time radio items rarely change.
+        return timedelta(hours=12) if path.startswith("metadata/") else timedelta(minutes=30)
     if provider == "bbc":
         # Radio show data changes weekly at most; an hour is the shortest refresh interval.
         return timedelta(hours=1)

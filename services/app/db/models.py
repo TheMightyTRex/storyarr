@@ -14,13 +14,14 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    Uuid,
     func,
     text,
 )
 from sqlalchemy import (
     Identity as SQLIdentity,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from app.domain.catalog_titles import display_base_sql, display_title_sql
@@ -1554,6 +1555,10 @@ class RequestQuotaCharge(Base):
 # Radio (FEAT-R). Shows, their series and episodes are kept apart from Work and Version; later
 # phases link episodes to the audio pipeline. Stations are shared by everyone, shows are owned.
 RADIO_FOLLOW = ("all", "from_now_on", "none")
+# Where a show's data comes from (storyarr_0092): the BBC, a podcast feed (Apple Podcasts shows
+# are saved as their feed) or the Internet Archive.
+RADIO_PROVIDERS = ("bbc", "feed", "archive")
+RADIO_NUMBER_SOURCES = ("bbc", "broadcast_order", "source")
 # The status words of app.domain.follow_status.StatusKind (a unit test keeps them in step).
 RADIO_EPISODE_STATUS = (
     "in_library",
@@ -1588,13 +1593,20 @@ class RadioShow(Identity, Base):
     __tablename__ = "radio_shows"
     __table_args__ = (
         UniqueConstraint("owner_id", "provider", "external_id"),
-        CheckConstraint("provider = 'bbc'", name="radio_shows_provider_check"),
+        CheckConstraint(_in("provider", RADIO_PROVIDERS), name="radio_shows_provider_check"),
         CheckConstraint(_in("follow", RADIO_FOLLOW), name="radio_shows_follow_check"),
     )
     owner_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     provider: Mapped[str] = mapped_column(String(20), default="bbc")
-    # The BBC brand pid (or a top-level series pid when a series has no brand).
-    external_id: Mapped[str] = mapped_column(String(20))
+    # The BBC brand pid (or a top-level series pid when a series has no brand), the feed address
+    # or the Internet Archive identifier.
+    external_id: Mapped[str] = mapped_column(String(1000))
+    # From feeds and the Internet Archive (storyarr_0092): who makes it, its web page, where
+    # its artwork is, and the licence the Internet Archive gives (None: no licence given).
+    author: Mapped[str | None] = mapped_column(String(300))
+    web_url: Mapped[str | None] = mapped_column(String(1000))
+    artwork_url: Mapped[str | None] = mapped_column(String(1000))
+    licence: Mapped[str | None] = mapped_column(String(300))
     title: Mapped[str] = mapped_column(String(600))
     synopsis: Mapped[str | None] = mapped_column(Text)
     first_broadcast: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -1626,6 +1638,19 @@ class RadioShow(Identity, Base):
     # The radio library show (Audiobookshelf item id) it was added from (storyarr_0090), so its
     # files link even when the folder's title differs from the BBC title.
     library_item_id: Mapped[str | None] = mapped_column(String(200))
+
+
+class RadioShowAlias(Base):
+    """Another id a show was added or opened under (storyarr_0092): a BBC series pid that led
+    to its brand, or an Apple Podcasts id that led to a feed. Search and Discover use it."""
+
+    __tablename__ = "radio_show_aliases"
+    __table_args__ = (Index("ix_radio_show_aliases_lookup", "provider", "external_id"),)
+    show_id: Mapped[UUID] = mapped_column(
+        ForeignKey("radio_shows.id", ondelete="CASCADE"), primary_key=True
+    )
+    provider: Mapped[str] = mapped_column(String(20), primary_key=True)
+    external_id: Mapped[str] = mapped_column(String(1000), primary_key=True)
 
 
 class SeriesLogo(Base):
@@ -1660,15 +1685,15 @@ class RadioSeries(Identity, Base):
         UniqueConstraint("show_id", "pid"),
         CheckConstraint("kind IN ('series', 'specials')", name="radio_series_kind_check"),
         CheckConstraint(
-            "number_source IN ('bbc', 'broadcast_order')", name="radio_series_number_source_check"
+            _in("number_source", RADIO_NUMBER_SOURCES), name="radio_series_number_source_check"
         ),
     )
     show_id: Mapped[UUID] = mapped_column(
         ForeignKey("radio_shows.id", ondelete="CASCADE"), index=True
     )
     # The BBC series pid. Episodes listed straight under the brand form a "specials" series,
-    # number 0, keyed by the brand pid.
-    pid: Mapped[str] = mapped_column(String(20))
+    # number 0, keyed by the brand pid. Feeds use season:N and specials.
+    pid: Mapped[str] = mapped_column(String(200))
     kind: Mapped[str] = mapped_column(String(20), default="series")
     number: Mapped[int] = mapped_column(Integer)
     number_source: Mapped[str] = mapped_column(String(20), default="bbc")
@@ -1682,6 +1707,8 @@ class RadioSeries(Identity, Base):
     first_broadcast: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # When the BBC episode list was last read; settled series are not read again.
     walked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # When the source stopped listing the series (storyarr_0092). Nothing is deleted.
+    removed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class RadioEpisode(Identity, Base):
@@ -1690,7 +1717,7 @@ class RadioEpisode(Identity, Base):
         UniqueConstraint("show_id", "pid"),
         CheckConstraint(_in("status", RADIO_EPISODE_STATUS), name="radio_episodes_status_check"),
         CheckConstraint(
-            "number_source IN ('bbc', 'broadcast_order')",
+            _in("number_source", RADIO_NUMBER_SOURCES),
             name="radio_episodes_number_source_check",
         ),
     )
@@ -1700,12 +1727,24 @@ class RadioEpisode(Identity, Base):
     series_id: Mapped[UUID] = mapped_column(
         ForeignKey("radio_series.id", ondelete="CASCADE"), index=True
     )
-    pid: Mapped[str] = mapped_column(String(20))
+    # The BBC pid, a feed item's guid (or its enclosure address, or a digest of a long one), or
+    # an Internet Archive file name.
+    pid: Mapped[str] = mapped_column(String(200))
     number: Mapped[int] = mapped_column(Integer)
     number_source: Mapped[str] = mapped_column(String(20), default="bbc")
     title: Mapped[str] = mapped_column(String(600))
     synopsis: Mapped[str | None] = mapped_column(Text)
     first_broadcast: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # The audio address a feed gives (storyarr_0092), for exact matches in the radio library.
+    enclosure_url: Mapped[str | None] = mapped_column(String(2000))
+    # When the source stopped listing the episode. It is kept, with its file and request.
+    removed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Chosen by hand: True wants it, False does not; None follows the show's follow choice.
+    monitored: Mapped[bool | None] = mapped_column(Boolean)
+    # Files someone said were not this episode; automatic matching never offers them again.
+    rejected_files: Mapped[list[UUID]] = mapped_column(
+        ARRAY(Uuid), default=list, server_default=text("'{}'::uuid[]")
+    )
     duration_seconds: Mapped[int | None] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(20), default="not_requested")
     # The radio library file that holds this episode (storyarr_0089), set by the radio sync.
@@ -1751,6 +1790,9 @@ class RadioLibraryFile(Identity, Base):
     episode: Mapped[int | None] = mapped_column(Integer)
     # The BBC pid from the episode's guid, link or file name, when there is one.
     pid: Mapped[str | None] = mapped_column(String(20), index=True)
+    # The feed item's guid and audio address as Audiobookshelf saved them (storyarr_0092).
+    guid: Mapped[str | None] = mapped_column(String(500), index=True)
+    enclosure_url: Mapped[str | None] = mapped_column(String(2000))
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     duration_seconds: Mapped[int | None] = mapped_column(Integer)
     path: Mapped[str] = mapped_column(String(2048))

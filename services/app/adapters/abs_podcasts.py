@@ -34,6 +34,9 @@ class PodcastEpisode(BaseModel):
     season: int | None = None
     episode: int | None = None
     pid: str | None = None
+    # The feed item's guid and audio address, for exact matches with shows from feeds.
+    guid: str | None = None
+    enclosure_url: str | None = None
     published_at: datetime | None = None
     duration_seconds: int | None = None
     path: str
@@ -63,6 +66,13 @@ def _number(value) -> int | None:
     return None
 
 
+def _short(value, limit: int) -> str | None:
+    """A text value that fits its column, or None (a longer one cannot be an exact match)."""
+    if isinstance(value, str) and value.strip() and len(value.strip()) <= limit:
+        return value.strip()
+    return None
+
+
 def _published(value) -> datetime | None:
     if isinstance(value, int | float) and not isinstance(value, bool) and value > 0:
         return datetime.fromtimestamp(value / 1000, UTC)
@@ -86,6 +96,8 @@ def parse_episode(value: dict) -> PodcastEpisode | None:
         season=_number(value.get("season")),
         episode=_number(value.get("episode")),
         pid=find_pid(value.get("guid"), enclosure.get("url"), file.get("filename")),
+        guid=_short(value.get("guid"), 500),
+        enclosure_url=_short(enclosure.get("url"), 2000),
         published_at=_published(value.get("publishedAt")),
         duration_seconds=round(duration) if isinstance(duration, int | float) else None,
         path=file["path"],

@@ -411,10 +411,22 @@ async def test_the_review_adds_library_shows_and_links_files_by_hand(
         f"Truth - {code} - First.m4a"
     ]
 
-    # Not this file: no file, and the sync leaves it so.
+    # Not this file: that file is never offered again, so the sync finds the right one.
     none = await client.put(f"/api/radio/episodes/{first.id}/file", json={"file_id": None})
-    assert (none.json()["file"], none.json()["file_manual"]) == (None, True)
-    assert none.json()["status"]["kind"] != "in_library"
+    assert none.status_code == 200, none.text
+    assert (none.json()["file"]["name"], none.json()["file_manual"]) == (
+        f"Truth - {code} - First.m4a",
+        False,
+    )
+    await radio_library.sync(library_id)
+    after = (await client.get(f"/api/radio/episodes/{first.id}")).json()
+    assert after["file"]["name"] == f"Truth - {code} - First.m4a"
+    # And not that one either: no file is left to offer.
+    again = await client.put(f"/api/radio/episodes/{first.id}/file", json={"file_id": None})
+    assert (again.json()["file"], again.json()["file_manual"]) == (None, False)
+    assert again.json()["status"]["kind"] != "in_library"
+    await radio_library.sync(library_id)
+    assert (await client.get(f"/api/radio/episodes/{first.id}")).json()["file"] is None
     # A file of another show is refused.
     async with database() as db:
         other = RadioLibraryFile(

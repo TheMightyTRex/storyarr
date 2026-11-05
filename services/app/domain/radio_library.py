@@ -4,11 +4,14 @@ One Audiobookshelf podcast library is chosen as the radio library, with the fold
 episodes into. A sync reads its shows and episodes and keeps one row per episode file. Each radio
 episode is then linked to the file that holds it, which makes its status "in_library":
 
-1. By the BBC pid, from the episode's guid, download link or file name. This is exact, so it
-   works across shows.
+1. Exactly: by the BBC pid, from the episode's guid, download link or file name; or, for a show
+   from a feed, by the feed item's guid or audio address. This works across shows.
 2. In a show with the same title, by series and episode number: the ones Audiobookshelf read, or
-   S20E03 in the title or file name (how Storyarr names radio files).
+   S20E03 in the title or file name (how Storyarr names radio files). A number that two files,
+   or two episodes, share matches nothing, so a repeat or a second copy is never linked by guess.
 3. In a show with the same title, by an episode title that only one episode has.
+
+Files someone said were not an episode ("Not this file") are never offered to it again.
 
 A show added from the radio library review also takes the files of the library show (folder) it
 was added from, whatever that folder is called. Links made by hand in the review are kept as they
@@ -73,8 +76,17 @@ def show_files(show, files) -> list:
     ]
 
 
+def _unique(pairs) -> dict:
+    """A map from each key to its one value; keys with more than one value are left out."""
+    found: dict = {}
+    for key, value in pairs:
+        found.setdefault(key, []).append(value)
+    return {key: values[0] for key, values in found.items() if len(values) == 1}
+
+
 def links(shows, series, episodes, files) -> dict[UUID, UUID]:
-    """Which file holds each episode, as episode id to file id. One file per episode.
+    """Which file holds each episode, as episode id to file id. One file per episode, and one
+    episode per file within a show.
 
     Episodes linked by hand are left out, and so are the files they hold in the same show.
     """
@@ -86,11 +98,17 @@ def links(shows, series, episodes, files) -> dict[UUID, UUID]:
         own = [episode for episode in everything if not episode.file_manual]
         free = [file for file in files if file.id not in taken]
         by_pid = {file.pid: file for file in free if file.pid}
+        by_guid = {file.guid: file for file in free if getattr(file, "guid", None)}
+        by_enclosure = {
+            file.enclosure_url: file for file in free if getattr(file, "enclosure_url", None)
+        }
         candidates = show_files(show, free)
-        numbered = {}
-        for file in candidates:
-            if key := season_episode(file):
-                numbered.setdefault(key, file)
+        numbered = _unique(
+            (key, file) for file in candidates if (key := season_episode(file)) is not None
+        )
+        wanted_numbers = _unique(
+            ((numbers.get(episode.series_id), episode.number), episode.id) for episode in own
+        )
         titles: dict[str, list] = {}
         for file in candidates:
             titles.setdefault(title_key(file.title), []).append(file)
@@ -98,16 +116,33 @@ def links(shows, series, episodes, files) -> dict[UUID, UUID]:
         for episode in own:
             key = title_key(episode.title)
             episode_titles[key] = episode_titles.get(key, 0) + 1
+        used: set[UUID] = set()
         for episode in own:
-            file = by_pid.get(episode.pid)
+            rejected = set(getattr(episode, "rejected_files", None) or ())
+
+            def usable(file, rejected=rejected, used=used):
+                return file and file.id not in rejected and file.id not in used
+
+            exact = [
+                by_pid.get(episode.pid),
+                by_guid.get(episode.pid) if getattr(show, "provider", "bbc") == "feed" else None,
+                by_enclosure.get(enclosure)
+                if (enclosure := getattr(episode, "enclosure_url", None))
+                else None,
+            ]
+            file = next((item for item in exact if usable(item)), None)
             if not file:
-                file = numbered.get((numbers.get(episode.series_id), episode.number))
+                number = (numbers.get(episode.series_id), episode.number)
+                if wanted_numbers.get(number) == episode.id:
+                    file = numbered.get(number)
+                    file = file if usable(file) else None
             if not file:
                 key = title_key(episode.title)
                 same = titles.get(key, [])
-                if key and len(same) == 1 and episode_titles[key] == 1:
+                if key and len(same) == 1 and episode_titles[key] == 1 and usable(same[0]):
                     file = same[0]
             if file:
+                used.add(file.id)
                 result[episode.id] = file.id
     return result
 
@@ -135,7 +170,12 @@ async def relink(db, *, show_id: UUID | None = None) -> int:
                 "in_library"
                 if episode.file_id
                 else episode_status(
-                    episode.first_broadcast, show.follow, show.followed_at, None, now
+                    episode.first_broadcast,
+                    show.follow,
+                    show.followed_at,
+                    None,
+                    now,
+                    monitored=episode.monitored,
                 )
             )
             continue
@@ -147,7 +187,12 @@ async def relink(db, *, show_id: UUID | None = None) -> int:
             episode.file_id = None
             # Worked out again from the broadcast date and the follow choice.
             episode.status = episode_status(
-                episode.first_broadcast, show.follow, show.followed_at, None, now
+                episode.first_broadcast,
+                show.follow,
+                show.followed_at,
+                None,
+                now,
+                monitored=episode.monitored,
             )
     await db.flush()
     # Requests follow the statuses: wanted episodes are requested, the rest withdrawn.
@@ -203,6 +248,8 @@ async def sync(library_id: UUID) -> int:
                 "season": episode.season,
                 "episode": episode.episode,
                 "pid": episode.pid,
+                "guid": episode.guid,
+                "enclosure_url": episode.enclosure_url,
                 "published_at": episode.published_at,
                 "duration_seconds": episode.duration_seconds,
                 "path": episode.path,

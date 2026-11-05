@@ -1,4 +1,7 @@
-"""Radio shows (FEAT-R): adding, refreshing and following BBC shows, owned per person.
+"""Radio shows (FEAT-R): adding, refreshing and following shows, owned per person.
+
+Shows come from the BBC, podcast feeds (Apple Podcasts shows are saved as their feed) or the
+Internet Archive; see radio_sources.
 
 A show is added from a preview (a few BBC requests), then a background job reads every series
 and its episodes. BBC responses are cached for an hour through the catalog gateway, requests
@@ -11,7 +14,7 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
-from sqlalchemy import func, select, text
+from sqlalchemy import and_, func, or_, select, text
 from sqlalchemy.dialects.postgresql import insert
 
 from app.adapters import bbc_programmes as bbc_feed
@@ -22,11 +25,12 @@ from app.db.models import (
     RadioEpisode,
     RadioSeries,
     RadioShow,
+    RadioShowAlias,
     RadioStation,
     User,
 )
 from app.db.session import session_factory
-from app.domain import radio_images
+from app.domain import radio_images, radio_sources
 from app.domain.catalog_network import CatalogGateway
 from app.domain.operations import transaction_lock
 from app.jobs.queue import enqueue
@@ -75,17 +79,13 @@ async def bbc(*, provider="bbc"):
         yield fetch
 
 
-def link_pid(link: str) -> str:
-    try:
-        return bbc_feed.parse_link(link)
-    except bbc_feed.LinkError as error:
-        raise HTTPException(422, str(error)) from None
+def check_link(link: str) -> tuple[str, str]:
+    """The source and id a pasted link points to (422 when it is not a show's link)."""
+    return radio_sources.classify(link)
 
 
 async def preview(link: str) -> bbc_feed.ShowData:
-    pid = link_pid(link)
-    async with bbc() as fetch:
-        return await bbc_feed.preview(fetch, pid)
+    return await radio_sources.preview(link)
 
 
 async def search(query: str) -> list[bbc_feed.SearchResult]:
@@ -121,12 +121,18 @@ async def popular(*, category: str | None = None, network: str | None = None):
     return bbc_feed.popular_shows(data)
 
 
-def episode_status(first_broadcast, follow, followed_at, current=None, now=None) -> str:
+def episode_status(
+    first_broadcast, follow, followed_at, current=None, now=None, monitored=None
+) -> str:
+    """The status worked out from the broadcast date and the follow choice, or from the choice
+    made by hand for this episode (monitored True or False)."""
     if current and current not in COMPUTED:
         return current
     now = now or datetime.now(UTC)
     if first_broadcast and first_broadcast > now:
         return "not_released"
+    if monitored is not None:
+        return "wanted" if monitored else "not_requested"
     if follow == "all":
         return "wanted"
     if (
@@ -151,12 +157,19 @@ async def save_station(db, station) -> str | None:
 
 
 async def apply(db, show: RadioShow, data: bbc_feed.ShowData, now=None):
-    """Save what the BBC returned. Nothing is deleted when the BBC drops an item."""
+    """Save what the source returned. Nothing is deleted when the source drops an item: it is
+    marked as no longer listed (removed_at), and the mark goes when it comes back. A read that
+    was cut short (data.complete is False) or found nothing marks nothing."""
     now = now or datetime.now(UTC)
     show.title, show.synopsis = data.title, data.synopsis
     show.first_broadcast = data.first_broadcast or show.first_broadcast
     show.station_id = await save_station(db, data.station) or show.station_id
     show.image_pid = data.image_pid or show.image_pid
+    show.author = data.author or show.author
+    show.web_url = data.web_url or show.web_url
+    show.artwork_url = data.artwork_url or show.artwork_url
+    if data.provider == "archive":
+        show.licence = data.licence
     saved = {
         row.pid: row
         for row in await db.scalars(select(RadioSeries).where(RadioSeries.show_id == show.id))
@@ -165,7 +178,9 @@ async def apply(db, show: RadioShow, data: bbc_feed.ShowData, now=None):
         row.pid: row
         for row in await db.scalars(select(RadioEpisode).where(RadioEpisode.show_id == show.id))
     }
+    listed_series, listed_episodes, read_series = set(), set(), set()
     for item in data.series:
+        listed_series.add(item.pid)
         row = saved.get(item.pid)
         if not row:
             row = RadioSeries(id=uuid4(), show_id=show.id, pid=item.pid)
@@ -176,12 +191,15 @@ async def apply(db, show: RadioShow, data: bbc_feed.ShowData, now=None):
         row.station_id = await save_station(db, item.station) or row.station_id or show.station_id
         row.expected_episodes = item.expected_episodes
         row.first_broadcast = item.first_broadcast or row.first_broadcast
+        row.removed_at = None
         if item.episodes is None:
             continue
         # No ORM relationships, so the series row goes in before its episodes.
         await db.flush()
         row.walked_at = now
+        read_series.add(row.id)
         for entry in item.episodes:
+            listed_episodes.add(entry.pid)
             episode = episodes.get(entry.pid)
             if not episode:
                 episode = RadioEpisode(
@@ -193,9 +211,23 @@ async def apply(db, show: RadioShow, data: bbc_feed.ShowData, now=None):
             episode.number, episode.number_source = entry.number, entry.number_source
             episode.title, episode.synopsis = entry.title, entry.synopsis or episode.synopsis
             episode.first_broadcast = entry.first_broadcast or episode.first_broadcast
+            episode.enclosure_url = entry.enclosure_url or episode.enclosure_url
+            episode.removed_at = None
     for pid, seconds in data.durations.items():
         if pid in episodes:
             episodes[pid].duration_seconds = seconds
+    if data.complete and (listed_series or listed_episodes):
+        for pid, row in saved.items():
+            if pid not in listed_series and not row.removed_at:
+                row.removed_at = now
+        for pid, episode in episodes.items():
+            # Only episodes of a series read now: a settled series is not read again.
+            if (
+                episode.series_id in read_series
+                and pid not in listed_episodes
+                and not episode.removed_at
+            ):
+                episode.removed_at = now
     await db.flush()
     restatus(show, episodes.values(), now)
     show.refreshed_at = now
@@ -204,7 +236,12 @@ async def apply(db, show: RadioShow, data: bbc_feed.ShowData, now=None):
 def restatus(show, episodes, now=None):
     for episode in episodes:
         episode.status = episode_status(
-            episode.first_broadcast, show.follow, show.followed_at, episode.status, now
+            episode.first_broadcast,
+            show.follow,
+            show.followed_at,
+            episode.status,
+            now,
+            monitored=episode.monitored,
         )
 
 
@@ -216,24 +253,58 @@ async def owned_show(db, user, show_id, *, lock=False) -> RadioShow:
     return show
 
 
+def show_keys(data: bbc_feed.ShowData) -> list[tuple[str, str]]:
+    """Every (provider, id) a show is known by: its own and the ids that led to it."""
+    return list(dict.fromkeys([(data.provider, data.pid), *data.aliases]))
+
+
+async def existing_show(db, owner_id, keys) -> UUID | None:
+    """The person's show known by any of these (provider, id) pairs, by its own id or an alias.
+    Feed addresses are compared without the scheme, case or a trailing slash."""
+    keys = [(provider, value) for provider, value in keys if value]
+    if not keys:
+        return None
+    feeds = {radio_sources.feed_key(value) for provider, value in keys if provider == "feed"}
+    own = or_(*(and_(RadioShow.provider == p, RadioShow.external_id == v) for p, v in keys))
+    if feeds:
+        own = or_(
+            own,
+            and_(
+                RadioShow.provider == "feed",
+                func.rtrim(func.lower(func.split_part(RadioShow.external_id, "://", 2)), "/").in_(
+                    feeds
+                ),
+            ),
+        )
+    aliased = select(RadioShowAlias.show_id).where(
+        or_(*(and_(RadioShowAlias.provider == p, RadioShowAlias.external_id == v) for p, v in keys))
+    )
+    return await db.scalar(
+        select(RadioShow.id)
+        .where(RadioShow.owner_id == owner_id, or_(own, RadioShow.id.in_(aliased)))
+        .limit(1)
+    )
+
+
+async def save_aliases(db, show_id, keys) -> None:
+    for provider, value in keys:
+        statement = insert(RadioShowAlias).values(
+            show_id=show_id, provider=provider[:20], external_id=value[:1000]
+        )
+        await db.execute(statement.on_conflict_do_nothing())
+
+
 async def add(
     db, owner_id, data: bbc_feed.ShowData, follow: str, library_item_id: str | None = None
 ) -> tuple[RadioShow, Operation]:
-    await transaction_lock(db, f"radio-show:{owner_id}:{data.pid}")
-    existing = await db.scalar(
-        select(RadioShow.id).where(
-            RadioShow.owner_id == owner_id,
-            RadioShow.provider == "bbc",
-            RadioShow.external_id == data.pid,
-        )
-    )
-    if existing:
+    await transaction_lock(db, f"radio-show:{owner_id}:{data.provider}:{data.pid}")
+    if await existing_show(db, owner_id, show_keys(data)):
         raise HTTPException(409, "This show is already in your radio shows")
     now = datetime.now(UTC)
     show = RadioShow(
         id=uuid4(),
         owner_id=owner_id,
-        provider="bbc",
+        provider=data.provider,
         external_id=data.pid,
         title=data.title,
         follow=follow,
@@ -242,6 +313,7 @@ async def add(
     )
     db.add(show)
     await db.flush()
+    await save_aliases(db, show.id, data.aliases)
     await apply(db, show, data, now)
     # Only the preview has been read so far; the refresh job reads every series.
     show.refreshed_at = None
@@ -260,7 +332,24 @@ async def set_follow(db, show: RadioShow, follow: str):
     show.followed_at = datetime.now(UTC) if follow != "none" else None
     episodes = list(await db.scalars(select(RadioEpisode).where(RadioEpisode.show_id == show.id)))
     for episode in episodes:
+        # A new follow choice applies to every episode, including those chosen by hand.
+        episode.monitored = None
         if episode.status == "excluded":
+            episode.status = "not_requested"
+    restatus(show, episodes)
+    await db.flush()
+    await sync(db, [show.id])
+
+
+async def set_monitored(db, show: RadioShow, episodes, monitored: bool | None):
+    """Want or do not want these episodes by hand (None: follow the show again). Their
+    statuses and requests follow; an episode withdrawn in Activity can be wanted again."""
+    from app.domain.radio_wanted import sync
+
+    episodes = list(episodes)
+    for episode in episodes:
+        episode.monitored = monitored
+        if episode.status == "excluded" and monitored is not False:
             episode.status = "not_requested"
     restatus(show, episodes)
     await db.flush()
@@ -289,13 +378,19 @@ async def start_refresh(db, owner_id, show: RadioShow) -> Operation:
         kind=KIND,
         idempotency_key=f"radio-refresh:{show.id}:{uuid4()}",
         payload={"show_id": str(show.id)},
-        message="Waiting to read the show from the BBC",
+        message=f"Waiting to read the show from {source_name(show.provider)}",
     )
     db.add(operation)
     await db.flush()
     show.operation_id = operation.id
     operation.job_id = await enqueue(db, KIND, operation_id=str(operation.id))
     return operation
+
+
+def source_name(provider: str) -> str:
+    return {"bbc": "the BBC", "feed": "its podcast feed", "archive": "the Internet Archive"}.get(
+        provider, "its source"
+    )
 
 
 async def _current(db, operation_id):
@@ -338,7 +433,7 @@ async def run(operation_id):
         operation, show = await _current(db, operation_id)
         if not operation:
             return
-        pid, show_id = show.external_id, show.id
+        pid, show_id, provider = show.external_id, show.id, show.provider
         skip = await settled(db, show.id, now)
         lengths = (
             await db.execute(
@@ -349,17 +444,20 @@ async def run(operation_id):
         ).all()
         known = {pid for pid, _, seconds in lengths if seconds}
         missing = [(pid, start) for pid, start, seconds in lengths if not seconds]
-        operation.status, operation.message = "running", "Reading the show from the BBC"
+        operation.status = "running"
+        operation.message = f"Reading the show from {source_name(provider)}"
     try:
-        async with bbc() as fetch:
-            data = await bbc_feed.walk(
-                fetch,
-                pid,
-                settled=skip,
-                known_durations=known,
-                stored_missing=missing,
-                duration_budget=DURATION_BUDGET,
-            )
+        options = (
+            {
+                "settled": skip,
+                "known_durations": known,
+                "stored_missing": missing,
+                "duration_budget": DURATION_BUDGET,
+            }
+            if provider == "bbc"
+            else {}
+        )
+        data = await radio_sources.read_show(provider, pid, **options)
     except AdapterError as error:
         transient = error.kind in {
             FailureKind.RATE_LIMIT,
@@ -383,13 +481,19 @@ async def run(operation_id):
     logos = {}
     for station in sorted(filter(None, stations)):
         logos[station[0]] = await radio_images.fetch_station_logo(station[0])
-    artwork = await radio_images.fetch_artwork(pid, data.image_pid) if data.image_pid else None
+    if provider == "bbc":
+        artwork = await radio_images.fetch_artwork(pid, data.image_pid) if data.image_pid else None
+    else:
+        artwork = (
+            await radio_images.fetch_remote_artwork(data.artwork_url) if data.artwork_url else None
+        )
     async with session_factory()() as db, db.begin():
         await transaction_lock(db, f"radio-refresh:{show_id}")
         operation, show = await _current(db, operation_id)
         if not operation:
             return
         await apply(db, show, data)
+        await save_aliases(db, show.id, data.aliases)
         # Episodes already in the radio library show as in your library straight away.
         from app.domain.radio_library import relink
 
@@ -403,6 +507,6 @@ async def run(operation_id):
         series = [item for item in data.series if item.kind == "series"]
         read = sum(len(item.episodes or []) for item in data.series)
         operation.status = "completed"
-        operation.message = f"Read {len(series)} series and {read} episodes from the BBC" + (
-            f"; {len(skip)} finished series were already up to date" if skip else ""
-        )
+        operation.message = (
+            f"Read {len(series)} series and {read} episodes from {source_name(provider)}"
+        ) + (f"; {len(skip)} finished series were already up to date" if skip else "")

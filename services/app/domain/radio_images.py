@@ -172,7 +172,9 @@ def save(relative: str, data: bytes) -> str:
 
 
 def read(relative: str | None) -> bytes | None:
-    if not relative or not re.fullmatch(r"(stations|shows)/[a-z0-9_]{2,60}\.(svg|jpg)", relative):
+    if not relative or not re.fullmatch(
+        r"(stations|shows)/[a-z0-9_]{2,60}\.(svg|jpg|png)", relative
+    ):
         return None
     try:
         return (root() / relative).read_bytes()
@@ -209,4 +211,44 @@ async def fetch_artwork(show_pid: str, image_pid: str, *, transport=None) -> str
         return save(relative, check_jpeg(data))
     except (ImageError, OSError) as error:
         LOG.warning("Artwork for %s not saved: %s", show_pid, error)
+        return None
+
+
+# Artwork from feeds and the Internet Archive is often a large PNG.
+MAX_REMOTE = 5 * 1024 * 1024
+
+
+def kind_of(data: bytes) -> str | None:
+    """The image type from its first bytes (never from what the server says)."""
+    if data.startswith(b"\xff\xd8\xff"):
+        return "jpg"
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    return None
+
+
+def media_type(relative: str) -> str:
+    return {"svg": "image/svg+xml", "png": "image/png"}.get(
+        relative.rsplit(".", 1)[-1], "image/jpeg"
+    )
+
+
+async def fetch_remote_artwork(url: str, *, transport=None, resolver=None) -> str | None:
+    """Fetch and save artwork a feed or the Internet Archive names, through the public-address
+    reader; None (keeping any earlier copy) when it fails. Saved by a digest of the address."""
+    from app.adapters import public_web
+    from app.adapters.contracts import AdapterError
+
+    try:
+        options = {"resolver": resolver} if resolver else {}
+        page = await public_web.fetch(
+            url, accept="image/jpeg,image/png", limit=MAX_REMOTE, transport=transport, **options
+        )
+        kind = kind_of(page.body)
+        if not kind or len(page.body) < 100:
+            raise ImageError("The artwork is not a JPEG or PNG image")
+        name = "f" + hashlib.sha256(url.encode()).hexdigest()[:40]
+        return save(f"shows/{name}.{kind}", page.body)
+    except (ImageError, OSError, AdapterError) as error:
+        LOG.warning("Show artwork not saved: %s", error)
         return None

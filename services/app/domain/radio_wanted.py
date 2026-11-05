@@ -12,7 +12,8 @@ release monitor only adopts manual requests, and the record is kept out of book 
 
 The poll (`schedule`) is gentle: every 15 minutes it works out the statuses of episodes whose
 broadcast time has passed (no BBC request), then starts at most two show refreshes, each show
-at most once in twelve hours. The refresh itself is cached and spaces its BBC requests out.
+at most once in twelve hours, and up to four podcast feeds, each at most once an hour. The
+refresh itself is cached and spaces its requests out.
 """
 
 from datetime import UTC, datetime, timedelta
@@ -40,6 +41,9 @@ KIND = "episode"
 WANTING = {"wanted", "searching", "waiting", "downloading", "importing", "attention"}
 CHECK_EVERY = timedelta(hours=12)
 MAX_PER_RUN = 2
+# Podcast feeds are one small request each and change often, so they are read every hour.
+FEED_EVERY = timedelta(hours=1)
+FEEDS_PER_RUN = 4
 SPECIFICATION = {"mode": "audio"}
 # Radio sources (Prowlarr radio categories, MAM) are phase R5. Until then a wanted episode waits.
 NO_SOURCES = "Wanted. Storyarr does not search for radio episodes yet."
@@ -235,12 +239,12 @@ async def catch_up(db, now=None) -> int:
     return len(shows)
 
 
-async def due_shows(db, now, limit=MAX_PER_RUN) -> list[RadioShow]:
-    """Followed shows not read for CHECK_EVERY, oldest first, without a refresh running or
-    started (or failed) within CHECK_EVERY."""
+async def due_shows(db, now, limit=MAX_PER_RUN, *, feeds=False) -> list[RadioShow]:
+    """Followed shows not read for CHECK_EVERY (feeds: FEED_EVERY), oldest first, without a
+    refresh running or started (or failed) within that time."""
     from app.domain.radio import ACTIVE
 
-    since = now - CHECK_EVERY
+    since = now - (FEED_EVERY if feeds else CHECK_EVERY)
     recent = select(Operation.id).where(Operation.created_at >= since)
     busy = select(Operation.id).where(Operation.status.in_(ACTIVE))
     return list(
@@ -249,6 +253,7 @@ async def due_shows(db, now, limit=MAX_PER_RUN) -> list[RadioShow]:
             .join(User, User.id == RadioShow.owner_id)
             .where(
                 RadioShow.follow != "none",
+                (RadioShow.provider == "feed") if feeds else (RadioShow.provider != "feed"),
                 User.active.is_(True),
                 (RadioShow.refreshed_at.is_(None)) | (RadioShow.refreshed_at < since),
                 RadioShow.operation_id.is_(None)
@@ -271,7 +276,7 @@ async def schedule(now=None) -> int:
     async with session_factory()() as db, db.begin():
         await catch_up(db, now)
     async with session_factory()() as db, db.begin():
-        shows = await due_shows(db, now)
+        shows = await due_shows(db, now) + await due_shows(db, now, FEEDS_PER_RUN, feeds=True)
         for show in shows:
             await start_refresh(db, show.owner_id, show)
     return len(shows)

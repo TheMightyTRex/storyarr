@@ -1,0 +1,52 @@
+{
+ "responseHeader": {
+  "status": 0,
+  "QTime": 40,
+  "params": {
+   "query": "(text:goon OR text:goon OR text__reviews:goon) AND collection:oldtimeradio",
+   "qin": "(goon) AND collection:oldtimeradio",
+   "fields": "identifier,title",
+   "wt": "json",
+   "rows": 8,
+   "start": 0
+  }
+ },
+ "response": {
+  "numFound": 14,
+  "start": 0,
+  "docs": [
+   {
+    "identifier": "idiots-weekly-1950s-the-worlds-greatest-adventure-old-time-radio",
+    "title": "Aus 21 - Idiot's Weekly"
+   },
+   {
+    "identifier": "RaysALaugh1949",
+    "title": "Ray's A Laugh : 1949-1961 : High Quality"
+   },
+   {
+    "identifier": "christmas-radio-comedy",
+    "title": "Christmas Radio Comedies: 100+ Broadcasts"
+   },
+   {
+    "identifier": "DimensionX1951092249Requiem",
+    "title": "Dimension X"
+   },
+   {
+    "identifier": "GoonButNotForgotenTheReturnOfDjDoctorToast",
+    "title": "Goon but not forgoten: The return of DJ Doctor Toast"
+   },
+   {
+    "identifier": "barry-cryers-christmas-selection-box-part-1",
+    "title": "Barry Cryer's Christmas Selection Box, Part 1 : 3 Hour Special"
+   },
+   {
+    "identifier": "OTR-50_Sampler",
+    "title": "OTR-50_Sampler"
+   },
+   {
+    "identifier": "18NewYearOTRClassics",
+    "title": "18NewYearsOTRClassics"
+   }
+  ]
+ }
+}

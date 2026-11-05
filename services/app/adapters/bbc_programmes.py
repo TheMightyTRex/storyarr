@@ -111,6 +111,9 @@ class EpisodeData:
     title: str
     synopsis: str | None
     first_broadcast: datetime | None
+    # Feeds only: the audio address, and the length the feed gives.
+    enclosure_url: str | None = None
+    duration_seconds: int | None = None
 
 
 @dataclass
@@ -140,6 +143,17 @@ class ShowData:
     episode_count: int | None = None
     # Episode lengths in seconds, by episode pid (see walk).
     durations: dict[str, int] = field(default_factory=dict)
+    # Where the data came from (radio_shows.provider) and, for feeds and the Internet Archive,
+    # who makes it, its web page, its artwork address and its licence.
+    provider: str = "bbc"
+    author: str | None = None
+    web_url: str | None = None
+    artwork_url: str | None = None
+    licence: str | None = None
+    # False when the read was cut short, so missing items are not marked as removed.
+    complete: bool = True
+    # Other ids that led here (provider, id): a BBC series pid, an Apple Podcasts id.
+    aliases: list[tuple[str, str]] = field(default_factory=list)
 
 
 async def programme(fetch: Fetch, pid: str) -> dict:
@@ -254,6 +268,9 @@ async def preview(fetch: Fetch, pid: str) -> ShowData:
     """The show and its series list, without reading every series (a few requests)."""
     top = await resolve(fetch, pid)
     show = _show(top)
+    if pid != show.pid:
+        # A series or episode pid that led to the show: Discover and search know it by this.
+        show.aliases.append(("bbc", pid))
     if top["type"] == "series":
         show.series = [_single_series(top)]
         return show

@@ -48,6 +48,10 @@ RADIO_TYPES = (
     ("music", "Music", "Sport and music"),
 )
 RadioTypeId = Literal[tuple(key for key, _, _ in RADIO_TYPES)]  # type: ignore[valid-type]
+# Where Add a show searches by name (RADIO-02). Podcast feeds and links work whatever is chosen.
+RadioSource = Literal["bbc", "apple", "archive"]
+COUNTRY = r"^[A-Z]{2}$"
+LANGUAGE = r"^[a-z]{2,3}$"
 
 
 class SavedView(BaseModel):
@@ -73,6 +77,11 @@ class UserPreferences(BaseModel):
     cover_actions: Literal["on", "beside"] = "on"
     # The radio types shown on Discover, For you, Radio, in the order chosen.
     radio_types: list[RadioTypeId] = ["comedy", "drama-scifiandfantasy", "news"]
+    # The country and language radio search suits (None: anywhere, any language), and the
+    # sources it asks. The BBC is only asked for the United Kingdom and English, Welsh or Gaelic.
+    radio_country: str | None = Field(default=None, pattern=COUNTRY)
+    radio_language: str | None = Field(default=None, pattern=LANGUAGE)
+    radio_sources: list[RadioSource] = ["bbc", "apple", "archive"]
 
 
 class PreferencesInput(BaseModel):
@@ -83,6 +92,17 @@ class PreferencesInput(BaseModel):
     cover_size: Literal["small", "medium", "large"] | None = None
     cover_actions: Literal["on", "beside"] | None = None
     radio_types: list[RadioTypeId] | None = Field(default=None, max_length=12)
+    # An empty string clears the country or language (anywhere, any language).
+    radio_country: str | None = Field(default=None, pattern=r"^([A-Z]{2})?$")
+    radio_language: str | None = Field(default=None, pattern=r"^([a-z]{2,3})?$")
+    radio_sources: list[RadioSource] | None = Field(default=None, min_length=1, max_length=3)
+
+    @field_validator("radio_sources")
+    @classmethod
+    def unique_sources(cls, value):
+        if value is not None and len(set(value)) != len(value):
+            raise ValueError("Choose each radio source once")
+        return value
 
     @field_validator("radio_types")
     @classmethod
@@ -109,6 +129,9 @@ async def read_preferences(user: CurrentUser):
 @router.patch("", response_model=UserPreferences)
 async def save_preferences(body: PreferencesInput, user: CurrentUser, db: Database):
     changes = body.model_dump(exclude_none=True, mode="json")
+    for name in ("radio_country", "radio_language"):
+        if changes.get(name) == "":
+            changes[name] = None
     row = await db.get(User, user.id, with_for_update=True)
     row.preferences = {**(row.preferences or {}), **changes}
     await db.commit()

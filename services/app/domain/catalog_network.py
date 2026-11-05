@@ -50,6 +50,9 @@ def catalog_endpoint(provider):
         # Radio: the public BBC programmes feed and BBC Sounds search (no key).
         "bbc": "https://www.bbc.co.uk",
         "bbc-sounds": "https://rms.api.bbc.co.uk",
+        # Radio beyond the BBC: Apple Podcasts search and the Internet Archive (no key).
+        "apple": "https://itunes.apple.com",
+        "archive": "https://archive.org",
     }
     endpoint = endpoints.get(provider)
     if not endpoint:
