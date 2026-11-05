@@ -105,6 +105,17 @@
     outline: var(--focus-w) solid var(--color-focus);
     outline-offset: 2px;
   }
+  /* Focus not obscured (WCAG 2.2, 2.4.11): the sticky header and save bar never cover what has focus or
+     what a link scrolls to, because the page keeps their height clear when it scrolls. */
+  :root:has(.site-header) {
+    scroll-padding-top: calc(var(--header-h) + var(--space-4));
+  }
+  :root:has(.site-header__tabs) {
+    scroll-padding-top: calc(var(--header-h) + var(--tabs-h) + var(--space-4));
+  }
+  :root:has(.save-bar:not([hidden])) {
+    scroll-padding-bottom: calc(var(--control-h) + var(--space-8));
+  }
   .visually-hidden {
     position: absolute;
     width: 1px;
@@ -269,7 +280,30 @@
     height: 48px;
     margin-bottom: var(--space-3);
   }
-  .rail a {
+  /* The app's logo with its name underneath, at the top of the side menu. It links to the home page. */
+  .rail__brand {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    padding: var(--space-2) 0 var(--space-3);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .rail .rail__brand {
+    min-height: 0;
+    font-size: var(--text-xs);
+    font-weight: var(--weight-heading);
+  }
+  .rail .rail__brand:hover {
+    background: none;
+  }
+  .rail__name {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+  .rail a,
+  .rail__search {
     position: relative;
     display: grid;
     justify-items: center;
@@ -281,7 +315,18 @@
     font-weight: var(--weight-strong);
     text-decoration: none;
   }
+  /* Search is always one button away: first in the rail, under the logo. */
+  .rail__search {
+    width: 100%;
+    margin-bottom: var(--space-2);
+    border: 0;
+    border-bottom: 1px solid var(--color-divider);
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
   .rail a:hover,
+  .rail__search:hover,
   .rail a[aria-current="page"] {
     background: var(--color-control-active);
     color: var(--color-text);
@@ -301,6 +346,38 @@
   }
   .with-rail {
     padding-left: var(--rail-w);
+  }
+  /* The server's own name, up to 10 characters, at the start of the level 1 menu, as plain text with no
+     icon (David, 4 November 2026). A label, not a link: it names the server the page is about. */
+  .site-header__server {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    align-self: stretch;
+    padding: 0 var(--space-4) 0 var(--space-5);
+    border-right: 1px solid var(--color-divider);
+    color: var(--color-text);
+    /* Bold, and a size up from the tabs (David, 4 November 2026: "Make the text bold"). */
+    font-size: var(--text-md);
+    font-weight: var(--weight-heading);
+    white-space: nowrap;
+  }
+  /* The header's search button: shown where the search box is not (phones). It opens the same box as a
+     full-width row under the header bar. */
+  .site-header .site-header__search-btn {
+    display: none;
+  }
+  .site-header.is-search-open .site-header__search {
+    display: block;
+    position: absolute;
+    inset: 100% 0 auto 0;
+    max-width: none;
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-header);
+    border-bottom: 1px solid var(--color-divider);
+    box-shadow: var(--shadow-raised);
   }
 
   /* Update dot: a small red dot on the version or the menu button. Its name says it in words. */
@@ -1331,6 +1408,36 @@
   .table .numeric {
     text-align: right;
   }
+  /* Tables that line up: several tables one after another (tasks by category, a menu by section) keep the
+     same columns, whatever their content. Give each table the same <colgroup>: the named widths below for
+     short columns, and no width for the column that takes the rest. */
+  .table--fixed {
+    table-layout: fixed;
+  }
+  .table--fixed th {
+    white-space: normal;
+  }
+  .table--fixed td {
+    overflow-wrap: anywhere;
+  }
+  .table--fixed .col-id {
+    width: 8rem;
+  }
+  .table--fixed .col-date {
+    width: 11rem;
+  }
+  .table--fixed .col-state {
+    width: 13rem;
+  }
+  .table--fixed .col-number {
+    width: 7rem;
+  }
+  .table--fixed .col-quarter {
+    width: 25%;
+  }
+  .table--fixed .col-third {
+    width: 33%;
+  }
   /* Notice: a message in the page. Icon and words, not colour alone. */
   .notice {
     display: grid;
@@ -1627,9 +1734,10 @@
   .steps li::before {
     content: counter(step);
     display: inline-grid;
+    flex: none;
     place-items: center;
-    width: 24px;
-    height: 24px;
+    width: max(24px, 1.7em); /* grows with Text size, so the number stays inside */
+    height: max(24px, 1.7em);
     border: 1px solid currentColor;
     font-weight: var(--weight-heading);
   }
@@ -2626,6 +2734,27 @@
   .dialog::backdrop {
     background: var(--color-backdrop);
   }
+  /* Long dialogs (help): the header and foot stay in view and only the body scrolls. */
+  .dialog--scroll[open] {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .dialog--scroll .panel-header,
+  .dialog--scroll .dialog__foot {
+    flex: none;
+  }
+  .dialog--scroll .dialog__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+  .dialog--scroll .dialog__foot {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-divider);
+  }
   .dialog__body {
     display: grid;
     gap: var(--space-4);
@@ -2818,6 +2947,15 @@
     height: auto;
     min-height: var(--control-h);
     border-left: 1px solid var(--color-divider);
+  }
+  /* A copy button with its word beside the icon, for commands newcomers copy. It grows to fit. */
+  .copy-btn--label {
+    flex: none;
+    width: auto;
+    gap: var(--space-2);
+    padding: 0 var(--space-4);
+    color: var(--color-text);
+    white-space: nowrap;
   }
 
   /* Line chart: grid, axes, one or two series (the second dashed, so it is not colour alone), a
@@ -3607,6 +3745,377 @@
     font-weight: var(--weight-strong);
   }
 
+  /* Wizard rules (4 November 2026, docs/WIZARD.md): the progress bar and, for a step in parts, a
+     small step bar under it. What happens next and the decision tree are review aids for testing
+     (David, 4 November 2026): shown beside the step only while an app's testing setting is on, never
+     in the finished product. Without them, the step has the whole width. */
+  .wizard-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+  .wizard-layout:has(> .wizard-aside:not([hidden])) {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  }
+  .wizard-aside[hidden] {
+    display: none;
+  }
+  .wizard-layout > .wizard,
+  .wizard-layout > .wizard-main {
+    max-width: none;
+    min-width: 0;
+  }
+  .wizard-aside {
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .wizard-aside h2 {
+    margin: 0;
+    font-size: var(--text-lg);
+  }
+  .wizard-progress {
+    margin-bottom: var(--space-6);
+  }
+  .wizard-progress .numeric {
+    white-space: nowrap;
+  }
+  /* The step bar for a step in parts: as wide as the progress bar, the parts numbered 1, 2, 3 and
+     sharing it equally, with a line between them. Each part is still a step in the progress bar's total. */
+  .steps--sub {
+    flex-wrap: nowrap;
+    gap: var(--space-6);
+    width: 100%;
+    margin: calc(var(--space-4) * -1) 0 var(--space-6);
+  }
+  .steps--sub li {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    hyphens: auto;
+  }
+  .steps--sub li + li::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 1px);
+    width: var(--space-6);
+    border-top: 2px solid var(--color-divider);
+  }
+  .steps--sub li[data-done] + li::after,
+  .steps--sub li[data-done] + li[aria-current="step"]::after {
+    border-top-color: var(--color-accent);
+  }
+  .steps--sub li::before {
+    width: max(20px, 1.7em);
+    height: max(20px, 1.7em);
+  }
+  .steps[hidden] {
+    display: none;
+  }
+
+  /* The first question: each job as a card with its stages and number of steps. */
+  .wizard-paths {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: var(--space-3);
+  }
+  .wizard-paths__path {
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+  }
+  .wizard-paths__path[data-here] {
+    border: 2px solid var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  .wizard-paths__path h3,
+  .wizard-paths__path p {
+    margin: 0;
+  }
+  .wizard-paths__path ol {
+    display: grid;
+    gap: 2px;
+    margin: var(--space-1) 0 0;
+    padding-left: var(--space-5);
+    font-size: var(--text-sm);
+  }
+
+  /* Review aid. What happens next: one item for each choice on this step, the current choice first. */
+  .wizard-next {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .wizard-next li {
+    min-width: 0;
+    padding: var(--space-3);
+    border: 1px solid var(--color-divider);
+    overflow-wrap: anywhere;
+  }
+  .wizard-next li[data-chosen] {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  .wizard-next__if {
+    display: block;
+    font-weight: var(--weight-strong);
+  }
+  .wizard-next__then {
+    display: block;
+    margin-top: var(--space-1);
+  }
+  .wizard-next__tag {
+    display: inline-block;
+    margin-left: var(--space-2);
+    color: var(--color-accent);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-heading);
+  }
+
+  /* Review aid. Decision tree: the chosen job's stages and steps, and the choices that branch from them. */
+  .wizard-tree-toggle > summary {
+    display: flex;
+    align-items: center;
+    min-height: var(--control-h);
+    cursor: pointer;
+    list-style-position: inside;
+  }
+  .wizard-tree-toggle > summary h2 {
+    display: inline;
+  }
+  .wizard-tree__flow {
+    margin: 0 0 var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+  }
+  .wizard-tree {
+    --mark: max(24px, 1.5rem); /* grows with Text size, so the number stays inside */
+  }
+  .wizard-tree,
+  .wizard-tree ol,
+  .wizard-tree__branches {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .wizard-tree__stage {
+    margin: var(--space-4) 0 var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-heading);
+  }
+  .wizard-tree > li:first-child .wizard-tree__stage {
+    margin-top: 0;
+  }
+  .wizard-tree__step {
+    position: relative;
+    padding: 0 0 var(--space-3) calc(var(--mark) + var(--space-3));
+  }
+  /* The line that joins one step to the next. */
+  .wizard-tree__step::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--mark) / 2 - 1px);
+    top: var(--mark);
+    bottom: 0;
+    border-left: 2px solid var(--color-divider);
+  }
+  .wizard-tree__step:last-child::before {
+    display: none;
+  }
+  .wizard-tree__mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: var(--mark);
+    height: var(--mark);
+    border: 2px solid var(--color-border);
+    background: var(--color-surface-raised);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-heading);
+  }
+  .wizard-tree__mark svg {
+    width: 60%;
+    height: 60%;
+  }
+  /* A decision is a diamond, so it does not rest on colour. */
+  .wizard-tree__step[data-kind="decision"] .wizard-tree__mark {
+    transform: rotate(45deg) scale(0.8);
+  }
+  .wizard-tree__step[data-kind="decision"] .wizard-tree__mark > * {
+    transform: rotate(-45deg);
+  }
+  .wizard-tree__step[data-state="done"] .wizard-tree__mark {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-accent-text);
+  }
+  .wizard-tree__step[data-state="current"] .wizard-tree__mark {
+    border-color: var(--color-accent);
+    outline: var(--focus-w) solid var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+  .wizard-tree__step[data-state="left-out"] {
+    color: var(--color-text-muted);
+  }
+  .wizard-tree__step[data-state="left-out"] .wizard-tree__mark {
+    border-style: dashed;
+  }
+  .wizard-tree__title {
+    display: block;
+    padding-top: 2px;
+    font-weight: var(--weight-strong);
+    line-height: var(--leading-tight);
+  }
+  .wizard-tree__step[data-state="current"] .wizard-tree__title {
+    color: var(--color-accent);
+  }
+  .wizard-tree__step[data-state="left-out"] .wizard-tree__title {
+    font-weight: var(--weight-regular);
+    text-decoration: line-through;
+  }
+  .wizard-tree__meta {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+  .wizard-tree__branches {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+  }
+  .wizard-tree__branch {
+    border-left: 2px solid var(--color-divider);
+    font-size: var(--text-sm);
+  }
+  .wizard-tree__branch[data-chosen] {
+    border-left-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  .wizard-tree__branch summary {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2);
+    align-items: start;
+    min-height: 32px;
+    padding: var(--space-1) var(--space-2);
+    cursor: pointer;
+    list-style: none;
+  }
+  .wizard-tree__branch summary::-webkit-details-marker {
+    display: none;
+  }
+  .wizard-tree__branch summary:focus-visible {
+    outline: var(--focus-w) solid var(--color-focus);
+    outline-offset: -2px;
+  }
+  .wizard-tree__branch summary svg {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+  }
+  .wizard-tree__branch:not([data-chosen]) details[open] summary svg {
+    transform: rotate(90deg);
+  }
+  .wizard-tree__branch details p {
+    margin: 0;
+    padding: 0 var(--space-2) var(--space-2) calc(var(--space-4) + 16px);
+    color: var(--color-text-muted);
+  }
+
+  /* "What is…" links at the end of the part of a step they explain; each opens a dialog. */
+  .help-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+  }
+  .help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--control-h);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-accent);
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .help-link:hover {
+    text-decoration-thickness: 2px;
+  }
+  .help-link svg {
+    flex: none;
+  }
+
+  /* A server address: the link, opening in a new tab, then its copy button. */
+  .address {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-1);
+    max-width: 100%;
+    vertical-align: middle;
+  }
+  .address a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--control-h);
+    font-weight: var(--weight-strong);
+    overflow-wrap: anywhere;
+  }
+  .address a svg {
+    flex: none;
+  }
+
+  /* The end of a wizard: what was set and what was skipped. */
+  .wizard-summary {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .wizard-summary li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-3);
+    align-items: start;
+    padding: var(--space-3);
+    border: 1px solid var(--color-divider);
+    background: var(--color-surface-raised);
+  }
+  .wizard-summary li > svg {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+  }
+  .wizard-summary li[data-tone="warning"] {
+    border-left: var(--status-edge-w) solid var(--status-warning-fg);
+  }
+  .wizard-summary .small {
+    display: block;
+  }
+
   /* Footer: on every page, under main. Left: the app's icon, name and version, then Help (when the
      app has a help centre), About and Updates. Right: the maker mark, the T-rex and TheMightyTRexUK,
      linking to the GitHub profile. On phones the maker mark goes under the app's links. */
@@ -3753,6 +4262,9 @@
 
   /* 7. Phones and narrow windows ---------------------------------------------------------------- */
   @media (max-width: 1100px) {
+    .wizard-layout:has(> .wizard-aside:not([hidden])) {
+      grid-template-columns: minmax(0, 1fr);
+    }
     .calendar__long {
       display: none;
     }
@@ -3781,6 +4293,22 @@
     .site-header__bar > .menu-tabs,
     .site-header__search {
       display: none;
+    }
+    .site-header .site-header__search-btn {
+      display: inline-flex;
+    }
+    /* On phones the header shows only the logo on the left, no names (David, 4 November 2026). The app's
+       name and the server name stay for screen readers. */
+    .site-header__brand > span,
+    .site-header__server {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      padding: 0;
+      border: 0;
     }
     .site-header__brand {
       display: inline-flex;
@@ -3826,6 +4354,33 @@
     }
     .item-header__art {
       width: 96px;
+    }
+    /* On phones the step bar is just its numbers, joined by lines; a done part's number becomes a
+       tick. The names stay for screen readers (font-size 0 hides them from sight only). */
+    .steps--sub {
+      --mark: max(28px, calc(1.7 * var(--text-sm)));
+      gap: 0;
+    }
+    .steps--sub li {
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      font-size: 0;
+    }
+    .steps--sub li::before {
+      width: var(--mark);
+      height: var(--mark);
+      border-width: 2px;
+      font-size: var(--text-sm);
+    }
+    .steps--sub li[aria-current="step"]::before {
+      border-color: var(--color-accent);
+      outline: var(--focus-w) solid var(--color-accent-soft);
+      color: var(--color-accent);
+    }
+    .steps--sub li + li::after {
+      right: calc(50% + var(--mark) / 2);
+      width: calc(100% - var(--mark));
     }
     /* Wizard steps become "Step 3 of 7" on phones. */
     .steps--collapse li {
