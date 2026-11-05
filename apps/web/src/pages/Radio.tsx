@@ -43,7 +43,17 @@ type Station = components["schemas"]["RadioStationView"];
 type SeriesView = components["schemas"]["RadioSeriesView"];
 type Episode = components["schemas"]["RadioEpisodeView"];
 type Preview = components["schemas"]["RadioShowPreview"];
+type SearchItem = components["schemas"]["RadioSearchItem"];
 type Follow = Show["follow"];
+type RadioSource = "bbc" | "apple" | "archive";
+
+/** Where a show's data comes from, in words for "Reading the show from …". */
+const sourceWords = (provider: Show["provider"]) =>
+  provider === "feed"
+    ? "its podcast feed"
+    : provider === "archive"
+      ? "the Internet Archive"
+      : "the BBC";
 
 const base = "/library/radio";
 export const showPage = (id: string) => `${base}/shows/${id}`;
@@ -436,6 +446,7 @@ function RadioShows({ canEdit }: { canEdit: boolean }) {
         showing={`Showing ${plural(items.length, "show")}`}
       />
       <Notice error={shows.error} />
+      <RadioHealthNotice />
       {canEdit && <RadioReviewNotice review={review.data} />}
       {shows.isPending && <Loading />}
       {shows.data &&
@@ -465,7 +476,7 @@ function RadioShows({ canEdit }: { canEdit: boolean }) {
             {shows.data.items.length
               ? "Try clearing the filters."
               : canEdit
-                ? "Add a show from a BBC programmes or BBC Sounds link, or by its name."
+                ? "Add a show by its name, or from a link: BBC programmes or BBC Sounds, Apple Podcasts, archive.org or any podcast feed."
                 : "Shows appear here when someone adds them."}
           </Empty>
         ))}
@@ -743,7 +754,7 @@ function RadioShow({
     (station) => station.id !== data.station?.id,
   );
   const meta = [
-    data.station?.name,
+    data.station?.name ?? data.author,
     data.first_broadcast &&
       `First broadcast ${day(data.first_broadcast, true)}`,
     `${plural(data.series_count, "series", "series")}, ${plural(data.episode_count, "episode")}`,
@@ -796,7 +807,33 @@ function RadioShow({
               tone={data.follow === "none" ? "muted" : "neutral"}
             />
             <StatusChip label="Radio" icon={RadioIcon} tone="neutral" />
+            {data.provider !== "bbc" && (
+              <StatusChip label={data.source_name} tone="neutral" />
+            )}
           </div>
+          {data.provider === "archive" && (
+            <p className="small">
+              Licence: {data.licence ?? "No licence given"}.{" "}
+              {!data.licence &&
+                "No licence given does not mean free to use; check before sharing."}
+            </p>
+          )}
+          {(data.web_url || data.library_url) && (
+            <p className="small radio-show-links">
+              {data.library_url && (
+                <a href={data.library_url} target="_blank" rel="noreferrer">
+                  Open in Audiobookshelf
+                </a>
+              )}
+              {data.web_url && (
+                <a href={data.web_url} target="_blank" rel="noreferrer">
+                  {data.provider === "bbc"
+                    ? "BBC programme page"
+                    : "The show’s web page"}
+                </a>
+              )}
+            </p>
+          )}
           <Progress
             have={have}
             aired={aired}
@@ -862,7 +899,7 @@ function RadioShow({
           </p>
           <p className="small muted" role="status">
             {pending
-              ? "Reading the BBC programme list. New series and episodes appear as they are found."
+              ? `Reading the show from ${sourceWords(data.provider)}. New series and episodes appear as they are found.`
               : failed
                 ? `The last refresh failed: ${data.refresh?.message}`
                 : data.refreshed_at
@@ -899,7 +936,11 @@ function RadioShow({
           }}
         />
       )}
-      <ShowEpisodes data={data} open={(id) => setEpisodeId(id)} />
+      <ShowEpisodes
+        data={data}
+        canEdit={canEdit}
+        open={(id) => setEpisodeId(id)}
+      />
       {episodeId && (
         <EpisodePanel
           data={data}
@@ -915,9 +956,11 @@ function RadioShow({
 
 function ShowEpisodes({
   data,
+  canEdit,
   open,
 }: {
   data: Detail;
+  canEdit: boolean;
   open: (id: string) => void;
 }) {
   const series = useMemo(
@@ -1004,8 +1047,8 @@ function ShowEpisodes({
       {!series.length && (
         <Empty title="No episodes yet">
           {refreshing(data)
-            ? "Storyarr is reading the BBC programme list for this show."
-            : "The BBC lists no series or episodes for this show yet."}
+            ? `Storyarr is reading the show from ${sourceWords(data.provider)}.`
+            : `${data.provider === "bbc" ? "The BBC lists" : "Its source lists"} no series or episodes for this show yet.`}
         </Empty>
       )}
       <div className="radio-series-list">
@@ -1050,6 +1093,15 @@ function ShowEpisodes({
                 {item.title && item.title !== seriesName(item) && (
                   <p className="muted small">{item.title}</p>
                 )}
+                {item.removed_at && (
+                  <p className="muted small">
+                    No longer listed at its source since{" "}
+                    {day(item.removed_at, true)}. Its episodes are kept.
+                  </p>
+                )}
+                {canEdit && item.episodes.length > 0 && (
+                  <SeriesMonitor series={item} />
+                )}
                 <Progress
                   have={have}
                   aired={aired}
@@ -1084,6 +1136,12 @@ function ShowEpisodes({
                               >
                                 {ep.title}
                               </button>
+                              {ep.removed_at && (
+                                <span className="small muted radio-removed">
+                                  {" "}
+                                  · No longer listed
+                                </span>
+                              )}
                             </td>
                             <td data-label="First broadcast">
                               {day(ep.first_broadcast) || "Date not known"}
@@ -1101,7 +1159,7 @@ function ShowEpisodes({
                   </div>
                 ) : (
                   <p className="muted">
-                    The BBC lists no episodes for this series yet.
+                    No episodes are listed for this series yet.
                   </p>
                 )}
               </div>
@@ -1197,20 +1255,193 @@ function EpisodePanel({
       <dl className="facts">
         <dt>Station</dt>
         <dd>{(series.station ?? data.station)?.name || "No station given"}</dd>
-        <dt>BBC programme ID</dt>
-        <dd>
-          <a
-            href={`https://www.bbc.co.uk/programmes/${ep.pid}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {ep.pid}
-          </a>
-        </dd>
+        {data.provider === "bbc" ? (
+          <>
+            <dt>BBC programme ID</dt>
+            <dd>
+              <a
+                href={`https://www.bbc.co.uk/programmes/${ep.pid}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {ep.pid}
+              </a>
+            </dd>
+          </>
+        ) : (
+          <EpisodeSource episodeId={ep.id} source={data.source_name} />
+        )}
+        {ep.removed_at && (
+          <>
+            <dt>Listed</dt>
+            <dd>
+              No longer listed at its source since {day(ep.removed_at, true)}
+            </dd>
+          </>
+        )}
+        {canEdit && <EpisodeMonitor episode={ep} />}
         <EpisodeFile episodeId={ep.id} canEdit={canEdit} />
         <EpisodeRequest episodeId={ep.id} />
       </dl>
     </SidePanel>
+  );
+}
+
+const monitorChoices: {
+  value: "follow" | "yes" | "no";
+  label: string;
+  monitored: boolean | null;
+}[] = [
+  { value: "follow", label: "Follow choice", monitored: null },
+  { value: "yes", label: "Wanted", monitored: true },
+  { value: "no", label: "Not wanted", monitored: false },
+];
+const monitorValue = (monitored?: boolean | null) =>
+  monitored === true ? "yes" : monitored === false ? "no" : "follow";
+
+/** Want or do not want one episode by hand, or leave it to the show's follow choice. */
+function EpisodeMonitor({ episode }: { episode: Episode }) {
+  const cache = useQueryClient();
+  const change = useMutation({
+    mutationFn: async (monitored: boolean | null) =>
+      result(
+        await api.PUT("/api/radio/episodes/{episode_id}/monitored", {
+          params: { path: { episode_id: episode.id } },
+          body: { monitored },
+        }),
+      ),
+    onSuccess: (saved) => {
+      cache.setQueryData(["radio", "episode", episode.id], saved);
+      void cache.invalidateQueries({ queryKey: ["radio", "show"] });
+      void cache.invalidateQueries({ queryKey: ["radio", "shows"] });
+    },
+  });
+  const current = change.isPending
+    ? monitorValue(change.variables)
+    : monitorValue(episode.monitored);
+  return (
+    <>
+      <dt>Want this episode</dt>
+      <dd>
+        <fieldset className="radio-monitor">
+          <legend className="sr-only">Want this episode</legend>
+          <div className="segmented">
+            {monitorChoices.map((choice) => (
+              <label key={choice.value}>
+                <input
+                  type="radio"
+                  name={`monitor-${episode.id}`}
+                  checked={current === choice.value}
+                  disabled={change.isPending}
+                  onChange={() => change.mutate(choice.monitored)}
+                />
+                <span>{choice.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <Notice error={change.error} />
+      </dd>
+    </>
+  );
+}
+
+/** Want every episode of a series by hand, none of them, or hand them back to the follow choice. */
+function SeriesMonitor({ series }: { series: SeriesView }) {
+  const cache = useQueryClient();
+  const change = useMutation({
+    mutationFn: async (monitored: boolean | null) =>
+      result(
+        await api.PUT("/api/radio/series/{series_id}/monitored", {
+          params: { path: { series_id: series.id } },
+          body: { monitored },
+        }),
+      ),
+    onSuccess: () => cache.invalidateQueries({ queryKey: ["radio"] }),
+  });
+  const handSet = series.episodes.some((ep) => ep.monitored != null);
+  return (
+    <div className="button-row radio-series-monitor">
+      <button
+        type="button"
+        disabled={change.isPending}
+        onClick={() => change.mutate(true)}
+      >
+        Want every episode
+      </button>
+      <button
+        type="button"
+        disabled={change.isPending}
+        onClick={() => change.mutate(false)}
+      >
+        Want none
+      </button>
+      {handSet && (
+        <button
+          type="button"
+          disabled={change.isPending}
+          onClick={() => change.mutate(null)}
+        >
+          Use the follow choice
+        </button>
+      )}
+      <Notice error={change.error} />
+    </div>
+  );
+}
+
+/** Where a feed or Internet Archive episode is: its audio at the source. */
+function EpisodeSource({
+  episodeId,
+  source,
+}: {
+  episodeId: string;
+  source: string;
+}) {
+  const detail = useEpisodeDetail(episodeId);
+  const url = detail.data?.source_url;
+  if (!url) return null;
+  return (
+    <>
+      <dt>Source</dt>
+      <dd>
+        <a href={url} target="_blank" rel="noreferrer">
+          Episode audio ({source})
+        </a>
+      </dd>
+    </>
+  );
+}
+
+/** Why followed shows may not reach Audiobookshelf: no radio library, or its folder. */
+function RadioHealthNotice() {
+  const health = useQuery({
+    queryKey: ["radio", "health"],
+    queryFn: async () => result(await api.GET("/api/radio/health")),
+    staleTime: 60_000,
+  });
+  const items = health.data?.items ?? [];
+  if (!items.length) return null;
+  return (
+    <div
+      className={`notice${items.some((item) => item.kind === "error") ? " error" : ""}`}
+      role="status"
+    >
+      <ul className="radio-health">
+        {items.map((item) => (
+          <li key={item.message}>{item.message}</li>
+        ))}
+      </ul>
+      {items.some((item) => item.fix === "radio_library") && (
+        <p className="small">
+          An administrator chooses the radio library in{" "}
+          <Link to="/settings#libraries">
+            Settings, Libraries, Radio library
+          </Link>
+          .
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -1325,10 +1556,117 @@ function EpisodeFile({
   );
 }
 
+/** A web address, a bare BBC programme id or an Apple Podcasts or archive.org link. */
 const looksLikeLink = (value: string) =>
-  /bbc\.co\.uk\//i.test(value) || /^[bpmw][0-9a-z]{7,15}$/i.test(value.trim());
+  /^https?:\/\//i.test(value.trim()) ||
+  /^(www\.)?[a-z0-9-]+(\.[a-z0-9-]+)+\/\S*$/i.test(value.trim()) ||
+  /^[bpmw][0-9a-z]{7,15}$/i.test(value.trim());
 const programmeLink = (pid: string) =>
   `https://www.bbc.co.uk/programmes/${pid}`;
+const bbcArt = (pid?: string | null) =>
+  pid ? `https://ichef.bbci.co.uk/images/ic/320x320/${pid}.jpg` : undefined;
+
+const COUNTRIES: { code: string; name: string }[] = [
+  { code: "", name: "Anywhere" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "IE", name: "Ireland" },
+  { code: "US", name: "United States" },
+  { code: "CA", name: "Canada" },
+  { code: "AU", name: "Australia" },
+  { code: "NZ", name: "New Zealand" },
+  { code: "ZA", name: "South Africa" },
+  { code: "IN", name: "India" },
+  { code: "DE", name: "Germany" },
+  { code: "FR", name: "France" },
+  { code: "ES", name: "Spain" },
+  { code: "IT", name: "Italy" },
+  { code: "NL", name: "Netherlands" },
+  { code: "SE", name: "Sweden" },
+  { code: "NO", name: "Norway" },
+  { code: "DK", name: "Denmark" },
+  { code: "BR", name: "Brazil" },
+  { code: "JP", name: "Japan" },
+];
+const SOURCE_CHOICES: { value: RadioSource; label: string; hint: string }[] = [
+  {
+    value: "bbc",
+    label: "BBC",
+    hint: "BBC Sounds and the BBC programmes A to Z (United Kingdom only)",
+  },
+  {
+    value: "apple",
+    label: "Apple Podcasts",
+    hint: "Podcasts everywhere, saved as their feed",
+  },
+  {
+    value: "archive",
+    label: "Internet Archive",
+    hint: "Old-time radio, with its licence",
+  },
+];
+
+/** Where search by name looks: your country and the sources to ask, saved with your account. */
+function SearchChoices() {
+  const { preferences, save } = usePreferences();
+  if (!preferences) return null;
+  const sources = (preferences.radio_sources ?? [
+    "bbc",
+    "apple",
+    "archive",
+  ]) as RadioSource[];
+  const toggle = (value: RadioSource) => {
+    const next = sources.includes(value)
+      ? sources.filter((item) => item !== value)
+      : [...sources, value];
+    if (next.length) save.mutate({ radio_sources: next });
+  };
+  return (
+    <details className="disclosure radio-search-choices">
+      <summary>Where to search</summary>
+      <div className="disclosure__body">
+        <label className="field">
+          Your country
+          <select
+            value={preferences.radio_country ?? ""}
+            onChange={(event) =>
+              save.mutate({ radio_country: event.target.value })
+            }
+          >
+            {COUNTRIES.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <fieldset className="radio-search-sources">
+          <legend>Search in</legend>
+          {SOURCE_CHOICES.map((choice) => (
+            <label key={choice.value} className="checkbox">
+              <input
+                type="checkbox"
+                checked={sources.includes(choice.value)}
+                disabled={
+                  sources.length === 1 && sources.includes(choice.value)
+                }
+                onChange={() => toggle(choice.value)}
+              />
+              <span>
+                {choice.label}
+                <span className="small muted"> · {choice.hint}</span>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+        <p className="small muted">
+          The BBC is only searched when your country is the United Kingdom or
+          Anywhere. Links and podcast feeds work whatever you choose.
+        </p>
+        <Notice error={save.error} />
+      </div>
+    </details>
+  );
+}
 
 /**
  * Add a show: a link or a name, a preview, the follow choice (From now on by default), then the
@@ -1367,8 +1705,15 @@ export function AddShow({
   const [follow, setFollow] = useState<Follow>("from_now_on");
   const field = useRef<HTMLInputElement>(null);
   useEffect(() => field.current?.focus(), []);
+  const { preferences } = usePreferences();
   const search = useQuery({
-    queryKey: ["radio", "search", query?.value],
+    queryKey: [
+      "radio",
+      "search",
+      query?.value,
+      preferences?.radio_country,
+      preferences?.radio_sources?.join(","),
+    ],
     enabled: query?.kind === "name",
     queryFn: async () =>
       result(
@@ -1414,9 +1759,7 @@ export function AddShow({
     if (looksLikeLink(value)) {
       setQuery({ kind: "link", value });
       setLink(
-        /^https?:/i.test(value) || value.includes("/")
-          ? value
-          : programmeLink(value),
+        /^[bpmw][0-9a-z]{7,15}$/i.test(value) ? programmeLink(value) : value,
       );
     } else {
       setQuery({ kind: "name", value });
@@ -1424,57 +1767,79 @@ export function AddShow({
     }
   }
   const data: Preview | undefined = preview.data;
+  const art = (item: SearchItem) => item.artwork_url ?? bbcArt(item.image_pid);
   return (
     <BookDialog title="Add a show" close={close} className="radio-add-dialog">
       <form onSubmit={find} className="radio-add-find">
         <p className="muted">
-          Paste a link from BBC programmes or BBC Sounds, or search by the
-          show’s name.
+          Search by the show’s name, or paste a link: BBC programmes or BBC
+          Sounds, Apple Podcasts, archive.org, or any podcast feed.
         </p>
         <label className="field">
           Link or show name
           <input
             ref={field}
             value={text}
-            maxLength={500}
+            maxLength={1000}
             onChange={(event) => setText(event.target.value)}
             aria-describedby="radio-add-example"
           />
         </label>
         <p id="radio-add-example" className="small muted">
-          For example bbc.co.uk/programmes/b006qykl or
-          bbc.co.uk/sounds/brands/b006qykl
+          For example bbc.co.uk/programmes/b006qykl,
+          podcasts.apple.com/gb/podcast/…/id342735925 or a feed address ending
+          in .rss
         </p>
         <button type="submit" disabled={text.trim().length < 2}>
           Find show
         </button>
       </form>
+      <SearchChoices />
       {query?.kind === "name" && (
         <section aria-label="Shows found" className="radio-add-results">
           <Notice error={search.error} />
-          {search.isPending && <Loading label="Searching the BBC…" />}
+          {search.isPending && <Loading label="Searching for shows…" />}
           {search.data && (
             <>
               <p className="small" role="status">
                 {search.data.items.length
-                  ? plural(search.data.items.length, "show") + " found"
+                  ? `${plural(search.data.items.length, "show")} found in ${(search.data.sources ?? []).join(", ")}`
                   : "No shows found. Try another name, or paste a link."}
+                {(search.data.failed ?? []).length > 0 &&
+                  ` ${(search.data.failed ?? []).join(" and ")} did not answer; try again later.`}
               </p>
               <fieldset className="radio-add-choices">
                 <legend className="sr-only">Choose a show</legend>
                 {search.data.items.map((item) => (
-                  <label key={item.pid} className="radio-add-choice">
+                  <label key={item.link} className="radio-add-choice">
                     <input
                       type="radio"
                       name="radio-add-result"
-                      checked={link === programmeLink(item.pid)}
-                      onChange={() => setLink(programmeLink(item.pid))}
+                      checked={link === item.link}
+                      onChange={() => setLink(item.link)}
                     />
+                    {art(item) ? (
+                      <img
+                        className="radio-add-art"
+                        src={art(item)}
+                        alt=""
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <span className="radio-add-art" aria-hidden="true" />
+                    )}
                     <span>
                       <strong>{item.title}</strong>
                       <span className="small muted">
-                        {item.station_name || "No station given"}
-                        {item.synopsis ? ` · ${item.synopsis}` : ""}
+                        {[
+                          item.source_name,
+                          item.station_name || item.author,
+                          item.existing_show_id && "In your radio",
+                          item.synopsis,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
                       </span>
                     </span>
                   </label>
@@ -1487,17 +1852,40 @@ export function AddShow({
       {link && (
         <section aria-label="What will be added" className="radio-add-preview">
           <Notice error={preview.error} />
-          {preview.isPending && <Loading label="Reading the BBC programme…" />}
+          {preview.isPending && <Loading label="Reading the show…" />}
           {data && (
             <>
               <h3>What will be added</h3>
               <div className="radio-add-show">
-                <ShowArt title={data.title} station={data.station?.name} />
+                <ShowArt
+                  title={data.title}
+                  station={data.station?.name ?? data.author ?? undefined}
+                  artwork={data.artwork_url ?? bbcArt(data.image_pid) ?? null}
+                />
                 <dl className="facts">
                   <dt>Show</dt>
                   <dd>{data.title}</dd>
-                  <dt>Station</dt>
-                  <dd>{data.station?.name || "No station given"}</dd>
+                  <dt>Source</dt>
+                  <dd>{data.source_name}</dd>
+                  {data.provider === "bbc" ? (
+                    <>
+                      <dt>Station</dt>
+                      <dd>{data.station?.name || "No station given"}</dd>
+                    </>
+                  ) : (
+                    data.author && (
+                      <>
+                        <dt>By</dt>
+                        <dd>{data.author}</dd>
+                      </>
+                    )
+                  )}
+                  {data.provider === "archive" && (
+                    <>
+                      <dt>Licence</dt>
+                      <dd>{data.licence ?? "No licence given"}</dd>
+                    </>
+                  )}
                   {data.first_broadcast && (
                     <>
                       <dt>First broadcast</dt>

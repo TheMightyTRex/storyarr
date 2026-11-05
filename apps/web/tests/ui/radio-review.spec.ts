@@ -183,9 +183,13 @@ async function mockApi(page: Page) {
       };
     } else if (path === "/api/radio/search")
       data = {
-        source: "bbc_sounds",
+        sources: ["BBC"],
+        failed: [],
         items: [
           {
+            source: "bbc",
+            source_name: "BBC",
+            link: "https://www.bbc.co.uk/programmes/b0manor",
             pid: "b0manor",
             title: "To the Manor Born",
             synopsis: "The radio series.",

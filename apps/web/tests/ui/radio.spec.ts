@@ -249,9 +249,13 @@ async function mockApi(
       });
     else if (path === "/api/radio/search")
       data = {
-        source: "bbc_sounds",
+        sources: ["BBC"],
+        failed: [],
         items: [
           {
+            source: "bbc",
+            source_name: "BBC",
+            link: "https://www.bbc.co.uk/programmes/b0museum",
             pid: "b0museum",
             title: "The Museum of Small Disasters",
             synopsis: "Comedy about the things that went wrong.",
@@ -260,6 +264,9 @@ async function mockApi(
             image_pid: "p0abc123",
           },
           {
+            source: "bbc",
+            source_name: "BBC",
+            link: "https://www.bbc.co.uk/programmes/b0atsea",
             pid: "b0atsea",
             title: "Small Disasters at Sea",
             synopsis: "Drama.",

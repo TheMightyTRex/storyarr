@@ -6246,7 +6246,7 @@
           "radio"
         ],
         "summary": "Search",
-        "description": "Find shows by name through BBC Sounds search.",
+        "description": "Find shows by name in the sources the person has turned on that suit their country and\nlanguage (Settings, Radio): the BBC, Apple Podcasts and the Internet Archive.",
         "operationId": "search_api_radio_search_get",
         "parameters": [
           {
@@ -6291,7 +6291,7 @@
           "radio"
         ],
         "summary": "Preview",
-        "description": "What a BBC link points to, without saving anything.",
+        "description": "What a link points to, without saving anything.",
         "operationId": "preview_api_radio_preview_get",
         "parameters": [
           {
@@ -6301,7 +6301,7 @@
             "schema": {
               "type": "string",
               "minLength": 8,
-              "maxLength": 500,
+              "maxLength": 1000,
               "title": "Link"
             }
           }
@@ -6681,7 +6681,7 @@
           "radio"
         ],
         "summary": "Choose Episode File",
-        "description": "Link the episode to a file of its show by hand, or say no file holds it. The radio sync\nthen leaves the episode as it is.",
+        "description": "Link the episode to a file of its show by hand, or, with no file, say the file it has is\nnot this episode (\"Not this file\"): that file is never offered to it again and automatic\nmatching looks for another. With no file linked, no file is chosen by hand.",
         "operationId": "choose_episode_file_api_radio_episodes__episode_id__file_put",
         "parameters": [
           {
@@ -6733,7 +6733,7 @@
           "radio"
         ],
         "summary": "Automatic Episode File",
-        "description": "Let the radio sync find the episode's file again.",
+        "description": "Let the radio sync find the episode's file again, including files said to be not it.",
         "operationId": "automatic_episode_file_api_radio_episodes__episode_id__file_delete",
         "parameters": [
           {
@@ -6771,13 +6771,143 @@
         }
       }
     },
+    "/api/radio/episodes/{episode_id}/monitored": {
+      "put": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Monitor Episode",
+        "description": "Want or do not want one episode by hand, or hand it back to the follow choice (None).\nIts request in Activity follows.",
+        "operationId": "monitor_episode_api_radio_episodes__episode_id__monitored_put",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Episode Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadioMonitoredInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioEpisodeDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/series/{series_id}/monitored": {
+      "put": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Monitor Series",
+        "description": "Want or do not want every episode of a series by hand, or hand them back to the follow\nchoice (None).",
+        "operationId": "monitor_series_api_radio_series__series_id__monitored_put",
+        "parameters": [
+          {
+            "name": "series_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Series Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadioMonitoredInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioShowSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/radio/health": {
+      "get": {
+        "tags": [
+          "radio"
+        ],
+        "summary": "Radio Health",
+        "description": "Why followed shows may not reach Audiobookshelf. Checked only while the person follows\na show: no radio library chosen, Audiobookshelf not answering, or the radio folder missing\nor not writable from Storyarr.",
+        "operationId": "radio_health_api_radio_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioHealthView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/radio/shows/{show_id}/artwork": {
       "get": {
         "tags": [
           "radio"
         ],
         "summary": "Show Artwork",
-        "description": "The saved copy of the show's BBC artwork (640 by 640 JPEG).",
+        "description": "The saved copy of the show's artwork (the BBC's is a 640 by 640 JPEG).",
         "operationId": "show_artwork_api_radio_shows__show_id__artwork_get",
         "parameters": [
           {
@@ -6812,6 +6942,7 @@
             "description": "Successful Response",
             "content": {
               "image/jpeg": {},
+              "image/png": {},
               "image/svg+xml": {}
             }
           },
@@ -6871,6 +7002,7 @@
             "description": "Successful Response",
             "content": {
               "image/jpeg": {},
+              "image/png": {},
               "image/svg+xml": {}
             }
           },
@@ -37842,6 +37974,51 @@
               }
             ],
             "title": "Radio Types"
+          },
+          "radio_country": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^([A-Z]{2})?$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radio Country"
+          },
+          "radio_language": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^([a-z]{2,3})?$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radio Language"
+          },
+          "radio_sources": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "bbc",
+                    "apple",
+                    "archive"
+                  ]
+                },
+                "type": "array",
+                "maxItems": 3,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radio Sources"
           }
         },
         "additionalProperties": false,
@@ -38988,7 +39165,8 @@
             "type": "string",
             "enum": [
               "bbc",
-              "broadcast_order"
+              "broadcast_order",
+              "source"
             ],
             "title": "Number Source"
           },
@@ -39033,11 +39211,45 @@
           "status": {
             "$ref": "#/components/schemas/RadioEpisodeStatus"
           },
+          "monitored": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monitored"
+          },
+          "removed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Removed At"
+          },
           "show": {
             "$ref": "#/components/schemas/RadioEpisodeShow"
           },
           "series": {
             "$ref": "#/components/schemas/RadioEpisodeSeries"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
           },
           "request": {
             "anyOf": [
@@ -39298,7 +39510,8 @@
             "type": "string",
             "enum": [
               "bbc",
-              "broadcast_order"
+              "broadcast_order",
+              "source"
             ],
             "title": "Number Source"
           },
@@ -39342,6 +39555,29 @@
           },
           "status": {
             "$ref": "#/components/schemas/RadioEpisodeStatus"
+          },
+          "monitored": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monitored"
+          },
+          "removed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Removed At"
           }
         },
         "type": "object",
@@ -39357,6 +39593,56 @@
           "status"
         ],
         "title": "RadioEpisodeView"
+      },
+      "RadioHealthItem": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "warning",
+              "error"
+            ],
+            "title": "Kind"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "fix": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "radio_library"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fix"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "message"
+        ],
+        "title": "RadioHealthItem"
+      },
+      "RadioHealthView": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RadioHealthItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "RadioHealthView"
       },
       "RadioLibraryInput": {
         "properties": {
@@ -39578,6 +39864,27 @@
         ],
         "title": "RadioLibraryView"
       },
+      "RadioMonitoredInput": {
+        "properties": {
+          "monitored": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monitored"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "monitored"
+        ],
+        "title": "RadioMonitoredInput"
+      },
       "RadioPreviewSeries": {
         "properties": {
           "pid": {
@@ -39707,9 +40014,24 @@
       },
       "RadioSearchItem": {
         "properties": {
-          "pid": {
+          "source": {
             "type": "string",
-            "title": "Pid"
+            "enum": [
+              "bbc",
+              "apple",
+              "archive"
+            ],
+            "title": "Source",
+            "default": "bbc"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name",
+            "default": "BBC"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
           },
           "title": {
             "type": "string",
@@ -39725,6 +40047,17 @@
               }
             ],
             "title": "Synopsis"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
           },
           "station_id": {
             "anyOf": [
@@ -39748,6 +40081,17 @@
             ],
             "title": "Station Name"
           },
+          "pid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pid"
+          },
           "image_pid": {
             "anyOf": [
               {
@@ -39758,11 +40102,45 @@
               }
             ],
             "title": "Image Pid"
+          },
+          "artwork_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artwork Url"
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence"
+          },
+          "existing_show_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Existing Show Id"
           }
         },
         "type": "object",
         "required": [
-          "pid",
+          "link",
           "title",
           "synopsis",
           "station_id",
@@ -39773,11 +40151,21 @@
       },
       "RadioSearchView": {
         "properties": {
-          "source": {
-            "type": "string",
-            "const": "bbc_sounds",
-            "title": "Source",
-            "default": "bbc_sounds"
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources",
+            "default": []
+          },
+          "failed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Failed",
+            "default": []
           },
           "items": {
             "items": {
@@ -39820,9 +40208,22 @@
             "type": "string",
             "enum": [
               "bbc",
-              "broadcast_order"
+              "broadcast_order",
+              "source"
             ],
             "title": "Number Source"
+          },
+          "removed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Removed At"
           },
           "title": {
             "type": "string",
@@ -39910,8 +40311,17 @@
           },
           "provider": {
             "type": "string",
-            "const": "bbc",
+            "enum": [
+              "bbc",
+              "feed",
+              "archive"
+            ],
             "title": "Provider"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name",
+            "default": "BBC"
           },
           "external_id": {
             "type": "string",
@@ -39931,6 +40341,39 @@
               }
             ],
             "title": "Synopsis"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence"
           },
           "first_broadcast": {
             "anyOf": [
@@ -40066,6 +40509,17 @@
             },
             "type": "array",
             "title": "Series"
+          },
+          "library_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Library Url"
           }
         },
         "type": "object",
@@ -40131,7 +40585,7 @@
         "properties": {
           "link": {
             "type": "string",
-            "maxLength": 500,
+            "maxLength": 1000,
             "minLength": 8,
             "title": "Link"
           },
@@ -40193,6 +40647,21 @@
             "type": "string",
             "title": "Pid"
           },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "bbc",
+              "feed",
+              "archive"
+            ],
+            "title": "Provider",
+            "default": "bbc"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name",
+            "default": "BBC"
+          },
           "title": {
             "type": "string",
             "title": "Title"
@@ -40207,6 +40676,28 @@
               }
             ],
             "title": "Synopsis"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
           },
           "first_broadcast": {
             "anyOf": [
@@ -40240,6 +40731,28 @@
               }
             ],
             "title": "Image Pid"
+          },
+          "artwork_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artwork Url"
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence"
           },
           "series_count": {
             "type": "integer",
@@ -40299,8 +40812,17 @@
           },
           "provider": {
             "type": "string",
-            "const": "bbc",
+            "enum": [
+              "bbc",
+              "feed",
+              "archive"
+            ],
             "title": "Provider"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name",
+            "default": "BBC"
           },
           "external_id": {
             "type": "string",
@@ -40320,6 +40842,39 @@
               }
             ],
             "title": "Synopsis"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence"
           },
           "first_broadcast": {
             "anyOf": [
@@ -47980,6 +48535,47 @@
               "comedy",
               "drama-scifiandfantasy",
               "news"
+            ]
+          },
+          "radio_country": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radio Country"
+          },
+          "radio_language": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z]{2,3}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radio Language"
+          },
+          "radio_sources": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "bbc",
+                "apple",
+                "archive"
+              ]
+            },
+            "type": "array",
+            "title": "Radio Sources",
+            "default": [
+              "bbc",
+              "apple",
+              "archive"
             ]
           }
         },

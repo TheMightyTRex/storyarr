@@ -2163,7 +2163,8 @@ export interface paths {
     };
     /**
      * Search
-     * @description Find shows by name through BBC Sounds search.
+     * @description Find shows by name in the sources the person has turned on that suit their country and
+     *     language (Settings, Radio): the BBC, Apple Podcasts and the Internet Archive.
      */
     get: operations["search_api_radio_search_get"];
     put?: never;
@@ -2183,7 +2184,7 @@ export interface paths {
     };
     /**
      * Preview
-     * @description What a BBC link points to, without saving anything.
+     * @description What a link points to, without saving anything.
      */
     get: operations["preview_api_radio_preview_get"];
     put?: never;
@@ -2308,16 +2309,81 @@ export interface paths {
     get?: never;
     /**
      * Choose Episode File
-     * @description Link the episode to a file of its show by hand, or say no file holds it. The radio sync
-     *     then leaves the episode as it is.
+     * @description Link the episode to a file of its show by hand, or, with no file, say the file it has is
+     *     not this episode ("Not this file"): that file is never offered to it again and automatic
+     *     matching looks for another. With no file linked, no file is chosen by hand.
      */
     put: operations["choose_episode_file_api_radio_episodes__episode_id__file_put"];
     post?: never;
     /**
      * Automatic Episode File
-     * @description Let the radio sync find the episode's file again.
+     * @description Let the radio sync find the episode's file again, including files said to be not it.
      */
     delete: operations["automatic_episode_file_api_radio_episodes__episode_id__file_delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/episodes/{episode_id}/monitored": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Monitor Episode
+     * @description Want or do not want one episode by hand, or hand it back to the follow choice (None).
+     *     Its request in Activity follows.
+     */
+    put: operations["monitor_episode_api_radio_episodes__episode_id__monitored_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/series/{series_id}/monitored": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Monitor Series
+     * @description Want or do not want every episode of a series by hand, or hand them back to the follow
+     *     choice (None).
+     */
+    put: operations["monitor_series_api_radio_series__series_id__monitored_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/radio/health": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Radio Health
+     * @description Why followed shows may not reach Audiobookshelf. Checked only while the person follows
+     *     a show: no radio library chosen, Audiobookshelf not answering, or the radio folder missing
+     *     or not writable from Storyarr.
+     */
+    get: operations["radio_health_api_radio_health_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -2332,7 +2398,7 @@ export interface paths {
     };
     /**
      * Show Artwork
-     * @description The saved copy of the show's BBC artwork (640 by 640 JPEG).
+     * @description The saved copy of the show's artwork (the BBC's is a 640 by 640 JPEG).
      */
     get: operations["show_artwork_api_radio_shows__show_id__artwork_get"];
     put?: never;
@@ -12835,6 +12901,12 @@ export interface components {
             | "music"
           )[]
         | null;
+      /** Radio Country */
+      radio_country?: string | null;
+      /** Radio Language */
+      radio_language?: string | null;
+      /** Radio Sources */
+      radio_sources?: ("bbc" | "apple" | "archive")[] | null;
     };
     /** PresetInfo */
     PresetInfo: {
@@ -13277,7 +13349,7 @@ export interface components {
        * Number Source
        * @enum {string}
        */
-      number_source: "bbc" | "broadcast_order";
+      number_source: "bbc" | "broadcast_order" | "source";
       /** Title */
       title: string;
       /** Synopsis */
@@ -13287,8 +13359,14 @@ export interface components {
       /** Duration Seconds */
       duration_seconds: number | null;
       status: components["schemas"]["RadioEpisodeStatus"];
+      /** Monitored */
+      monitored?: boolean | null;
+      /** Removed At */
+      removed_at?: string | null;
       show: components["schemas"]["RadioEpisodeShow"];
       series: components["schemas"]["RadioEpisodeSeries"];
+      /** Source Url */
+      source_url?: string | null;
       request?: components["schemas"]["RadioEpisodeRequest"] | null;
       file?: components["schemas"]["RadioEpisodeFile"] | null;
       /**
@@ -13403,7 +13481,7 @@ export interface components {
        * Number Source
        * @enum {string}
        */
-      number_source: "bbc" | "broadcast_order";
+      number_source: "bbc" | "broadcast_order" | "source";
       /** Title */
       title: string;
       /** Synopsis */
@@ -13413,6 +13491,27 @@ export interface components {
       /** Duration Seconds */
       duration_seconds: number | null;
       status: components["schemas"]["RadioEpisodeStatus"];
+      /** Monitored */
+      monitored?: boolean | null;
+      /** Removed At */
+      removed_at?: string | null;
+    };
+    /** RadioHealthItem */
+    RadioHealthItem: {
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "warning" | "error";
+      /** Message */
+      message: string;
+      /** Fix */
+      fix?: "radio_library" | null;
+    };
+    /** RadioHealthView */
+    RadioHealthView: {
+      /** Items */
+      items: components["schemas"]["RadioHealthItem"][];
     };
     /** RadioLibraryInput */
     RadioLibraryInput: {
@@ -13490,6 +13589,11 @@ export interface components {
       /** Linked */
       linked: number;
     };
+    /** RadioMonitoredInput */
+    RadioMonitoredInput: {
+      /** Monitored */
+      monitored: boolean | null;
+    };
     /** RadioPreviewSeries */
     RadioPreviewSeries: {
       /** Pid */
@@ -13554,27 +13658,52 @@ export interface components {
     };
     /** RadioSearchItem */
     RadioSearchItem: {
-      /** Pid */
-      pid: string;
+      /**
+       * Source
+       * @default bbc
+       * @enum {string}
+       */
+      source: "bbc" | "apple" | "archive";
+      /**
+       * Source Name
+       * @default BBC
+       */
+      source_name: string;
+      /** Link */
+      link: string;
       /** Title */
       title: string;
       /** Synopsis */
       synopsis: string | null;
+      /** Author */
+      author?: string | null;
       /** Station Id */
       station_id: string | null;
       /** Station Name */
       station_name: string | null;
+      /** Pid */
+      pid?: string | null;
       /** Image Pid */
       image_pid: string | null;
+      /** Artwork Url */
+      artwork_url?: string | null;
+      /** Licence */
+      licence?: string | null;
+      /** Existing Show Id */
+      existing_show_id?: string | null;
     };
     /** RadioSearchView */
     RadioSearchView: {
       /**
-       * Source
-       * @default bbc_sounds
-       * @constant
+       * Sources
+       * @default []
        */
-      source: "bbc_sounds";
+      sources: string[];
+      /**
+       * Failed
+       * @default []
+       */
+      failed: string[];
       /** Items */
       items: components["schemas"]["RadioSearchItem"][];
     };
@@ -13598,7 +13727,9 @@ export interface components {
        * Number Source
        * @enum {string}
        */
-      number_source: "bbc" | "broadcast_order";
+      number_source: "bbc" | "broadcast_order" | "source";
+      /** Removed At */
+      removed_at?: string | null;
       /** Title */
       title: string;
       /** Synopsis */
@@ -13622,15 +13753,26 @@ export interface components {
       id: string;
       /**
        * Provider
-       * @constant
+       * @enum {string}
        */
-      provider: "bbc";
+      provider: "bbc" | "feed" | "archive";
+      /**
+       * Source Name
+       * @default BBC
+       */
+      source_name: string;
       /** External Id */
       external_id: string;
       /** Title */
       title: string;
       /** Synopsis */
       synopsis: string | null;
+      /** Author */
+      author?: string | null;
+      /** Web Url */
+      web_url?: string | null;
+      /** Licence */
+      licence?: string | null;
       /** First Broadcast */
       first_broadcast: string | null;
       station: components["schemas"]["RadioStationRef"] | null;
@@ -13664,6 +13806,8 @@ export interface components {
       refresh: components["schemas"]["OperationView"] | null;
       /** Series */
       series: components["schemas"]["RadioSeriesView"][];
+      /** Library Url */
+      library_url?: string | null;
     };
     /** RadioShowEdit */
     RadioShowEdit: {
@@ -13696,15 +13840,34 @@ export interface components {
     RadioShowPreview: {
       /** Pid */
       pid: string;
+      /**
+       * Provider
+       * @default bbc
+       * @enum {string}
+       */
+      provider: "bbc" | "feed" | "archive";
+      /**
+       * Source Name
+       * @default BBC
+       */
+      source_name: string;
       /** Title */
       title: string;
       /** Synopsis */
       synopsis: string | null;
+      /** Author */
+      author?: string | null;
+      /** Web Url */
+      web_url?: string | null;
       /** First Broadcast */
       first_broadcast: string | null;
       station: components["schemas"]["RadioStationRef"] | null;
       /** Image Pid */
       image_pid: string | null;
+      /** Artwork Url */
+      artwork_url?: string | null;
+      /** Licence */
+      licence?: string | null;
       /** Series Count */
       series_count: number;
       /** Episode Count */
@@ -13723,15 +13886,26 @@ export interface components {
       id: string;
       /**
        * Provider
-       * @constant
+       * @enum {string}
        */
-      provider: "bbc";
+      provider: "bbc" | "feed" | "archive";
+      /**
+       * Source Name
+       * @default BBC
+       */
+      source_name: string;
       /** External Id */
       external_id: string;
       /** Title */
       title: string;
       /** Synopsis */
       synopsis: string | null;
+      /** Author */
+      author?: string | null;
+      /** Web Url */
+      web_url?: string | null;
+      /** Licence */
+      licence?: string | null;
       /** First Broadcast */
       first_broadcast: string | null;
       station: components["schemas"]["RadioStationRef"] | null;
@@ -16619,6 +16793,19 @@ export interface components {
         | "sport"
         | "music"
       )[];
+      /** Radio Country */
+      radio_country?: string | null;
+      /** Radio Language */
+      radio_language?: string | null;
+      /**
+       * Radio Sources
+       * @default [
+       *       "bbc",
+       *       "apple",
+       *       "archive"
+       *     ]
+       */
+      radio_sources: ("bbc" | "apple" | "archive")[];
     };
     /** UserView */
     UserView: {
@@ -21723,6 +21910,96 @@ export interface operations {
       };
     };
   };
+  monitor_episode_api_radio_episodes__episode_id__monitored_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        episode_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RadioMonitoredInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioEpisodeDetail"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  monitor_series_api_radio_series__series_id__monitored_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        series_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RadioMonitoredInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioShowSummary"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  radio_health_api_radio_health_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RadioHealthView"];
+        };
+      };
+    };
+  };
   show_artwork_api_radio_shows__show_id__artwork_get: {
     parameters: {
       query?: never;
@@ -21743,6 +22020,7 @@ export interface operations {
         };
         content: {
           "image/jpeg": unknown;
+          "image/png": unknown;
           "image/svg+xml": unknown;
         };
       };
@@ -21784,6 +22062,7 @@ export interface operations {
         };
         content: {
           "image/jpeg": unknown;
+          "image/png": unknown;
           "image/svg+xml": unknown;
         };
       };
