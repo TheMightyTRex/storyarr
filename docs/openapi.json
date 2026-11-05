@@ -47393,12 +47393,61 @@
             "type": "string",
             "title": "Title"
           },
+          "added": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Added",
+            "default": []
+          },
+          "changed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Changed",
+            "default": []
+          },
+          "deprecated": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Deprecated",
+            "default": []
+          },
+          "removed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Removed",
+            "default": []
+          },
+          "fixed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fixed",
+            "default": []
+          },
+          "security": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Security",
+            "default": []
+          },
           "highlights": {
             "items": {
               "type": "string"
             },
             "type": "array",
-            "title": "Highlights"
+            "title": "Highlights",
+            "default": []
           },
           "review": {
             "items": {
@@ -47439,8 +47488,7 @@
         "type": "object",
         "required": [
           "id",
-          "title",
-          "highlights"
+          "title"
         ],
         "title": "UpgradeRelease"
       },

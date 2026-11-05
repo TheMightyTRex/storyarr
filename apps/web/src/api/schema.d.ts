@@ -16350,7 +16350,40 @@ export interface components {
       id: string;
       /** Title */
       title: string;
-      /** Highlights */
+      /**
+       * Added
+       * @default []
+       */
+      added: string[];
+      /**
+       * Changed
+       * @default []
+       */
+      changed: string[];
+      /**
+       * Deprecated
+       * @default []
+       */
+      deprecated: string[];
+      /**
+       * Removed
+       * @default []
+       */
+      removed: string[];
+      /**
+       * Fixed
+       * @default []
+       */
+      fixed: string[];
+      /**
+       * Security
+       * @default []
+       */
+      security: string[];
+      /**
+       * Highlights
+       * @default []
+       */
       highlights: string[];
       /**
        * Review

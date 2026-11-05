@@ -20,7 +20,15 @@ class UpgradeReviewItem(BaseModel):
 class UpgradeRelease(BaseModel):
     id: str
     title: str
-    highlights: list[str]
+    # What the release brings, in the change types of the changelog (CHANGELOG.md), in this order.
+    added: list[str] = []
+    changed: list[str] = []
+    deprecated: list[str] = []
+    removed: list[str] = []
+    fixed: list[str] = []
+    security: list[str] = []
+    # Notes with no change type; every release in RELEASES uses the lists above instead.
+    highlights: list[str] = []
     # New settings worth a look after upgrading; each has built-in defaults already applied.
     review: list[UpgradeReviewItem] = []
     # Changes to the database structure, each with how to undo it. A settings backup is taken
@@ -42,21 +50,23 @@ RELEASES = [
     UpgradeRelease(
         id="2026.10.30",
         title="Layout, light theme, bookshelves and smarter searching",
-        highlights=[
+        added=[
             "A choice of layout: Classic, or Shelf with a slim icon menu and page menus in the "
             "header.",
-            "A light theme by default, with Dark and Match device, plus display and "
-            "accessibility settings: text size, a low-vision font, high contrast, reduced "
-            "motion, underlined links and wider spacing.",
+            "A light theme by default, with Dark and Match device, plus display and accessibility "
+            "settings: text size, a low-vision font, high contrast, reduced motion, underlined "
+            "links and wider spacing.",
             "A bookshelf page for each followed author or series, with progress, statuses and a "
             "book drawer.",
             "Book types for follows, statuses for every followed book, and Add missing books.",
             "Delete library books, with a holding folder you can restore from and a retention "
             "period.",
-            "Activity in three tabs: Queue, Wanted and History, each with filters.",
-            "Settings in six groups.",
             "Wanted books are searched again automatically.",
             "Audible search when matching library audiobooks, and a choice of Audible store.",
+        ],
+        changed=[
+            "Activity in three tabs: Queue, Wanted and History, each with filters.",
+            "Settings in six groups.",
         ],
         review=[
             UpgradeReviewItem(
@@ -94,11 +104,15 @@ RELEASES = [
     UpgradeRelease(
         id="2026.10.30.2",
         title="Faster pages",
-        highlights=[
+        added=[
+            "A loading bar under the header shows when a page is fetching data.",
+        ],
+        changed=[
             "Request counts take under a second instead of several minutes, so Activity and "
             "background work are much quicker.",
             "Leaving a page now stops the database work it started.",
-            "A loading bar under the header shows when a page is fetching data.",
+        ],
+        removed=[
             "The request count badge is no longer in the main menu.",
         ],
         database_changes=[
@@ -113,18 +127,20 @@ RELEASES = [
     UpgradeRelease(
         id="2026.10.31",
         title="Storyarr",
-        highlights=[
-            "The app is now called Storyarr, with a new icon. It is a fork of Dewarr by logabell.",
-            "Settings, Reading is now Settings, Sources.",
+        added=[
             "The calendar has a Show menu: covers on the calendar, and which sources and authors "
             "appear.",
             "The bookshelf drawer can start a search now, and exclude a book from the follow.",
+        ],
+        changed=[
+            "The app is now called Storyarr, with a new icon. It is a fork of Dewarr by logabell.",
+            "Settings, Reading is now Settings, Sources.",
         ],
     ),
     UpgradeRelease(
         id="2026.10.31.2",
         title="Background work",
-        highlights=[
+        added=[
             "Settings, System, Background work chooses how often scheduled jobs run: Normal, "
             "Relaxed, Light or Minimal. A slower pace saves CPU and database work on a small "
             "server.",
@@ -149,11 +165,13 @@ RELEASES = [
     UpgradeRelease(
         id="2026.10.31.3",
         title="Series, Authors and Following layouts",
-        highlights=[
-            "My library Series and Authors, and Following, have two layouts: List and detail "
-            "(the list beside the chosen series or author) and List (one aligned row each).",
+        added=[
+            "My library Series and Authors, and Following, have two layouts: List and detail (the "
+            "list beside the chosen series or author) and List (one aligned row each).",
             "List and detail is the default. The layout switch is next to the search, and your "
             "choice is saved with your account, so it follows you to every browser.",
+        ],
+        changed=[
             "Each series or author shows its covers, the author's picture beside the name, "
             "progress, statuses and actions in the same place every time.",
         ],
@@ -170,12 +188,14 @@ RELEASES = [
     UpgradeRelease(
         id="2026.10.31.4",
         title="Sorting and releases Storyarr could not confirm",
-        highlights=[
+        added=[
             "Series, Authors and Following can be sorted by Newest, Number of books, Date "
             "published, Author or A to Z, with Reverse order.",
             "Review release lets an administrator confirm a release whose name does not clearly "
             "match the book, or whose language is not stated, before downloading it.",
             "Requests has Review sources, which shows a request's sources in a dialog.",
+        ],
+        fixed=[
             "Series whose names differ only in punctuation, a leading The or a trailing Series "
             "are grouped together.",
         ],
@@ -192,12 +212,14 @@ RELEASES = [
     UpgradeRelease(
         id="2026.11.01",
         title="A new My library bookshelf",
-        highlights=[
+        changed=[
             "My library shows smaller covers, so more books fit. Click a book and a summary "
             "slides out from the right with its series, formats, rating and description.",
             "Covers in My library no longer show Quick add. Getting a missing format is in the "
             "summary.",
             "Searching sources shows the loading bar under the header until the search finishes.",
+        ],
+        fixed=[
             "Downloads held after a library switched from hardlink to copy can be repaired and "
             "carry on.",
         ],
@@ -205,7 +227,7 @@ RELEASES = [
     UpgradeRelease(
         id="2026.11.01.2",
         title="Storyarr everywhere",
-        highlights=[
+        changed=[
             "In the My library summary, the author and series open their pages, and selecting "
             "anywhere outside the summary closes it.",
             "Notifications are titled Storyarr notification, including the ones you already have.",
@@ -225,7 +247,7 @@ RELEASES = [
     UpgradeRelease(
         id="2026.11.01.3",
         title="Soulseek with an administrator key",
-        highlights=[
+        fixed=[
             "Connecting slskd with a read-write API key now explains what to change: slskd only "
             "shares its download folder with an administrator key. Give the key the administrator "
             "role in slskd, then test the connection again.",
@@ -234,44 +256,50 @@ RELEASES = [
     UpgradeRelease(
         id="2026.11.01.4",
         title="Quieter upgrades",
-        highlights=[
+        changed=[
             "A red dot on the version number, with Upgrade available, when a new version is out.",
             "The upgrade wizard opens only when a version has settings to choose or changes to "
             "your configuration or database. Every upgrade still saves a settings backup first.",
             "The way back is in Settings, System, Upgrades and backups, as Restore previous "
             "version.",
-            "One typeface on every page: Atkinson Hyperlegible Next, designed for readers with low "
-            "vision. The Low-vision font switch is gone, because it is always on.",
+            "One typeface on every page: Atkinson Hyperlegible Next, designed for readers with "
+            "low vision.",
             "Every slide-out panel has the same header: its name in bold and the close button.",
             "The Library tabs share one toolbar, and each can save its filters and order as your "
             "default, with your account. Reset them in Settings, General, Saved views.",
             "On phones, a menu button in the header opens every section and its pages.",
         ],
+        removed=[
+            "The Low-vision font switch is gone, because every page now uses the low-vision "
+            "typeface.",
+        ],
     ),
     UpgradeRelease(
         id="2026.11.02",
         title="Cover actions, shelf arrows and radio",
-        highlights=[
-            "Series pages have a new header: the series logo above the name in one solid "
-            "colour, or the name set large when there is no logo, with the author, the number of "
-            "books, the next book, a short description, how many you have and the first covers.",
+        added=[
+            "Series pages have a new header: the series logo above the name in one solid colour, "
+            "or the name set large when there is no logo, with the author, the number of books, "
+            "the next book, a short description, how many you have and the first covers.",
             "Admins add a series logo for everyone with Change logo: cut it out of one of the "
             "covers, find it on Wikimedia Commons with its licence, or upload a file. Storyarr "
             "keeps a copy in its config folder. Radio show pages have Change logo too.",
+            "Every cover has its actions: Details, Ebook, Audiobook, Add to a list and More, on "
+            "the cover or beside it. Book rows have them at the end, and small covers have a More "
+            "button.",
+            "Radio, an early feature: add BBC radio shows by link or name, and browse shows, "
+            "stations, series and episodes. Downloading episodes and filing them in "
+            "Audiobookshelf come in a later version.",
+        ],
+        changed=[
             "A new header: each page's tabs have a row of their own, with icons. On phones, the "
             "menu holds search as well as every section.",
             "Every slide-out panel works the same way, and the accent colour is teal.",
             "Status chips have an icon and the same words on every page. Buttons and fields are "
             "44px high, and each Settings section has one bar to save or discard changes.",
-            "Every cover has its actions: Details, Ebook, Audiobook, Add to a list and More, on "
-            "the cover or beside it. Book rows have them at the end, and small covers have a More "
-            "button.",
             "Discover shelves have no scroll bars: the covers fade at each end, with an arrow "
             "when there are more books that way.",
             "Covers always line up, and covers on In my libraries are 10% larger.",
-            "Radio, an early feature: add BBC radio shows by link or name, and browse shows, "
-            "stations, series and episodes. Downloading episodes and filing them in "
-            "Audiobookshelf come in a later version.",
         ],
         review=[
             UpgradeReviewItem(
@@ -297,26 +325,30 @@ RELEASES = [
     UpgradeRelease(
         id="2026.11.02.2",
         title="A tidier, more consistent look",
-        highlights=[
-            "Display and accessibility opens as a slide-out from the right, with Done and Reset at "
-            "the bottom.",
-            "The chosen option is teal everywhere, with a tick or a bar as well, and every control "
-            "has the same focus ring.",
+        changed=[
+            "Display and accessibility opens as a slide-out from the right, with Done and Reset "
+            "at the bottom.",
+            "The chosen option is teal everywhere, with a tick or a bar as well, and every "
+            "control has the same focus ring.",
             "Dates, times and numbers are written the British way on every page.",
+        ],
+        fixed=[
             "Deleting a notification channel asks first, and Users and access fits on phones.",
         ],
     ),
     UpgradeRelease(
         id="2026.11.02.3",
         title="A radio library, and one look for series, authors and radio",
-        highlights=[
+        added=[
             "Radio library: choose an Audiobookshelf podcast library for radio in Settings, "
             "Connections. Storyarr reads it every 15 minutes and shows the episodes it holds as "
             "in your library.",
-            "My library, Series and Authors show the list beside the chosen one, with its own "
-            "header. Radio shows follow the same design.",
             "Change logo has one editor for a cover, an uploaded file and a logo found online, "
             "with clean-up, an eraser and a paintbrush.",
+        ],
+        changed=[
+            "My library, Series and Authors show the list beside the chosen one, with its own "
+            "header. Radio shows follow the same design.",
             "Scroll bars are thin and square on every page.",
         ],
         review=[
@@ -337,6 +369,39 @@ RELEASES = [
             "To go back to v0.5.9, run python -m app.downgrade storyarr_0088_series_logos in the "
             "Storyarr container first. Only the radio library choice and its list of episode "
             "files are removed. No audio files are touched."
+        ),
+    ),
+    UpgradeRelease(
+        id="2026.11.05",
+        title="Review the radio library, passwords and security fixes",
+        added=[
+            "Review the radio library in My library, Radio: add its shows, and link files that "
+            "match no episode by hand.",
+            "Change password in Settings, Sign-in, and Set new password for someone else in "
+            "their account's details.",
+            "Send feedback under the version number, sent as a GitHub issue.",
+            "Discover, For you has Books and Radio tabs.",
+        ],
+        changed=[
+            "Confirmations are toasts, and settings pages say when they were saved.",
+            "Settings are activated and deactivated, and are active or inactive.",
+        ],
+        fixed=[
+            "Dates are written the same way on every page, whatever your browser's language.",
+        ],
+        security=[
+            "Fixes from the security check of 3 November 2026, each with a test. The release "
+            "notes list them.",
+        ],
+        database_changes=[
+            "Two new columns for the radio library review (storyarr_0090_radio_review): the "
+            "radio library folder a show was added from, and whether an episode's file was "
+            "linked by hand.",
+        ],
+        rollback=(
+            "To go back to v0.6.0, run python -m app.downgrade storyarr_0089_radio_library in the "
+            "Storyarr container first. Only the links chosen by hand in the review are lost. No "
+            "audio files are touched."
         ),
     ),
 ]

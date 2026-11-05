@@ -17,6 +17,16 @@ import {
 import { upgradeLaterKey } from "../upgradeLater";
 import { BackgroundWorkForm } from "./BackgroundWork";
 
+// What each release brings, in the change types and order of CHANGELOG.md.
+const CHANGE_TYPES = [
+  ["added", "Added"],
+  ["changed", "Changed"],
+  ["deprecated", "Deprecated"],
+  ["removed", "Removed"],
+  ["fixed", "Fixed"],
+  ["security", "Security"],
+] as const;
+
 const steps = [
   ["whats-new", "New in this version"],
   ["backup", "Your backup"],
@@ -131,11 +141,25 @@ export default function UpgradeWizard() {
               releases.map((release) => (
                 <article key={release.id} className="upgrade-release">
                   <h3>{release.title}</h3>
-                  <ul>
-                    {release.highlights.map((line) => (
-                      <li key={line}>{line}</li>
-                    ))}
-                  </ul>
+                  {!!release.highlights?.length && (
+                    <ul>
+                      {release.highlights.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {CHANGE_TYPES.map(([key, heading]) =>
+                    release[key]?.length ? (
+                      <div key={key} className="upgrade-changes">
+                        <h4>{heading}</h4>
+                        <ul>
+                          {release[key].map((line) => (
+                            <li key={line}>{line}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null,
+                  )}
                   {!!release.database_changes?.length && (
                     <div className="upgrade-database">
                       <h4>Database changes</h4>
