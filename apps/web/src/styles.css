@@ -4527,7 +4527,9 @@ textarea {
 
 /* Send feedback (Snaglist) sits under the version, in the same small underlined text. */
 .application-release button.send-feedback {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
   border: 0;
   background: transparent;
   padding: 0;

@@ -3,6 +3,7 @@ import { TriangleAlert } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api, result } from "../api/client";
 import "./connection-health.css";
+import { dateAndTime } from "../dates";
 
 export default function ConnectionHealth() {
   const health = useQuery({
@@ -51,7 +52,7 @@ export default function ConnectionHealth() {
               <p>{issue.message}</p>
               <small>
                 {issue.checked_at
-                  ? `Last checked ${new Date(issue.checked_at).toLocaleString("en-GB")}`
+                  ? `Last checked ${dateAndTime(issue.checked_at)}`
                   : "Not checked yet"}
               </small>
               {issue.settings_url ? (

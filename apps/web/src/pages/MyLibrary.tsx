@@ -20,6 +20,7 @@ import SectionToolbar, { SaveViewButton } from "../components/SectionToolbar";
 import { useSavedView } from "../hooks/useSavedView";
 import { usePreferences } from "../hooks/usePreferences";
 import { currentParams } from "../currentParams";
+import { dateAndTime } from "../dates";
 
 const count = (total?: number) =>
   total == null
@@ -438,8 +439,7 @@ export function LibraryAssets({
           )}
           {fileDetails.last_seen_at && (
             <p className="muted">
-              Last seen{" "}
-              {new Date(fileDetails.last_seen_at).toLocaleString("en-GB")}
+              Last seen {dateAndTime(fileDetails.last_seen_at)}
             </p>
           )}
           <a href={fileDetails.open_url} target="_blank" rel="noreferrer">
@@ -649,9 +649,7 @@ export function LibraryAssets({
                         <p className="muted">
                           Last seen{" "}
                           <time dateTime={asset.last_seen_at}>
-                            {new Date(asset.last_seen_at).toLocaleString(
-                              "en-GB",
-                            )}
+                            {dateAndTime(asset.last_seen_at)}
                           </time>
                         </p>
                       )}

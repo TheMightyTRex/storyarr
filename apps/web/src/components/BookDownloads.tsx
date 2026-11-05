@@ -4,6 +4,7 @@ import InfiniteScroll from "./InfiniteScroll";
 import { Link } from "react-router-dom";
 import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
+import { longDate } from "../dates";
 export default function BookDownloads({ workId }: { workId: string }) {
   const query = usePagedQuery({
     queryKey: ["book-downloads", workId],
@@ -88,9 +89,7 @@ export default function BookDownloads({ workId }: { workId: string }) {
                       </td>
                       <td>
                         <time dateTime={item.created_at}>
-                          {new Date(item.created_at).toLocaleDateString(
-                            "en-GB",
-                          )}
+                          {longDate(item.created_at)}
                         </time>
                       </td>
                       <td>

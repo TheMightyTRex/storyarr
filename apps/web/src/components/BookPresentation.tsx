@@ -5,6 +5,7 @@ import type { components } from "../api/schema";
 import BookCover from "./BookCover";
 import { languageName } from "./LanguageSelect";
 import { HardcoverRating } from "./BookReaderDetails";
+import { shortDate } from "../dates";
 
 type ReaderDetails = components["schemas"]["ReaderDetails"];
 
@@ -149,15 +150,7 @@ export function BookHero({
               <dd>
                 {published.showDate && details?.release_date ? (
                   <time dateTime={details.release_date}>
-                    {new Date(details.release_date).toLocaleDateString(
-                      "en-GB",
-                      {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                        timeZone: "UTC",
-                      },
-                    )}
+                    {shortDate(details.release_date.slice(0, 10))}
                   </time>
                 ) : (
                   year

@@ -8,6 +8,7 @@ import { BookOpen, Check, Headphones } from "lucide-react";
 import { api, result } from "../api/client";
 import type { components } from "../api/schema";
 import { Loading, Notice } from "../components";
+import { longDate } from "../dates";
 
 type Medium = "any" | "ebook" | "audio";
 type SeriesGap = components["schemas"]["SeriesGap"];
@@ -315,9 +316,7 @@ function SeriesCard({
             Ignore this series
           </button>
         </div>
-        <p className="series-gap-note">
-          Updated {new Date(series.fetched_at).toLocaleDateString("en-GB")}
-        </p>
+        <p className="series-gap-note">Updated {longDate(series.fetched_at)}</p>
       </footer>
     </article>
   );

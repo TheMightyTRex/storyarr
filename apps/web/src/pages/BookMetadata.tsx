@@ -15,6 +15,7 @@ import BookMatch from "./BookMatch";
 import { fieldLabel } from "./MetadataSettings";
 import IdentityHistory, { useRefreshIdentity } from "./IdentityHistory";
 import VersionReviews from "./VersionReview";
+import { dateAndTime } from "../dates";
 
 type Edit = components["schemas"]["EditValues"];
 type Field =
@@ -493,10 +494,7 @@ export default function BookMetadata({
                 <span>
                   <strong>{providerName(source.provider)}</strong> ·{" "}
                   {source.title}
-                  <small>
-                    Fetched{" "}
-                    {new Date(source.fetched_at).toLocaleString("en-GB")}
-                  </small>
+                  <small>Fetched {dateAndTime(source.fetched_at)}</small>
                   {source.series.map((series) => (
                     <small key={series.external_id}>
                       {source.provider === "hardcover" ? (

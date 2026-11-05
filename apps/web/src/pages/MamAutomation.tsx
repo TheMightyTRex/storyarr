@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import type { components } from "../api/schema";
+import { dateAndTime } from "../dates";
 
 export type AutomationSettings = components["schemas"]["AccountAutomation"];
 export type UploadAmount = number | "max";
@@ -187,7 +188,7 @@ export function AccountAutomation({
             </dt>
             <dd>
               {checks?.[key]
-                ? `Last checked ${new Date(checks[key]!).toLocaleString("en-GB")}`
+                ? `Last checked ${dateAndTime(checks[key]!)}`
                 : "Not checked yet"}
             </dd>
           </div>

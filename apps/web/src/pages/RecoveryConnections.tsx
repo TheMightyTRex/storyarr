@@ -4,6 +4,7 @@ import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
 import type { components } from "../api/schema";
 import { randomUUID } from "../randomUUID";
+import { dateAndTime } from "../dates";
 
 export type ConnectionReview =
   components["schemas"]["ConnectionReconciliationView"];
@@ -438,8 +439,7 @@ export function ConnectionRecoveryReview({
       {prepared && (
         <>
           <p className="muted">
-            Review expires {new Date(review.expires_at).toLocaleString("en-GB")}
-            .
+            Review expires {dateAndTime(review.expires_at)}.
           </p>
           {review.scan_id !== currentScan && (
             <p>A newer observation exists. Prepare a new review from it.</p>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, result } from "../api/client";
 import { Loading, Notice } from "../components";
+import { dateAndTime } from "../dates";
 
 export function useRefreshIdentity() {
   const cache = useQueryClient();
@@ -93,8 +94,7 @@ export default function IdentityHistory({
               <span>
                 <strong>{change.summary}</strong>
                 <small>
-                  {change.actor_name} ·{" "}
-                  {new Date(change.created_at).toLocaleString("en-GB")}
+                  {change.actor_name} · {dateAndTime(change.created_at)}
                 </small>
                 <small>
                   {change.undone_at

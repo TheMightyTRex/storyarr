@@ -268,7 +268,7 @@ export function RadioShowsShelf({ q }: { q: string }) {
 }
 
 /**
- * Shows as a list beside the chosen show, like My library, Series and Authors (David, 2 November 2026):
+ * Shows as a list beside the chosen show, like My library, Series and Authors (TheMightyTRexUK, 2 November 2026):
  * the pane is the show page's own header (artwork on the right) with its series and episodes.
  */
 function ShowSplit({

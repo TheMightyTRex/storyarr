@@ -1,7 +1,7 @@
 /* My library: a compact cover wall, with a summary that slides out from the right. */
 .shelf-wall {
   /* Cover size from Settings, General: Small, Medium (the default) or Large. Each cover is this wide,
-     10% larger than the covers were at 1440px (David, 2 November 2026: 113, 167 and 238px). The
+     10% larger than the covers were at 1440px (TheMightyTRexUK, 2 November 2026: 113, 167 and 238px). The
      columns keep that width and the space left over goes between them, so covers line up in rows and
      columns. Small stays 120px or more, so a square cover still holds five 24px action targets. */
   --shelf-cover: 184px;

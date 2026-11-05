@@ -49,6 +49,14 @@
 .upgrade-release li + li {
   margin-top: 4px;
 }
+/* Added, Changed, Removed and the other change types, as in the changelog. */
+.upgrade-changes + .upgrade-changes {
+  margin-top: 12px;
+}
+.upgrade-changes h4 {
+  margin: 0 0 4px;
+  font-size: 0.9375rem;
+}
 .upgrade-actions {
   margin-top: 8px;
 }

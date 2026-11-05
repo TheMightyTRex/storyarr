@@ -26,6 +26,7 @@ import {
   selectLibraryDestination,
 } from "./libraryFolderSettings";
 import { randomUUID } from "../randomUUID";
+import { dateAndTime } from "../dates";
 
 type Destination = components["schemas"]["DestinationView"];
 
@@ -334,10 +335,7 @@ export default function Destinations({
                                 <code>{route.download_path}</code>
                                 {route.checked_at && (
                                   <small>
-                                    Checked{" "}
-                                    {new Date(route.checked_at).toLocaleString(
-                                      "en-GB",
-                                    )}
+                                    Checked {dateAndTime(route.checked_at)}
                                   </small>
                                 )}
                               </li>

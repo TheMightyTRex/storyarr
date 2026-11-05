@@ -18,6 +18,7 @@ import {
   downloaderLabel,
 } from "./RouteFields";
 import { randomUUID } from "../randomUUID";
+import { dateAndTime } from "../dates";
 
 type Policy = components["schemas"]["ListPolicyView"];
 type Input = components["schemas"]["ListPolicyInput"];
@@ -137,10 +138,7 @@ export default function ListPolicy({
                   </Link>
                 )}
                 {book.next_check_at && (
-                  <small>
-                    Next check:{" "}
-                    {new Date(book.next_check_at).toLocaleString("en-GB")}
-                  </small>
+                  <small>Next check: {dateAndTime(book.next_check_at)}</small>
                 )}
               </div>
             </article>

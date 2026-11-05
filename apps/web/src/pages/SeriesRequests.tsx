@@ -18,6 +18,7 @@ import SeriesAutomaticRoutes, {
 import { BookOpen, Headphones } from "lucide-react";
 import { randomUUID } from "../randomUUID";
 import { currentParams } from "../currentParams";
+import { dateAndTime } from "../dates";
 
 type Spec = components["schemas"]["RequestOptions"];
 type Preview = components["schemas"]["SeriesRequestView"];
@@ -571,10 +572,7 @@ export default function SeriesRequests({
                 {book.issue && <p>{book.issue}</p>}
                 {book.acquisition_message && <p>{book.acquisition_message}</p>}
                 {book.next_check_at && (
-                  <small>
-                    Next check:{" "}
-                    {new Date(book.next_check_at).toLocaleString("en-GB")}
-                  </small>
+                  <small>Next check: {dateAndTime(book.next_check_at)}</small>
                 )}
                 {book.warnings.map((warning) => (
                   <p className="muted" key={warning}>
@@ -671,8 +669,7 @@ export default function SeriesRequests({
           {history.data.items.map((item) => (
             <div className="button-row" key={item.id}>
               <button disabled={busy} onClick={() => setId(item.id)}>
-                Open {item.count}-book request ·{" "}
-                {new Date(item.created_at).toLocaleString("en-GB")}
+                Open {item.count}-book request · {dateAndTime(item.created_at)}
               </button>
               <span>{item.status}</span>
             </div>

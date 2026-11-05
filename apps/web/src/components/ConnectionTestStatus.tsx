@@ -8,6 +8,7 @@ import {
   Minus,
   TriangleAlert,
 } from "lucide-react";
+import { dateAndTime } from "../dates";
 
 type ConnectionTestStatusProps = {
   configured: boolean;
@@ -64,7 +65,7 @@ export default function ConnectionTestStatus({
       : error
         ? "Saved credentials were kept."
         : connected && lastSuccessAt
-          ? `Verified ${new Date(lastSuccessAt).toLocaleString("en-GB")}`
+          ? `Verified ${dateAndTime(lastSuccessAt)}`
           : connected
             ? "Connection verified successfully."
             : configured && status === "untested"
