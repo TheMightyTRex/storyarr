@@ -167,3 +167,9 @@ async def test_profile_redirect_rejects_unrelated_destinations(target):
             transport=httpx.MockTransport(handle),
         )
     assert len(calls) == 1
+
+
+def test_profile_shelves_treat_the_user_id_as_text():
+    html = '<div id="shelves"><a href="/review/list/1?shelf=read">read (2)</a></div>'
+    assert profile.parse_profile(html, ".*")[1] == []
+    assert len(profile.parse_profile(html, "1")[1]) == 1
