@@ -344,6 +344,13 @@
     gap: var(--space-2);
     justify-items: center;
   }
+  /* The app's version at the bottom of the side menu: plain text, not a link (Release notes is in the footer). */
+  .rail__version {
+    padding-bottom: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    text-align: center;
+  }
   .with-rail {
     padding-left: var(--rail-w);
   }
@@ -1290,6 +1297,29 @@
   .progress[data-tone="danger"] > span {
     background: var(--status-danger-fg);
   }
+  /* Busy: a job whose end is not known (WIZARD.md section 5, A job's progress). A band moves across; with less motion
+     asked for, the bar is shown half filled and still, and the words beside it say it is working. */
+  .progress--busy {
+    overflow: hidden;
+  }
+  .progress--busy > span {
+    width: 30%;
+    animation: progress-busy 1.4s ease-in-out infinite;
+  }
+  @keyframes progress-busy {
+    from { margin-left: -30%; }
+    to { margin-left: 100%; }
+  }
+  :root.pref-motion .progress--busy > span {
+    width: 50%;
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .progress--busy > span {
+      width: 50%;
+      animation: none;
+    }
+  }
   .meter {
     display: grid;
     gap: var(--space-1);
@@ -1710,6 +1740,88 @@
     color: var(--color-text-muted);
     font-size: var(--text-sm);
     font-weight: var(--weight-regular);
+  }
+  /* Releases: one .disclosure.release for each release, newest first, the installed one open. The summary has
+     the version, an "Installed" chip, the date, and a count for each type of change in that type's chip tone; the
+     body has one .release__type for each type, a coloured bar beside it, then Your settings and the way back. */
+  .release > summary {
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    padding-block: var(--space-3);
+  }
+  .release > summary h3 {
+    margin: 0;
+    font-size: var(--text-lg);
+  }
+  .release[open] > summary {
+    margin-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .release .disclosure__body {
+    gap: var(--space-4);
+  }
+  .release__date {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-regular);
+  }
+  .release__counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-left: auto;
+    font-weight: var(--weight-regular);
+  }
+  .release__type {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-1) 0 var(--space-1) var(--space-4);
+    border-left: 3px solid var(--type-colour, var(--color-divider));
+  }
+  .release__type > h4 {
+    margin: 0;
+    color: var(--type-colour, var(--color-text));
+    font-size: var(--text-base);
+  }
+  .release__type > ul {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding-left: var(--space-4);
+  }
+  .release__type > p {
+    margin: 0;
+  }
+  .release__type[data-type="added"] {
+    --type-colour: var(--status-success-fg);
+  }
+  .release__type[data-type="changed"] {
+    --type-colour: var(--status-info-fg);
+  }
+  .release__type[data-type="fixed"] {
+    --type-colour: var(--status-warning-fg);
+  }
+  .release__type[data-type="security"] {
+    --type-colour: var(--status-danger-fg);
+  }
+  .release__type[data-type="deprecated"],
+  .release__type[data-type="removed"] {
+    --type-colour: var(--status-muted-fg);
+  }
+  .release__type[data-type="settings"] {
+    padding-block: var(--space-3);
+    background: var(--color-surface-sunken);
+  }
+  .releases-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .releases-head > p {
+    margin: 0;
   }
   /* Steps: where you are in a wizard (onboarding, upgrade). */
   .steps {
