@@ -22,7 +22,10 @@ and when `main` at that commit passed its checks.
 3. **Database changes:** every migration needs a working downgrade, a test, and a line in
    `services/app/downgrade.py` if people may need to go back past it. Name new migrations
    `storyarr_NNNN_…` so they never clash with a future Dewarr migration of the same number.
-4. **Release notes:** write `docs/releases/vX.Y.Z.md`, and add the release to `CHANGELOG.md`.
+4. **Release notes:** write `docs/releases/vX.Y.Z.md`. In `CHANGELOG.md`, rename `## [Unreleased]` to
+   `## [X.Y.Z] (day month year)`, start a new empty `## [Unreleased]` above it, and add a link reference at the
+   end. Both use only Added, Changed, Deprecated, Removed, Fixed and Security, in that order (the design system's
+   `docs/CHANGELOGS.md`).
 5. **Checks:** run the server and web test suites (see [Development](DEVELOPMENT.md)). Run `tools/security-scan.sh` (`--full`
    before a larger release), and add a row to "Security checks for each release" in [Security](SECURITY.md).
 6. **Publish:** merge to `main` and wait for the **Publish container** run to pass. Then tag and release:

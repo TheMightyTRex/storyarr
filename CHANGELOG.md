@@ -1,9 +1,13 @@
-# Storyarr changelog
+# Changelog
 
-Changes in Storyarr, newest first. Storyarr is a fork of [Dewarr](https://github.com/logabell/dewarr) v0.3.9 by
-logabell. Release notes for each version are in [docs/releases](docs/releases).
+All notable changes to Storyarr are listed here, newest first. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with dates written as in the TRex Design System.
+Version numbers do not follow [Semantic Versioning](https://semver.org/): database changes and removed features
+have come in releases that change only the last number. Storyarr is a fork of
+[Dewarr](https://github.com/logabell/dewarr) v0.3.9 by logabell. Release notes for each version are in
+[docs/releases](docs/releases).
 
-## Unreleased
+## [Unreleased]
 
 ### Added
 - **Review the radio library** (My library, Radio): the shows in the radio library that are not in your radio
@@ -16,7 +20,10 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Add a show** also looks in the BBC programmes A to Z when BBC Sounds has no show of that name, so older
   shows such as Cabin Pressure and Old Harry's Game are found by name.
 
-## v0.6.0 (2 November 2026)
+## [0.6.0] (2 November 2026)
+
+The database gains a table for the radio library (`storyarr_0089_radio_library`). To go back to v0.5.9, run
+`python -m app.downgrade storyarr_0088_series_logos` in the Storyarr container first.
 
 ### Added
 - **Radio library:** choose an Audiobookshelf podcast library for radio in Settings, Connections. Storyarr reads
@@ -36,7 +43,7 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Change logo previews** show for uploaded and found logos, and the Text colour and Accent colour buttons
   change them.
 
-## v0.5.9 (2 November 2026)
+## [0.5.9] (2 November 2026)
 
 ### Changed
 - **Display and accessibility** opens as a slide-out from the right, with Done and Reset at the bottom and Match
@@ -54,7 +61,12 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Notifications:** Delete asks first, and says the delivery history goes too.
 - **Users and access** stacks on phones and at large text sizes, with compact 32px buttons.
 
-## v0.5.8 (2 November 2026)
+## [0.5.8] (2 November 2026)
+
+Versions 0.4.9 to 0.5.7 were never published: the version moved from 0.4.8 straight to 0.5.8.
+New tables for radio (`storyarr_0087_radio_shows`) and series logos (`storyarr_0088_series_logos`). To go back to
+v0.4.8, run `python -m app.downgrade storyarr_0086_notification_title` in the Storyarr container first. Logo and
+radio image files stay in the config folder.
 
 ### Added
 - **Series header with a logo:** a series page opens with the series logo above the name, in one colour that
@@ -75,6 +87,8 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Radio, an early feature:** add BBC radio shows by link or by name, and browse shows, stations, series and
   episodes in My library, Radio. Artwork and station logos are saved on your server. Downloading episodes and
   filing them in Audiobookshelf come in a later version.
+- New screenshots of cover actions, a Discover shelf, the series header, a reading order, radio and the Cover
+  actions setting.
 
 ### Changed
 - **Header:** each page's tabs have a row of their own in the header, with icons. On phones, the menu holds search
@@ -104,6 +118,10 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
   all lists, and refresh Goodreads, StoryGraph or Hardcover lists only. The connection warning sits beside Lists.
 - **One header for every pop-up:** release notes, the Display dialog and every other pop-up now have the
   slide-out panels' header: the name in bold at the same size, the close button, a white bar and a grey line.
+- **NZBGet:** the README and the download client guide now list NZBGet beside SABnzbd for Usenet, with setup
+  steps for both. NZBGet has been supported since v0.2.0, in Settings and in the setup wizard.
+
+### Removed
 - **One layout:** the Classic layout is retired, and everyone uses Shelf (the icon menu, with the page's tabs in
   the header, and the menu drawer on phones). The Layout choice is gone from Settings, onboarding and the upgrade
   wizard; installs that chose Classic open in Shelf.
@@ -118,18 +136,7 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - In Settings, the Cover actions examples keep every button on the cover, and the first line of the Display
   dialog no longer sits under its header.
 
-### Documentation
-- **NZBGet:** the README and the download client guide now list NZBGet beside SABnzbd for Usenet, with setup
-  steps for both. NZBGet has been supported since v0.2.0, in Settings and in the setup wizard.
-- New screenshots of cover actions, a Discover shelf, the series header, a reading order, radio and the Cover
-  actions setting.
-
-### Database
-- New tables for radio (`storyarr_0087_radio_shows`) and series logos (`storyarr_0088_series_logos`). To go back to
-  v0.4.8, run `python -m app.downgrade storyarr_0086_notification_title` in the Storyarr container first. Logo and
-  radio image files stay in the config folder.
-
-## v0.4.8 (1 November 2026)
+## [0.4.8] (1 November 2026)
 
 ### Changed
 - **Library tabs, one toolbar (design D):** In my libraries, Authors, Series and All saved titles share one section
@@ -151,11 +158,14 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Restore previous version** in Settings, System, Upgrades and backups replaces the wizard's way-back step:
   restore your settings, undo database changes, then start the previous image.
 - **One typeface:** Atkinson Hyperlegible Next on every page, replacing the system, serif and monospace fonts.
-  The Display panel's Low-vision font switch is removed.
 - **Slide-out panels** (My library summary, the bookshelf drawer, the calendar day) share one header: the name in
   bold on a white bar with a grey line, and the close button.
 
-## v0.4.7 (1 November 2026)
+### Removed
+- **Low-vision font:** the Display panel's Low-vision font switch is removed, because every page uses
+  Atkinson Hyperlegible Next.
+
+## [0.4.7] (1 November 2026)
 
 ### Fixed
 - **Soulseek (slskd) connection with a read-write API key** ([#1](https://github.com/TheMightyTRex/storyarr/issues/1)):
@@ -163,15 +173,15 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
   "use a read-write key" message. Storyarr now checks the key before the Soulseek session and says to give the
   key the administrator role. The settings page and the download clients guide say the same.
 
-## v0.4.6 (1 November 2026)
+## [0.4.6] (1 November 2026)
+
+Migration `storyarr_0086_notification_title` retitles stored notifications. To go back to v0.4.5, run
+`python -m app.downgrade storyarr_0085_user_preferences` in the Storyarr container first.
 
 ### Changed
-- **Storyarr everywhere:** notifications are titled "Storyarr notification", including stored ones
-  (migration `storyarr_0086_notification_title`; undo with
-  `python -m app.downgrade storyarr_0085_user_preferences`). The default `DB_NAME` and `DB_USER` are `storyarr`,
-  and the package, logger, sample compose overrides, CI images and the Docker and development guides use
-  Storyarr names. The `x-dewarr-proxy-token` header and the `dewarr-` download folder prefix keep their names.
-
+- **Storyarr everywhere:** notifications are titled "Storyarr notification", including stored ones. The default
+  `DB_NAME` and `DB_USER` are `storyarr`, and the package, logger, sample compose overrides, CI images and the
+  Docker and development guides use Storyarr names. The `x-dewarr-proxy-token` header and the `dewarr-` download folder prefix keep their names.
 - **My library summary:** the author and series names open their pages, and a click outside the panel closes it
   (the close button and Escape still work).
 - `compose.yaml` names the containers `storyarr` and `storyarr-postgres`, matching the `docker run` guide.
@@ -181,7 +191,7 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - `deploy/compose.build.yaml` and `deploy/compose.dev.yaml` named a `dewarr` service and Dewarr's image and
   release feed, so they did not apply to `compose.yaml`.
 
-## v0.4.5 (1 November 2026)
+## [0.4.5] (1 November 2026)
 
 ### Changed
 - **My library bookshelf:** a compact cover wall. Clicking a book slides out a summary from the right: cover,
@@ -194,7 +204,7 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - Connection repair accepts a library that switched from hardlink to copy after the download was chosen, so
   held downloads no longer stop at "The library destination changed".
 
-## v0.4.4 (31 October 2026)
+## [0.4.4] (31 October 2026)
 
 ### Added
 - **Sort by** on Series, Authors and Following: Newest, Number of books, Date published, Author (by surname)
@@ -211,38 +221,42 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - Series group together when names differ only in punctuation, a leading "The" or a trailing "Series".
 - Followed series and authors in My library open on In library.
 
-## v0.4.3 (31 October 2026)
+## [0.4.3] (31 October 2026)
+
+Migration `storyarr_0085_user_preferences` stores each person's layout choice. To go back to v0.4.2, run
+`python -m app.downgrade storyarr_0084_background_work` in the Storyarr container first.
 
 ### Changed
 - **Series, Authors and Following layouts:** List and detail (the default) or List, with the switch next to the
   search. The choice is saved with each person's account. Covers, the author's picture beside the name,
   progress, statuses and actions sit in the same place on every row. Following shows the chosen follow's
-  bookshelf beside the list. Migration `storyarr_0085_user_preferences`; undo with
-  `python -m app.downgrade storyarr_0084_background_work`.
+  bookshelf beside the list.
 
-## v0.4.2 (31 October 2026)
+## [0.4.2] (31 October 2026)
+
+Migration `storyarr_0084_background_work` stores the setting. To go back to v0.4.1, run
+`python -m app.downgrade 0083_operation_lookups` in the Storyarr container first.
 
 ### Added
 - **Background work** (Settings → System): choose how often scheduled jobs run: Normal, Relaxed (×5), Light
   (×20) or Minimal (×50). Normal keeps the usual schedule; a change applies within a minute. The upgrade wizard
-  offers it as a new setting. Migration `storyarr_0084_background_work`; undo with
-  `python -m app.downgrade 0083_operation_lookups`.
+  offers it as a new setting.
 
-## v0.4.1 (31 October 2026)
+## [0.4.1] (31 October 2026)
 
 ### Fixed
 - **Release notes window:** left-aligned in the Shelf layout, with bold section headings. Long list items stay
   together, numbered lists work, and the release title is not repeated.
 
-## v0.4.0 (31 October 2026): the first Storyarr release
+## [0.4.0] (31 October 2026)
 
-### Published
+The first Storyarr release.
+
+### Added
 - **Docker image** for amd64 and arm64 at `ghcr.io/themightytrex/storyarr`: `latest` for releases, `vX.Y.Z` to
   pin one, `edge` for the newest checked build. Built and checked by GitHub Actions.
 - **Guides:** installing, setting up, updating, moving from Dewarr, and releasing (for maintainers).
 - **New screenshots** with invented books and generated covers.
-
-### Added
 - **Going back to an earlier release:** `docker exec storyarr python -m app.downgrade <revision>` moves the database
   back, for example to Dewarr v0.3.9 (`0080_member_setup`). Tested both ways.
 - **Upgrade wizard title** shows the version number, such as "Welcome to version 0.4.0".
@@ -251,7 +265,7 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Bookshelf drawer:** Search now, and Exclude from this follow (or Include again).
 - **Loading bar:** a thin bar under the header while a page is fetching data.
 - **Upgrade wizard (F):**
-  - Before an existing install upgrades, Dewarr saves a settings backup to `/config/upgrade-backups`.
+  - Before an existing install upgrades, Storyarr saves a settings backup to `/config/upgrade-backups`.
   - Admins then get a wizard: what is new, the backup to download, new settings to review, and the way back
     (restore settings from a backup; your current settings are saved first).
   - New installs get onboarding instead.
@@ -327,7 +341,6 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - **Headings and wording:** "My library" in sentence case, one main heading per page, British spellings, and no
   contractions.
 - **In-app help links** for OpenID Connect and Plex now open Storyarr's own guides.
-- **Main menu:** the request count badge is removed.
 - **Activity in three tabs, each with filter buttons:**
   - *Queue* (was Active and Downloading): All, Downloading, and Needs review (admins). Needs review replaces the
     old Download review tab.
@@ -342,13 +355,30 @@ logabell. Release notes for each version are in [docs/releases](docs/releases).
 - New follows use your saved defaults when no filters are given.
 - List automation can select every missing book in one step; hand-picked selection keeps its 25-book limit.
 
+### Removed
+- **Main menu:** the request count badge is removed.
+
 ### Fixed
 - **Slow request counts (database speed, part 1):**
   - The counts behind Activity took about 4 minutes on a large library. They now take under a second, thanks to two
     new indexes on the operations table.
-  - Postgres no longer compiles Dewarr's queries to machine code (JIT), which cost more than it saved.
+  - Postgres no longer compiles Storyarr's queries to machine code (JIT), which cost more than it saved.
 - **Leaving a page stops its database work:** the server cancels a page's database query when the browser
   moves away.
 - **Onboarding failed after the Automation step:** saving failed with an error from the server, because it
   only accepted the original seven steps. It now accepts all nine.
 - My Library no longer lists files that were removed or are confirmed missing as unticked books.
+
+[Unreleased]: https://github.com/TheMightyTRex/storyarr/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/TheMightyTRex/storyarr/compare/v0.5.9...v0.6.0
+[0.5.9]: https://github.com/TheMightyTRex/storyarr/compare/v0.5.8...v0.5.9
+[0.5.8]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.8...v0.5.8
+[0.4.8]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.7...v0.4.8
+[0.4.7]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.6...v0.4.7
+[0.4.6]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.5...v0.4.6
+[0.4.5]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.4...v0.4.5
+[0.4.4]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.3...v0.4.4
+[0.4.3]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.2...v0.4.3
+[0.4.2]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/TheMightyTRex/storyarr/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/TheMightyTRex/storyarr/compare/v0.3.9...v0.4.0
