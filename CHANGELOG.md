@@ -9,16 +9,53 @@ have come in releases that change only the last number. Storyarr is a fork of
 
 ## [Unreleased]
 
+The database gains two columns for the radio library review (`storyarr_0090_radio_review`). To go back to
+v0.6.0, run `python -m app.downgrade storyarr_0089_radio_library` in the Storyarr container first.
+
 ### Added
 - **Review the radio library** (My library, Radio): the shows in the radio library that are not in your radio
   shows, each with Find on the BBC (the show then takes that folder's files, whatever it is called) or Already
   added, and the files that match no episode, each with a list of the show's episodes to link it by hand.
 - **Not this file** on an episode's file, and **Match automatically again** after a choice by hand. The radio
   library sync keeps choices made by hand.
+- **Change password.** In Settings, Sign-in, change your own password. Your other browsers and devices are
+  signed out.
+- **Set new password.** In an account's details, an administrator sets a new password for someone else, who is
+  signed out everywhere.
+- **Send feedback.** Under the version number, in the side menu and the phone menu: report a problem or suggest
+  something, shown on the page or recorded as steps, sent as a GitHub issue. It uses
+  [Snaglist](https://github.com/TheMightyTRex/snaglist), which loads only when you select it and records nothing
+  personal.
+- **Discover, For you** has Books and Radio tabs: five stations, top shows and a genre choice.
 
 ### Changed
 - **Add a show** also looks in the BBC programmes A to Z when BBC Sounds has no show of that name, so older
   shows such as Cabin Pressure and Old Harry's Game are found by name.
+- **Confirmations are toasts:** a card in the corner, up to three stacked, that waits while the pointer or
+  keyboard focus is on it. About 10 actions confirm this way.
+- **Settings pages say "Saved at 16:31"** beside Save, on about 14 settings sections, until the next change.
+- **Display** is an icon button, and Reduce motion is Match device, On or Off. Saved choices carry over.
+- **Words:** settings are activated and deactivated, and are active or inactive, on every page and state chip.
+
+### Fixed
+- **Dates** are written the same way on every page, whatever your browser's language: "12 May 2020", never
+  "12/05/2020" or "May 12, 2020".
+
+### Security
+From the security check of 3 November 2026. Each fix has a test.
+- **Libraries updated** to versions without known problems: Pillow 13, Authlib, cryptography 50, oauthlib 4,
+  pypdf, certifi, joserfc and Mako. The image also takes Debian's security updates when it is built, and leaves
+  out pip, which is not used at run time.
+- **Identity providers:** with **Match existing accounts** set to **Verified email**, a provider account with an
+  administrator's email no longer signs in as that administrator.
+- **Large requests:** a request body over 5 MB is refused before it is read.
+- **Saved keys stay with their address:** changing an Audiobookshelf or Grimmory connection's address needs its
+  key or password typed again.
+- **Less shown before signing in:** the version, the release notes and the upgrade page need a signed-in
+  account, and the API map (`/openapi.json`, `/docs`, `/redoc`) is no longer served.
+- **Old sign-ins are cleared:** expired sessions and old sign-in counters are deleted each night.
+- **Logos:** CSS escapes are removed from uploaded SVG logos.
+- **A malformed security token** is refused (403) instead of causing a server error.
 
 ## [0.6.0] (2 November 2026)
 
