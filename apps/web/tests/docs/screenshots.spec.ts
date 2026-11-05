@@ -597,11 +597,13 @@ async function setup(
           {
             id: "2026.11.02",
             title: "Cover actions, shelf arrows and radio",
-            highlights: [
+            added: [
               "Series pages have a new header: the series logo above the name, or the name set large when there is no logo.",
               "Every cover has its actions: Details, Ebook, Audiobook, Add to a list and More, on the cover or beside it.",
-              "Discover shelves have no scroll bars: the covers fade at each end, with an arrow when there are more books that way.",
               "Radio, an early feature: add BBC radio shows by link or name, and browse shows, stations, series and episodes.",
+            ],
+            changed: [
+              "Discover shelves have no scroll bars: the covers fade at each end, with an arrow when there are more books that way.",
             ],
             review: [
               {
