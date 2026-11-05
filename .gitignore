@@ -11,7 +11,7 @@ dist/
 .env.*
 !.env.example
 .local/
-test-results/
+test-results*/
 playwright-report/
 .DS_Store
 *.tsbuildinfo
